@@ -7,8 +7,9 @@ import numpy as np
 import tsplib95
 import pathlib
 from tqdm import tqdm
+from typing import Union
 from multiprocessing import Pool
-
+from data4co.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -16,10 +17,10 @@ warnings.filterwarnings("ignore")
 class TSPDataGenerator:
     def __init__(
         self,
-        batch_size: int=1,
+        num_threads: int=1,
         nodes_num: int=50,
         data_type: str="uniform",
-        solver_type: str="lkh",
+        solver: Union[str, TSPSolver]="lkh",
         train_samples_num: int=128000,
         val_samples_num: int=1280,
         test_samples_num: int=1280,
@@ -29,57 +30,40 @@ class TSPDataGenerator:
         gaussian_mean_x: float=0.0,
         gaussian_mean_y: float=0.0,
         gaussian_std: float=1.0,
-        # special for lkh
-        lkh_max_trials: int=1000,
-        lkh_path: pathlib.Path="LKH",
-        lkh_scale: int=1e6,
-        lkh_runs: int=10,
-        # special for concorde
-        concorde_scale: int=1e6
     ):
-        """_summary_
-
+        """
+        TSPDataGenerator
         Args:
-            batch_size (int, optional): 
-                The batch size. Defaults to 1.
+            num_threads (int, optional): 
+                The number of threads to generate datasets.
             nodes_num (int, optional): 
-                The number of nodes. Defaults to 50.
+                The number of nodes.
             data_type (str, optional): 
-                The data type. Defaults to "uniform".
+                The data type.
             solver_type (str, optional): 
-                The solver type. Defaults to "lkh".
+                The solver type.
             train_samples_num (int, optional): 
-                The number of training samples. Defaults to 128000.
+                The number of training samples.
             val_samples_num (int, optional): 
-                The number of validation samples. Defaults to 1280.
+                The number of validation samples.
             test_samples_num (int, optional): 
-                The number of test samples. Defaults to 1280.
+                The number of test samples.
             save_path (pathlib.Path, optional): 
-                The save path. Defaults to "data/tsp/uniform".
+                The save path.
             filename (str, optional): 
-                The filename. Defaults to None.
+                The filename.
             gaussian_mean_x (float, optional): The mean of the x-coordinate 
-                in Gaussian data generation. Defaults to 0.0.
+                in Gaussian data generation.
             gaussian_mean_y (float, optional): The mean of the y-coordinate 
-                in Gaussian data generation. Defaults to 0.0.
+                in Gaussian data generation.
             gaussian_std (float, optional): The standard deviation in Gaussian 
-                data generation. Defaults to 1.0.
-            lkh_max_trials (int, optional): The maximum number of trials for 
-                the LKH solver. Defaults to 1000.
-            lkh_path (pathlib.Path, optional): The path to the LKH solver. 
-                Defaults to "LKH".
-            lkh_scale (int, optional): The scale factor for coordinates in the 
-                LKH solver. Defaults to 1e6.
-            lkh_runs (int, optional): The number of runs for the LKH solver. 
-                Defaults to 10.
-            concorde_scale (int, optional): The scale factor for coordinates 
-                in the Concorde solver. Defaults to 1e6.
+                data generation.
         """
         # record variable data
-        self.batch_size = batch_size
+        self.num_threads = num_threads
         self.nodes_num = nodes_num
         self.data_type = data_type
-        self.solver_type = solver_type
+        self.solver = solver
         self.train_samples_num = train_samples_num
         self.val_samples_num = val_samples_num
         self.test_samples_num = test_samples_num
@@ -89,27 +73,20 @@ class TSPDataGenerator:
         self.gaussian_mean_x = gaussian_mean_x
         self.gaussian_mean_y = gaussian_mean_y
         self.gaussian_std = gaussian_std
-        # special for lkh
-        self.lkh_max_trials = lkh_max_trials
-        self.lkh_path = lkh_path
-        self.lkh_scale = lkh_scale
-        self.lkh_runs = lkh_runs
-        # special for concorde
-        self.concorde_scale = concorde_scale
         # check the input variables
         self.sample_types = ['train', 'val', 'test']
-        self.check_batch_size()
+        self.check_num_threads()
         self.check_data_type()
-        self.check_solver_type()
+        self.check_solver()
         self.get_filename()
         
-    def check_batch_size(self):
+    def check_num_threads(self):
         self.samples_num = 0
         for sample_type in self.sample_types:
             self.samples_num += getattr(self, f"{sample_type}_samples_num")
-            if self.samples_num % self.batch_size != 0:
+            if self.samples_num % self.num_threads != 0:
                 message = f"The {self.sample_types}_samples_num must be "
-                message += "evenly divided by the batch size"
+                message += "evenly divided by the number of threads"
                 raise ValueError(message)
     
     def check_data_type(self):
@@ -124,31 +101,38 @@ class TSPDataGenerator:
             raise ValueError(message)
         self.generate_func = generate_func_dict[self.data_type]
         
-    def check_solver_type(self):
-        supported_solver_dict = {
-            "lkh": self.solve_by_lkh, 
-            "concorde": self.solve_by_concorde
-        }
+    def check_solver(self):
+        # get solver
+        if type(self.solver) == str:
+            self.solver_type = self.solver
+            supported_solver_dict = {
+                "lkh": TSPLKHSolver, 
+                "concorde": TSPConcordeSolver
+            }
+            supported_solver_type = supported_solver_dict.keys()
+            if self.solver_type not in supported_solver_type:
+                message = f"The input solver_type({self.solver_type}) is not a valid type, "
+                message += f"and the generator only supports {supported_solver_type}"
+                raise ValueError(message)
+            self.solver = supported_solver_dict[self.solver_type]()
+        else:
+            self.solver_type = self.solver.solver_type   
+        # check solver
         check_solver_dict = {
             "lkh": self.check_lkh,
             "concorde": self.check_concorde
         }
-        supported_solver_type = supported_solver_dict.keys()
-        if self.solver_type not in supported_solver_type:
-            message = f"The input solver_type({self.solver_type}) is not a valid type, "
-            message += f"and the generator only supports {supported_solver_type}"
-            raise ValueError(message)
-        self.solver = supported_solver_dict[self.solver_type]
         check_func = check_solver_dict[self.solver_type]
         check_func()
         
     def check_lkh(self):
-        # check if lkh is downloaded 
-        if shutil.which(self.lkh_path) is None:
+        # check if lkh is downloaded
+        self.solver: TSPLKHSolver
+        if shutil.which(self.solver.lkh_path) is None:
             self.download_lkh()
         # check again
-        if shutil.which(self.lkh_path) is None:
-            message = f"The LKH solver cannot be found in the path '{self.lkh_path}'. "
+        if shutil.which(self.solver.lkh_path) is None:
+            message = f"The LKH solver cannot be found in the path '{self.solver.lkh_path}'. "
             message += "Please verify that the input lkh_path is correct. "
             message += "If you have not installed the LKH solver, "
             message += "please use the 'self.download_lkh()' function to download it."
@@ -159,7 +143,7 @@ class TSPDataGenerator:
     
     def check_concorde(self):
         try:
-            from data4co.solver import TSPConSolver
+            from data4co.solver.tsp.pyconcorde import TSPConSolver
         except:
             self.recompile_concorde()
 
@@ -196,14 +180,13 @@ class TSPDataGenerator:
     def generate(self):
         with open(self.file_save_path, "w") as f:
             start_time = time.time()
-            for _ in tqdm(range(self.samples_num // self.batch_size), \
+            for _ in tqdm(range(self.samples_num // self.num_threads), \
                           desc=f"Solving TSP Using {self.solver_type}"):
                 batch_nodes_coord = self.generate_func()
-                with Pool(self.batch_size) as p:
+                with Pool(self.num_threads) as p:
                     tours = p.map(
-                        self.solver, 
-                        [batch_nodes_coord[idx] for idx in range(self.batch_size)], 
-                        self.lkh_max_trials
+                        self.solver.solve,
+                        [batch_nodes_coord[idx] for idx in range(self.num_threads)], 
                     )
                 for idx, tour in enumerate(tours):
                     if (np.sort(tour) == np.arange(self.nodes_num)).all():
@@ -232,40 +215,11 @@ class TSPDataGenerator:
                 file.writelines(data_content)
     
     def generate_uniform(self) -> np.ndarray:
-        return np.random.random([self.batch_size, self.nodes_num, 2])
+        return np.random.random([self.num_threads, self.nodes_num, 2])
 
     def generate_gaussian(self) -> np.ndarray:
         return np.random.normal(
             loc=[self.gaussian_mean_x, self.gaussian_mean_y], 
             scale=self.gaussian_std, 
-            size=(self.batch_size, self.nodes_num, 2)
+            size=(self.num_threads, self.nodes_num, 2)
         )
-    
-    def solve_by_lkh(self, points: np.ndarray) -> np.ndarray:
-        problem = tsplib95.models.StandardProblem()
-        problem.name = 'TSP'
-        problem.type = 'TSP'
-        problem.dimension = self.nodes_num
-        problem.edge_weight_type = 'EUC_2D'
-        problem.node_coords = {n + 1: points[n] * self.lkh_scale for n in range(self.nodes_num)}
-        solution = lkh.solve(
-            solver=self.lkh_path, 
-            problem=problem, 
-            max_trials=self.lkh_max_trials, 
-            runs=self.lkh_runs
-        )
-        tour = [n - 1 for n in solution[0]]   
-        np_tour = np.array(tour)
-        return np_tour
-    
-    def solve_by_concorde(self, points: np.ndarray) -> np.ndarray:
-        from data4co.solver import TSPConSolver
-        solver = TSPConSolver.from_data(
-            points[:, 0] * self.concorde_scale, 
-            points[:, 1] * self.concorde_scale, 
-            norm="GEO"
-        )
-        solution = solver.solve(verbose=False)
-        tour = solution.tour
-        np_tour = np.array(tour)
-        return np_tour

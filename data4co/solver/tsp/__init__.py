@@ -1,2 +1,5 @@
-from .pyconcorde import TSPConSolver
+from .base import TSPSolver
+from .lkh import TSPLKHSolver
+from .concorde import TSPConcordeSolver
+
     
