@@ -26,7 +26,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 
 ### How to Install
 
-#### Github
+**Github**
 Clone with the url https://github.com/heatingma/Data4CO.git , and the following packages are required, and shall be automatically installed by ``pip``:
 ```
 Python >= 3.8
@@ -40,50 +40,39 @@ pandas>=2.2.0,
 scipy>=1.12.0
 ```
 
-#### PyPI
+**PyPI**
 It is very convenient to directly use the following commands
 ```
 pip install data4co
 ```
 
-### How to Use
+### How to Use Solver (TSPLKHSolver as example)
 
-#### TSP
+```python
+from data4co.solver import TSPLKHSolver
+
+tsp_lkh_solver = TSPLKHSolver(lkh_max_trials=500)
+tsp_lkh_solver.from_txt("path/to/read/file.txt")
+tsp_lkh_solver.solve()
+tsp_lkh_solver.evaluate()
+tsp_lkh_solver.to_txt("path/to/write/file.txt")
+```
+
+### How to Use Generator (TSPDataGenerator as example)
 
 ```python
 from data4co import TSPDataGenerator
 
 tsp_data_lkh = TSPDataGenerator(
-    batch_size=16,
+    num_threads=8,
     nodes_num=50,
     data_type="uniform",
-    solver_type="lkh",
-    train_samples_num=128000,
-    val_samples_num=1280,
-    test_samples_num=1280,
-    save_path="your/path/to/save"
+    solver="lkh",
+    train_samples_num=16,
+    val_samples_num=16,
+    test_samples_num=16,
+    save_path="path/to/save/"
 )
 
 tsp_data_lkh.generate()
-```
-
-#### MIS
-
-```python
-from data4co import MISDataGenerator
-
-mis_data_kamis = MISDataGenerator(
-    nodes_num_min=700, 
-    nodes_num_max=800,
-    data_type="er",
-    solver_type="kamis",
-    train_samples_num=128000,
-    val_samples_num=1280,
-    test_samples_num=1280,
-    save_path="your/path/to/save",
-    solve_limit_time=10.0
-)
-
-mis_data_kamis.generate()
-mis_data_kamis.solve()
 ```
