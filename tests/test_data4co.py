@@ -101,6 +101,33 @@ def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
     shutil.rmtree(save_path)
 
 
+def _test_mis_gurobi(nodes_num_min: int, nodes_num_max: int, data_type: str):
+    """
+    Test MISDataGenerator using MISGurobi
+    """
+    # save path
+    save_path = f"tmp/mis_{data_type}_gurobi"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create TSPDataGenerator using lkh solver 
+    mis_data_gurobi = MISDataGenerator(
+        nodes_num_min=nodes_num_min, 
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver_type="gurobi",
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+        solve_limit_time=10.0
+    )
+    # generate and solve data
+    mis_data_gurobi.generate()
+    mis_data_gurobi.solve()
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+
 def test_mis():
     """
     Test MISDataGenerator
@@ -109,7 +136,13 @@ def test_mis():
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ba")
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="hk")
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ws")
-
+    # gurobi need license
+    # gurobipy.GurobiError: Model too large for size-limited license;
+    # visit https://www.gurobi.com/free-trial for a full license
+    # _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    # _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    # _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    # _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 ##############################################
 #                    MAIN                    #

@@ -23,7 +23,8 @@ URL = 'https://github.com/heatingma/Data4CO'
 AUTHOR = get_property('__author__', NAME)
 VERSION = get_property('__version__', NAME)
 REQUIRED = [
-     'numpy>=1.24.4', 'networkx>=2.8.8', 'lkh>=1.1.1', 'tsplib95>=0.7.1', 'tqdm>=4.66.1', 'wget>=3.2'
+     'numpy>=1.24.4', 'networkx>=2.8.8', 'lkh>=1.1.1', 'tsplib95>=0.7.1', 'tqdm>=4.66.1', 'wget>=3.2',
+     'pulp>=2.8.0', 'pandas>=2.2.0', 'scipy>=1.12.0'
 ]
 
 EXTRAS = {}
@@ -78,17 +79,7 @@ setup(
     author=AUTHOR,
     url=URL,
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    package_data={
-        NAME: ["**"],
-        "data4co/solver": ["**"],
-        "data4co/solver/mis": ["**"],
-        "data4co/solver/mis/KaMIS": ["**"],
-        "data4co/solver/mis/kamis-source": ["**"],
-        "data4co/solver/tsp": ["**"],
-        "data4co/solver/tsp/pyconcorde": ["**"],
-        "data4co/solver/tsp/pyconcorde/concorde": ["**"],
-        "data4co/solver/tsp/pyconcorde/data": ["**"],
-    },
+    package_data={NAME: ["**"]},
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,

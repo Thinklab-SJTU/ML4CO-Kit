@@ -8,8 +8,8 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 
 |Problem|Solver1|Impl.|Solver2|Impl.|Solver3|Impl.|
 | :---: | :---: |:---:| :---: |:---:| :---: |:---:|
-|  TSP  | LKH | ✔ | Concorde | ✔ | Gurobi | 📆  |
-|  MIS  | KaMIS | ✔ | Gurobi| 📆 | -- | -- |
+|  TSP  | LKH | ✔ | Concorde | ✔ | TSPNARSolver | 📆 | TSPARSolver | 📆 |
+|  MIS  | KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
 
 
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
@@ -31,6 +31,9 @@ networkx==2.8.8
 lkh>=1.1.1
 tsplib95==0.7.1
 tqdm>=4.66.1
+pulp>=2.8.0, 
+pandas>=2.2.0,
+scipy>=1.12.0
 ```
 
 #### PyPI

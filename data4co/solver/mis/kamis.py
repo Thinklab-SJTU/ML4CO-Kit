@@ -15,6 +15,14 @@ class KaMIS:
         weighted: bool=False,
         time_limit: float=600.0,
     ):
+        """
+        KaMIS
+        Args:
+            weighted (bool, optional): 
+                If enabled, solve the weighted MIS problem instead of MIS.
+            time_limit (float, optional): 
+                Time limit in seconds.
+        """
         self.weighted = weighted
         self.time_limit = time_limit
         self.kamis_path = pathlib.Path(__file__).parent

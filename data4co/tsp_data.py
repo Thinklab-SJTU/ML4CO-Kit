@@ -37,6 +37,44 @@ class TSPDataGenerator:
         # special for concorde
         concorde_scale: int=1e6
     ):
+        """_summary_
+
+        Args:
+            batch_size (int, optional): 
+                The batch size. Defaults to 1.
+            nodes_num (int, optional): 
+                The number of nodes. Defaults to 50.
+            data_type (str, optional): 
+                The data type. Defaults to "uniform".
+            solver_type (str, optional): 
+                The solver type. Defaults to "lkh".
+            train_samples_num (int, optional): 
+                The number of training samples. Defaults to 128000.
+            val_samples_num (int, optional): 
+                The number of validation samples. Defaults to 1280.
+            test_samples_num (int, optional): 
+                The number of test samples. Defaults to 1280.
+            save_path (pathlib.Path, optional): 
+                The save path. Defaults to "data/tsp/uniform".
+            filename (str, optional): 
+                The filename. Defaults to None.
+            gaussian_mean_x (float, optional): The mean of the x-coordinate 
+                in Gaussian data generation. Defaults to 0.0.
+            gaussian_mean_y (float, optional): The mean of the y-coordinate 
+                in Gaussian data generation. Defaults to 0.0.
+            gaussian_std (float, optional): The standard deviation in Gaussian 
+                data generation. Defaults to 1.0.
+            lkh_max_trials (int, optional): The maximum number of trials for 
+                the LKH solver. Defaults to 1000.
+            lkh_path (pathlib.Path, optional): The path to the LKH solver. 
+                Defaults to "LKH".
+            lkh_scale (int, optional): The scale factor for coordinates in the 
+                LKH solver. Defaults to 1e6.
+            lkh_runs (int, optional): The number of runs for the LKH solver. 
+                Defaults to 10.
+            concorde_scale (int, optional): The scale factor for coordinates 
+                in the Concorde solver. Defaults to 1e6.
+        """
         # record variable data
         self.batch_size = batch_size
         self.nodes_num = nodes_num

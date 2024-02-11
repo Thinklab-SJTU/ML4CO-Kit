@@ -6,7 +6,7 @@ import shutil
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
-from data4co.solver.mis import KaMIS
+from data4co.solver.mis import KaMIS, MISGurobi
 
 
 class MISDataGenerator:
@@ -32,7 +32,58 @@ class MISDataGenerator:
         kamis_recompile: bool=False,
         mis_weighted: bool=False,
         solve_limit_time: float=600.0,
+        gurobi_num_threads: int=8,
+        gurobi_quadratic: bool=False,
+        gurobi_write_mps: bool=False 
     ):
+        """
+        MISDataGenerator
+        Args:
+            nodes_num_min (int, optional): 
+                The minimum number of nodes.
+            nodes_num_max (int, optional): 
+                The maximum number of nodes.
+            data_type (str, optional): 
+                The data type. Support: ``erdos_renyi``,``er``,``barabasi_albert``,
+                ``ba``,``holme_kim``,``hk``,``watts_strogatz``,``ws``.
+            solver_type (str, optional):
+                The solver type. Support: ``kamis``,``gurobi``.
+            train_samples_num (int, optional): 
+                The number of training samples. 
+            val_samples_num (int, optional): 
+                The number of validation samples. 
+            test_samples_num (int, optional): 
+                The number of test samples.
+            save_path (pathlib.Path, optional): 
+                The save path of mis samples/datasets.
+            filename (str, optional): 
+                The filename of mis samples.
+            er_prob (float, optional): 
+                The probability parameter for Erdos-Renyi graph generation.
+            ba_conn_degree (int, optional): 
+                The connection degree parameter for Barabasi-Albert graph generation.
+            hk_prob (float, optional): 
+                The probability parameter for Hyperbolic graph generation.
+            hk_conn_degree (int, optional):
+                The connection degree parameter for Hyperbolic graph generation.
+            ws_prob (float, optional): 
+                The probability parameter for Watts-Strogatz graph generation.
+            ws_ring_neighbors (int, optional): 
+                The number of ring neighbors for Watts-Strogatz graph generation.
+            kamis_recompile (bool, optional):
+                Flag indicating whether to recompile the KAMIS solver.
+            mis_weighted (bool, optional): 
+                Flag indicating whether to consider weighted maximum independent set.
+            solve_limit_time (float, optional): 
+                The time limit for solving.
+            gurobi_num_threads (int, optional):
+                The number of threads to use in Gurobi solver.
+            gurobi_quadratic (bool, optional):
+                Whether a quadratic program should be used instead of a linear program
+                to solve the MIS problem (cannot be used together with weighted). 
+            gurobi_write_mps (bool, optional): 
+                Instead of solving, write mps output (e.g., for tuning)
+        """
         # record variable data
         self.nodes_num_min = nodes_num_min
         self.nodes_num_max = nodes_num_max
@@ -54,7 +105,10 @@ class MISDataGenerator:
         self.kamis_recompile = kamis_recompile
         self.mis_weighted = mis_weighted
         self.solve_limit_time = solve_limit_time
-        
+        self.gurobi_num_threads = gurobi_num_threads
+        self.gurobi_quadratic = gurobi_quadratic
+        self.gurobi_write_mps = gurobi_write_mps        
+
         # check the input variables
         self.sample_types = ['train', 'val', 'test']
         self.check_data_type()
@@ -181,5 +235,12 @@ class MISDataGenerator:
             message += "you can try 'self.recompile_kamis()'"
             raise TypeError(message)
         
-    def solve_by_gurobi(self):
-        pass
+    def solve_by_gurobi(self, folder: pathlib.Path):
+        solver = MISGurobi(
+            weighted=self.mis_weighted,
+            time_limit=self.solve_limit_time,
+            num_threads=self.gurobi_num_threads,
+            quadratic=self.gurobi_quadratic,
+            write_mps=self.gurobi_write_mps
+        )
+        solver.solve(folder, folder)

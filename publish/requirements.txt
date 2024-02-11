@@ -7,3 +7,5 @@ wget>=3.2
 cython>=3.0.8
 wheel>=0.42.0
 setuptools>=69.0.3
+pulp>=2.8.0
+pandas>=2.2.0
