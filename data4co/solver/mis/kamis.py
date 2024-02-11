@@ -1,19 +1,21 @@
 import re
 import time
 import json
+import shutil
 import subprocess
 import numpy as np
 import networkx as nx
 import os.path
 import pathlib
 from pathlib import Path
+from .base import MISSolver
 
 
-class KaMIS:
+class KaMIS(MISSolver):
     def __init__(
         self,
         weighted: bool=False,
-        time_limit: float=600.0,
+        time_limit: float=60.0,
     ):
         """
         KaMIS
@@ -23,6 +25,8 @@ class KaMIS:
             time_limit (float, optional): 
                 Time limit in seconds.
         """
+        super(KaMIS, self).__init__()
+        self.solver_type = "kamis"
         self.weighted = weighted
         self.time_limit = time_limit
         self.kamis_path = pathlib.Path(__file__).parent
@@ -43,22 +47,24 @@ class KaMIS:
             res += " ".join(map(str, line)) + "\n"
         return res
     
-    @classmethod
-    def _prepare_instances(C, instance_directory: pathlib.Path, 
-                           cache_directory: pathlib.Path, **kwargs):
+    def prepare_instances(
+        self, 
+        instance_directory: pathlib.Path, 
+        cache_directory: pathlib.Path
+    ):
         instance_directory = Path(instance_directory)
         cache_directory = Path(cache_directory)
         for graph_path in instance_directory.rglob("*.gpickle"):
-            C._prepare_instance(graph_path.resolve(), cache_directory, **kwargs)
+            self.prepare_instance(graph_path.resolve(), cache_directory)
             
-    def _prepare_instance(
+    def prepare_instance(
+        self,
         source_instance_file: pathlib.Path, 
         cache_directory: pathlib.Path, 
-        weighted=False
     ):
         cache_directory.mkdir(parents=True, exist_ok=True)
         dest_path = cache_directory / (source_instance_file.stem + \
-            f"_{'weighted' if weighted else 'unweighted'}.graph")
+            f"_{'weighted' if self.weighted else 'unweighted'}.graph")
         if os.path.exists(dest_path):
             source_mtime = os.path.getmtime(source_instance_file)
             last_updated = os.path.getmtime(dest_path)
@@ -66,14 +72,24 @@ class KaMIS:
                 return
         print(f"Updated graph file: {source_instance_file}.")
         g = nx.read_gpickle(source_instance_file)
-        graph = KaMIS.__prepare_graph(g, weighted=weighted)
+        graph = KaMIS.__prepare_graph(g, weighted=self.weighted)
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
 
     def solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
+        try:
+            self._solve(solve_data_path, results_path)
+        except TypeError:
+            message = "This may be the reason for KaMIS compilation, "
+            message += "you can try 'self.recompile_kamis()'"
+            raise TypeError(message)
+    
+    def _solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
         print("Solving all given instances using " + str(self))
-        cache_directory = os.path.join(solve_data_path, "preprocessed")
-        self._prepare_instances(solve_data_path, cache_directory, weighted=self.weighted)
+        solve_data_path = Path(solve_data_path)
+        results_path = Path(results_path)
+        cache_directory = solve_data_path / "preprocessed"
+        self.prepare_instances(solve_data_path, cache_directory)
         results = {}
         solve_data_path = Path(solve_data_path)
         results_path = Path(results_path)
@@ -82,7 +98,6 @@ class KaMIS:
                 executable = self.kamis_path / "KaMIS" / "deploy" / "weighted_branch_reduce"
             else:
                 executable = self.kamis_path / "KaMIS" / "deploy" / "redumis"
-            
             _preprocessed_graph = os.path.join(cache_directory, (graph_path.stem + \
                 f"_{'weighted' if self.weighted else 'unweighted'}.graph"))
             results_filename = os.path.join(results_path, (graph_path.stem + \
@@ -167,6 +182,20 @@ class KaMIS:
 
             with open(results_path / "results.json", 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, sort_keys = True, indent=4)
+
+    def recompile_kamis(self):
+        if os.path.exists('solver/mis/KaMIS/deploy/'):
+            shutil.rmtree('solver/mis/KaMIS/deploy/')
+        shutil.copytree('solver/mis/kamis-source/', 
+                        'solver/mis/KaMIS/tmp_build/')
+        ori_dir = os.getcwd()
+        os.chdir('solver/mis/KaMIS/tmp_build/')
+        os.system("bash cleanup.sh")
+        os.system("bash compile_withcmake.sh")
+        os.chdir(ori_dir)
+        shutil.copytree('solver/mis/KaMIS/tmp_build/deploy/', 
+                        'solver/mis/KaMIS/deploy/')
+        shutil.rmtree('solver/mis/KaMIS/tmp_build/')
 
     def __str__(self) -> str:
         return "kamis"

@@ -6,7 +6,9 @@ import shutil
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
+from typing import Union
 from data4co.solver.mis import KaMIS, MISGurobi
+from data4co.solver import MISSolver, KaMIS, MISGurobi
 
 
 class MISDataGenerator:
@@ -14,27 +16,21 @@ class MISDataGenerator:
         self,
         nodes_num_min: int=700,
         nodes_num_max: int=800,
-        data_type: str="er",
-        solver_type: str="kamis",
+        data_type: Union[str, MISSolver]="er",
+        solver: str="kamis",
         train_samples_num: int=128000,
         val_samples_num: int=1280,
         test_samples_num: int=1280,
         save_path: pathlib.Path="data/mis/er",
         filename: str=None,
         # args for generate
+        mis_weighted: bool=False,
         er_prob: float=0.5,
         ba_conn_degree: int=10,
         hk_prob: float=0.5,
         hk_conn_degree: int=10,
         ws_prob: float=0.5,
         ws_ring_neighbors: int=2,
-        # args for solve
-        kamis_recompile: bool=False,
-        mis_weighted: bool=False,
-        solve_limit_time: float=600.0,
-        gurobi_num_threads: int=8,
-        gurobi_quadratic: bool=False,
-        gurobi_write_mps: bool=False 
     ):
         """
         MISDataGenerator
@@ -58,6 +54,8 @@ class MISDataGenerator:
                 The save path of mis samples/datasets.
             filename (str, optional): 
                 The filename of mis samples.
+            mis_weighted (bool, optional):
+                If enabled, generate the weighted MIS problem instead of MIS.
             er_prob (float, optional): 
                 The probability parameter for Erdos-Renyi graph generation.
             ba_conn_degree (int, optional): 
@@ -72,47 +70,30 @@ class MISDataGenerator:
                 The number of ring neighbors for Watts-Strogatz graph generation.
             kamis_recompile (bool, optional):
                 Flag indicating whether to recompile the KAMIS solver.
-            mis_weighted (bool, optional): 
-                Flag indicating whether to consider weighted maximum independent set.
-            solve_limit_time (float, optional): 
-                The time limit for solving.
-            gurobi_num_threads (int, optional):
-                The number of threads to use in Gurobi solver.
-            gurobi_quadratic (bool, optional):
-                Whether a quadratic program should be used instead of a linear program
-                to solve the MIS problem (cannot be used together with weighted). 
-            gurobi_write_mps (bool, optional): 
-                Instead of solving, write mps output (e.g., for tuning)
         """
         # record variable data
         self.nodes_num_min = nodes_num_min
         self.nodes_num_max = nodes_num_max
         self.data_type = data_type
-        self.solver_type = solver_type
+        self.solver = solver
         self.train_samples_num = train_samples_num
         self.val_samples_num = val_samples_num
         self.test_samples_num = test_samples_num
         self.save_path = save_path
         self.filename = filename
         # args for generate
+        self.mis_weighted = mis_weighted
         self.er_prob = er_prob
         self.ba_conn_degree = ba_conn_degree
         self.hk_prob = hk_prob
         self.hk_conn_degree = hk_conn_degree
         self.ws_prob = ws_prob
-        self.ws_ring_neighbors = ws_ring_neighbors
-        # args for solve
-        self.kamis_recompile = kamis_recompile
-        self.mis_weighted = mis_weighted
-        self.solve_limit_time = solve_limit_time
-        self.gurobi_num_threads = gurobi_num_threads
-        self.gurobi_quadratic = gurobi_quadratic
-        self.gurobi_write_mps = gurobi_write_mps        
+        self.ws_ring_neighbors = ws_ring_neighbors      
 
         # check the input variables
         self.sample_types = ['train', 'val', 'test']
         self.check_data_type()
-        self.check_solver_type()
+        self.check_solver()
         self.check_save_path()
         self.get_filename()
         
@@ -147,34 +128,28 @@ class MISDataGenerator:
         if self.filename is None:
             self.filename = f"mis_{self.data_type}_{self.nodes_num_min}_{self.nodes_num_max}"
         
-    def check_solver_type(self):
-        supported_solver_dict = {
-            "kamis": self.solve_by_kamis, 
-            "gurobi": self.solve_by_gurobi
-        }
-        supported_solver_type = supported_solver_dict.keys()
-        if self.solver_type not in supported_solver_type:
-            message = f"The input solver_type({self.solver_type}) is not a valid type, "
-            message += f"and the generator only supports {supported_solver_type}"
+    def check_solver(self):
+        # check solver
+        if type(self.solver) == str:
+            self.solver_type = self.solver
+            supported_solver_dict = {
+                "kamis": KaMIS, 
+                "gurobi": MISGurobi
+            }
+            supported_solver_type = supported_solver_dict.keys()
+            if self.solver not in supported_solver_type:
+                message = f"The input solver_type({self.solver}) is not a valid type, "
+                message += f"and the generator only supports {supported_solver_type}"
+                raise ValueError(message)
+            self.solver = supported_solver_dict[self.solver]()
+        else:
+            self.solver: MISSolver
+            self.solver_type = self.solver.solver_type
+        # check weighted
+        if self.mis_weighted != self.solver.weighted:
+            message = "Mismatch between mis_weighted and solver.weighted"
             raise ValueError(message)
-        self.solver = supported_solver_dict[self.solver_type]
-        if self.solver_type == "kamis" and self.kamis_recompile:
-            self.recompile_kamis()
-    
-    def recompile_kamis(self):
-        if os.path.exists('solver/mis/KaMIS/deploy/'):
-            shutil.rmtree('solver/mis/KaMIS/deploy/')
-        shutil.copytree('solver/mis/kamis-source/', 
-                        'solver/mis/KaMIS/tmp_build/')
-        ori_dir = os.getcwd()
-        os.chdir('solver/mis/KaMIS/tmp_build/')
-        os.system("bash cleanup.sh")
-        os.system("bash compile_withcmake.sh")
-        os.chdir(ori_dir)
-        shutil.copytree('solver/mis/KaMIS/tmp_build/deploy/', 
-                        'solver/mis/KaMIS/deploy/')
-        shutil.rmtree('solver/mis/KaMIS/tmp_build/')
-    
+
     def random_weight(self, n, mu = 1, sigma = 0.1):
         return np.around(np.random.normal(mu, sigma, n)).astype(int).clip(min=0)
 
@@ -207,7 +182,7 @@ class MISDataGenerator:
     def solve(self):
         for sample_type in self.sample_types:
             folder = getattr(self, f"{sample_type}_save_path")
-            self.solver(folder)
+            self.solver.solve(folder, folder)
 
     def generate_erdos_renyi(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
@@ -224,23 +199,3 @@ class MISDataGenerator:
     def generate_watts_strogatz(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
         return nx.watts_strogatz_graph(num_nodes, self.ws_ring_neighbors, self.ws_prob)
-
-    def solve_by_kamis(self, folder: pathlib.Path):
-        solver = KaMIS(self.mis_weighted, self.solve_limit_time)
-        try:
-            solver.solve(folder, folder)
-        except TypeError:
-            message = "expected str, bytes or os.PathLike object, not float. "
-            message += "This may be the reason for KaMIS compilation, "
-            message += "you can try 'self.recompile_kamis()'"
-            raise TypeError(message)
-        
-    def solve_by_gurobi(self, folder: pathlib.Path):
-        solver = MISGurobi(
-            weighted=self.mis_weighted,
-            time_limit=self.solve_limit_time,
-            num_threads=self.gurobi_num_threads,
-            quadratic=self.gurobi_quadratic,
-            write_mps=self.gurobi_write_mps
-        )
-        solver.solve(folder, folder)

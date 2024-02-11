@@ -19,7 +19,7 @@ class TSPConcordeSolver(TSPSolver):
 
     def _solve(self, nodes_coord: np.ndarray) -> np.ndarray:
         solver = TSPConSolver.from_data(nodes_coord[:, 0] * self.concorde_scale, 
-                nodes_coord[:, 1] * self.concorde_scale, norm="GEO")
+        nodes_coord[:, 1] * self.concorde_scale, norm="EUC_2D")
         solution = solver.solve(verbose=False)
         tour = solution.tour
         return tour

@@ -11,13 +11,14 @@ import numpy as np
 import networkx as nx
 import pandas as pd
 from pathlib import Path
+from .base import MISSolver
 
 
-class MISGurobi:
+class MISGurobi(MISSolver):
     def __init__(
         self,
         weighted: bool=False,
-        time_limit: float=600.0,
+        time_limit: float=60.0,
         num_threads: int=8,
         quadratic: bool=False,
         write_mps: bool=False,
@@ -37,6 +38,8 @@ class MISGurobi:
             write_mps (bool, optional): 
                 Instead of solving, write mps output (e.g., for tuning)
         """
+        super(MISGurobi, self).__init__()
+        self.solver_type = "gurobi"
         self.weighted = weighted
         self.time_limit = time_limit
         self.num_threads = num_threads

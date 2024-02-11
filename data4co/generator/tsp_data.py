@@ -114,6 +114,7 @@ class TSPDataGenerator:
                 raise ValueError(message)
             self.solver = supported_solver_dict[self.solver_type]()
         else:
+            self.solver: TSPSolver
             self.solver_type = self.solver.solver_type   
         # check solver
         check_solver_dict = {
@@ -125,7 +126,6 @@ class TSPDataGenerator:
         
     def check_lkh(self):
         # check if lkh is downloaded
-        self.solver: TSPLKHSolver
         if shutil.which(self.solver.lkh_path) is None:
             self.download_lkh()
         # check again

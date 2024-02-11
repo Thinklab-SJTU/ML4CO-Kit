@@ -3,8 +3,7 @@ import shutil
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co import TSPDataGenerator, MISDataGenerator, TSPLKHSolver, TSPConcordeSolver
-
+from data4co import TSPDataGenerator, MISDataGenerator, TSPLKHSolver, TSPConcordeSolver, KaMIS
 
 ##############################################
 #             Test Func For TSP              #
@@ -37,7 +36,7 @@ def _test_tsp_lkh_generator(num_threads: int, nodes_num: int, data_type: str):
 
 def _test_tsp_lkh_solver():
     tsp_lkh_solver  = TSPLKHSolver(lkh_max_trials=100)
-    tsp_lkh_solver.from_txt("tests/tsp50_lkh_500_5.68759.txt")
+    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True)
     _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
@@ -73,7 +72,7 @@ def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: st
 
 def _test_tsp_concorde_solver():
     tsp_lkh_solver  = TSPConcordeSolver()
-    tsp_lkh_solver.from_txt("tests/tsp50_small_test.txt")
+    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True)
     _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
@@ -106,17 +105,17 @@ def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
     save_path = f"tmp/mis_{data_type}_kamis"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    # create TSPDataGenerator using lkh solver 
+    # create TSPDataGenerator using lkh solver
+    solver = KaMIS(time_limit=10)
     mis_data_kamis = MISDataGenerator(
         nodes_num_min=nodes_num_min, 
         nodes_num_max=nodes_num_max,
         data_type=data_type,
-        solver="kamis",
+        solver=solver,
         train_samples_num=2,
         val_samples_num=2,
         test_samples_num=2,
         save_path=save_path,
-        solve_limit_time=10.0
     )
     # generate and solve data
     mis_data_kamis.generate()
