@@ -6,8 +6,8 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 
 **version:** ``0.0.1-alpha``
 
-|Problem|Solver1|Impl.|Solver2|Impl.|Solver3|Impl.|
-| :---: | :---: |:---:| :---: |:---:| :---: |:---:|
+|Problem|Solver1|Impl.|Solver2|Impl.|Solver3|Impl.|Solver4|Impl.|
+| :---: | :---: |:---:| :---: |:---:| :---: |:---:| :---: |:---:|
 |  TSP  | LKH | ✔ | Concorde | ✔ | TSPNARSolver | 📆 | TSPARSolver | 📆 |
 |  MIS  | KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
 
