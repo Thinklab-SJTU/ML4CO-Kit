@@ -36,8 +36,8 @@ lkh>=1.1.1
 tsplib95==0.7.1
 tqdm>=4.66.1
 pulp>=2.8.0, 
-pandas>=2.2.0,
-scipy>=1.12.0
+pandas>=2.0.0,
+scipy>=1.10.1
 ```
 
 **PyPI**

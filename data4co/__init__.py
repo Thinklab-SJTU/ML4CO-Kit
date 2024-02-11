@@ -3,5 +3,5 @@ from .generator import TSPDataGenerator, MISDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .solver import MISSolver, KaMIS, MISGurobi
 
-__version__ = '0.0.1a8'
+__version__ = '0.0.1a9'
 __author__ = 'ThinkLab at SJTU'
