@@ -50,7 +50,7 @@ else:
     
 class BdistWheelCommand(_bdist_wheel):
     def run(self):
-        # os.system("python publish/compile_solvers.py")
+        os.system("python publish/compile_solvers.py")
         super().run()
 
     def get_tag(self):
