@@ -12,7 +12,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 **solver**
 |Problem|Base|Impl.|First|Impl.|Second|Impl.|Third|Impl.|Fourth|Impl.|
 | :---: |:--:|:---:|:---:|:---:| :--: |:---:|:---:|:---:| :--: |:---:|
-|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ | NARSolver | 📆 | ARSolver | 📆 |
+|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ | NAR | 📆 | AR| 📆 |
 |  MIS  | MISSolver | ✔ |KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
 
 **generator**
