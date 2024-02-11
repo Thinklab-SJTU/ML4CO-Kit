@@ -1,17 +1,21 @@
 ## Data4CO
 
+[![PyPi version](https://badgen.net/pypi/v/data4co/)](https://pypi.org/pypi/data4co/)
+[![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fdata4co%2Fjson)](https://pypi.python.org/pypi/data4co/)
+[![Downloads](https://static.pepy.tech/badge/data4co)](https://pepy.tech/project/data4co)
+[![GitHub stars](https://img.shields.io/github/stars/heatingma/Data4CO.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/heatingma/Data4CO/stargazers/) 
+
 A data generator tool for Combinatorial Optimization (CO) problems, enabling customizable, diverse, and scalable datasets for benchmarking optimization algorithms.
 
 ### Current support
 
-**version:** ``0.0.1-alpha``
+**solver**
+|Problem|Base|Impl.|First|Impl.|Second|Impl.|Third|Impl.|Fourth|Impl.|
+| :---: |:--:|:---:|:---:|:---:| :--: |:---:|:---:|:---:| :--: |:---:|
+|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ | NARSolver | 📆 | ARSolver | 📆 |
+|  MIS  | MISSolver | ✔ |KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
 
-|Problem|Solver1|Impl.|Solver2|Impl.|Solver3|Impl.|Solver4|Impl.|
-| :---: | :---: |:---:| :---: |:---:| :---: |:---:| :---: |:---:|
-|  TSP  | LKH | ✔ | Concorde | ✔ | TSPNARSolver | 📆 | TSPARSolver | 📆 |
-|  MIS  | KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
-
-
+**generator**
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
 | :---: | :---: |:---:| :---: |:---:| :---: |:---:| :---: |:---:|
 |  TSP  | uniform | ✔ | gaussian | ✔ | cluster | 📆 | -- | -- |
