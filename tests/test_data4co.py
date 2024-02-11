@@ -3,14 +3,14 @@ import shutil
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co import TSPDataGenerator, MISDataGenerator
+from data4co import TSPDataGenerator, MISDataGenerator, TSPLKHSolver, TSPConcordeSolver
 
 
 ##############################################
 #             Test Func For TSP              #
 ##############################################
 
-def _test_tsp_lkh(batch_size: int, nodes_num: int, data_type: str):
+def _test_tsp_lkh_generator(num_threads: int, nodes_num: int, data_type: str):
     """
     Test TSPDataGenerator using LKH Solver
     """
@@ -20,10 +20,10 @@ def _test_tsp_lkh(batch_size: int, nodes_num: int, data_type: str):
         os.makedirs(save_path)
     # create TSPDataGenerator using lkh solver 
     tsp_data_lkh = TSPDataGenerator(
-        batch_size=batch_size,
+        num_threads=num_threads,
         nodes_num=nodes_num,
         data_type=data_type,
-        solver_type="lkh",
+        solver="lkh",
         train_samples_num=16,
         val_samples_num=16,
         test_samples_num=16,
@@ -35,7 +35,18 @@ def _test_tsp_lkh(batch_size: int, nodes_num: int, data_type: str):
     shutil.rmtree(save_path)
 
 
-def _test_tsp_concorde(batch_size: int, nodes_num: int, data_type: str):
+def _test_tsp_lkh_solver():
+    tsp_lkh_solver  = TSPLKHSolver(lkh_max_trials=100)
+    tsp_lkh_solver.from_txt("tests/tsp50_lkh_500_5.68759.txt")
+    tsp_lkh_solver.solve(show_time=True)
+    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    print(f"TSPLKHSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = "The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
+        message += "is larger than or equal to 1e-2."
+        raise ValueError(message)
+
+def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: str):
     """
     Test TSPDataGenerator using Concorde Solver
     """
@@ -45,10 +56,10 @@ def _test_tsp_concorde(batch_size: int, nodes_num: int, data_type: str):
         os.makedirs(save_path)
     # create TSPDataGenerator using lkh solver 
     tsp_data_concorde = TSPDataGenerator(
-        batch_size=batch_size,
+        num_threads=num_threads,
         nodes_num=nodes_num,
         data_type=data_type,
-        solver_type="concorde",
+        solver="concorde",
         train_samples_num=16,
         val_samples_num=16,
         test_samples_num=16,
@@ -60,15 +71,28 @@ def _test_tsp_concorde(batch_size: int, nodes_num: int, data_type: str):
     shutil.rmtree(save_path)
 
 
+def _test_tsp_concorde_solver():
+    tsp_lkh_solver  = TSPConcordeSolver()
+    tsp_lkh_solver.from_txt("tests/tsp50_small_test.txt")
+    tsp_lkh_solver.solve(show_time=True)
+    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    print(f"TSPConcordeSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
+        message += "is larger than or equal to 1e-2."
+        raise ValueError(message)
+
+
 def test_tsp():
     """
     Test TSPDataGenerator
     """
-    _test_tsp_lkh(batch_size=16, nodes_num=50, data_type="uniform")
-    _test_tsp_lkh(batch_size=16, nodes_num=50, data_type="gaussian")
-    _test_tsp_concorde(batch_size=16, nodes_num=50, data_type="uniform")
-    _test_tsp_concorde(batch_size=16, nodes_num=50, data_type="gaussian")
-    
+    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="uniform")
+    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="gaussian")
+    _test_tsp_lkh_solver()
+    _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="uniform")
+    _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="gaussian")
+    _test_tsp_concorde_solver()
 
 ##############################################
 #             Test Func For MIS              #
@@ -87,7 +111,7 @@ def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
         nodes_num_min=nodes_num_min, 
         nodes_num_max=nodes_num_max,
         data_type=data_type,
-        solver_type="kamis",
+        solver="kamis",
         train_samples_num=2,
         val_samples_num=2,
         test_samples_num=2,
@@ -114,7 +138,7 @@ def _test_mis_gurobi(nodes_num_min: int, nodes_num_max: int, data_type: str):
         nodes_num_min=nodes_num_min, 
         nodes_num_max=nodes_num_max,
         data_type=data_type,
-        solver_type="gurobi",
+        solver="gurobi",
         train_samples_num=2,
         val_samples_num=2,
         test_samples_num=2,

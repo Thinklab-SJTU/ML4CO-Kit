@@ -1,2 +1,2 @@
-from .tsp import TSPConSolver
+from .tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .mis import KaMIS

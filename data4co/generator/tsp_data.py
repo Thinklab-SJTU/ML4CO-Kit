@@ -1,10 +1,8 @@
 import os
-import lkh
 import sys
 import time
 import shutil
 import numpy as np
-import tsplib95
 import pathlib
 from tqdm import tqdm
 from typing import Union
@@ -189,6 +187,7 @@ class TSPDataGenerator:
                         [batch_nodes_coord[idx] for idx in range(self.num_threads)], 
                     )
                 for idx, tour in enumerate(tours):
+                    tour = tour[:-1]
                     if (np.sort(tour) == np.arange(self.nodes_num)).all():
                         f.write(" ".join(str(x) + str(" ") + str(y) for x, y in batch_nodes_coord[idx]))
                         f.write(str(" ") + str('output') + str(" "))

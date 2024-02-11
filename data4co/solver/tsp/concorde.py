@@ -48,6 +48,8 @@ class TSPConcordeSolver(TSPSolver):
         self.tours = np.array(tours)
         zeros = np.zeros((self.tours.shape[0], 1))
         self.tours = np.append(self.tours, zeros, axis=1).astype(np.int32)
+        if self.tours.ndim == 2 and self.tours.shape[0] == 1:
+            self.tours = self.tours[0]
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
