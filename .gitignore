@@ -1,0 +1,15 @@
+*.DS_Store
+*__pycache__
+*wandb/*
+*.gz
+**/__pycache__/*
+__pycache__/
+**/__pycache__/**
+tmp/**
+LKH-3.0.7/**
+dist/**
+data4co.egg-info/**
+build/**
+# C extensions
+*.so
+data4co/solver/tsp/pyconcorde/build/**
