@@ -146,8 +146,9 @@ class TSPDataGenerator:
             self.recompile_concorde()
 
     def recompile_concorde(self):
+        concorde_path = pathlib.Path(__file__).parent.parent / "solver/tsp/pyconcorde"
         ori_dir = os.getcwd()
-        os.chdir('solver/tsp/pyconcorde')
+        os.chdir(concorde_path)
         os.system("python ./setup.py build_ext --inplace")
         os.chdir(ori_dir)
     
