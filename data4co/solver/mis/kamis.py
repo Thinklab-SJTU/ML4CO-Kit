@@ -184,18 +184,18 @@ class KaMIS(MISSolver):
                 json.dump(results, f, ensure_ascii=False, sort_keys = True, indent=4)
 
     def recompile_kamis(self):
-        if os.path.exists('solver/mis/KaMIS/deploy/'):
-            shutil.rmtree('solver/mis/KaMIS/deploy/')
-        shutil.copytree('solver/mis/kamis-source/', 
-                        'solver/mis/KaMIS/tmp_build/')
+        if os.path.exists(self.kamis_path / 'KaMIS/deploy/'):
+            shutil.rmtree(self.kamis_path / 'KaMIS/deploy/')
+        shutil.copytree(self.kamis_path / 'kamis-source/', 
+                        self.kamis_path / 'KaMIS/tmp_build/')
         ori_dir = os.getcwd()
-        os.chdir('solver/mis/KaMIS/tmp_build/')
+        os.chdir(self.kamis_path / 'KaMIS/tmp_build/')
         os.system("bash cleanup.sh")
         os.system("bash compile_withcmake.sh")
         os.chdir(ori_dir)
-        shutil.copytree('solver/mis/KaMIS/tmp_build/deploy/', 
-                        'solver/mis/KaMIS/deploy/')
-        shutil.rmtree('solver/mis/KaMIS/tmp_build/')
+        shutil.copytree(self.kamis_path / 'KaMIS/tmp_build/deploy/', 
+                        self.kamis_path / 'KaMIS/deploy/')
+        shutil.rmtree(self.kamis_path / 'KaMIS/tmp_build/')
 
     def __str__(self) -> str:
         return "kamis"
