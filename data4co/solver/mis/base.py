@@ -12,6 +12,9 @@ class MISSolver:
         self.time_limit = 60.0
         self.nodes_num = None
         self.node_labels = None
+        self.gt_node_labels = None
+        self.sel_nodes_num = None
+        self.gt_sel_nodes_num = None
         self.edges = None
         
     def from_folder(self, folder: str, weighted: bool=False):
@@ -20,7 +23,8 @@ class MISSolver:
         read_label = True if os.path.exists(self.solve_folder) else False
         files = os.listdir(folder)
         self.nodes_num = list()
-        self.node_labels = list()
+        self.gt_node_labels = list()
+        self.gt_sel_nodes_num = list()
         self.edges = list()
         for filename in files:
             if not filename.endswith(".gpickle"):
@@ -58,7 +62,8 @@ class MISSolver:
             edges = edges.T
             # add to list
             self.nodes_num.append(nodes_num)
-            self.node_labels.append(node_labels)
+            self.gt_node_labels.append(node_labels)
+            self.gt_sel_nodes_num.append(np.count_nonzero(node_labels))
             self.edges.append(edges)
          
     @staticmethod
