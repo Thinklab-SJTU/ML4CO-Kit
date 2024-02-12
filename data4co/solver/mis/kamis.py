@@ -80,9 +80,15 @@ class KaMIS(MISSolver):
         try:
             self._solve(solve_data_path, results_path)
         except TypeError:
-            message = "This may be the reason for KaMIS compilation, "
+            message = "This may be the reason for KaMIS compilation"
+            message += "(Compilation differences between different Linux versions) ,"
             message += "you can try 'self.recompile_kamis()'"
             raise TypeError(message)
+        except FileNotFoundError:
+            message = "This may be the reason for KaMIS compilation"
+            message += "(Compilation differences between different Linux versions) ,"
+            message += "you can try 'self.recompile_kamis()'"
+            raise FileNotFoundError(message)
     
     def _solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
         print("Solving all given instances using " + str(self))
