@@ -30,6 +30,8 @@ class TSPLIBDataset:
         self.url = "https://huggingface.co/datasets/Bench4CO/TSP-Dataset/resolve/main/tsplib.tar.gz?download=true"
         self.md5 = "9ee214be3ad818b60c137d3f9869151b"
         self.dir = "dataset/tsplib"
+        if not os.path.exists('dataset'):
+            os.mkdir('dataset')
         if not os.path.exists('dataset/tsplib'):
             download(filename="dataset/tsplib.tar.gz", url=self.url, md5=self.md5)
             extract_archive(archive_path="dataset/tsplib.tar.gz", extract_path=self.dir)
