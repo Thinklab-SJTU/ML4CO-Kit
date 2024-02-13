@@ -28,7 +28,7 @@ class TSPLIBData:
 class TSPLIBDataset:
     def __init__(self):
         self.url = "https://huggingface.co/datasets/Bench4CO/TSP-Dataset/resolve/main/tsplib.tar.gz?download=true"
-        self.md5 = "9ee214be3ad818b60c137d3f9869151b"
+        self.md5 = "5167961548e19d665bbe5cc1fbe123d7"
         self.dir = "dataset/tsplib"
         if not os.path.exists('dataset'):
             os.mkdir('dataset')
