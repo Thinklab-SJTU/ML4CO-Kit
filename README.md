@@ -9,11 +9,11 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 
 ### Current support
 
-**solver**
-|Problem|Base|Impl.|First|Impl.|Second|Impl.|Third|Impl.|Fourth|Impl.|
-| :---: |:--:|:---:|:---:|:---:| :--: |:---:|:---:|:---:| :--: |:---:|
-|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ | NAR | 📆 | AR| 📆 |
-|  MIS  | MISSolver | ✔ |KaMIS | ✔ | Gurobi| ✔ | -- | -- | -- | -- |
+**data**
+|Problem|First|Impl.|Second|Impl.|Third|Impl.|
+| :---: |:--:|:---:|:---:|:---:| :--: |:---:|
+|  TSP  |tsplib| 📆 | LKH | 📆 | Concorde| 📆 |
+|  MIS  |satlib| 📆 | KaMIS | 📆 | Gurobi | 📆 |
 
 **generator**
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
@@ -21,6 +21,11 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 |  TSP  | uniform | ✔ | gaussian | ✔ | cluster | 📆 | -- | -- |
 |  MIS  | ER | ✔ | BA | ✔ | HK | ✔ | WS | ✔ |
 
+**solver**
+|Problem|Base|Impl.|First|Impl.|Second|Impl.|
+| :---: |:--:|:---:|:---:|:---:| :--: |:---:|
+|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ |
+|  MIS  | MISSolver | ✔ |KaMIS | ✔ | Gurobi| ✔ |
 
 ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
 
