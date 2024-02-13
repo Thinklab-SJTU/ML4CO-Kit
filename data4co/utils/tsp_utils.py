@@ -4,50 +4,6 @@ import os
 import tsplib95
 
 
-############################################
-##               TSP_DATA                 ##
-############################################
-
-class TSP_DATA:
-    """
-    Represents a batch of TSP problems, 
-    each with a fixed number of nodes and random node node_coords.
-
-    Attributes:
-        node_coords (ndarray): 
-            A 3D numpy array of shape (batch, nodes_num, 2), 
-            representing the node node_coords of eachTSP problem in the batch.
-        edge_weights (ndarray): 
-            A 3D numpy array of shape (batch, nodes_num, nodes_num), 
-            representing the distance matrix of each TSP problem in the batch.
-        tour (ndarray):
-            A 2D numpy array of shape (batch, nodes_num), representing the tour of
-            each TSP problem in the batch, if available.
-            
-    """
-    def __init__(self, node_coords: np.ndarray=None, edge_weights: np.ndarray=None):
-        if node_coords is None:
-            self.node_coords = None
-            if edge_weights is None:
-                raise ValueError("node_coords and edge_weights cannot be both None")
-            self.edge_weights = edge_weights
-        else:
-            if node_coords.ndim == 2:
-                node_coords = np.expand_dims(node_coords,axis=0)
-            assert node_coords.ndim == 3
-            self.node_coords = node_coords
-            self.edge_weights = np.array([cdist(coords,coords) for coords in self.node_coords])
-        self.tour = None
-    
-    def __repr__(self):
-        if self.node_coords is None:
-            self.message = "edge_weights = {}".format(self.edge_weights.shape)
-        else:
-            self.message = "node_coords = {}, edge_weights = {}".format(
-                self.node_coords.shape,self.edge_weights.shape)
-        return f"{self.__class__.__name__}({self.message})"
-
-
 #############################################
 ##               Write Function            ##
 #############################################
@@ -139,7 +95,9 @@ def _generate_opt_tour_file(tour:np.ndarray, filename):
 ##         get data/tour from files        ##
 #############################################
 
-def get_data_from_tsp_file(filename):
+def get_data_from_tsp_file(filename: str):
+    if not filename.endswith('.tsp'):
+        raise ValueError("The file name must end with '. tsp'")
     tsp_data = tsplib95.load(filename)
     if tsp_data.node_coords == {}:
         num_nodes = tsp_data.dimension
@@ -208,14 +166,17 @@ def get_data_from_tsp_file(filename):
                     pt += 1  
         else:
             raise ValueError("edge_weights cannot form a Symmetric matrix") 
-        data = TSP_DATA(edge_weights=new_edge_weights)
+        return None, new_edge_weights
     else:
         node_coords = np.array(list(tsp_data.node_coords.values()))
-        data = TSP_DATA(node_coords)
-    return data
+    return node_coords, np.array(cdist(node_coords, node_coords))
 
 
 def get_tour_from_tour_file(filename) -> np.ndarray:
     tsp_tour = tsplib95.load(filename)
-    tsp_tour = np.array(tsp_tour.tours).squeeze(axis=0)
-    return tsp_tour
+    tsp_tour = tsp_tour.tours
+    tsp_tour: list
+    tsp_tour = tsp_tour[0]
+    tsp_tour.append(1)
+    np_tour = np.array(tsp_tour) - 1
+    return np_tour

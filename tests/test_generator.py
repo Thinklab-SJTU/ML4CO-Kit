@@ -34,17 +34,6 @@ def _test_tsp_lkh_generator(num_threads: int, nodes_num: int, data_type: str):
     shutil.rmtree(save_path)
 
 
-def _test_tsp_lkh_solver():
-    tsp_lkh_solver  = TSPLKHSolver(lkh_max_trials=100)
-    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True)
-    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
-    print(f"TSPLKHSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-2:
-        message = "The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
-        message += "is larger than or equal to 1e-2."
-        raise ValueError(message)
-
 def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: str):
     """
     Test TSPDataGenerator using Concorde Solver
@@ -70,28 +59,15 @@ def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: st
     shutil.rmtree(save_path)
 
 
-def _test_tsp_concorde_solver():
-    tsp_lkh_solver  = TSPConcordeSolver()
-    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True)
-    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
-    print(f"TSPConcordeSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-2:
-        message = f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
-        message += "is larger than or equal to 1e-2."
-        raise ValueError(message)
-
-
 def test_tsp():
     """
     Test TSPDataGenerator
     """
     _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="uniform")
     _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="gaussian")
-    _test_tsp_lkh_solver()
     _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="uniform")
     _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="gaussian")
-    _test_tsp_concorde_solver()
+
 
 ##############################################
 #             Test Func For MIS              #

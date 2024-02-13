@@ -8,3 +8,5 @@ cython>=3.0.8
 pulp>=2.8.0
 pandas>=2.0.0
 scipy>=1.10.1
+requests
+aiohttp
