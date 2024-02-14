@@ -43,7 +43,6 @@ Clone with the url https://github.com/heatingma/Data4CO.git , and the following 
 Python >= 3.8
 numpy>=1.24.4
 networkx==2.8.8
-lkh>=1.1.1
 tsplib95==0.7.1
 tqdm>=4.66.1
 pulp>=2.8.0, 
