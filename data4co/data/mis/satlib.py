@@ -24,7 +24,7 @@ class SATLIBData:
 class SATLIBDataset:
     def __init__(self) -> None:
         self.url = "https://huggingface.co/datasets/Bench4CO/SAT-Dataset/resolve/main/satlib.tar.gz?download=true"
-        self.md5 = " b83d1d7ca4574d93884c0456a2e90f0c"
+        self.md5 = "b83d1d7ca4574d93884c0456a2e90f0c"
         self.dir = "dataset/satlib/"
         self.processed_dir = "dataset/satlib/processed"
         self.raw_dir = "dataset/satlib/raw_data"

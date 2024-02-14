@@ -1,7 +1,7 @@
 import numpy as np
 import data4co.utils.tsp_utils as tsp_utils
 from typing import Union
-from data4co.eva.tsp_eva import TSPEvaluator
+from data4co.utils.tsp_utils import TSPEvaluator
 
 
 class TSPSolver:
