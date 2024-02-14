@@ -30,17 +30,19 @@ class TSPLIBDataset:
         self.url = "https://huggingface.co/datasets/Bench4CO/TSP-Dataset/resolve/main/tsplib.tar.gz?download=true"
         self.md5 = "5167961548e19d665bbe5cc1fbe123d7"
         self.dir = "dataset/tsplib"
+        self.raw_data_path = "dataset/tsplib.tar.gz"
+        self.processed_data_path = "dataset/tsplib/processed_data.pickle"
         if not os.path.exists('dataset'):
             os.mkdir('dataset')
-        if not os.path.exists('dataset/tsplib'):
-            download(filename="dataset/tsplib.tar.gz", url=self.url, md5=self.md5)
-            extract_archive(archive_path="dataset/tsplib.tar.gz", extract_path=self.dir)
-        if os.path.exists('dataset/tsplib/data.pickle'):
-            with open('dataset/tsplib/data.pickle', 'rb') as f:
+        if not os.path.exists(self.dir):
+            download(filename=self.raw_data_path, url=self.url, md5=self.md5)
+            extract_archive(archive_path=self.raw_data_path, extract_path=self.dir)
+        if os.path.exists(self.processed_data_path):
+            with open(self.processed_data_path, 'rb') as f:
                 self.data = pickle.load(f)
         else:
             self.data_process()
-            with open('dataset/tsplib/data.pickle', 'wb') as f:
+            with open(self.processed_data_path, 'wb') as f:
                 pickle.dump(self.data, f)
 
     def data_process(self):

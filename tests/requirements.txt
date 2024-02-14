@@ -1,6 +1,5 @@
 numpy>=1.24.4
 networkx==2.8.8
-lkh>=1.1.1
 tsplib95==0.7.1
 tqdm>=4.66.1
 wget>=3.2

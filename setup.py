@@ -23,7 +23,7 @@ URL = 'https://github.com/heatingma/Data4CO'
 AUTHOR = get_property('__author__', NAME)
 VERSION = get_property('__version__', NAME)
 REQUIRED = [
-     'numpy>=1.24.4', 'networkx>=2.8.8', 'lkh>=1.1.1', 'tsplib95>=0.7.1', 'tqdm>=4.66.1', 'wget>=3.2',
+     'numpy>=1.24.4', 'networkx>=2.8.8', 'tsplib95>=0.7.1', 'tqdm>=4.66.1', 'wget>=3.2',
      'pulp>=2.8.0', 'pandas>=2.0.0', 'scipy>=1.10.1'
 ]
 

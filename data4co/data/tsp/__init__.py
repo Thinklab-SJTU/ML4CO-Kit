@@ -1,3 +1,3 @@
-from .tsplib import TSPLIBDataset
+from .tsplib import TSPLIBData, TSPLIBDataset
 from .tspconcorde import TSPConcordeDataset
 from .tsplkh import TSPLKHDataset

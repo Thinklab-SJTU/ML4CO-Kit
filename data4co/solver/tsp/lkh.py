@@ -1,10 +1,10 @@
-import lkh
 import time
 import numpy as np
 import tsplib95
 import pathlib
 from tqdm import tqdm
 from .base import TSPSolver
+from .lkh_solver import lkh_solve
 
 
 class TSPLKHSolver(TSPSolver):
@@ -43,7 +43,7 @@ class TSPLKHSolver(TSPSolver):
         problem.node_coords = {
             n + 1: nodes_coord[n] * self.lkh_scale for n in range(self.nodes_num)
         }
-        solution = lkh.solve(
+        solution = lkh_solve(
             solver=self.lkh_path, 
             problem=problem, 
             max_trials=self.lkh_max_trials, 
