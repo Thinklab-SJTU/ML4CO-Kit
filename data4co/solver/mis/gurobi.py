@@ -85,13 +85,13 @@ class MISGurobi(MISSolver):
         graph = self.__prepare_graph(g, weighted=self.weighted)
         nx.write_gpickle(graph, dest_path)
     
-    def solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
+    def solve(self, src: pathlib.Path, out: pathlib.Path):
         print("Solving all given instances using " + str(self))
         # preprocess
-        solve_data_path = Path(solve_data_path)
-        results_path = Path(results_path)
-        cache_directory = solve_data_path / "preprocessed"
-        self.prepare_instances(solve_data_path, cache_directory)
+        src = Path(src)
+        out = Path(out)
+        cache_directory = src / "preprocessed"
+        self.prepare_instances(src, cache_directory)
         # call gurobi
         results = {}
         for _, graph_path in enumerate(
@@ -101,10 +101,10 @@ class MISGurobi(MISSolver):
             print(f"Solving graph {graph_path}")
             graph = nx.read_gpickle(graph_path)
             if self.write_mps:
-                self._solve(graph, graph_name_stub, results_path)
+                self._solve(graph, graph_name_stub, out)
             else:
                 solu, sum, status, total_time, explore_time = \
-                    self._solve(graph, graph_name_stub, results_path)
+                    self._solve(graph, graph_name_stub, out)
                 print(f"Found MWIS: n={len(solu)}, w={sum} ✔️✔️")
                 if status != "Optimal":
                     print(f"Non-Optimal Gurobi status: {status}")
@@ -118,11 +118,11 @@ class MISGurobi(MISSolver):
                 }
         # write the result
         if not self.write_mps:
-            with open(results_path / "results.json", 'w', encoding='utf-8') as f:
+            with open(out / "results.json", 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, sort_keys = True, indent=4)
         print("Done with all graphs, exiting.")
 
-    def _solve(self, graph: nx.Graph, graph_name_stub: str, results_path: pathlib.Path):
+    def _solve(self, graph: nx.Graph, graph_name_stub: str, out: pathlib.Path):
         start_time = time.monotonic()
         weight_dict = nx.get_node_attributes(graph, "weight")
         # not defined whether dictionary returned by networkx is sorted
@@ -135,7 +135,7 @@ class MISGurobi(MISSolver):
                 graph=graph,
                 wts=wts,
                 graph_name_stub=graph_name_stub,
-                results_path=results_path
+                out=out
             )
         else:
             self.quadratic_solve(
@@ -143,7 +143,7 @@ class MISGurobi(MISSolver):
                 graph=graph,
                 wts=wts,
                 graph_name_stub=graph_name_stub,
-                results_path=results_path
+                out=out
             )    
     
     def quadratic_solve(
@@ -152,7 +152,7 @@ class MISGurobi(MISSolver):
         graph: nx.Graph, 
         wts: np.ndarray,
         graph_name_stub: str,
-        results_path: pathlib.Path
+        out: pathlib.Path
     ):
         import gurobipy as gp
         from gurobipy import GRB
@@ -169,7 +169,7 @@ class MISGurobi(MISSolver):
         m.setParam('ImproveStartTime', self.time_limit * 0.9)
 
         if self.write_mps:
-            m.write(results_path / f"{graph_name_stub}.mps")
+            m.write(out / f"{graph_name_stub}.mps")
             return
 
         # redirect stdout by gurobi into internal string buffer
@@ -199,7 +199,7 @@ class MISGurobi(MISSolver):
         graph: nx.Graph, 
         wts: np.ndarray,
         graph_name_stub: str,
-        results_path: pathlib.Path
+        out: pathlib.Path
     ):
         opt_model = plp.LpProblem(name="model")
         adj = nx.adjacency_matrix(graph)
@@ -229,7 +229,7 @@ class MISGurobi(MISSolver):
         opt_model.setObjective(objective)
 
         if self.write_mps:
-            opt_model.writeMPS(results_path / (graph_name_stub  + ".mps"))
+            opt_model.writeMPS(out / (graph_name_stub  + ".mps"))
             return
 
         # redirect stdout by gurobi into internal string buffer

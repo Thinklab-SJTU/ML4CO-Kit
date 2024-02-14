@@ -2,7 +2,7 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co import TSPLKHSolver, TSPConcordeSolver
+from data4co.solver import TSPLKHSolver, TSPConcordeSolver, KaMISSolver
 
 
 ##############################################
@@ -17,7 +17,7 @@ def _test_tsp_lkh_solver():
     print(f"TSPLKHSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
         message = "The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
-        message += "is larger than or equal to 1e-2."
+        message += "is larger than or equal to 1e-2%."
         raise ValueError(message)
 
 
@@ -29,7 +29,7 @@ def _test_tsp_concorde_solver():
     print(f"TSPConcordeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
         message = f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
-        message += "is larger than or equal to 1e-3."
+        message += "is larger than or equal to 1e-3%."
         raise ValueError(message)
 
 
@@ -40,6 +40,29 @@ def test_tsp():
     _test_tsp_lkh_solver()
     _test_tsp_concorde_solver()
 
+
+##############################################
+#            Test Func For KaMIS             #
+##############################################
+
+def _test_kamis_solver():
+    kamis_solver = KaMISSolver(time_limit=60)
+    kamis_solver.solve(src="tests/mis_test")
+    kamis_solver.from_folder("tests/mis_test")
+    kamis_solver.from_satlib_pickle("tests/mis_test.pickle")
+    gap_avg = kamis_solver.evaluate(caculate_gap=True)["avg_gap"]
+    print(f"KaMISSolver Gap: {gap_avg}")
+    if gap_avg >= 0.1:
+        message = f"The average gap ({gap_avg}) of MIS solved by KaMISSolver " 
+        message += "is larger than or equal to 0.1%."
+        raise ValueError(message)    
+
+
+def test_mis():
+    """
+    Test MISSolver
+    """
+    _test_kamis_solver()
 
 ##############################################
 #                    MAIN                    #

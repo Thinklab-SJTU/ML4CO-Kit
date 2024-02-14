@@ -7,11 +7,12 @@ import numpy as np
 import networkx as nx
 import os.path
 import pathlib
+from tqdm import tqdm
 from pathlib import Path
 from .base import MISSolver
 
 
-class KaMIS(MISSolver):
+class KaMISSolver(MISSolver):
     def __init__(
         self,
         weighted: bool=False,
@@ -25,7 +26,7 @@ class KaMIS(MISSolver):
             time_limit (float, optional): 
                 Time limit in seconds.
         """
-        super(KaMIS, self).__init__()
+        super(KaMISSolver, self).__init__()
         self.solver_type = "kamis"
         self.weighted = weighted
         self.time_limit = time_limit
@@ -72,41 +73,44 @@ class KaMIS(MISSolver):
                 return
         print(f"Updated graph file: {source_instance_file}.")
         g = nx.read_gpickle(source_instance_file)
-        graph = KaMIS.__prepare_graph(g, weighted=self.weighted)
+        graph = KaMISSolver.__prepare_graph(g, weighted=self.weighted)
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
 
-    def solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
+    def solve(self, src: pathlib.Path, out: pathlib.Path):
+        message = "This may be the reason for KaMIS compilation"
+        message += "(Compilation differences between different Linux versions) ,"
+        message += "you can try 'self.recompile_kamis()'. "
+        message += "If you are sure that the KaMIS is correct, "
+        message += "please confirm whether the Conda environment of the terminal "
+        message += "is consistent with the Python environment."
         try:
-            self._solve(solve_data_path, results_path)
+            self._solve(src, out)
         except TypeError:
-            message = "This may be the reason for KaMIS compilation"
-            message += "(Compilation differences between different Linux versions) ,"
-            message += "you can try 'self.recompile_kamis()'"
             raise TypeError(message)
         except FileNotFoundError:
-            message = "This may be the reason for KaMIS compilation"
-            message += "(Compilation differences between different Linux versions) ,"
-            message += "you can try 'self.recompile_kamis()'"
             raise FileNotFoundError(message)
     
-    def _solve(self, solve_data_path: pathlib.Path, results_path: pathlib.Path):
-        print("Solving all given instances using " + str(self))
-        solve_data_path = Path(solve_data_path)
-        results_path = Path(results_path)
-        cache_directory = solve_data_path / "preprocessed"
-        self.prepare_instances(solve_data_path, cache_directory)
+    def _solve(self, src: pathlib.Path, out: pathlib.Path):
+        src = Path(src)
+        out = Path(out)
+        if not os.path.exists(out):
+            os.makedirs(out)
+        cache_directory = src / "preprocessed"
+        self.prepare_instances(src, cache_directory)
         results = {}
-        solve_data_path = Path(solve_data_path)
-        results_path = Path(results_path)
-        for graph_path in solve_data_path.rglob("*.gpickle"):
+        src = Path(src)
+        out = Path(out)
+        files = [f for f in os.listdir(src) if f.endswith('.gpickle')]
+        for graph_path in tqdm(files, desc=f"Solving all given instances using " + str(self)):
+            graph_path = graph_path.replace(".gpickle", "")
             if self.weighted:
                 executable = self.kamis_path / "KaMIS" / "deploy" / "weighted_branch_reduce"
             else:
                 executable = self.kamis_path / "KaMIS" / "deploy" / "redumis"
-            _preprocessed_graph = os.path.join(cache_directory, (graph_path.stem + \
+            _preprocessed_graph = os.path.join(cache_directory, (graph_path + \
                 f"_{'weighted' if self.weighted else 'unweighted'}.graph"))
-            results_filename = os.path.join(results_path, (graph_path.stem + \
+            results_filename = os.path.join(out, (graph_path + \
                 f"_{'weighted' if self.weighted else 'unweighted'}.result"))
             arguments = [
                 _preprocessed_graph, # input
@@ -114,7 +118,6 @@ class KaMIS(MISSolver):
                 "--time_limit", str(self.time_limit),
             ]
 
-            print(f"Calling {executable} with arguments {arguments}.")
             start_time = time.monotonic()
             result = subprocess.run(
                 [executable] + arguments, 
@@ -125,7 +128,7 @@ class KaMIS(MISSolver):
             lines = result.stdout.split('\n')
             solve_time = time.monotonic() - start_time
             
-            results[graph_path.stem] = {"total_time": solve_time}
+            results[graph_path] = {"total_time": solve_time}
             with open(results_filename, "r") as f:
                 vertices = list(map(int, f.read().replace('\n','')))
             is_vertices = np.flatnonzero(np.array(vertices))
@@ -151,13 +154,13 @@ class KaMIS(MISSolver):
                             max_mwis_weight = line.split(" ")[1]
 
                 if max_mwis_weight == 0:
-                    results[graph_path.stem]["mwis_found"] = False
+                    results[graph_path]["mwis_found"] = False
                 else:
-                    results[graph_path.stem]["mwis_found"] = True
-                    results[graph_path.stem]["mwis"] = is_vertices.tolist()
-                    results[graph_path.stem]["time_to_find_mwis"] = mis_time
-                    results[graph_path.stem]["mwis_vertices"] = is_vertices.shape[0]
-                    results[graph_path.stem]["mwis_weight"] = max_mwis_weight
+                    results[graph_path]["mwis_found"] = True
+                    results[graph_path]["mwis"] = is_vertices.tolist()
+                    results[graph_path]["time_to_find_mwis"] = mis_time
+                    results[graph_path]["mwis_vertices"] = is_vertices.shape[0]
+                    results[graph_path]["mwis_weight"] = max_mwis_weight
 
             else:
                 stdout = "\n".join(lines)
@@ -179,19 +182,21 @@ class KaMIS(MISSolver):
                         time_found_in_stdout = True
 
                 if not time_found_in_stdout:
-                    results[graph_path.stem]["found_mis"] = False
+                    results[graph_path]["found_mis"] = False
                 else:
-                    results[graph_path.stem]["found_mis"] = True
-                    results[graph_path.stem]["mis"] = is_vertices.tolist()
-                    results[graph_path.stem]["vertices"] = is_vertices.shape[0]
-                    results[graph_path.stem]["solution_time"] = solution_time
+                    results[graph_path]["found_mis"] = True
+                    results[graph_path]["mis"] = is_vertices.tolist()
+                    results[graph_path]["vertices"] = is_vertices.shape[0]
+                    results[graph_path]["solution_time"] = solution_time
 
-            with open(results_path / "results.json", 'w', encoding='utf-8') as f:
+            with open(out / "results.json", 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, sort_keys = True, indent=4)
 
     def recompile_kamis(self):
         if os.path.exists(self.kamis_path / 'KaMIS/deploy/'):
             shutil.rmtree(self.kamis_path / 'KaMIS/deploy/')
+        if os.path.exists(self.kamis_path / 'KaMIS/tmp_build/'):
+            shutil.rmtree(self.kamis_path / 'KaMIS/tmp_build/')
         shutil.copytree(self.kamis_path / 'kamis-source/', 
                         self.kamis_path / 'KaMIS/tmp_build/')
         ori_dir = os.getcwd()

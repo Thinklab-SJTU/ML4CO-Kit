@@ -14,7 +14,7 @@ def test_tsp_dataset():
 
 def test_sat_dataset():
     satlib_dataset = SATLIBDataset()
-    satlib_dataset.get_data_from_folder()
+    satlib_dataset.generate_mis_from_sat()
     
 
 if __name__ == "__main__":

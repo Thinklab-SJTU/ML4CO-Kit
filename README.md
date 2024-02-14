@@ -13,7 +13,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 |Problem|First|Impl.|Second|Impl.|Third|Impl.|
 | :---: |:--:|:---:|:---:|:---:| :--: |:---:|
 |  TSP  |tsplib| ✔ | LKH | ✔ | Concorde| ✔ |
-|  MIS  |satlib| 📆 | KaMIS | 📆 | Gurobi | 📆 |
+|  MIS  |satlib| ✔ | KaMIS | -- | -- | -- |
 
 **generator**
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|

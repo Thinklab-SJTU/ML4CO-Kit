@@ -1,7 +1,7 @@
 import numpy as np
-import data4co.utils.tsp_utils as tsp_util
+import data4co.utils.tsp_utils as tsp_utils
 from typing import Union
-from data4co.eva import TSPEvaluator
+from data4co.eva.tsp_eva import TSPEvaluator
 
 
 class TSPSolver:
@@ -21,18 +21,18 @@ class TSPSolver:
         self.nodes_num = self.points.shape[1]
 
     def from_tspfile(self, filename: str):
-        assert filename.endswith(".tsp"), f"file name error"
-        data = tsp_util.get_data_from_tsp_file(filename)
-        points = data.node_coords
+        if not filename.endswith(".tsp"):
+            raise ValueError("Invalid file format. Expected a .tsp file.")
+        points, _ = tsp_utils.get_data_from_tsp_file(filename)
         if points is None:
             raise RuntimeError("Error in loading {}".format(filename))
-        points = np.array(points)
         self.ori_points = points
         self.points = points.astype(np.float32)
         self.check_points_dim()
 
     def from_txt(self, filename: str, load_gt_tours: str=True):
-        assert filename.endswith(".txt"), f"file name error"
+        if not filename.endswith(".txt"):
+            raise ValueError("Invalid file format. Expected a .txt file.")
         with open(filename, 'r') as file:
             nodes_coords = list()
             gt_tours = list()
@@ -67,8 +67,10 @@ class TSPSolver:
         self.check_points_dim()
     
     def read_gt_tours_from_tspfile(self, filename: str):
-        assert filename.endswith(".opt.tour"), f"file name error"
-        self.gt_tours = tsp_util.get_tour_from_tour_file(filename)
+        if not filename.endswith(".opt.tour"):
+            raise ValueError("Invalid file format. Expected a .opt.tour file.")
+        gt_tour = tsp_utils.get_tour_from_tour_file(filename)
+        self.gt_tours = np.expand_dims(gt_tour, axis=0)
     
     def to_tsp_file(
         self,
@@ -90,11 +92,11 @@ class TSPSolver:
         # generate .tsp file if filename is not none
         if filename is not None:
             assert filename.endswith('.tsp')
-            tsp_util.generate_tsp_file(points, filename)
+            tsp_utils.generate_tsp_file(points, filename)
         # generate .tsp.tour file if tour_filename is not none
         if tour_filename is not None:
             assert filename.endswith('.tsp.tour')
-            tsp_util.generate_opt_tour_file(tours, filename)
+            tsp_utils.generate_opt_tour_file(tours, filename)
             
     def to_txt(
         self, 
@@ -127,20 +129,23 @@ class TSPSolver:
         if caculate_gap and self.gt_tours is None:
             raise ValueError("gt_tours cannot be None, please use TSPLKHSolver to get the gt_tours.")
         if self.tours is None:
-            raise ValueError("tours cannot be None, please use method 'solve' to solve solution.")
+            raise ValueError("tours cannot be None, please use method 'solve' to get solution.")
         
         if self.points.ndim == 2:
+            # only one problem
             evaluator = TSPEvaluator(self.points)
             solved_cost = evaluator.evaluate(self.tours)
             return solved_cost
         else:
+            # more than one problem
             cost_total = 0
-            batch = self.points.shape[0]
+            samples = self.points.shape[0]
             if caculate_gap:
                 gap_list = list()
-            if self.tours.ndim != batch:
-                tours = self.tours.reshape(batch, -1, self.tours.shape[-1])
-                for idx in range(batch):
+            if self.tours.shape[0] != samples:
+                # a problem has more than one solved tour
+                tours = self.tours.reshape(samples, -1, self.tours.shape[-1])
+                for idx in range(samples):
                     evaluator = TSPEvaluator(self.points[idx])
                     solved_tours = tours[idx]
                     solved_costs = list()
@@ -153,7 +158,8 @@ class TSPSolver:
                         gap = (solved_cost - gt_cost) / gt_cost * 100
                         gap_list.append(gap)
             else:
-                for idx in range(batch):
+                # a problem only one solved tour
+                for idx in range(samples):
                     evaluator = TSPEvaluator(self.points[idx])
                     solved_tour = self.tours[idx]
                     solved_cost = evaluator.evaluate(solved_tour)
@@ -162,9 +168,10 @@ class TSPSolver:
                         gt_cost = evaluator.evaluate(self.gt_tours[idx])
                         gap = (solved_cost - gt_cost) / gt_cost * 100
                         gap_list.append(gap)
-            cost_avg = cost_total / batch
+            # caculate average cost/gap & std
+            cost_avg = cost_total / samples
             if caculate_gap:
-                gap_avg = np.sum(gap_list) / batch
+                gap_avg = np.sum(gap_list) / samples
                 gap_std = np.std(gap_list)
                 return cost_avg, gap_avg, gap_std
             else:

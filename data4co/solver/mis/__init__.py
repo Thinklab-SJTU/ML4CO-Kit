@@ -1,3 +1,3 @@
 from .base import MISSolver
-from .kamis import KaMIS
+from .kamis import KaMISSolver
 from .gurobi import MISGurobi

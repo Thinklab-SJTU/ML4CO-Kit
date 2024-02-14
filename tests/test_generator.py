@@ -3,7 +3,8 @@ import shutil
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co import TSPDataGenerator, MISDataGenerator, TSPLKHSolver, TSPConcordeSolver, KaMIS
+from data4co import TSPDataGenerator, MISDataGenerator,  KaMISSolver
+
 
 ##############################################
 #             Test Func For TSP              #
@@ -82,7 +83,7 @@ def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     # create TSPDataGenerator using lkh solver
-    solver = KaMIS(time_limit=10)
+    solver = KaMISSolver(time_limit=10)
     mis_data_kamis = MISDataGenerator(
         nodes_num_min=nodes_num_min, 
         nodes_num_max=nodes_num_max,
@@ -148,6 +149,6 @@ def test_mis():
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
+    # test_tsp()
     test_mis()
     shutil.rmtree("tmp")

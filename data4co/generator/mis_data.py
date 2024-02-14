@@ -7,8 +7,8 @@ import networkx as nx
 import numpy as np
 from tqdm import tqdm
 from typing import Union
-from data4co.solver.mis import KaMIS, MISGurobi
-from data4co.solver import MISSolver, KaMIS, MISGurobi
+from data4co.solver.mis import KaMISSolver, MISGurobi
+from data4co.solver import MISSolver, KaMISSolver, MISGurobi
 
 
 class MISDataGenerator:
@@ -133,7 +133,7 @@ class MISDataGenerator:
         if type(self.solver) == str:
             self.solver_type = self.solver
             supported_solver_dict = {
-                "kamis": KaMIS, 
+                "kamis": KaMISSolver, 
                 "gurobi": MISGurobi
             }
             supported_solver_type = supported_solver_dict.keys()

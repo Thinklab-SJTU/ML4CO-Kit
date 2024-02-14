@@ -4,6 +4,8 @@ import lzma
 import codecs
 import gzip
 import itertools
+import numpy as np
+import networkx as nx
 
 
 class FileObject(object):
@@ -120,3 +122,30 @@ class CNF(object):
                 itertools.chain.from_iterable([[[self.nv]], self.clauses])
             )
         )
+        
+        
+def sat_to_mis_graph(sat_path: str) -> nx.Graph:
+    cnf = CNF(sat_path)
+    nv = cnf.nv
+    clauses = list(filter(lambda x: x, cnf.clauses))
+    ind = { k:[] for k in np.concatenate([np.arange(1, nv+1), -np.arange(1, nv+1)]) }
+    edges = []
+    for i, clause in enumerate(clauses):
+        a = clause[0]
+        b = clause[1]
+        c = clause[2]
+        aa = 3 * i + 0
+        bb = 3 * i + 1
+        cc = 3 * i + 2
+        ind[a].append(aa)
+        ind[b].append(bb)
+        ind[c].append(cc)
+        edges.append((aa, bb))
+        edges.append((aa, cc))
+        edges.append((bb, cc))
+    for i in np.arange(1, nv+1):
+        for u in ind[i]:
+            for v in ind[-i]:
+                edges.append((u, v))
+    graph = nx.from_edgelist(edges)
+    return graph
