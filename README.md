@@ -18,7 +18,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 **evaluator**
 |Problem|First|Impl.|Second|Impl.|
 | :---: |:--:|:---:|:---:|:---:|
-|  TSP  |tsplib| ✔ | uniform | 📆 |
+|  TSP  |tsplib| ✔ | uniform | ✔ |
 |  MIS  |satlib| 📆 | ER | 📆 |
 
 **generator**

@@ -16,5 +16,15 @@ class TSPConcordeDataset:
         
     @property
     def supported(self):
-        return ["TSP50", "TSP100", "TSP500"]
+        supported_files = {
+            50: "dataset/tspconcorde/tsp50_concorde_5.68759.txt",
+            100: "dataset/tspconcorde/tsp100_concorde_5_7.75585.txt",
+            500: "dataset/tspconcorde/tsp500_concorde_16.54581.txt"
+        }
+        return supported_files
+    
+    def get_data_path(self, num_nodes: int):
+        supported_files = self.supported
+        if num_nodes in supported_files.keys():
+            return supported_files[num_nodes]
         
