@@ -47,6 +47,8 @@ class TSPLIBDataset:
 
     def data_process(self):
         self.data = dict()
+        self.data["resolved"] = dict()
+        self.data["unresolved"] = dict()
         edge_weight_types = ["EUC_2D", "EXPLICIT", "GEO"]
 
         # resolved
@@ -57,6 +59,7 @@ class TSPLIBDataset:
                         self.resolved_explicit_path,
                         self.resolved_geo_path]
         for edge_weight_type, resolved_path in zip(edge_weight_types, resolved_paths):
+            self.data["resolved"][edge_weight_type] = dict()
             tsp_files = os.listdir(os.path.join(resolved_path, "problem"))
             for tsp_file in tqdm(tsp_files, desc=f"Processing {resolved_path}"):
                 tsp_path = os.path.join(resolved_path, f"problem/{tsp_file}")
@@ -71,7 +74,7 @@ class TSPLIBDataset:
                     edge_weight=edge_weight,
                     tour=tour
                 )
-                self.data[name] = tsp_data
+                self.data["resolved"][edge_weight_type][name] = tsp_data
 
         # unresolved
         self.unresolved_euc2d_path = os.path.join(self.dir, "unresolved/EUC_2D")
@@ -81,6 +84,7 @@ class TSPLIBDataset:
                             self.unresolved_explicit_path,
                             self.unresolved_geo_path]
         for edge_weight_type, unresolved_path in zip(edge_weight_types, unresolved_paths):
+            self.data["unresolved"][edge_weight_type] = dict()
             tsp_files = os.listdir(unresolved_path)
             for tsp_file in tqdm(tsp_files, desc=f"Processing {unresolved_path}"):
                 tsp_path = os.path.join(unresolved_path, tsp_file)
@@ -92,5 +96,5 @@ class TSPLIBDataset:
                     node_coords=node_coords,
                     edge_weight=edge_weight,
                 )
-                self.data[name] = tsp_data
+                self.data["unresolved"][edge_weight_type][name] = tsp_data
                 

@@ -14,6 +14,7 @@ class TSPLKHSolver(TSPSolver):
         lkh_path: pathlib.Path="LKH",
         lkh_scale: int=1e6,
         lkh_runs: int=10,
+        edge_weight_type: str="EUC_2D"
     ):
         """
         TSPLKHSolver
@@ -26,6 +27,10 @@ class TSPLKHSolver(TSPSolver):
                 LKH solver. Defaults to 1e6.
             lkh_runs (int, optional): The number of runs for the LKH solver. 
                 Defaults to 10.
+            edge_weight_type (str, optional):
+                egde weights type of TSP, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
+                ``MAX_2D``, ``MAN_2D``, ``GEO``, ``GEOM``, ``ATT``, ``CEIL_2D``,
+                ``CEIL_2D``, ``DSJRAND``
         """
         super(TSPLKHSolver, self).__init__()
         self.solver_type = "lkh"
@@ -33,13 +38,14 @@ class TSPLKHSolver(TSPSolver):
         self.lkh_path = lkh_path
         self.lkh_scale = lkh_scale
         self.lkh_runs = lkh_runs
+        self.edge_weight_type = edge_weight_type
 
     def _solve(self, nodes_coord: np.ndarray) -> list:
         problem = tsplib95.models.StandardProblem()
         problem.name = 'TSP'
         problem.type = 'TSP'
         problem.dimension = self.nodes_num
-        problem.edge_weight_type = 'EUC_2D'
+        problem.edge_weight_type = self.edge_weight_type
         problem.node_coords = {
             n + 1: nodes_coord[n] * self.lkh_scale for n in range(self.nodes_num)
         }

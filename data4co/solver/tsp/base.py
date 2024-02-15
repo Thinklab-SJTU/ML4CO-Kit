@@ -65,7 +65,12 @@ class TSPSolver:
     def from_data(self, points: np.ndarray):
         self.points = points.astype(np.float32)
         self.check_points_dim()
-    
+
+    def read_gt_tours(self, gt_tours: np.ndarray):
+        if gt_tours.ndim == 1:
+            gt_tours = np.expand_dims(gt_tours, axis=0)
+        self.gt_tours = gt_tours
+   
     def read_gt_tours_from_tspfile(self, filename: str):
         if not filename.endswith(".opt.tour"):
             raise ValueError("Invalid file format. Expected a .opt.tour file.")
@@ -177,5 +182,5 @@ class TSPSolver:
             else:
                 return cost_avg
 
-    def solve(self, batch_size: int=1, points: np.ndarray=None):
+    def solve(self, batch_size: int=1, points: np.ndarray=None) -> np.ndarray:
         raise NotImplementedError("solve is required to implemented in subclass")

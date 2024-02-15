@@ -6,21 +6,25 @@ from .base import TSPSolver
 
 
 class TSPConcordeSolver(TSPSolver):
-    def __init__(self, concorde_scale: int=1e6, norm: str="EUC_2D"):
+    def __init__(
+        self, 
+        concorde_scale: int=1e6, 
+        edge_weight_type: str="EUC_2D"
+    ):
         """
         TSPConcordeSolver
         Args:
             concorde_scale (int, optional): 
                 The scale factor for coordinates in the Concorde solver.
-            norm (str, optional):
-                egde_weights_type, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
+            edge_weight_type (str, optional):
+                egde weights type of TSP, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
                 ``MAX_2D``, ``MAN_2D``, ``GEO``, ``GEOM``, ``ATT``, ``CEIL_2D``,
                 ``CEIL_2D``, ``DSJRAND``
         """
         super(TSPConcordeSolver, self).__init__()
         self.solver_type = "concorde"
         self.concorde_scale = concorde_scale
-        self.norm = norm
+        self.norm = edge_weight_type
 
     def _solve(self, nodes_coord: np.ndarray) -> np.ndarray:
         solver = TSPConSolver.from_data(nodes_coord[:, 0] * self.concorde_scale, 
