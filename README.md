@@ -90,12 +90,12 @@ tsp_data_lkh.generate()
 ### How to Use Evaluator (TSPLIBEvaluator as example)
 
 ```python
->>> from data4co.evaluate import TSPLIBEvaluator
+>>> from data4co.evaluate import TSPLIBEvaluator, TSPConcordeSolver
 >>> from data4co.solver import TSPLKHSolver
 
->>> solver = TSPLKHSolver()
+>>> lkh_solver = TSPLKHSolver(lkh_scale=1e2)
 >>> eva = TSPLIBEvaluator()
->>> eva.evaluate(solver)
+>>> eva.evaluate(lkh_solver)
            solved_costs       gt_costs          gaps
 a280        2586.769648    2586.769648  0.000000e+00
 att48      33523.708507   33523.708507  0.000000e+00
@@ -116,4 +116,28 @@ rd100       7910.396210    7910.396210  0.000000e+00
 st70         677.109609     678.597452 -2.192526e-01
 tsp225      3859.000000    3859.000000  0.000000e+00
 AVG        50007.054444   49631.448887  4.971646e-02
+
+# test concorde
+>>> con_solver = TSPConcordeSolver(concorde_scale=1e2)
+>>> eva.evaluate(con_solver)
+           solved_costs       gt_costs          gaps
+a280        2586.769648    2586.769648 -1.757974e-14
+att48      33523.708507   33523.708507  2.170392e-14
+berlin52    7544.365902    7544.365902  0.000000e+00
+ch130       6110.722200    6110.860950 -2.270541e-03
+ch150       6530.902722    6532.280933 -2.109847e-02
+eil101       640.211591     642.309536 -3.266252e-01
+eil51        428.871756     429.983312 -2.585113e-01
+eil76        544.369053     545.387552 -1.867479e-01
+kroA100    21285.443182   21285.443182 -1.709139e-14
+kroC100    20750.762504   20750.762504  0.000000e+00
+kroD100    21294.290821   21294.290821  3.416858e-14
+lin105     14382.995933   14382.995933 -1.264680e-14
+pr1002    259066.663053  259066.663053  0.000000e+00
+pr2392    378062.696085  378062.826191 -3.441403e-05
+pr76      108159.438274  108159.438274 -1.345413e-14
+rd100       7910.396210    7910.396210 -3.449238e-14
+st70         677.109609     678.597452 -2.192526e-01
+tsp225      3859.000000    3859.000000  0.000000e+00
+AVG        49631.039836   49631.448887 -5.636336e-02
 ```
