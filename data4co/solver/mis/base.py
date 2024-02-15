@@ -105,7 +105,7 @@ class MISSolver:
                            cache_directory: pathlib.Path):
         raise NotImplementedError("prepare_instances is required to implemented in subclass")
     
-    def solve(self, src: pathlib.Path, out: pathlib.Path):
+    def solve(self, src: pathlib.Path, out: pathlib.Path=None):
         raise NotImplementedError("solve is required to implemented in subclass")
     
     def evaluate(self, caculate_gap: bool=False):

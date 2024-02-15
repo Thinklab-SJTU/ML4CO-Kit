@@ -66,7 +66,7 @@ class SATLIBDataset:
         if os.path.exists(processed_pickle_path):
             with open(processed_pickle_path, 'rb') as f:
                 dataset = pickle.load(f)
-            return dataset
+            return processed_pickle_path, processed_gpickle_path, dataset
         
         # process the cnf data
         dataset = list()
@@ -92,4 +92,4 @@ class SATLIBDataset:
         # write the processed data
         with open(processed_pickle_path, 'wb') as f:
             pickle.dump(dataset, f)
-        return dataset
+        return processed_pickle_path, processed_gpickle_path, dataset

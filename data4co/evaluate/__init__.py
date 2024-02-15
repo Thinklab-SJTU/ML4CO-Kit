@@ -1,1 +1,2 @@
-from .tsp import TSPLIBEvaluator
+from .tsp import TSPLIBEvaluator, TSPUniformEvaluator
+from .mis import SATLIBEvaluator

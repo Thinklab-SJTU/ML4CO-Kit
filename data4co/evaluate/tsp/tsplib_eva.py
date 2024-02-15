@@ -8,8 +8,8 @@ from data4co.utils.tsp_utils import TSPEvaluator
 
 class TSPLIBEvaluator:
     def __init__(self) -> None:
-        self.tsplib_dataset = TSPLIBDataset()
-        self.tsplib_data = self.tsplib_dataset.data
+        self.dataset = TSPLIBDataset()
+        self.tsplib_data = self.dataset.data
     
     def evaluate(
         self, 

@@ -77,13 +77,15 @@ class KaMISSolver(MISSolver):
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
 
-    def solve(self, src: pathlib.Path, out: pathlib.Path):
+    def solve(self, src: pathlib.Path, out: pathlib.Path=None):
         message = "This may be the reason for KaMIS compilation"
         message += "(Compilation differences between different Linux versions) ,"
         message += "you can try 'self.recompile_kamis()'. "
         message += "If you are sure that the KaMIS is correct, "
         message += "please confirm whether the Conda environment of the terminal "
         message += "is consistent with the Python environment."
+        if out is None:
+            out = src / "solve"
         try:
             self._solve(src, out)
         except TypeError:
