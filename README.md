@@ -90,9 +90,10 @@ tsp_data_lkh.generate()
 ### How to Use Evaluator (TSPLIBEvaluator as example)
 
 ```python
->>> from data4co.evaluate import TSPLIBEvaluator, TSPConcordeSolver
->>> from data4co.solver import TSPLKHSolver
+>>> from data4co.evaluate import TSPLIBEvaluator
+>>> from data4co.solver import TSPLKHSolver, TSPConcordeSolver
 
+# test LKH
 >>> lkh_solver = TSPLKHSolver(lkh_scale=1e2)
 >>> eva = TSPLIBEvaluator()
 >>> eva.evaluate(lkh_solver)
