@@ -19,7 +19,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 |Problem|First|Impl.|Second|Impl.|
 | :---: |:--:|:---:|:---:|:---:|
 |  TSP  |tsplib| ✔ | uniform | ✔ |
-|  MIS  |satlib| 📆 | ER | 📆 |
+|  MIS  |satlib| ✔ | ER | 📆 |
 
 **generator**
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
