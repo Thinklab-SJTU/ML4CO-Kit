@@ -7,5 +7,5 @@ from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobi
 
 
-__version__ = '0.0.1a13'
+__version__ = '0.0.1a14'
 __author__ = 'ThinkLab at SJTU'

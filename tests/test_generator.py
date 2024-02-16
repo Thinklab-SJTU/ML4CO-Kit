@@ -10,7 +10,12 @@ from data4co import TSPDataGenerator, MISDataGenerator,  KaMISSolver
 #             Test Func For TSP              #
 ##############################################
 
-def _test_tsp_lkh_generator(num_threads: int, nodes_num: int, data_type: str):
+def _test_tsp_lkh_generator(
+    num_threads: int, 
+    nodes_num: int, 
+    data_type: str,
+    regret: bool
+):
     """
     Test TSPDataGenerator using LKH Solver
     """
@@ -27,7 +32,8 @@ def _test_tsp_lkh_generator(num_threads: int, nodes_num: int, data_type: str):
         train_samples_num=16,
         val_samples_num=16,
         test_samples_num=16,
-        save_path=save_path
+        save_path=save_path,
+        regret=regret
     )
     # generate data
     tsp_data_lkh.generate()
@@ -64,8 +70,9 @@ def test_tsp():
     """
     Test TSPDataGenerator
     """
-    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="uniform")
-    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="gaussian")
+    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="uniform", regret=False)
+    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="uniform", regret=True)
+    _test_tsp_lkh_generator(num_threads=16, nodes_num=50, data_type="gaussian", regret=False)
     _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="uniform")
     _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="gaussian")
 

@@ -24,7 +24,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 **generator**
 |Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
 | :---: | :---: |:---:| :---: |:---:| :---: |:---:| :---: |:---:|
-|  TSP  | uniform | ✔ | gaussian | ✔ | cluster | 📆 | -- | -- |
+|  TSP  | uniform | ✔ | gaussian | ✔ | cluster | ✔ | w/regret | ✔ |
 |  MIS  | ER | ✔ | BA | ✔ | HK | ✔ | WS | ✔ |
 
 **solver**

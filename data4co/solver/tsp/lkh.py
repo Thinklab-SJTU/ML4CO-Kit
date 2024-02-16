@@ -85,3 +85,25 @@ class TSPLKHSolver(TSPSolver):
         if show_time:
             print(f"Use Time: {end_time - start_time}")
         return self.tours
+    
+    def regret_solve(
+        self,
+        points: np.ndarray,
+        fixed_edges: tuple 
+    ):
+        problem = tsplib95.models.StandardProblem()
+        problem.name = 'TSP'
+        problem.type = 'TSP'
+        problem.dimension = points.shape[0]
+        problem.edge_weight_type = 'EUC_2D'
+        problem.node_coords = {n + 1: self.lkh_scale * points[n] for n in range(points.shape[0])}
+        problem.fixed_edges = [[n + 1 for n in fixed_edges]]
+        solution = lkh_solve(
+            solver=self.lkh_path, 
+            problem=problem, 
+            max_trials=self.lkh_max_trials, 
+            runs=self.lkh_runs
+        )
+        tour = [n - 1 for n in solution[0]] + [0]
+        np_tour = np.array(tour)
+        return np_tour
