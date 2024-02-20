@@ -21,9 +21,10 @@ class SATLIBEvaluator:
     def evaluate(
         self, 
         solver: MISSolver,
+        solver_args: dict={}
     ):
         solver.from_satlib_pickle(self.pickle_path)
-        solver.solve(self.test_path, self.result_path)
+        solver.solve(self.test_path, self.result_path, **solver_args)
         solver.from_folder(self.test_path, self.result_path)
         return solver.evaluate(caculate_gap=True)
         

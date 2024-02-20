@@ -10,10 +10,11 @@ class TSPUniformEvaluator:
     def evaluate(
         self, 
         solver: TSPSolver,
+        solver_args: dict={},
         **kwargs
     ):
         solver.from_txt(self.data_path)
         batch_size = kwargs.get("batch_size", 1)
-        solver.solve(batch_size=batch_size)
+        solver.solve(batch_size=batch_size, **solver_args)
         return solver.evaluate(caculate_gap=True)
         

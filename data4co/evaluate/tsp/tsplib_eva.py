@@ -14,7 +14,8 @@ class TSPLIBEvaluator:
     def evaluate(
         self, 
         solver: TSPSolver,
-        type: str="EUC_2D"
+        type: str="EUC_2D",
+        solver_args: dict={},
     ):
         solved_costs = dict()
         gt_costs = dict()
@@ -29,7 +30,7 @@ class TSPLIBEvaluator:
             solver.from_data(points)
             solver.read_gt_tours(gt_tour)
             # solve, caculate gap
-            tour = solver.solve().tolist()
+            tour = solver.solve(**solver_args).tolist()
             eva = TSPEvaluator(points)
             gt_cost = eva.evaluate(gt_tour)
             solved_cost = eva.evaluate(tour)
