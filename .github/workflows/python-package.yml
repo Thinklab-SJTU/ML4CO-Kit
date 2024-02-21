@@ -36,7 +36,7 @@ jobs:
     - name: Test using pytest
       run: |
         pip install pytest
-        pytest
+        pytest --cov=data4co --cov-report=xml --cov-append
     - name: package all the generated files
       uses: actions/upload-artifact@v2
       with:
