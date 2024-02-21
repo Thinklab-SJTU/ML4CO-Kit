@@ -36,10 +36,5 @@ jobs:
     - name: Test using pytest
       run: |
         pip install pytest
+        python -m pip install pytest-cov
         pytest --cov=data4co
-    - name: package all the generated files
-      uses: actions/upload-artifact@v2
-      with:
-        name: data4co
-        path: |
-          data4co/**
