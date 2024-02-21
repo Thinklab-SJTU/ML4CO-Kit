@@ -38,3 +38,8 @@ jobs:
         pip install pytest
         python -m pip install pytest-cov
         pytest --cov=data4co --cov-report=xml --cov-append
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      env:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        slug: heatingma/Data4CO
