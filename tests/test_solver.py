@@ -12,7 +12,7 @@ from data4co.solver import TSPLKHSolver, TSPConcordeSolver, KaMISSolver
 def _test_tsp_lkh_solver():
     tsp_lkh_solver  = TSPLKHSolver(lkh_max_trials=100)
     tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True)
+    tsp_lkh_solver.solve(show_time=True, num_threads=2)
     _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
@@ -24,7 +24,7 @@ def _test_tsp_lkh_solver():
 def _test_tsp_concorde_solver():
     tsp_lkh_solver  = TSPConcordeSolver()
     tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True)
+    tsp_lkh_solver.solve(show_time=True, num_threads=2)
     _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
@@ -70,4 +70,4 @@ def test_mis():
 
 if __name__ == "__main__":
     test_tsp()
-    test_mis()
+    # test_mis()

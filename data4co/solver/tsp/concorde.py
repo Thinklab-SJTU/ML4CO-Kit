@@ -1,6 +1,8 @@
 import time
 import numpy as np
 from tqdm import tqdm
+from multiprocessing import Pool
+from data4co.utils import check_dim
 from .pyconcorde import TSPConSolver
 from .base import TSPSolver
 
@@ -36,6 +38,7 @@ class TSPConcordeSolver(TSPSolver):
     def solve(
         self, 
         points: np.ndarray=None, 
+        num_threads: int=1,
         show_time: bool=False
     ) -> np.ndarray:
         start_time = time.time()
@@ -44,15 +47,32 @@ class TSPConcordeSolver(TSPSolver):
             self.from_data(points)
         if self.points is None:
             raise ValueError("points is None!")
+        check_dim(self.points, 3)
+        
         # solve
         tours = list()
-        num_points = self.points.shape[0]
+        p_shape = self.points.shape
+        num_points = p_shape[0]
+        batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
         if show_time:
-            for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"):
-                tours.append(self._solve(self.points[idx]))
+            for idx in tqdm(range(num_points // num_threads), desc="Solving TSP Using Concorde"):
+                with Pool(num_threads) as p1:
+                    cur_tours = p1.map(
+                        self._solve,
+                        [batch_points[idx][inner_idx] for inner_idx in range(num_threads)]
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
         else:
             for idx in range(num_points):
-                tours.append(self._solve(self.points[idx]))
+                with Pool(num_threads) as p1:
+                    cur_tours = p1.map(
+                        self._solve,
+                        [batch_points[idx][inner_idx] for inner_idx in range(num_threads)]
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
+
         # format
         self.tours = np.array(tours)
         zeros = np.zeros((self.tours.shape[0], 1))
