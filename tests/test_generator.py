@@ -156,6 +156,6 @@ def test_mis():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
+    test_tsp()
     test_mis()
     shutil.rmtree("tmp")
