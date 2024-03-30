@@ -188,13 +188,8 @@ draw_tsp_solution(
     tours=solver.tours
 )
 ```
-
-The resulting graph is shown below
-<div style="display: flex;">
-  <div style="width: 49%;">
-    <img src="docs/kroA150_problem.png" alt="Problem Image" style="width: 100%;">
-  </div>
-  <div style="width: 49%;">
-    <img src="docs/kroA150_solution.png" alt="Solution Image" style="width: 100%;">
-  </div>
-</div>
+<details>
+<summary>Click to view the drawing results</summary>
+<img src="docs/kroA150_problem.png" width="35%" alt="" />
+<img src="docs/kroA150_solution.png" width="35%" alt="" />
+</details>
