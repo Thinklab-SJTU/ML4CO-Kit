@@ -4,7 +4,7 @@ import uuid
 import numpy as np
 from tqdm import tqdm
 from multiprocessing import Pool
-from data4co.utils import check_dim
+from typing import Union
 from .pyconcorde import TSPConSolver
 from .base import TSPSolver
 
@@ -12,28 +12,23 @@ from .base import TSPSolver
 class TSPConcordeSolver(TSPSolver):
     def __init__(
         self, 
-        concorde_scale: int=1e6, 
-        edge_weight_type: str="EUC_2D"
+        scale: int=1, 
     ):
         """
         TSPConcordeSolver
         Args:
-            concorde_scale (int, optional): 
+            scale (int, optional): 
                 The scale factor for coordinates in the Concorde solver.
-            edge_weight_type (str, optional):
-                egde weights type of TSP, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
-                ``MAX_2D``, ``MAN_2D``, ``GEO``, ``GEOM``, ``ATT``, ``CEIL_2D``,
-                ``CEIL_2D``, ``DSJRAND``
         """
-        super(TSPConcordeSolver, self).__init__()
-        self.solver_type = "concorde"
-        self.concorde_scale = concorde_scale
-        self.norm = edge_weight_type
+        super(TSPConcordeSolver, self).__init__(
+            solver_type="concorde",
+            scale=scale
+        )
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
         solver = TSPConSolver.from_data(
-            xs=nodes_coord[:, 0] * self.concorde_scale, 
-            ys=nodes_coord[:, 1] * self.concorde_scale, 
+            xs=nodes_coord[:, 0] * self.scale, 
+            ys=nodes_coord[:, 1] * self.scale, 
             norm=self.norm,
             name=name
         )
@@ -43,17 +38,15 @@ class TSPConcordeSolver(TSPSolver):
         
     def solve(
         self, 
-        points: np.ndarray=None, 
+        points: Union[np.ndarray, list]=None,
+        norm: str="EUC_2D",
+        normalize: bool=False,
         num_threads: int=1,
         show_time: bool=False
     ) -> np.ndarray:
+        # prepare
+        self.from_data(points, norm, normalize)
         start_time = time.time()
-        # points
-        if points is not None:
-            self.from_data(points)
-        if self.points is None:
-            raise ValueError("points is None!")
-        check_dim(self.points, 3)
         
         # solve
         tours = list()
@@ -103,15 +96,16 @@ class TSPConcordeSolver(TSPSolver):
                         self.clear_tmp_files(name)
 
         # format
-        self.tours = np.array(tours)
-        zeros = np.zeros((self.tours.shape[0], 1))
-        self.tours = np.append(self.tours, zeros, axis=1).astype(np.int32)
-        if self.tours.ndim == 2 and self.tours.shape[0] == 1:
-            self.tours = self.tours[0]
+        tours = np.array(tours)
+        zeros = np.zeros((tours.shape[0], 1))
+        tours = np.append(tours, zeros, axis=1).astype(np.int32)
+        if tours.ndim == 2 and tours.shape[0] == 1:
+            tours = tours[0]
+        self.read_tours(tours)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return self.tours
+        return tours
 
     def clear_tmp_files(self, name):
         real_name = name[0:9]

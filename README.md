@@ -10,16 +10,22 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 ### Current support
 
 **data**
-| Problem |        First        | Impl. |      Second       | Impl. |         Third          | Impl. |
-|:-------:|:-------------------:|:-----:|:-----------------:|:-----:|:----------------------:|:-----:|
-|   TSP   | TSPLIBOriginDataset |   ✔   | TSPUniformDataset |   ✔   | TSPMultiDistrosDataset |  📆   |
-|   MIS   |    SATLIBDataset    |   ✔   |   KaMISDataset    |  📆   |           --           |  --   |
+| Problem |     First      | Impl. | Second  | Impl. |      Third      | Impl. |
+|:-------:|:--------------:|:-----:|:-------:|:-----:|:---------------:|:-----:|
+|   TSP   | TSPLIB(Origin) |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
+|   MIS   |     SATLIB     |   ✔   |  KaMIS  |  📆   |       --        |  --   |
+
+**draw**
+| Problem |     problem      | Impl. |     solution     | Impl. |
+|:-------:|:----------------:|:-----:|:----------------:|:-----:|
+|   TSP   | draw_tsp_problem |   ✔   | draw_tsp_soluton |   ✔   |
+|   MIS   | draw_mis_problem |  📆   | draw_mis_soluton |  📆   |
 
 **evaluator**
-| Problem |     Base     | Impl. |         First         | Impl. |       Second        | Impl. |
-|:-------:|:------------:|:-----:|:---------------------:|:-----:|:-------------------:|:-----:|
-|   TSP   | TSPEvaluator |   ✔   | TSPLIBOriginEvaluator |   ✔   | TSPUniformEvaluator |   ✔   |
-|   MIS   | MISEvaluator |  📆   |    SATLIBEvaluator    |  📆   |         --          |  --   |
+| Problem |     Base     | Impl. |      First      | Impl. | Second  | Impl. |      Third      | Impl. |
+|:-------:|:------------:|:-----:|:---------------:|:-----:|:-------:|:-----:|:---------------:|:-----:|
+|   TSP   | TSPEvaluator |   ✔   | TSPLIB(Origin)  |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
+|   MIS   | MISEvaluator |  📆   | SATLIBEvaluator |  📆   |   --    |  --   |       --        |  --   |
 
 **generator**
 | Problem |  Type1  | Impl. |  Type2   | Impl. |  Type3  | Impl. |  Type4   | Impl. |
@@ -28,16 +34,10 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 |   MIS   |   ER    |   ✔   |    BA    |   ✔   |   HK    |   ✔   |    WS    |   ✔   |
 
 **solver**
-| Problem |   Base    | Impl. | First | Impl. |  Second  | Impl. |
-|:-------:|:---------:|:-----:|:-----:|:-----:|:--------:|:-----:|
-|   TSP   | TSPSolver |   ✔   |  LKH  |   ✔   | Concorde |   ✔   |
-|   MIS   | MISSolver |   ✔   | KaMIS |   ✔   |  Gurobi  |   ✔   |
-
-**draw**
-| Problem |     problem      | Impl. |     solution     | Impl. |
-|:-------:|:----------------:|:-----:|:----------------:|:-----:|
-|   TSP   | draw_tsp_problem |   ✔   | draw_tsp_soluton |   ✔   |
-|   MIS   | draw_mis_problem |  📆   | draw_mis_soluton |  📆   |
+| Problem |   Base    | Impl. | First | Impl. |  Second  | Impl. |      Third      | Impl. |
+|:-------:|:---------:|:-----:|:-----:|:-----:|:--------:|:-----:|:---------------:|:-----:|
+|   TSP   | TSPSolver |   ✔   |  LKH  |   ✔   | Concorde |   ✔   | Concorde(Large) |   ✔   |
+|   MIS   | MISSolver |   ✔   | KaMIS |   ✔   |  Gurobi  |   ✔   |       --        |  --   |
 
 ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
 
@@ -54,6 +54,13 @@ tqdm>=4.66.1
 pulp>=2.8.0, 
 pandas>=2.0.0,
 scipy>=1.10.1
+requests>=2.31.0
+aiohttp>=3.9.3
+async_timeout>=4.0.3
+```
+If you want to obtain complete data4co's functions, like drawing, the following packages need to be installed by ``pip``:
+```
+matplotlib>=3.7.5
 ```
 
 **PyPI**
@@ -62,7 +69,7 @@ It is very convenient to directly use the following commands
 pip install data4co
 ```
 
-### How to Use Solver (TSPLKHSolver as example)
+### Solver Example
 
 ```python
 from data4co.solver import TSPLKHSolver
@@ -74,7 +81,7 @@ tsp_lkh_solver.evaluate()
 tsp_lkh_solver.to_txt("path/to/write/file.txt")
 ```
 
-### How to Use Generator (TSPDataGenerator as example)
+### Generator Example
 
 ```python
 from data4co import TSPDataGenerator
@@ -93,58 +100,95 @@ tsp_data_lkh = TSPDataGenerator(
 tsp_data_lkh.generate()
 ```
 
-### How to Use Evaluator (TSPLIBEvaluator as example)
+### Evaluator Example
 
 ```python
->>> from data4co.evaluate import TSPLIBEvaluator
+>>> from data4co.evaluate import TSPLIBOriginEvaluator
 >>> from data4co.solver import TSPLKHSolver, TSPConcordeSolver
 
 # test LKH
->>> lkh_solver = TSPLKHSolver(lkh_scale=1e2)
+>>> lkh_solver = TSPLIBOriginEvaluator()
 >>> eva = TSPLIBEvaluator()
->>> eva.evaluate(lkh_solver)
+>>> eva.evaluate(lkh_solver, norm="EUC_2D")
            solved_costs       gt_costs          gaps
-a280        2586.769648    2586.769648  0.000000e+00
 att48      33523.708507   33523.708507  0.000000e+00
+eil51        429.983312     429.983312  0.000000e+00
 berlin52    7544.365902    7544.365902  3.616585e-14
-ch130       6110.722200    6110.860950 -2.270541e-03
-ch150       6530.902722    6532.280933 -2.109847e-02
-eil101       640.211591     642.309536 -3.266252e-01
-eil51        428.871756     429.983312 -2.585113e-01
-eil76        544.369053     545.387552 -1.867479e-01
-kroA100    21285.443182   21285.443182  0.000000e+00
-kroC100    20750.762504   20750.762504  0.000000e+00
-kroD100    21294.290821   21294.290821  3.416858e-14
-lin105     14382.995933   14382.995933  0.000000e+00
-pr1002    260047.681630  259066.663053  3.786742e-01
-pr2392    383849.940441  378062.826191  1.530728e+00
+st70         678.557469     678.597452 -5.892021e-03
 pr76      108159.438274  108159.438274 -1.345413e-14
-rd100       7910.396210    7910.396210  0.000000e+00
-st70         677.109609     678.597452 -2.192526e-01
+kroC100    20750.762504   20750.762504  0.000000e+00
+eil101       642.856874     642.309536  8.521414e-02
+lin105     14382.995933   14382.995933  0.000000e+00
+ch130       6110.900592    6110.860950  6.487238e-04
+ch150       6530.902722    6532.280933 -2.109847e-02
 tsp225      3859.000000    3859.000000  0.000000e+00
-AVG        50007.054444   49631.448887  4.971646e-02
+a280        2588.301213    2586.769648  5.920765e-02
+pr1002    260277.189980  259066.663053  4.672646e-01
+pr2392    384469.093320  378062.826191  1.694498e+00
+AVG        60710.575472   60166.468728  1.628459e-01
+
+>>> eva.evaluate(lkh_solver, norm="GEO")
+           solved_costs  gt_costs      gaps
+ulysses16        6859.0    6859.0  0.000000
+ulysses22        7013.0    7013.0  0.000000
+gr96            55209.0   54327.0  1.623502
+gr202           40160.0   40160.0  0.000000
+gr666          295012.0  294358.0  0.222178
+AVG             80850.6   80543.4  0.369136
 
 # test concorde
->>> con_solver = TSPConcordeSolver(concorde_scale=1e2)
->>> eva.evaluate(con_solver)
+>>> con_solver = TSPConcordeSolver()
+>>> eva.evaluate(con_solver, norm="EUC_2D")
            solved_costs       gt_costs          gaps
-a280        2586.769648    2586.769648 -1.757974e-14
 att48      33523.708507   33523.708507  2.170392e-14
+eil51        429.117939     429.983312 -2.012573e-01
 berlin52    7544.365902    7544.365902  0.000000e+00
-ch130       6110.722200    6110.860950 -2.270541e-03
-ch150       6530.902722    6532.280933 -2.109847e-02
-eil101       640.211591     642.309536 -3.266252e-01
-eil51        428.871756     429.983312 -2.585113e-01
-eil76        544.369053     545.387552 -1.867479e-01
-kroA100    21285.443182   21285.443182 -1.709139e-14
-kroC100    20750.762504   20750.762504  0.000000e+00
-kroD100    21294.290821   21294.290821  3.416858e-14
-lin105     14382.995933   14382.995933 -1.264680e-14
-pr1002    259066.663053  259066.663053  0.000000e+00
-pr2392    378062.696085  378062.826191 -3.441403e-05
+st70         678.583751     678.597452 -2.019036e-03
 pr76      108159.438274  108159.438274 -1.345413e-14
-rd100       7910.396210    7910.396210 -3.449238e-14
-st70         677.109609     678.597452 -2.192526e-01
+kroC100    20750.762504   20750.762504  0.000000e+00
+eil101       641.690973     642.309536 -9.630290e-02
+lin105     14382.995933   14382.995933  0.000000e+00
+ch130       6110.739012    6110.860950 -1.995428e-03
+ch150       6532.280933    6532.280933  0.000000e+00
 tsp225      3859.000000    3859.000000  0.000000e+00
-AVG        49631.039836   49631.448887 -5.636336e-02
+a280        2587.930486    2586.769648  4.487600e-02
+pr1002    259066.663053  259066.663053 -1.123411e-14
+pr2392    378062.826191  378062.826191  0.000000e+00
+AVG        60166.435961   60166.468728 -1.833562e-02
+
+>>> eva.evaluate(con_solver, norm="GEO")
+           solved_costs  gt_costs  gaps
+ulysses16        6859.0    6859.0   0.0
+ulysses22        7013.0    7013.0   0.0
+gr96            55209.0   55209.0   0.0
+gr202           40160.0   40160.0   0.0
+gr666          294358.0  294358.0   0.0
+AVG             80719.8   80719.8   0.0
 ```
+
+### Draw Example
+
+```python
+>>> from data4co.solver import TSPConcordeSolver
+>>> from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
+
+# use TSPConcordeSolver to solve the problem
+>>> solver = TSPConcordeSolver()
+>>> solver.from_tsp("docs/kroA150.tsp")
+>>> solver.solve(norm="EUC_2D")
+
+# draw
+draw_tsp_problem(
+    save_path="docs/kroA150_problem.png",
+    points=solver.ori_points,
+)
+draw_tsp_solution(
+    save_path="docs/kroA150_solution.png",
+    points=solver.ori_points,
+    tours=solver.tours
+)
+```
+
+The resulting graph is shown below
+<img src="docs/kroA150_problem.png" alt="Image" style="width: 45%;">
+<img src="docs/kroA150_solution.png" alt="Image" style="width: 45%;">

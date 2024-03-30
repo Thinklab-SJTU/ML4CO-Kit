@@ -9,7 +9,13 @@ SUPPORT_TSPLIB_TYPE = ["EUC_2D", "GEO"]
 
 
 class TSPSolver:
-    def __init__(self):
+    def __init__(
+        self, 
+        solver_type: str,
+        scale: int=1
+    ):
+        self.solver_type = solver_type
+        self.scale = scale
         self.solver_type = None
         self.points = None
         self.norm = None
@@ -19,14 +25,23 @@ class TSPSolver:
         self.nodes_num = None
 
     def check_points_dim(self):
+        self.check_ori_points_dim()
         if self.points is None:
             return
         elif self.points.ndim == 2:
             self.points = np.expand_dims(self.points, axis=0)
         if self.points.ndim != 3:
-            raise ValueError("the gt_tours must be 2D or 3D array.")
+            raise ValueError("the points must be 2D or 3D array.")
         self.nodes_num = self.points.shape[1]
-    
+
+    def check_ori_points_dim(self):
+        if self.ori_points is None:
+            return
+        elif self.ori_points.ndim == 2:
+            self.ori_points = np.expand_dims(self.ori_points, axis=0)
+        if self.ori_points.ndim != 3:
+            raise ValueError("the ori_points must be 2D or 3D array.")
+
     def check_tours_dim(self):
         if self.tours is None:
             return
@@ -69,6 +84,9 @@ class TSPSolver:
         if norm not in SUPPORT_TSPLIB_TYPE:
             message = f"The norm({norm}) is not a valid type, "
             message += f"only supports {SUPPORT_TSPLIB_TYPE}"
+            raise ValueError(message)
+        if norm == "GEO" and self.scale != 1:
+            message = "when the norm is ``GEO``, the scale must be 1."
             raise ValueError(message)
         self.norm = norm
     
@@ -204,7 +222,7 @@ class TSPSolver:
         tsp_tour: list
         tsp_tour = tsp_tour[0]
         tsp_tour.append(1)
-        self.gt_tour = np.array(tsp_tour) - 1
+        self.gt_tours = np.array(tsp_tour) - 1
         self.check_gt_tours_dim()
         
     def to_tsp(
@@ -319,7 +337,7 @@ class TSPSolver:
         if caculate_gap:
             gt_tours_cost_list = list()
             gap_list = list()
-            
+        
         # deal with different situation
         if tours.shape[0] != samples:
             # a problem has more than one solved tour
@@ -364,5 +382,13 @@ class TSPSolver:
         else:
             return costs_avg
 
-    def solve(self, batch_size: int=1, points: np.ndarray=None) -> np.ndarray:
+    def solve(
+        self, 
+        points: Union[np.ndarray, list]=None,
+        norm: str="EUC_2D",
+        normalize: bool=False,
+        num_threads: int=1,
+        show_time: bool=False,
+        **kwargs
+    ) -> np.ndarray:
         raise NotImplementedError("solve is required to implemented in subclass")

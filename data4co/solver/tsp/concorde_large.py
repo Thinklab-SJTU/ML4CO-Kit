@@ -3,47 +3,39 @@ import time
 import uuid
 import numpy as np
 from tqdm import tqdm
+from typing import Union
 from multiprocessing import Process
-from data4co.utils import check_dim
 from .concorde import TSPConcordeSolver
 
 
 class TSPConcordeLargeSolver(TSPConcordeSolver):
     def __init__(
         self, 
-        concorde_scale: int=1e6, 
-        edge_weight_type: str="EUC_2D"
+        scale: int=1, 
     ):
         """
         TSPLargeConcordeSolver
         Args:
-            concorde_scale (int, optional): 
+            scale (int, optional): 
                 The scale factor for coordinates in the Concorde solver.
-            edge_weight_type (str, optional):
-                egde weights type of TSP, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
-                ``MAX_2D``, ``MAN_2D``, ``GEO``, ``GEOM``, ``ATT``, ``CEIL_2D``,
-                ``CEIL_2D``, ``DSJRAND``
         """
         super(TSPConcordeLargeSolver, self).__init__(
-            concorde_scale=concorde_scale,
-            edge_weight_type=edge_weight_type
+            scale=scale
         )
         self.solver_type = "concorde-large"
     
     def solve(
         self, 
-        points: np.ndarray=None, 
+        points: Union[np.ndarray, list]=None,
+        norm: str="EUC_2D",
+        normalize: bool=False,
         num_threads: int=1,
         max_time: float=600,
         show_time: bool=False
     ) -> np.ndarray:
+        # prepare
+        self.from_data(points, norm, normalize)
         start_time = time.time()
-        # points
-        if points is not None:
-            self.from_data(points)
-        if self.points is None:
-            raise ValueError("points is None!")
-        check_dim(self.points, 3)
 
         # solve
         tours = list()
@@ -97,15 +89,16 @@ class TSPConcordeLargeSolver(TSPConcordeSolver):
             raise ValueError("TSPConcordeLargeSolver Only supports single threading!")
 
         # format
-        self.tours = np.array(tours)
-        zeros = np.zeros((self.tours.shape[0], 1))
-        self.tours = np.append(self.tours, zeros, axis=1).astype(np.int32)
-        if self.tours.ndim == 2 and self.tours.shape[0] == 1:
-            self.tours = self.tours[0]
+        tours = np.array(tours)
+        zeros = np.zeros((tours.shape[0], 1))
+        tours = np.append(tours, zeros, axis=1).astype(np.int32)
+        if tours.ndim == 2 and tours.shape[0] == 1:
+            tours = tours[0]
+        self.read_tours(tours)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return self.tours
+        return tours
 
     def read_from_sol(self, filename: str) -> np.ndarray:
         with open(filename, 'r') as file:

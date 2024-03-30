@@ -15,7 +15,7 @@ class TSPLIBOriginEvaluator:
         solver: TSPSolver,
         norm: str="EUC_2D",
         normalize: bool=False,
-        solver_args: dict={},
+        **solver_args
     ):
         # record
         solved_costs = dict()
@@ -34,7 +34,7 @@ class TSPLIBOriginEvaluator:
             gt_tour_path = os.path.join(solution_dir, problem+".opt.tour") 
             solver.from_tsp(file_path, norm, normalize)
             solver.read_gt_tours_from_opt_tour(gt_tour_path)
-            solver.solve(**solver_args).tolist()
+            solver.solve(norm=norm, normalize=normalize, **solver_args)
             solved_cost, gt_cost, gap, _ = solver.evaluate(caculate_gap=True)
             # record
             solved_costs[problem] = solved_cost

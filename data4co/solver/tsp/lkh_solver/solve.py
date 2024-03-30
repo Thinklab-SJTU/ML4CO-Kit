@@ -12,7 +12,13 @@ class NoToursException(Exception):
 
 
 def lkh_solve(solver='LKH', problem=None, **params):
-    assert shutil.which(solver) is not None, f'{solver} not found.'
+    if shutil.which(solver) is None:
+        message = f"The LKH cannot be found in the path in your python env. "
+        message += "If you are sure that the LKH is installed, "
+        message += "please confirm whether the Conda environment of the terminal "
+        message += "is consistent with the Python environment."
+        raise ValueError(message)
+    
     assert ('problem_file' in params) ^ (problem is not None), 'Specify a problem object *or* a path.'
 
     if 'problem_file' in params:

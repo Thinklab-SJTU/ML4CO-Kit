@@ -4,7 +4,7 @@ import tsplib95
 import pathlib
 from tqdm import tqdm
 from multiprocessing import Pool
-from data4co.utils import check_dim
+from typing import Union
 from .base import TSPSolver
 from .lkh_solver import lkh_solve
 
@@ -14,9 +14,8 @@ class TSPLKHSolver(TSPSolver):
         self, 
         lkh_max_trials: int=1000,
         lkh_path: pathlib.Path="LKH",
-        lkh_scale: int=1e6,
+        scale: int=1,
         lkh_runs: int=10,
-        edge_weight_type: str="EUC_2D"
     ):
         """
         TSPLKHSolver
@@ -25,31 +24,28 @@ class TSPLKHSolver(TSPSolver):
                 the LKH solver. Defaults to 1000.
             lkh_path (pathlib.Path, optional): The path to the LKH solver. 
                 Defaults to "LKH".
-            lkh_scale (int, optional): The scale factor for coordinates in the 
-                LKH solver. Defaults to 1e6.
+            scale (int, optional): The scale factor for coordinates in the 
+                LKH solver. Defaults to 1.
             lkh_runs (int, optional): The number of runs for the LKH solver. 
                 Defaults to 10.
-            edge_weight_type (str, optional):
-                egde weights type of TSP, support ``EXPLICIT``, ``EUC_2D``, ``EUC_3D``,
-                ``MAX_2D``, ``MAN_2D``, ``GEO``, ``GEOM``, ``ATT``, ``CEIL_2D``,
-                ``CEIL_2D``, ``DSJRAND``
         """
-        super(TSPLKHSolver, self).__init__()
-        self.solver_type = "lkh"
+        super(TSPLKHSolver, self).__init__(
+            solver_type="lkh",
+            scale=scale
+        )
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
-        self.lkh_scale = lkh_scale
+        self.scale = scale
         self.lkh_runs = lkh_runs
-        self.edge_weight_type = edge_weight_type
 
     def _solve(self, nodes_coord: np.ndarray) -> list:
         problem = tsplib95.models.StandardProblem()
         problem.name = 'TSP'
         problem.type = 'TSP'
         problem.dimension = self.nodes_num
-        problem.edge_weight_type = self.edge_weight_type
+        problem.edge_weight_type = self.norm
         problem.node_coords = {
-            n + 1: nodes_coord[n] * self.lkh_scale for n in range(self.nodes_num)
+            n + 1: nodes_coord[n] * self.scale for n in range(self.nodes_num)
         }
         solution = lkh_solve(
             solver=self.lkh_path, 
@@ -62,17 +58,15 @@ class TSPLKHSolver(TSPSolver):
         
     def solve(
         self, 
-        points: np.ndarray=None, 
+        points: Union[np.ndarray, list]=None,
+        norm: str="EUC_2D",
+        normalize: bool=False,
         num_threads: int=1,
         show_time: bool=False
     ) -> np.ndarray:
+        # prepare
+        self.from_data(points, norm, normalize)
         start_time = time.time()
-        # points
-        if points is not None:
-            self.from_data(points)
-        if self.points is None:
-            raise ValueError("points is None!")
-        check_dim(self.points, 3)
         
         # solve
         tours = list()
@@ -105,28 +99,31 @@ class TSPLKHSolver(TSPSolver):
                         )
                     for tour in cur_tours:
                         tours.append(tour)
-        # format           
-        self.tours = np.array(tours)
-        zeros = np.zeros((self.tours.shape[0], 1))
-        self.tours = np.append(self.tours, zeros, axis=1).astype(np.int32)
-        if self.tours.ndim == 2 and self.tours.shape[0] == 1:
-            self.tours = self.tours[0]
+        
+        # format
+        tours = np.array(tours)
+        zeros = np.zeros((tours.shape[0], 1))
+        tours = np.append(tours, zeros, axis=1).astype(np.int32)
+        if tours.ndim == 2 and tours.shape[0] == 1:
+            tours = tours[0]
+        self.read_tours(tours)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return self.tours
+        return tours
     
     def regret_solve(
         self,
         points: np.ndarray,
-        fixed_edges: tuple 
+        fixed_edges: tuple,
+        norm: str="EUC_2D"
     ):
         problem = tsplib95.models.StandardProblem()
         problem.name = 'TSP'
         problem.type = 'TSP'
         problem.dimension = points.shape[0]
-        problem.edge_weight_type = 'EUC_2D'
-        problem.node_coords = {n + 1: self.lkh_scale * points[n] for n in range(points.shape[0])}
+        problem.edge_weight_type = norm
+        problem.node_coords = {n + 1: self.scale * points[n] for n in range(points.shape[0])}
         problem.fixed_edges = [[n + 1 for n in fixed_edges]]
         solution = lkh_solve(
             solver=self.lkh_path, 

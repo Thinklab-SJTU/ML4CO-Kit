@@ -20,7 +20,7 @@ class TSPEvaluator(object):
             raise ValueError("points must be 2D array.")
         self.points = points
         self.set_norm(norm)
-        self.edge_weight = self.get_weight()
+        self.edge_weights = self.get_weight()
 
     def set_norm(self, norm: str):
         if norm not in SUPPORT_TSPLIB_TYPE:
@@ -33,7 +33,7 @@ class TSPEvaluator(object):
         if self.norm == "EUC_2D":
             return scipy.spatial.distance_matrix(self.points, self.points)
         elif self.norm == "GEO":
-            nodes_num = self.points.shape[1]
+            nodes_num = self.points.shape[0]
             edge_weights = np.zeros(shape=(nodes_num, nodes_num), dtype=np.int32)
             for i_idx in range(nodes_num):
                 for j_idx in range(nodes_num):
@@ -50,7 +50,7 @@ class TSPEvaluator(object):
     def evaluate(self, route):
         total_cost = 0
         for i in range(len(route) - 1):
-            total_cost += self.edge_weight[route[i], route[i + 1]]
+            total_cost += self.edge_weights[route[i], route[i + 1]]
         return total_cost
     
     
