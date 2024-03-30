@@ -11,7 +11,7 @@ from .concorde import TSPConcordeSolver
 class TSPConcordeLargeSolver(TSPConcordeSolver):
     def __init__(
         self, 
-        scale: int=1, 
+        scale: int=1e6, 
     ):
         """
         TSPLargeConcordeSolver

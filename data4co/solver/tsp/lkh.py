@@ -14,7 +14,7 @@ class TSPLKHSolver(TSPSolver):
         self, 
         lkh_max_trials: int=1000,
         lkh_path: pathlib.Path="LKH",
-        scale: int=1,
+        scale: int=1e6,
         lkh_runs: int=10,
     ):
         """
@@ -25,7 +25,7 @@ class TSPLKHSolver(TSPSolver):
             lkh_path (pathlib.Path, optional): The path to the LKH solver. 
                 Defaults to "LKH".
             scale (int, optional): The scale factor for coordinates in the 
-                LKH solver. Defaults to 1.
+                LKH solver. Defaults to 1e6.
             lkh_runs (int, optional): The number of runs for the LKH solver. 
                 Defaults to 10.
         """

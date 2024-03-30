@@ -107,8 +107,8 @@ tsp_data_lkh.generate()
 >>> from data4co.solver import TSPLKHSolver, TSPConcordeSolver
 
 # test LKH
->>> lkh_solver = TSPLIBOriginEvaluator()
->>> eva = TSPLIBEvaluator()
+>>> lkh_solver = TSPLKHSolver(scale=1)
+>>> eva = TSPLIBOriginEvaluator()
 >>> eva.evaluate(lkh_solver, norm="EUC_2D")
            solved_costs       gt_costs          gaps
 att48      33523.708507   33523.708507  0.000000e+00
@@ -137,7 +137,7 @@ gr666          295012.0  294358.0  0.222178
 AVG             80850.6   80543.4  0.369136
 
 # test concorde
->>> con_solver = TSPConcordeSolver()
+>>> con_solver = TSPConcordeSolver(scale=1)
 >>> eva.evaluate(con_solver, norm="EUC_2D")
            solved_costs       gt_costs          gaps
 att48      33523.708507   33523.708507  2.170392e-14
@@ -173,7 +173,7 @@ AVG             80719.8   80719.8   0.0
 >>> from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
->>> solver = TSPConcordeSolver()
+>>> solver = TSPConcordeSolver(scale=1)
 >>> solver.from_tsp("docs/kroA150.tsp")
 >>> solver.solve(norm="EUC_2D")
 

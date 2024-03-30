@@ -12,7 +12,7 @@ from .base import TSPSolver
 class TSPConcordeSolver(TSPSolver):
     def __init__(
         self, 
-        scale: int=1, 
+        scale: int=1e6, 
     ):
         """
         TSPConcordeSolver

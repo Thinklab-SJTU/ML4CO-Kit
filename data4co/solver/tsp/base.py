@@ -12,7 +12,7 @@ class TSPSolver:
     def __init__(
         self, 
         solver_type: str,
-        scale: int=1
+        scale: int=1e6
     ):
         self.solver_type = solver_type
         self.scale = scale
