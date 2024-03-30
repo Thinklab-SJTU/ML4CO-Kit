@@ -169,13 +169,13 @@ AVG             80719.8   80719.8   0.0
 ### Draw Example
 
 ```python
->>> from data4co.solver import TSPConcordeSolver
->>> from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
+from data4co.solver import TSPConcordeSolver
+from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
->>> solver = TSPConcordeSolver(scale=1)
->>> solver.from_tsp("docs/kroA150.tsp")
->>> solver.solve(norm="EUC_2D")
+solver = TSPConcordeSolver(scale=1)
+solver.from_tsp("docs/kroA150.tsp")
+solver.solve(norm="EUC_2D")
 
 # draw
 draw_tsp_problem(
