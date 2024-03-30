@@ -10,28 +10,34 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 ### Current support
 
 **data**
-|Problem|First|Impl.|Second|Impl.|Third|Impl.|
-| :---: |:--:|:---:|:---:|:---:| :--: |:---:|
-|  TSP  |tsplib| ✔ | LKH | ✔ | Concorde| ✔ |
-|  MIS  |satlib| ✔ | KaMIS | 📆 | -- | -- |
+| Problem |        First        | Impl. |      Second       | Impl. |         Third          | Impl. |
+|:-------:|:-------------------:|:-----:|:-----------------:|:-----:|:----------------------:|:-----:|
+|   TSP   | TSPLIBOriginDataset |   ✔   | TSPUniformDataset |   ✔   | TSPMultiDistrosDataset |  📆   |
+|   MIS   |    SATLIBDataset    |   ✔   |   KaMISDataset    |  📆   |           --           |  --   |
 
 **evaluator**
-|Problem|First|Impl.|Second|Impl.|
-| :---: |:--:|:---:|:---:|:---:|
-|  TSP  |tsplib| ✔ | uniform | ✔ |
-|  MIS  |satlib| ✔ | ER | 📆 |
+| Problem |     Base     | Impl. |         First         | Impl. |       Second        | Impl. |
+|:-------:|:------------:|:-----:|:---------------------:|:-----:|:-------------------:|:-----:|
+|   TSP   | TSPEvaluator |   ✔   | TSPLIBOriginEvaluator |   ✔   | TSPUniformEvaluator |   ✔   |
+|   MIS   | MISEvaluator |  📆   |    SATLIBEvaluator    |  📆   |         --          |  --   |
 
 **generator**
-|Problem| Type1 |Impl.| Type2 |Impl.| Type3 |Impl.| Type4 |Impl.|
-| :---: | :---: |:---:| :---: |:---:| :---: |:---:| :---: |:---:|
-|  TSP  | uniform | ✔ | gaussian | ✔ | cluster | ✔ | w/regret | ✔ |
-|  MIS  | ER | ✔ | BA | ✔ | HK | ✔ | WS | ✔ |
+| Problem |  Type1  | Impl. |  Type2   | Impl. |  Type3  | Impl. |  Type4   | Impl. |
+|:-------:|:-------:|:-----:|:--------:|:-----:|:-------:|:-----:|:--------:|:-----:|
+|   TSP   | uniform |   ✔   | gaussian |   ✔   | cluster |   ✔   | w/regret |   ✔   |
+|   MIS   |   ER    |   ✔   |    BA    |   ✔   |   HK    |   ✔   |    WS    |   ✔   |
 
 **solver**
-|Problem|Base|Impl.|First|Impl.|Second|Impl.|
-| :---: |:--:|:---:|:---:|:---:| :--: |:---:|
-|  TSP  |TSPSolver| ✔ | LKH | ✔ | Concorde | ✔ |
-|  MIS  | MISSolver | ✔ |KaMIS | ✔ | Gurobi| ✔ |
+| Problem |   Base    | Impl. | First | Impl. |  Second  | Impl. |
+|:-------:|:---------:|:-----:|:-----:|:-----:|:--------:|:-----:|
+|   TSP   | TSPSolver |   ✔   |  LKH  |   ✔   | Concorde |   ✔   |
+|   MIS   | MISSolver |   ✔   | KaMIS |   ✔   |  Gurobi  |   ✔   |
+
+**draw**
+| Problem |     problem      | Impl. |     solution     | Impl. |
+|:-------:|:----------------:|:-----:|:----------------:|:-----:|
+|   TSP   | draw_tsp_problem |   ✔   | draw_tsp_soluton |   ✔   |
+|   MIS   | draw_mis_problem |  📆   | draw_mis_soluton |  📆   |
 
 ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
 

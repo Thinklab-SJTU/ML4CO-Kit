@@ -13,7 +13,7 @@ def _test_tsp_lkh_solver():
     tsp_lkh_solver  = TSPLKHSolver(lkh_max_trials=100)
     tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True, num_threads=2)
-    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    _, _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
         message = "The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
@@ -25,7 +25,7 @@ def _test_tsp_concorde_solver():
     tsp_lkh_solver  = TSPConcordeSolver()
     tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True, num_threads=2)
-    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    _, _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
         message = f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
@@ -37,7 +37,7 @@ def _test_tsp_concorde_large_solver():
     tsp_lkh_solver  = TSPConcordeLargeSolver()
     tsp_lkh_solver.from_txt("tests/tsp1000_test.txt")
     tsp_lkh_solver.solve(show_time=True, num_threads=1)
-    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    _, _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
     print(f"TSPConcordeLargeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-1:
         message = f"The average gap ({gap_avg}) of TSP1000 solved by TSPConcordeLargeSolver " 

@@ -23,7 +23,7 @@ class TSPSolver:
             return
         elif self.points.ndim == 2:
             self.points = np.expand_dims(self.points, axis=0)
-        if self.gt_tours.ndim != 3:
+        if self.points.ndim != 3:
             raise ValueError("the gt_tours must be 2D or 3D array.")
         self.nodes_num = self.points.shape[1]
     
@@ -59,7 +59,8 @@ class TSPSolver:
         if self.gt_tours is None:
             message = "gt_tours cannot be None! You can use solvers based on TSPSolver "
             message += "like ``TSPLKHSolver`` to solve the tours and set them as the gt_tours. "
-            message += "Also, you can use the method ``read_gt_tours`` or ``from_txt`` to get them."
+            message += "Also, you can use the method ``read_gt_tours`` or ``from_txt`` "
+            message += "or ``read_gt_tours_from_opt_tour`` to get them."
             raise ValueError(message)
     
     def set_norm(self, norm: str):
@@ -81,17 +82,17 @@ class TSPSolver:
     
     def from_tsp(
         self, 
-        filename: str,
+        file_path: str,
         norm: str="EUC_2D",
         normalize: bool=False
     ):
         self.set_norm(norm)
-        if not filename.endswith(".tsp"):
+        if not file_path.endswith(".tsp"):
             raise ValueError("Invalid file format. Expected a .tsp file.")
-        tsplib_data = tsplib95.load(filename)
+        tsplib_data = tsplib95.load(file_path)
         points = np.array(list(tsplib_data.node_coords.values()))
         if points is None:
-            raise RuntimeError("Error in loading {}".format(filename))
+            raise RuntimeError("Error in loading {}".format(file_path))
         self.ori_points = points
         self.points = points.astype(np.float32)
         self.check_points_dim()
@@ -100,7 +101,7 @@ class TSPSolver:
                     
     def from_txt(
         self, 
-        filename: str, 
+        file_path: str, 
         norm: str="EUC_2D", 
         normalize: bool=False,
         load_gt_tours: str=True,
@@ -109,11 +110,11 @@ class TSPSolver:
         self.set_norm(norm)
         
         # check the file format
-        if not filename.endswith(".txt"):
+        if not file_path.endswith(".txt"):
             raise ValueError("Invalid file format. Expected a .txt file.")
         
         # read the data form .txt
-        with open(filename, 'r') as file:
+        with open(file_path, 'r') as file:
             nodes_coords = list()
             gt_tours = list()
             for line in file:
@@ -173,17 +174,6 @@ class TSPSolver:
         if normalize:
             self.normalize_points()
             
-    def read_gt_tours(
-        self, 
-        gt_tours: Union[list, np.ndarray]
-    ):
-        if gt_tours is None:
-            return
-        if type(gt_tours) == list:
-            gt_tours = np.array(gt_tours)
-        self.gt_tours = gt_tours
-        self.check_gt_tours_dim()
-
     def read_tours(
         self, 
         tours: Union[list, np.ndarray]
@@ -194,11 +184,22 @@ class TSPSolver:
             tours = np.array(tours)
         self.tours = tours
         self.check_tours_dim()
- 
-    def read_gt_tours_from_tspfile(self, filename: str):
-        if not filename.endswith(".opt.tour"):
+        
+    def read_gt_tours(
+        self, 
+        gt_tours: Union[list, np.ndarray]
+    ):
+        if gt_tours is None:
+            return
+        if type(gt_tours) == list:
+            gt_tours = np.array(gt_tours)
+        self.gt_tours = gt_tours
+        self.check_gt_tours_dim()
+        
+    def read_gt_tours_from_opt_tour(self, file_path: str):
+        if not file_path.endswith(".opt.tour"):
             raise ValueError("Invalid file format. Expected a .opt.tour file.")
-        tsp_tour = tsplib95.load(filename)
+        tsp_tour = tsplib95.load(file_path)
         tsp_tour = tsp_tour.tours
         tsp_tour: list
         tsp_tour = tsp_tour[0]
@@ -313,9 +314,10 @@ class TSPSolver:
         gt_tours = self.gt_tours
 
         # prepare for evaluate
-        cost_total = 0
+        tours_cost_list = list()
         samples = points.shape[0]
         if caculate_gap:
+            gt_tours_cost_list = list()
             gap_list = list()
             
         # deal with different situation
@@ -329,9 +331,10 @@ class TSPSolver:
                 for tour in solved_tours:
                     solved_costs.append(evaluator.evaluate(tour))
                 solved_cost = np.min(solved_costs)
-                cost_total += solved_cost
+                tours_cost_list.append(solved_cost)
                 if caculate_gap:
                     gt_cost = evaluator.evaluate(gt_tours[idx])
+                    gt_tours_cost_list.append(gt_cost)
                     gap = (solved_cost - gt_cost) / gt_cost * 100
                     gap_list.append(gap)
         else:
@@ -340,19 +343,26 @@ class TSPSolver:
                 evaluator = TSPEvaluator(points[idx], self.norm)
                 solved_tour = tours[idx]
                 solved_cost = evaluator.evaluate(solved_tour)
-                cost_total += solved_cost
+                tours_cost_list.append(solved_cost)
                 if caculate_gap:
                     gt_cost = evaluator.evaluate(gt_tours[idx])
+                    gt_tours_cost_list.append(gt_cost)
                     gap = (solved_cost - gt_cost) / gt_cost * 100
                     gap_list.append(gap)
+
         # caculate average cost/gap & std
-        cost_avg = cost_total / samples
+        tours_costs = np.array(tours_cost_list)
         if caculate_gap:
-            gap_avg = np.sum(gap_list) / samples
-            gap_std = np.std(gap_list)
-            return cost_avg, gap_avg, gap_std
+            gt_costs = np.array(gt_tours_cost_list)
+            gaps = np.array(gap_list)
+        costs_avg = np.average(tours_costs)
+        if caculate_gap:
+            gt_costs_avg = np.average(gt_costs)
+            gap_avg = np.sum(gaps) / samples
+            gap_std = np.std(gaps)
+            return costs_avg, gt_costs_avg, gap_avg, gap_std
         else:
-            return cost_avg
+            return costs_avg
 
     def solve(self, batch_size: int=1, points: np.ndarray=None) -> np.ndarray:
         raise NotImplementedError("solve is required to implemented in subclass")

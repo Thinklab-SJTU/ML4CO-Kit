@@ -1,2 +1,2 @@
-from .tsp import TSPLIBData, TSPLIBDataset, TSPLKHDataset, TSPConcordeDataset
+from .tsp import TSPLIBOriginDataset, TSPUniformDataset
 from .mis import SATLIBData, SATLIBDataset

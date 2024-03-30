@@ -2,14 +2,13 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.data import TSPLIBDataset, TSPLKHDataset, TSPConcordeDataset
+from data4co.data import TSPLIBOriginDataset, TSPUniformDataset
 from data4co.data import SATLIBDataset
 
 
 def test_tsp_dataset():
-    TSPLIBDataset()
-    TSPLKHDataset()
-    TSPConcordeDataset()
+    TSPLIBOriginDataset()
+    TSPUniformDataset()
 
 
 def test_sat_dataset():
