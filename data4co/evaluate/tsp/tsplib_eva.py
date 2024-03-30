@@ -3,7 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 from data4co.data.tsp.tsplib import TSPLIBDataset, TSPLIBData
 from data4co.solver.tsp.base import TSPSolver
-from data4co.utils.tsp_utils import TSPEvaluator
+from .base import TSPEvaluator
 
 
 class TSPLIBEvaluator:

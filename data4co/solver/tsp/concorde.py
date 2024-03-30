@@ -1,4 +1,6 @@
+import os
 import time
+import uuid
 import numpy as np
 from tqdm import tqdm
 from multiprocessing import Pool
@@ -28,10 +30,14 @@ class TSPConcordeSolver(TSPSolver):
         self.concorde_scale = concorde_scale
         self.norm = edge_weight_type
 
-    def _solve(self, nodes_coord: np.ndarray) -> np.ndarray:
-        solver = TSPConSolver.from_data(nodes_coord[:, 0] * self.concorde_scale, 
-        nodes_coord[:, 1] * self.concorde_scale, norm=self.norm)
-        solution = solver.solve(verbose=False)
+    def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
+        solver = TSPConSolver.from_data(
+            xs=nodes_coord[:, 0] * self.concorde_scale, 
+            ys=nodes_coord[:, 1] * self.concorde_scale, 
+            norm=self.norm,
+            name=name
+        )
+        solution = solver.solve(verbose=False, name=name)
         tour = solution.tour
         return tour
         
@@ -55,31 +61,46 @@ class TSPConcordeSolver(TSPSolver):
         num_points = p_shape[0]
         if num_threads == 1:
             if show_time:
-                for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"):
-                    tours.append(self._solve(self.points[idx]))
+                for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"): 
+                    name = uuid.uuid4().hex  
+                    tours.append(self._solve(self.points[idx], name))
+                    self.clear_tmp_files(name)
             else:
                 for idx in range(num_points):
-                    tours.append(self._solve(self.points[idx]))
+                    name = uuid.uuid4().hex 
+                    tours.append(self._solve(self.points[idx], name))
+                    self.clear_tmp_files(name)
         else:
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
+            name_list = list()
             if show_time:
                 for idx in tqdm(range(num_points // num_threads), desc="Solving TSP Using Concorde"):
+                    for _ in range(num_threads):
+                        name_list.append(uuid.uuid4().hex)
                     with Pool(num_threads) as p1:
-                        cur_tours = p1.map(
+                        name = uuid.uuid4().hex  
+                        cur_tours = p1.starmap(
                             self._solve,
-                            [batch_points[idx][inner_idx] for inner_idx in range(num_threads)]
+                            [(batch_points[idx][inner_idx], name) for inner_idx, name in zip(range(num_threads), name_list)]
                         )
                     for tour in cur_tours:
                         tours.append(tour)
+                    for name in name_list:
+                        self.clear_tmp_files(name)
             else:
-                for idx in range(num_points):
+                for idx in range(num_points // num_threads):
+                    for _ in range(num_threads):
+                        name_list.append(uuid.uuid4().hex)
                     with Pool(num_threads) as p1:
-                        cur_tours = p1.map(
+                        name = uuid.uuid4().hex  
+                        cur_tours = p1.starmap(
                             self._solve,
-                            [batch_points[idx][inner_idx] for inner_idx in range(num_threads)]
+                            [(batch_points[idx][inner_idx], name) for inner_idx, name in zip(range(num_threads), name_list)]
                         )
                     for tour in cur_tours:
                         tours.append(tour)
+                    for name in name_list:
+                        self.clear_tmp_files(name)
 
         # format
         self.tours = np.array(tours)
@@ -91,3 +112,28 @@ class TSPConcordeSolver(TSPSolver):
         if show_time:
             print(f"Use Time: {end_time - start_time}")
         return self.tours
+
+    def clear_tmp_files(self, name):
+        real_name = name[0:9]
+        # tmp file
+        sol_filename = f"{real_name}.sol"
+        Osol_filename = f"O{real_name}.sol"
+        res_filename = f"{real_name}.res"
+        Ores_filename = f"O{real_name}.res"
+        sav_filename = f"{real_name}.sav"
+        Osav_filename = f"O{real_name}.sav"
+        pul_filename = f"{real_name}.pul"
+        Opul_filename = f"O{real_name}.pul"
+        filelist = [
+            sol_filename, Osol_filename, 
+            res_filename, Ores_filename,
+            sav_filename, Osav_filename,
+            pul_filename, Opul_filename
+        ]
+        # intermediate file
+        for i in range(100):
+            filelist.append("{}.{:03d}".format(name[0:8], i+1))
+        # delete
+        for file in filelist:
+            if os.path.exists(file):
+                os.remove(file)

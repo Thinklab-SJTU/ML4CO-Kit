@@ -2,7 +2,6 @@ import os
 import pickle
 import pathlib
 import random
-import shutil
 import networkx as nx
 import numpy as np
 from tqdm import tqdm

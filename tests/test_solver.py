@@ -2,7 +2,7 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.solver import TSPLKHSolver, TSPConcordeSolver, KaMISSolver
+from data4co.solver import TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver, KaMISSolver
 
 
 ##############################################
@@ -33,12 +33,25 @@ def _test_tsp_concorde_solver():
         raise ValueError(message)
 
 
+def _test_tsp_concorde_large_solver():
+    tsp_lkh_solver  = TSPConcordeLargeSolver()
+    tsp_lkh_solver.from_txt("tests/tsp1000_test.txt")
+    tsp_lkh_solver.solve(show_time=True, num_threads=1)
+    _, gap_avg, _ = tsp_lkh_solver.evaluate(caculate_gap=True)
+    print(f"TSPConcordeLargeSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-1:
+        message = f"The average gap ({gap_avg}) of TSP1000 solved by TSPConcordeLargeSolver " 
+        message += "is larger than or equal to 1e-1%."
+        raise ValueError(message)
+    
+
 def test_tsp():
     """
     Test TSPSolver
     """
     _test_tsp_lkh_solver()
     _test_tsp_concorde_solver()
+    _test_tsp_concorde_large_solver()
 
 
 ##############################################
@@ -63,6 +76,7 @@ def test_mis():
     Test MISSolver
     """
     _test_kamis_solver()
+
 
 ##############################################
 #                    MAIN                    #

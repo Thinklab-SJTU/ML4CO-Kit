@@ -9,8 +9,9 @@ from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
 from data4co.solver.tsp import TSPLKHSolver
-from data4co.utils.tsp_utils import TSPEvaluator
-from data4co.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
+from data4co.evaluate.tsp.base import TSPEvaluator
+from data4co.solver.tsp import TSPSolver, TSPLKHSolver, \
+    TSPConcordeSolver, TSPConcordeLargeSolver
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -124,7 +125,8 @@ class TSPDataGenerator:
             self.solver_type = self.solver
             supported_solver_dict = {
                 "lkh": TSPLKHSolver, 
-                "concorde": TSPConcordeSolver
+                "concorde": TSPConcordeSolver,
+                "concorde-large": TSPConcordeLargeSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
@@ -134,11 +136,12 @@ class TSPDataGenerator:
             self.solver = supported_solver_dict[self.solver_type]()
         else:
             self.solver: TSPSolver
-            self.solver_type = self.solver.solver_type   
+            self.solver_type = self.solver.solver_type
         # check solver
         check_solver_dict = {
             "lkh": self.check_lkh,
-            "concorde": self.check_concorde
+            "concorde": self.check_concorde,
+            "concorde-large": self.check_concorde
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()

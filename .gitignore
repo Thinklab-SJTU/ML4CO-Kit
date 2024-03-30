@@ -15,3 +15,4 @@ build/**
 data4co/solver/tsp/pyconcorde/build/**
 data4co/solver/mis/KaMIS/**
 dataset/**
+data4co/solver/tsp/pyconcorde/concorde/_concorde.c

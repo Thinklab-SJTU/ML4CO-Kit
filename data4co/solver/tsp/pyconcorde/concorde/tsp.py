@@ -75,8 +75,14 @@ class TSPSolver(object):
         else:
             return "TSPSolver with {} nodes".format(self._ncount)
 
-    def solve(self, time_bound=-1, verbose=True, random_seed=0):
-        name = str(uuid.uuid4().hex)[0:9]
+    def solve(
+        self, 
+        name: str, 
+        time_bound: int=-1, 
+        verbose: bool=True, 
+        random_seed: int=0
+    ):
+        name = name[0:9]
         res = _CCtsp_solve_dat(
             self._ncount, self._data, name, time_bound, not verbose, random_seed
         )

@@ -2,7 +2,6 @@ import os
 import time
 import requests
 import shutil
-import pathlib
 import aiohttp
 import asyncio
 import hashlib
@@ -18,7 +17,12 @@ from typing import Union
 #                  Download                   #
 ###############################################
 
-def download(filename, url, md5=None, retries=5):
+def download(
+    filename: str, 
+    url: Union[str, list], 
+    md5: str=None, 
+    retries: int=5
+):
     if type(url) == str:
         return _download(filename, url, md5, retries)
     elif type(url) == list:
@@ -32,7 +36,7 @@ def download(filename, url, md5=None, retries=5):
         raise ValueError("The url should be string or list of string.")
 
 
-async def _asyncdownload(filename, url):
+async def _asyncdownload(filename: str, url: str):
     async with aiohttp.ClientSession() as session:
         async with async_timeout.timeout(120):
             async with session.get(url) as response:
@@ -41,7 +45,7 @@ async def _asyncdownload(filename, url):
                         file.write(data)
 
 
-def _download(filename, url, md5, retries):
+def _download(filename: str, url: str, md5: str, retries: int):
     if retries <= 0:
         raise RuntimeError('Max Retries exceeded!')
     if not os.path.exists(filename):
@@ -77,7 +81,7 @@ def _download(filename, url, md5, retries):
     return filename
 
 
-def _get_md5(filename):
+def _get_md5(filename: str):
     hash_md5 = hashlib.md5()
     chunk = 8192
     with open(filename, 'rb') as file_to_check:

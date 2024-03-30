@@ -19,7 +19,9 @@ class TSPConcordeDataset:
         supported_files = {
             50: "dataset/tspconcorde/tsp50_concorde_5.68759.txt",
             100: "dataset/tspconcorde/tsp100_concorde_5_7.75585.txt",
-            500: "dataset/tspconcorde/tsp500_concorde_16.54581.txt"
+            500: "dataset/tspconcorde/tsp500_concorde_16.54581.txt",
+            1000: "dataset/tspconcorde/tsp1000_concorde_23.11812.txt",
+            10000: "dataset/tspconcorde/tsp10000_concorde_71.84185.txt"
         }
         return supported_files
     

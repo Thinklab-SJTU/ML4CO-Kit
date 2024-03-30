@@ -97,7 +97,7 @@ class TSPLKHSolver(TSPSolver):
                     for tour in cur_tours:
                         tours.append(tour)
             else:
-                for idx in range(num_points):
+                for idx in range(num_points // num_threads):
                     with Pool(num_threads) as p1:
                         cur_tours = p1.map(
                             self._solve,
