@@ -190,5 +190,11 @@ draw_tsp_solution(
 ```
 
 The resulting graph is shown below
-<img src="docs/kroA150_problem.png" alt="Image" style="width: 45%;">
-<img src="docs/kroA150_solution.png" alt="Image" style="width: 45%;">
+<div style="display: flex;">
+  <div style="width: 49%;">
+    <img src="docs/kroA150_problem.png" alt="Problem Image" style="width: 100%;">
+  </div>
+  <div style="width: 49%;">
+    <img src="docs/kroA150_solution.png" alt="Solution Image" style="width: 100%;">
+  </div>
+</div>
