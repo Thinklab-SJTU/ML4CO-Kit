@@ -19,14 +19,15 @@ TSPLIB_LARGE_CEIL_2D = [
 TSPLIB_RESOLVE_EUC_2D_PATH = "dataset/tsplib_origin/resolved/EUC_2D/problem"
 TSPLIB_RESOLVE_EUC_2D_SOLUTION = "dataset/tsplib_origin/resolved/EUC_2D/solution"
 TSPLIB_RESOLVE_EUC_2D = [
-    'att48', 'eil51', 'berlin52', 'st70', 'pr76', 'kroC100', 'eil101', 
-    'lin105', 'ch130', 'ch150', 'tsp225', 'a280', 'pr1002', 'pr2392'
+    'att48', 'eil51', 'berlin52', 'st70', 'eil76', 'pr76', 
+    'kroA100', 'kroC100', 'kroD100', 'rd100', 'eil101', 'lin105', 
+    'ch130', 'ch150', 'tsp225', 'a280', 'pr1002', 'pr2392'
 ]
 
 TSPLIB_RESOLVE_EXPLICIT_PATH = "dataset/tsplib_origin/resolved/EXPLICIT/problem"
 TSPLIB_RESOLVE_EXPLICIT_SOLUTION = "dataset/tsplib_origin/resolved/EXPLICIT/solution"
 TSPLIB_RESOLVE_EXPLICIT = [
-    'gr24', 'fri26', 'bayg29', 'gr48', 'gr120', 'brg180', 'pa561'
+    'gr24', 'fri26', 'bayg29', 'bays29', 'gr48', 'gr120', 'brg180', 'pa561'
 ]
 
 TSPLIB_RESOLVE_GEO_PATH = "dataset/tsplib_origin/resolved/GEO/problem"
@@ -37,16 +38,16 @@ TSPLIB_RESOLVE_GEO = [
 
 TSPLIB_UNRESOLVE_EUC_2D_PATH = "dataset/tsplib_origin/unresolved/EUC_2D"
 TSPLIB_UNRESOLVE_EUC_2D = [
-    'rat99', 'kroE100', 'pr107', 'pr124', 'bier127', 'pr136', 'pr144', 
-    'kroB150', 'pr152', 'u159', 'rat195', 'd198', 'kroB200', 'ts225', 
-    'pr226', 'gil262', 'pr264', 'pr299', 'lin318', 'rd400', 'fl417', 
-    'pr439', 'pcb442', 'd493', 'att532', 'u574', 'rat575', 'p654', 'd657', 
-    'u724', 'rat783', 'dsj1000'
+    'rat99', 'kroB100', 'kroE100', 'pr107', 'pr124', 'bier127', 'pr136', 
+    'pr144', 'kroA150', 'kroB150', 'pr152', 'u159', 'rat195', 'd198', 
+    'kroA200', 'kroB200', 'ts225', 'pr226', 'gil262', 'pr264', 'pr299', 
+    'lin318', 'linhp318', 'rd400', 'fl417', 'pr439', 'pcb442', 'd493', 
+    'att532', 'u574', 'rat575', 'p654', 'd657', 'u724', 'rat783', 'dsj1000'
 ]
 
 TSPLIB_UNRESOLVE_EXPLICIT_PATH = "dataset/tsplib_origin/unresolved/EXPLICIT"
 TSPLIB_UNRESOLVE_EXPLICIT = [
-    'gr17', 'gr21', 'swiss42', 'hk48', 'brazil58'
+    'gr17', 'gr21', 'dantzig42', 'swiss42', 'hk48', 'brazil58'
 ]
 
 TSPLIB_UNRESOLVE_GEO_PATH = "dataset/tsplib_origin/unresolved/GEO"
