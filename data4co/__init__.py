@@ -19,5 +19,5 @@ else:
     print("matplotlib not installed")
 
 
-__version__ = '0.0.1a17'
+__version__ = '0.0.1a18'
 __author__ = 'ThinkLab at SJTU'
