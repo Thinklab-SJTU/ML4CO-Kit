@@ -32,6 +32,7 @@ TSP_UNIFORM_1000 = [
 TSP_UNIFORM_10000 = [
     "dataset/tsp_uniform/tsp10000_lkh_100k_72.23920.txt",
     "dataset/tsp_uniform/tsp10000_lkh_1m_72.00978.txt",
+    "dataset/tsp_uniform/tsp10000_lkh_5m_71.93551.txt",
     "dataset/tsp_uniform/tsp10000_concorde_large_71.84185.txt"
 ]
 
@@ -39,7 +40,7 @@ TSP_UNIFORM_10000 = [
 class TSPUniformDataset:
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4TSP/TSPUniformDataset/resolve/main/tsp_uniform.tar.gz?download=true"
-        self.md5 = "b8dcc7139bb556b7c9c36cfd4af5e9b9"
+        self.md5 = "494766b3ab67105563e855c7a1f22d80"
         self.dir = "dataset/tsp_uniform"
         self.raw_data_path = "dataset/tsp_uniform.tar.gz"
         if not os.path.exists('dataset'):

@@ -1,0 +1,16 @@
+{
+    "mis_example": {
+        "found_mis": true,
+        "mis": [
+            9,
+            13,
+            14,
+            17,
+            18,
+            19
+        ],
+        "solution_time": 0.028199,
+        "total_time": 16.465695515973493,
+        "vertices": 6
+    }
+}

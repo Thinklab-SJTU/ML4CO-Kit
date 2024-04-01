@@ -25,6 +25,8 @@ def draw_tsp_problem(
     node_size: int=50
 ):
     # check
+    if "." not in save_path:
+        save_path += ".png"
     if type(points) == list:
         points = np.array(points)
     if points.ndim == 3 and points.shape[0] == 1:
@@ -80,6 +82,8 @@ def draw_tsp_solution(
     node_size: int=50
 ):
     # check
+    if "." not in save_path:
+        save_path += ".png"
     if type(points) == list:
         points = np.array(points)
     if type(tours) == list:

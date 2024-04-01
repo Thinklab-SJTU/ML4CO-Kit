@@ -9,6 +9,7 @@ import os.path
 import pathlib
 from tqdm import tqdm
 from pathlib import Path
+from typing import Union
 from .base import MISSolver
 
 
@@ -60,9 +61,11 @@ class KaMISSolver(MISSolver):
             
     def prepare_instance(
         self,
-        source_instance_file: pathlib.Path, 
-        cache_directory: pathlib.Path, 
+        source_instance_file: Union[str, pathlib.Path], 
+        cache_directory: Union[str, pathlib.Path], 
     ):
+        source_instance_file = Path(source_instance_file)
+        cache_directory = Path(cache_directory)
         cache_directory.mkdir(parents=True, exist_ok=True)
         dest_path = cache_directory / (source_instance_file.stem + \
             f"_{'weighted' if self.weighted else 'unweighted'}.graph")
@@ -77,15 +80,22 @@ class KaMISSolver(MISSolver):
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
 
-    def solve(self, src: pathlib.Path, out: pathlib.Path=None):
+    def solve(
+        self, 
+        src: Union[str, pathlib.Path], 
+        out: Union[str, pathlib.Path]=None
+    ):
         message = "This may be the reason for KaMIS compilation"
         message += "(Compilation differences between different Linux versions) ,"
         message += "you can try 'self.recompile_kamis()'. "
         message += "If you are sure that the KaMIS is correct, "
         message += "please confirm whether the Conda environment of the terminal "
         message += "is consistent with the Python environment."
+        src = Path(src)
         if out is None:
             out = src / "solve"
+        else:
+            out = Path(out)
         try:
             self._solve(src, out)
         except TypeError:
@@ -93,7 +103,11 @@ class KaMISSolver(MISSolver):
         except FileNotFoundError:
             raise FileNotFoundError(message)
     
-    def _solve(self, src: pathlib.Path, out: pathlib.Path):
+    def _solve(
+        self, 
+        src: Union[str, pathlib.Path],
+        out: Union[str, pathlib.Path]
+    ):
         src = Path(src)
         out = Path(out)
         if not os.path.exists(out):

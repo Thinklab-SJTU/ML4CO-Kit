@@ -18,8 +18,8 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 **draw**
 | Problem |     problem      | Impl. |     solution     | Impl. |
 |:-------:|:----------------:|:-----:|:----------------:|:-----:|
-|   TSP   | draw_tsp_problem |   ✔   | draw_tsp_soluton |   ✔   |
-|   MIS   | draw_mis_problem |  📆   | draw_mis_soluton |  📆   |
+|   TSP   | draw_tsp_problem |   ✔  | draw_tsp_soluton |   ✔  |
+|   MIS   | draw_mis_problem |  ✔   | draw_mis_soluton |  ✔   |
 
 **evaluator**
 | Problem |     Base     | Impl. |      First      | Impl. | Second  | Impl. |      Third      | Impl. |
@@ -44,6 +44,7 @@ A data generator tool for Combinatorial Optimization (CO) problems, enabling cus
 ### How to Install
 
 **Github**
+
 Clone with the url https://github.com/heatingma/Data4CO.git , and the following packages are required, and shall be automatically installed by ``pip``:
 ```
 Python >= 3.8
@@ -64,6 +65,7 @@ matplotlib>=3.7.5
 ```
 
 **PyPI**
+
 It is very convenient to directly use the following commands
 ```
 pip install data4co
@@ -182,6 +184,7 @@ AVG             80719.8   80719.8   0.0
 
 ### Draw Example
 
+**TSP**
 ```python
 from data4co.solver import TSPConcordeSolver
 from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
@@ -206,4 +209,30 @@ draw_tsp_solution(
 <summary>Click to view the drawing results</summary>
 <img src="docs/kroA150_problem.png" width="35%" alt="" />
 <img src="docs/kroA150_solution.png" width="35%" alt="" />
+</details>
+
+**MIS**
+```python
+from data4co.solver import KaMISSolver
+from data4co import draw_mis_problem, draw_mis_solution
+
+# use KaMISSolver to solve the problem
+mis_solver = KaMISSolver()
+mis_solver.solve(src="docs/mis_example")
+
+# draw
+draw_mis_problem(
+    save_path="docs/mis_problem.png", 
+    ckle_path="docs/mis_example/mis_example.gpickle"
+)
+draw_mis_solution(
+    save_path="docs/mis_solution.png",
+    gpickle_path="docs/mis_example/mis_example.gpickle",
+    result_path="docs/mis_example/solve/mis_example_unweighted.result"
+)
+```
+<details>
+<summary>Click to view the drawing results</summary>
+<img src="docs/mis_problem.png" width="35%" alt="" />
+<img src="docs/mis_solution.png" width="35%" alt="" />
 </details>

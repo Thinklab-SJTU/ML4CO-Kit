@@ -14,6 +14,7 @@ from .utils import download, compress_folder, extract_archive, _get_md5
 found_matplotlib = importlib.util.find_spec("matplotlib")
 if found_matplotlib is not None:
     from .draw.tsp import draw_tsp_problem, draw_tsp_solution
+    from .draw.mis import draw_mis_problem, draw_mis_solution
 else:
     print("matplotlib not installed")
 
