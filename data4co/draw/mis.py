@@ -1,6 +1,7 @@
 import pickle
 import networkx as nx
 import matplotlib.pyplot as plt
+from .utils import get_pos_layer
 
 
 def draw_mis_problem(
@@ -8,7 +9,7 @@ def draw_mis_problem(
     gpickle_path: str,
     undirected: bool=True,
     self_loop: bool=False,
-    pos_type: str="kkl",
+    pos_type: str="kamada_kawai_layout",
     figsize: tuple=(5, 5),
     node_color: str="darkblue",
     edge_color: str="darkblue",
@@ -33,13 +34,9 @@ def draw_mis_problem(
         graph.remove_edges_from(self_loop_edges)
         
     # pos
-    if pos_type == "kkl":
-        pos = nx.kamada_kawai_layout(graph)
-    elif pos_type == "spring":
-        pos = nx.spring_layout(graph)
-    else:
-        raise NotImplementedError()
-    
+    pos_layer = get_pos_layer(pos_type)
+    pos = pos_layer(graph)
+
     # plt
     figure = plt.figure(figsize=figsize)
     figure.add_subplot(111)
@@ -98,12 +95,8 @@ def draw_mis_solution(
         graph.remove_edges_from(self_loop_edges)
     
     # pos
-    if pos_type == "kkl":
-        pos = nx.kamada_kawai_layout(graph)
-    elif pos_type == "spring":
-        pos = nx.spring_layout(graph)
-    else:
-        raise NotImplementedError()
+    pos_layer = get_pos_layer(pos_type)
+    pos = pos_layer(graph)
     
     # plt
     figure = plt.figure(figsize=figsize)
