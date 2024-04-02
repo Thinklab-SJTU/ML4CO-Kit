@@ -24,7 +24,7 @@ AUTHOR = get_property('__author__', NAME)
 VERSION = get_property('__version__', NAME)
 REQUIRED = [
      'numpy>=1.24.4', 'networkx>=2.8.8', 'tsplib95>=0.7.1', 'tqdm>=4.66.1', 'requests>=2.31.0',
-     'pulp>=2.8.0', 'pandas>=2.0.0', 'scipy>=1.10.1'
+     'pulp>=2.8.0', 'pandas>=2.0.0', 'scipy>=1.10.1', "aiohttp>=3.9.3"
 ]
 
 EXTRAS = {}

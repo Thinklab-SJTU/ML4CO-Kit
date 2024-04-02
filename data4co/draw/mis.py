@@ -65,7 +65,7 @@ def draw_mis_solution(
     result_path: str,
     undirected: bool=True,
     self_loop: bool=False,
-    pos_type: str="kkl",
+    pos_type: str="kamada_kawai_layout",
     figsize: tuple=(5, 5),
     sel_node_color: str="orange",
     unsel_node_color: str="darkblue",
