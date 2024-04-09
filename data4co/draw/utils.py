@@ -14,7 +14,7 @@ SUPPORT_POS_TYPE_DICT = {
     "planar_layout": nx.planar_layout,
     "fruchterman_reingold_layout": nx.fruchterman_reingold_layout,
     "spiral_layout": nx.spiral_layout,
-    "multipartite_layout": nx.multipartite_layout
+    "multipartite_layout": nx.multipartite_layout,
 }
 
 SUPPORT_POS_TYPE = [

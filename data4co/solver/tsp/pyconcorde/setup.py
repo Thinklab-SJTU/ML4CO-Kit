@@ -13,6 +13,7 @@ not set these variables (and rely on the downloaded Concorde) or set
 both of them. Setting only one will not work as intended.
 
 """
+
 from __future__ import print_function
 
 import os

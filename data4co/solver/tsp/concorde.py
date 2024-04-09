@@ -11,70 +11,76 @@ from .base import TSPSolver
 
 class TSPConcordeSolver(TSPSolver):
     def __init__(
-        self, 
-        scale: int=1e6, 
+        self,
+        scale: int = 1e6,
     ):
         """
         TSPConcordeSolver
         Args:
-            scale (int, optional): 
+            scale (int, optional):
                 The scale factor for coordinates in the Concorde solver.
         """
-        super(TSPConcordeSolver, self).__init__(
-            solver_type="concorde",
-            scale=scale
-        )
+        super(TSPConcordeSolver, self).__init__(solver_type="concorde", scale=scale)
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
         solver = TSPConSolver.from_data(
-            xs=nodes_coord[:, 0] * self.scale, 
-            ys=nodes_coord[:, 1] * self.scale, 
+            xs=nodes_coord[:, 0] * self.scale,
+            ys=nodes_coord[:, 1] * self.scale,
             norm=self.norm,
-            name=name
+            name=name,
         )
         solution = solver.solve(verbose=False, name=name)
         tour = solution.tour
         return tour
-        
+
     def solve(
-        self, 
-        points: Union[np.ndarray, list]=None,
-        norm: str="EUC_2D",
-        normalize: bool=False,
-        num_threads: int=1,
-        show_time: bool=False
+        self,
+        points: Union[np.ndarray, list] = None,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
+        num_threads: int = 1,
+        show_time: bool = False,
     ) -> np.ndarray:
         # prepare
         self.from_data(points, norm, normalize)
         start_time = time.time()
-        
+
         # solve
         tours = list()
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
             if show_time:
-                for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"): 
-                    name = uuid.uuid4().hex  
+                for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"):
+                    name = uuid.uuid4().hex
                     tours.append(self._solve(self.points[idx], name))
                     self.clear_tmp_files(name)
             else:
                 for idx in range(num_points):
-                    name = uuid.uuid4().hex 
+                    name = uuid.uuid4().hex
                     tours.append(self._solve(self.points[idx], name))
                     self.clear_tmp_files(name)
         else:
-            batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
+            batch_points = self.points.reshape(
+                -1, num_threads, p_shape[-2], p_shape[-1]
+            )
             name_list = list()
             if show_time:
-                for idx in tqdm(range(num_points // num_threads), desc="Solving TSP Using Concorde"):
+                for idx in tqdm(
+                    range(num_points // num_threads), desc="Solving TSP Using Concorde"
+                ):
                     for _ in range(num_threads):
                         name_list.append(uuid.uuid4().hex)
                     with Pool(num_threads) as p1:
-                        name = uuid.uuid4().hex  
+                        name = uuid.uuid4().hex
                         cur_tours = p1.starmap(
                             self._solve,
-                            [(batch_points[idx][inner_idx], name) for inner_idx, name in zip(range(num_threads), name_list)]
+                            [
+                                (batch_points[idx][inner_idx], name)
+                                for inner_idx, name in zip(
+                                    range(num_threads), name_list
+                                )
+                            ],
                         )
                     for tour in cur_tours:
                         tours.append(tour)
@@ -85,10 +91,15 @@ class TSPConcordeSolver(TSPSolver):
                     for _ in range(num_threads):
                         name_list.append(uuid.uuid4().hex)
                     with Pool(num_threads) as p1:
-                        name = uuid.uuid4().hex  
+                        name = uuid.uuid4().hex
                         cur_tours = p1.starmap(
                             self._solve,
-                            [(batch_points[idx][inner_idx], name) for inner_idx, name in zip(range(num_threads), name_list)]
+                            [
+                                (batch_points[idx][inner_idx], name)
+                                for inner_idx, name in zip(
+                                    range(num_threads), name_list
+                                )
+                            ],
                         )
                     for tour in cur_tours:
                         tours.append(tour)
@@ -119,14 +130,18 @@ class TSPConcordeSolver(TSPSolver):
         pul_filename = f"{real_name}.pul"
         Opul_filename = f"O{real_name}.pul"
         filelist = [
-            sol_filename, Osol_filename, 
-            res_filename, Ores_filename,
-            sav_filename, Osav_filename,
-            pul_filename, Opul_filename
+            sol_filename,
+            Osol_filename,
+            res_filename,
+            Ores_filename,
+            sav_filename,
+            Osav_filename,
+            pul_filename,
+            Opul_filename,
         ]
         # intermediate file
         for i in range(100):
-            filelist.append("{}.{:03d}".format(name[0:8], i+1))
+            filelist.append("{}.{:03d}".format(name[0:8], i + 1))
         # delete
         for file in filelist:
             if os.path.exists(file):

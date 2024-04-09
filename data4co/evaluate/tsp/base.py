@@ -1,17 +1,13 @@
 import math
 import numpy as np
-import scipy.spatial 
+import scipy.spatial
 from typing import Union
 
 SUPPORT_TSPLIB_TYPE = ["EUC_2D", "GEO"]
 
 
 class TSPEvaluator(object):
-    def __init__(
-        self, 
-        points: Union[list, np.ndarray],
-        norm: str="EUC_2D"
-    ):
+    def __init__(self, points: Union[list, np.ndarray], norm: str = "EUC_2D"):
         if type(points) == list:
             points = np.array(points)
         if points.ndim == 3 and points.shape[0] == 1:
@@ -47,15 +43,14 @@ class TSPEvaluator(object):
                     edge_weights[i_idx][j_idx] = weight
                     edge_weights[j_idx][i_idx] = weight
             return edge_weights
-            
 
     def evaluate(self, route):
         total_cost = 0
         for i in range(len(route) - 1):
             total_cost += self.edge_weights[route[i], route[i + 1]]
         return total_cost
-    
-    
+
+
 def parse_degrees(coord):
     """Parse an encoded geocoordinate value into real degrees.
 
@@ -90,7 +85,7 @@ def geographical(start, end, radius=6378.388):
     :return: rounded distance
     """
     if len(start) != len(end):
-        raise ValueError('dimension mismatch between start and end')
+        raise ValueError("dimension mismatch between start and end")
 
     start = RadianGeo(start)
     end = RadianGeo(end)

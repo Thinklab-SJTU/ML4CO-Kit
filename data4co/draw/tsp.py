@@ -5,8 +5,7 @@ from typing import Union
 
 
 def edges_to_node_pairs(edge_target: np.ndarray):
-    """Helper function to convert edge matrix into pairs of adjacent nodes.
-    """
+    """Helper function to convert edge matrix into pairs of adjacent nodes."""
     pairs = []
     for r in range(len(edge_target)):
         for c in range(len(edge_target)):
@@ -18,11 +17,11 @@ def edges_to_node_pairs(edge_target: np.ndarray):
 def draw_tsp_problem(
     save_path: str,
     points: Union[list, np.ndarray],
-    edge_values: np.ndarray=None,
-    figsize: tuple=(5, 5),
-    node_color: str="darkblue",
-    edge_color: str="darkblue",
-    node_size: int=50
+    edge_values: np.ndarray = None,
+    figsize: tuple = (5, 5),
+    node_color: str = "darkblue",
+    edge_color: str = "darkblue",
+    node_size: int = 50,
 ):
     # check
     if "." not in save_path:
@@ -36,10 +35,12 @@ def draw_tsp_problem(
 
     # edge_values
     if edge_values is None:
-        edge_values = np.sum(
-            (np.expand_dims(points, 1) - np.expand_dims(points, 0)) ** 2, 
-            axis=-1
-        ) ** 0.5
+        edge_values = (
+            np.sum(
+                (np.expand_dims(points, 1) - np.expand_dims(points, 0)) ** 2, axis=-1
+            )
+            ** 0.5
+        )
 
     # edge_target
     nodes_num = points.shape[0]
@@ -47,39 +48,28 @@ def draw_tsp_problem(
     target_pairs = edges_to_node_pairs(edge_target)
     graph = nx.from_numpy_array(edge_values)
     pos = dict(zip(range(len(points)), points.tolist()))
-    
+
     # plt
     figure = plt.figure(figsize=figsize)
     figure.add_subplot(111)
-    nx.draw_networkx_nodes(
-        G=graph, 
-        pos=pos, 
-        node_color=node_color, 
-        node_size=node_size
-    )
+    nx.draw_networkx_nodes(G=graph, pos=pos, node_color=node_color, node_size=node_size)
     nx.draw_networkx_edges(
-        G=graph, 
-        pos=pos, 
-        edgelist=target_pairs, 
-        alpha=1, 
-        width=1, 
-        edge_color=edge_color
+        G=graph, pos=pos, edgelist=target_pairs, alpha=1, width=1, edge_color=edge_color
     )
-    
+
     # save
     plt.savefig(save_path)
-
 
 
 def draw_tsp_solution(
     save_path: str,
     points: Union[list, np.ndarray],
     tours: Union[list, np.ndarray],
-    edge_values: np.ndarray=None,
-    figsize: tuple=(5, 5),
-    node_color: str="darkblue",
-    edge_color: str="darkblue",
-    node_size: int=50
+    edge_values: np.ndarray = None,
+    figsize: tuple = (5, 5),
+    node_color: str = "darkblue",
+    edge_color: str = "darkblue",
+    node_size: int = 50,
 ):
     # check
     if "." not in save_path:
@@ -99,10 +89,12 @@ def draw_tsp_solution(
 
     # edge_values
     if edge_values is None:
-        edge_values = np.sum(
-            (np.expand_dims(points, 1) - np.expand_dims(points, 0)) ** 2, 
-            axis=-1
-        ) ** 0.5
+        edge_values = (
+            np.sum(
+                (np.expand_dims(points, 1) - np.expand_dims(points, 0)) ** 2, axis=-1
+            )
+            ** 0.5
+        )
 
     # edge_target
     nodes_num = points.shape[0]
@@ -112,24 +104,14 @@ def draw_tsp_solution(
     target_pairs = edges_to_node_pairs(edge_target)
     graph = nx.from_numpy_array(edge_values)
     pos = dict(zip(range(len(points)), points.tolist()))
-    
+
     # plt
     figure = plt.figure(figsize=figsize)
     figure.add_subplot(111)
-    nx.draw_networkx_nodes(
-        G=graph, 
-        pos=pos, 
-        node_color=node_color, 
-        node_size=node_size
-    )
+    nx.draw_networkx_nodes(G=graph, pos=pos, node_color=node_color, node_size=node_size)
     nx.draw_networkx_edges(
-        G=graph, 
-        pos=pos, 
-        edgelist=target_pairs, 
-        alpha=1, 
-        width=1, 
-        edge_color=edge_color
+        G=graph, pos=pos, edgelist=target_pairs, alpha=1, width=1, edge_color=edge_color
     )
-    
+
     # save
     plt.savefig(save_path)

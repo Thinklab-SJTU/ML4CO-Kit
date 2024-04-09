@@ -8,11 +8,7 @@ from data4co.utils import download, extract_archive
 
 class SATLIBData:
     def __init__(
-        self,
-        data_path: str,
-        variable_num: int,
-        clause_num: int,
-        backbone_size: int
+        self, data_path: str, variable_num: int, clause_num: int, backbone_size: int
     ):
         self.data_path = data_path
         self.variable_num = variable_num
@@ -29,8 +25,8 @@ class SATLIBDataset:
         self.processed_dir = "dataset/satlib/processed"
         self.raw_dir = "dataset/satlib/raw_data"
         self.test_dir = "dataset/satlib/test_data"
-        if not os.path.exists('dataset'):
-            os.mkdir('dataset')
+        if not os.path.exists("dataset"):
+            os.mkdir("dataset")
         if not os.path.exists(self.dir):
             download(filename="dataset/satlib.tar.gz", url=self.url, md5=self.md5)
             extract_archive(archive_path="dataset/satlib.tar.gz", extract_path=self.dir)
@@ -38,10 +34,10 @@ class SATLIBDataset:
             os.mkdir(self.processed_dir)
 
     def generate_mis_from_sat(
-        self, 
-        src: str="dataset/satlib/test_data",
-        out: str=None,
-        samples_num: int=-1
+        self,
+        src: str = "dataset/satlib/test_data",
+        out: str = None,
+        samples_num: int = -1,
     ):
         # get the save path
         folder_name = os.path.basename(src)
@@ -59,15 +55,15 @@ class SATLIBDataset:
                 os.makedirs(out)
             processed_pickle_path = os.path.join(out, pickle_name)
             processed_gpickle_path = os.path.join(out, gpickle_dir_name)
-            
+
         # check if the processed data exists
         if not os.path.exists(processed_gpickle_path):
             os.mkdir(processed_gpickle_path)
         if os.path.exists(processed_pickle_path):
-            with open(processed_pickle_path, 'rb') as f:
+            with open(processed_pickle_path, "rb") as f:
                 dataset = pickle.load(f)
             return processed_pickle_path, processed_gpickle_path, dataset
-        
+
         # process the cnf data
         dataset = list()
         files = os.listdir(src)
@@ -75,21 +71,23 @@ class SATLIBDataset:
             files = random.sample(files, samples_num)
         for file in tqdm(files, desc=f"Processing files in {src}"):
             file_path = os.path.join(src, file)
-            mis_graph_path = os.path.join(processed_gpickle_path, file.replace(".cnf", ".gpickle"))
+            mis_graph_path = os.path.join(
+                processed_gpickle_path, file.replace(".cnf", ".gpickle")
+            )
             clause_num = int(file[13:16])
             backbone_size = int(file[18:20])
             sat_data = SATLIBData(
                 data_path=file_path,
                 variable_num=100,
                 clause_num=clause_num,
-                backbone_size=backbone_size
+                backbone_size=backbone_size,
             )
             dataset.append(sat_data)
             # write .gpickle
             with open(mis_graph_path, "wb") as f:
                 pickle.dump(sat_data.mis_graph, f, pickle.HIGHEST_PROTOCOL)
-                
+
         # write the processed data
-        with open(processed_pickle_path, 'wb') as f:
+        with open(processed_pickle_path, "wb") as f:
             pickle.dump(dataset, f)
         return processed_pickle_path, processed_gpickle_path, dataset

@@ -1,5 +1,6 @@
 import os
 import sys
+
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
@@ -22,5 +23,4 @@ def _test_draw_tsp():
 
 
 if __name__ == "__main__":
-    _test_draw_tsp()  
-    
+    _test_draw_tsp()

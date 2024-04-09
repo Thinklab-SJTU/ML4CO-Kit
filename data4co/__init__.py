@@ -1,6 +1,6 @@
 import importlib.util
 
-# base 
+# base
 from .data import TSPLIBOriDataset, TSPUniformDataset
 from .data import SATLIBData, SATLIBDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPUniformEvaluator
@@ -19,5 +19,5 @@ else:
     print("matplotlib not installed")
 
 
-__version__ = '0.0.1a19'
-__author__ = 'ThinkLab at SJTU'
+__version__ = "0.0.1a19"
+__author__ = "SJTU-ReThinkLab"

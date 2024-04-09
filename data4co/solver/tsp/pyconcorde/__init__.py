@@ -13,5 +13,3 @@ except:
     os.chdir(ori_dir)
     shutil.rmtree(f"{concorde_path}/build")
     from .concorde.tsp import TSPSolver as TSPConSolver
-
-    

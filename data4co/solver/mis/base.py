@@ -111,7 +111,9 @@ class MISSolver:
         )
 
     def solve(self, src: pathlib.Path, out: pathlib.Path = None):
-        raise NotImplementedError("The method ``solve`` is required to implemented in subclasses.")
+        raise NotImplementedError(
+            "The method ``solve`` is required to implemented in subclasses."
+        )
 
     def evaluate(self, calculate_gap: bool = False):
         sel_nodes_num = np.array(self.sel_nodes_num)
