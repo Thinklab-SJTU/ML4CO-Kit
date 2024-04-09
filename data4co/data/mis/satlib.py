@@ -19,23 +19,23 @@ class SATLIBData:
 
 class SATLIBDataset:
     def __init__(self) -> None:
-        self.url = "https://huggingface.co/datasets/Bench4CO/SAT-Dataset/resolve/main/satlib.tar.gz?download=true"
-        self.md5 = "b83d1d7ca4574d93884c0456a2e90f0c"
-        self.dir = "dataset/satlib/"
-        self.processed_dir = "dataset/satlib/processed"
-        self.raw_dir = "dataset/satlib/raw_data"
-        self.test_dir = "dataset/satlib/test_data"
+        self.url = "https://huggingface.co/datasets/ML4CO/SATLIBOriDataset/resolve/main/satlib_original.tar.gz?download=true"
+        self.md5 = "0da8a73e2b79a6b5e6156005959ce509"
+        self.dir = "dataset/satlib_original/"
+        self.processed_dir = "dataset/satlib_original/processed"
+        self.raw_dir = "dataset/satlib_original/raw_data"
+        self.test_dir = "dataset/satlib_original/test_data"
         if not os.path.exists("dataset"):
             os.mkdir("dataset")
         if not os.path.exists(self.dir):
-            download(filename="dataset/satlib.tar.gz", url=self.url, md5=self.md5)
-            extract_archive(archive_path="dataset/satlib.tar.gz", extract_path=self.dir)
+            download(filename="dataset/satlib_original.tar.gz", url=self.url, md5=self.md5)
+            extract_archive(archive_path="dataset/satlib_original.tar.gz", extract_path=self.dir)
         if not os.path.exists(self.processed_dir):
             os.mkdir(self.processed_dir)
 
     def generate_mis_from_sat(
         self,
-        src: str = "dataset/satlib/test_data",
+        src: str = "dataset/satlib_original/test_data",
         out: str = None,
         samples_num: int = -1,
     ):

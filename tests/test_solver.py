@@ -53,7 +53,7 @@ def test_tsp():
 
 
 def _test_kamis_solver():
-    kamis_solver = KaMISSolver(time_limit=20)
+    kamis_solver = KaMISSolver(time_limit=30)
     kamis_solver.solve(src="tests/mis_test", out="tests/mis_test/solve")
     kamis_solver.from_folder("tests/mis_test")
     kamis_solver.from_satlib_pickle("tests/mis_test.pickle")

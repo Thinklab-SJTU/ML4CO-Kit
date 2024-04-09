@@ -2,7 +2,7 @@ import os
 from data4co.utils import download, extract_archive
 
 
-TSPLIB_LARGE_EUC_2D_PATH = "dataset/tsplib_origin/large/EUC_2D"
+TSPLIB_LARGE_EUC_2D_PATH = "dataset/tsplib_original/large/EUC_2D"
 TSPLIB_LARGE_EUC_2D = [
     "u1060",
     "vm1084",
@@ -33,11 +33,11 @@ TSPLIB_LARGE_EUC_2D = [
     "d18512",
 ]
 
-TSPLIB_LARGE_CEIL_2D_PATH = "dataset/tsplib_origin/large/CEIL_2D"
+TSPLIB_LARGE_CEIL_2D_PATH = "dataset/tsplib_original/large/CEIL_2D"
 TSPLIB_LARGE_CEIL_2D = ["pla7397", "pla33810", "pla85900"]
 
-TSPLIB_RESOLVE_EUC_2D_PATH = "dataset/tsplib_origin/resolved/EUC_2D/problem"
-TSPLIB_RESOLVE_EUC_2D_SOLUTION = "dataset/tsplib_origin/resolved/EUC_2D/solution"
+TSPLIB_RESOLVE_EUC_2D_PATH = "dataset/tsplib_original/resolved/EUC_2D/problem"
+TSPLIB_RESOLVE_EUC_2D_SOLUTION = "dataset/tsplib_original/resolved/EUC_2D/solution"
 TSPLIB_RESOLVE_EUC_2D = [
     "att48",
     "eil51",
@@ -59,8 +59,8 @@ TSPLIB_RESOLVE_EUC_2D = [
     "pr2392",
 ]
 
-TSPLIB_RESOLVE_EXPLICIT_PATH = "dataset/tsplib_origin/resolved/EXPLICIT/problem"
-TSPLIB_RESOLVE_EXPLICIT_SOLUTION = "dataset/tsplib_origin/resolved/EXPLICIT/solution"
+TSPLIB_RESOLVE_EXPLICIT_PATH = "dataset/tsplib_original/resolved/EXPLICIT/problem"
+TSPLIB_RESOLVE_EXPLICIT_SOLUTION = "dataset/tsplib_original/resolved/EXPLICIT/solution"
 TSPLIB_RESOLVE_EXPLICIT = [
     "gr24",
     "fri26",
@@ -72,11 +72,11 @@ TSPLIB_RESOLVE_EXPLICIT = [
     "pa561",
 ]
 
-TSPLIB_RESOLVE_GEO_PATH = "dataset/tsplib_origin/resolved/GEO/problem"
-TSPLIB_RESOLVE_GEO_SOLUTION = "dataset/tsplib_origin/resolved/GEO/solution"
+TSPLIB_RESOLVE_GEO_PATH = "dataset/tsplib_original/resolved/GEO/problem"
+TSPLIB_RESOLVE_GEO_SOLUTION = "dataset/tsplib_original/resolved/GEO/solution"
 TSPLIB_RESOLVE_GEO = ["ulysses16", "ulysses22", "gr96", "gr202", "gr666"]
 
-TSPLIB_UNRESOLVE_EUC_2D_PATH = "dataset/tsplib_origin/unresolved/EUC_2D"
+TSPLIB_UNRESOLVE_EUC_2D_PATH = "dataset/tsplib_original/unresolved/EUC_2D"
 TSPLIB_UNRESOLVE_EUC_2D = [
     "rat99",
     "kroB100",
@@ -116,19 +116,19 @@ TSPLIB_UNRESOLVE_EUC_2D = [
     "dsj1000",
 ]
 
-TSPLIB_UNRESOLVE_EXPLICIT_PATH = "dataset/tsplib_origin/unresolved/EXPLICIT"
+TSPLIB_UNRESOLVE_EXPLICIT_PATH = "dataset/tsplib_original/unresolved/EXPLICIT"
 TSPLIB_UNRESOLVE_EXPLICIT = ["gr17", "gr21", "dantzig42", "swiss42", "hk48", "brazil58"]
 
-TSPLIB_UNRESOLVE_GEO_PATH = "dataset/tsplib_origin/unresolved/GEO"
+TSPLIB_UNRESOLVE_GEO_PATH = "dataset/tsplib_original/unresolved/GEO"
 TSPLIB_UNRESOLVE_GEO = ["burma14", "ali535"]
 
 
 class TSPLIBOriDataset:
     def __init__(self):
-        self.url = "https://huggingface.co/datasets/ML4TSP/TSPLIBOriDataset/resolve/main/tsplib_origin.tar.gz?download=true"
-        self.md5 = "f096628e060cbc6b800c9dbaa8d2bd0c"
-        self.dir = "dataset/tsplib_origin"
-        self.raw_data_path = "dataset/tsplib_origin.tar.gz"
+        self.url = "https://huggingface.co/datasets/ML4CO/TSPLIBOriDataset/resolve/main/tsplib_original.tar.gz?download=true"
+        self.md5 = "0b4c671736fbe0d0110e892769eddb72"
+        self.dir = "dataset/tsplib_original"
+        self.raw_data_path = "dataset/tsplib_original.tar.gz"
         if not os.path.exists("dataset"):
             os.mkdir("dataset")
         if not os.path.exists(self.dir):

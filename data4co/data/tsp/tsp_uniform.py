@@ -38,7 +38,7 @@ TSP_UNIFORM_10000 = [
 
 class TSPUniformDataset:
     def __init__(self):
-        self.url = "https://huggingface.co/datasets/ML4TSP/TSPUniformDataset/resolve/main/tsp_uniform.tar.gz?download=true"
+        self.url = "https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform.tar.gz?download=true"
         self.md5 = "494766b3ab67105563e855c7a1f22d80"
         self.dir = "dataset/tsp_uniform"
         self.raw_data_path = "dataset/tsp_uniform.tar.gz"

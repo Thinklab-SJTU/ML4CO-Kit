@@ -11,5 +11,6 @@ except:
     os.chdir(concorde_path)
     os.system("python ./setup.py build_ext --inplace")
     os.chdir(ori_dir)
-    shutil.rmtree(f"{concorde_path}/build")
+    if os.path.exists(f"{concorde_path}/build"):
+        shutil.rmtree(f"{concorde_path}/build")
     from .concorde.tsp import TSPSolver as TSPConSolver
