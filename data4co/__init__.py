@@ -1,9 +1,9 @@
 import importlib.util
 
 # base 
-from .data import TSPLIBOriginDataset, TSPUniformDataset
+from .data import TSPLIBOriDataset, TSPUniformDataset
 from .data import SATLIBData, SATLIBDataset
-from .evaluate import TSPEvaluator, TSPLIBOriginEvaluator, TSPUniformEvaluator
+from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver

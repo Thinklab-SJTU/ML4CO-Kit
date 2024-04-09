@@ -33,7 +33,6 @@ TSP_UNIFORM_10000 = [
     "dataset/tsp_uniform/tsp10000_lkh_100k_72.23920.txt",
     "dataset/tsp_uniform/tsp10000_lkh_1m_72.00978.txt",
     "dataset/tsp_uniform/tsp10000_lkh_5m_71.93551.txt",
-    "dataset/tsp_uniform/tsp10000_concorde_large_71.84185.txt"
 ]
 
 

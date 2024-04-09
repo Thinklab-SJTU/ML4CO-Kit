@@ -10,8 +10,7 @@ from typing import Union
 from multiprocessing import Pool
 from data4co.solver.tsp import TSPLKHSolver
 from data4co.evaluate.tsp.base import TSPEvaluator
-from data4co.solver.tsp import TSPSolver, TSPLKHSolver, \
-    TSPConcordeSolver, TSPConcordeLargeSolver
+from data4co.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -125,8 +124,7 @@ class TSPDataGenerator:
             self.solver_type = self.solver
             supported_solver_dict = {
                 "lkh": TSPLKHSolver, 
-                "concorde": TSPConcordeSolver,
-                "concorde-large": TSPConcordeLargeSolver
+                "concorde": TSPConcordeSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:

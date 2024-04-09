@@ -107,7 +107,7 @@ def draw_tsp_solution(
     # edge_target
     nodes_num = points.shape[0]
     edge_target = np.zeros((nodes_num, nodes_num))
-    for i in range(len(tours)-1):
+    for i in range(len(tours) - 1):
         edge_target[tours[i], tours[i + 1]] = 1
     target_pairs = edges_to_node_pairs(edge_target)
     graph = nx.from_numpy_array(edge_values)

@@ -56,9 +56,9 @@ TSPLIB_UNRESOLVE_GEO = [
 ]
 
 
-class TSPLIBOriginDataset:
+class TSPLIBOriDataset:
     def __init__(self):
-        self.url = "https://huggingface.co/datasets/ML4TSP/TSPLIBOriginDataset/resolve/main/tsplib_origin.tar.gz?download=true"
+        self.url = "https://huggingface.co/datasets/ML4TSP/TSPLIBOriDataset/resolve/main/tsplib_origin.tar.gz?download=true"
         self.md5 = "f096628e060cbc6b800c9dbaa8d2bd0c"
         self.dir = "dataset/tsplib_origin"
         self.raw_data_path = "dataset/tsplib_origin.tar.gz"

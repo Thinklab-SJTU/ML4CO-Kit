@@ -7,33 +7,33 @@
 
 A data generator tool for Combinatorial Optimization (CO) problems, enabling customizable, diverse, and scalable datasets for benchmarking optimization algorithms.
 
-### Current support
+### Current Support
 
-**data**
+**Data**
 | Problem |     First      | Impl. | Second  | Impl. |      Third      | Impl. |
 |:-------:|:--------------:|:-----:|:-------:|:-----:|:---------------:|:-----:|
-|   TSP   | TSPLIB(Origin) |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
+|   TSP   | TSPLIB (Original) |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
 |   MIS   |     SATLIB     |   ✔   |  KaMIS  |  📆   |       --        |  --   |
 
-**draw**
+**Visualization**
 | Problem |     problem      | Impl. |     solution     | Impl. |
 |:-------:|:----------------:|:-----:|:----------------:|:-----:|
 |   TSP   | draw_tsp_problem |   ✔  | draw_tsp_soluton |   ✔  |
 |   MIS   | draw_mis_problem |  ✔   | draw_mis_soluton |  ✔   |
 
-**evaluator**
+**Evaluator**
 | Problem |     Base     | Impl. |      First      | Impl. | Second  | Impl. |      Third      | Impl. |
 |:-------:|:------------:|:-----:|:---------------:|:-----:|:-------:|:-----:|:---------------:|:-----:|
-|   TSP   | TSPEvaluator |   ✔   | TSPLIB(Origin)  |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
+|   TSP   | TSPEvaluator |   ✔   | TSPLIB (Original)  |   ✔   | Uniform |   ✔   | Multi. Distros. |  📆   |
 |   MIS   | MISEvaluator |  📆   | SATLIBEvaluator |  📆   |   --    |  --   |       --        |  --   |
 
-**generator**
+**Generator**
 | Problem |  Type1  | Impl. |  Type2   | Impl. |  Type3  | Impl. |  Type4   | Impl. |
 |:-------:|:-------:|:-----:|:--------:|:-----:|:-------:|:-----:|:--------:|:-----:|
 |   TSP   | uniform |   ✔   | gaussian |   ✔   | cluster |   ✔   | w/regret |   ✔   |
 |   MIS   |   ER    |   ✔   |    BA    |   ✔   |   HK    |   ✔   |    WS    |   ✔   |
 
-**solver**
+**Solver**
 | Problem |   Base    | Impl. | First | Impl. |  Second  | Impl. |      Third      | Impl. |
 |:-------:|:---------:|:-----:|:-----:|:-----:|:--------:|:-----:|:---------------:|:-----:|
 |   TSP   | TSPSolver |   ✔   |  LKH  |   ✔   | Concorde |   ✔   | Concorde(Large) |   ✔   |
@@ -106,13 +106,13 @@ tsp_data_lkh.generate()
 
 **test lkh**
 ```python
->>> from data4co.evaluate import TSPLIBOriginEvaluator
+>>> from data4co.evaluate import TSPLIBOriEvaluator
 >>> from data4co.solver import TSPLKHSolver
 
 >>> lkh_solver = TSPLKHSolver(scale=1)
->>> eva = TSPLIBOriginEvaluator()
+>>> eva = TSPLIBOriEvaluator()
 >>> eva.evaluate(lkh_solver, norm="EUC_2D")
-           solved_costs       gt_costs          gaps
+           solved_costs       ref_costs          gaps
 att48      33523.708507   33523.708507  0.000000e+00
 eil51        429.983312     429.983312  0.000000e+00
 berlin52    7544.365902    7544.365902  3.616585e-14
@@ -134,7 +134,7 @@ pr2392    384469.093320  378062.826191  1.694498e+00
 AVG        50054.634253   49631.448887  1.250504e-01
 
 >>> eva.evaluate(lkh_solver, norm="GEO")
-           solved_costs  gt_costs      gaps
+           solved_costs  ref_costs      gaps
 ulysses16        6859.0    6859.0  0.000000
 ulysses22        7013.0    7013.0  0.000000
 gr96            55209.0   55209.0  0.000000
@@ -145,13 +145,13 @@ AVG             80850.6   80719.8  0.044436
 
 **test concorde**
 ```python
->>> from data4co.evaluate import TSPLIBOriginEvaluator
+>>> from data4co.evaluate import TSPLIBOriEvaluator
 >>> from data4co.solver import TSPConcordeSolver
 
->>> eva = TSPLIBOriginEvaluator()
+>>> eva = TSPLIBOriEvaluator()
 >>> con_solver = TSPConcordeSolver(scale=1)
 >>> eva.evaluate(con_solver, norm="EUC_2D")
-           solved_costs       gt_costs          gaps
+           solved_costs       ref_costs          gaps
 att48      33523.708507   33523.708507  2.170392e-14
 eil51        429.117939     429.983312 -2.012573e-01
 berlin52    7544.365902    7544.365902  0.000000e+00
@@ -173,7 +173,7 @@ pr2392    378062.826191  378062.826191  0.000000e+00
 AVG        49631.382539   49631.448887 -2.175343e-02
 
 >>> eva.evaluate(con_solver, norm="GEO")
-           solved_costs  gt_costs  gaps
+           solved_costs  ref_costs  gaps
 ulysses16        6859.0    6859.0   0.0
 ulysses22        7013.0    7013.0   0.0
 gr96            55209.0   55209.0   0.0

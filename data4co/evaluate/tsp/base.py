@@ -24,7 +24,7 @@ class TSPEvaluator(object):
 
     def set_norm(self, norm: str):
         if norm not in SUPPORT_TSPLIB_TYPE:
-            message = f"The norm({norm}) is not a valid type, "
+            message = f"The norm type ({norm}) is not a valid type, "
             message += f"only supports {SUPPORT_TSPLIB_TYPE}"
             raise ValueError(message)
         self.norm = norm

@@ -2,12 +2,12 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.data import TSPLIBOriginDataset, TSPUniformDataset
+from data4co.data import TSPLIBOriDataset, TSPUniformDataset
 from data4co.data import SATLIBDataset
 
 
 def test_tsp_dataset():
-    TSPLIBOriginDataset()
+    TSPLIBOriDataset()
     TSPUniformDataset()
 
 
