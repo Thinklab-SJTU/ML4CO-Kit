@@ -59,30 +59,38 @@ class TSPSolver:
 
     def check_points_not_none(self):
         if self.points is None:
-            message = "``points`` cannot be None! You can load the points using the methods"
-            message += "``from_data``, ``from_txt``, or ``from_tsp``."
+            message = (
+                "``points`` cannot be None! You can load the points using the methods"
+                "``from_data``, ``from_txt``, or ``from_tsp``."
+            )
             raise ValueError(message)
     
     def check_tours_not_none(self):
         if self.tours is None:
-            message = "``tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
-            message += "like ``TSPLKHSolver`` or the method ``read_tours`` to get the tours."
+            message = (
+                "``tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
+                "like ``TSPLKHSolver`` or the method ``read_tours`` to get the tours."
+            )
             raise ValueError(message)
         
     def check_ref_tours_not_none(self):
         if self.ref_tours is None:
-            message = "``ref_tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
-            message += "like ``TSPLKHSolver`` to obtain the tours and set them as the ``ref_tours``. "
-            message += "Or you can use the methods ``read_ref_tours``, ``from_txt``, "
-            message += "or ``read_ref_tours_from_opt_tour`` to load them."
+            message = (
+                "``ref_tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
+                "like ``TSPLKHSolver`` to obtain the tours and set them as the ``ref_tours``. "
+                "Or you can use the methods ``read_ref_tours``, ``from_txt``, "
+                "or ``read_ref_tours_from_opt_tour`` to load them."
+            )
             raise ValueError(message)
     
     def set_norm(self, norm: str):
         if norm is None:
             return
         if norm not in SUPPORT_TSPLIB_TYPE:
-            message = f"The norm type ({norm}) is not a valid type, "
-            message += f"only {SUPPORT_TSPLIB_TYPE} are supported."
+            message = (
+                f"The norm type ({norm}) is not a valid type, "
+                f"only {SUPPORT_TSPLIB_TYPE} are supported."
+            )
             raise ValueError(message)
         if norm == "GEO" and self.scale != 1:
             message = "The scale must be 1 for ``GEO`` norm type."
@@ -160,10 +168,12 @@ class TSPSolver:
             try:
                 self.ref_tours = np.array(ref_tours)
             except Exception as e:
-                message = "This method does not support instances of different numbers of nodes. "
-                message += "If you want to read the data, please set ``return_list`` as True. "
-                message += "Anyway, the data will not be saved in the solver. "
-                message += "Please convert the data to ``np.ndarray`` externally before calling the solver."
+                message = (
+                    "This method does not support instances of different numbers of nodes. "
+                    "If you want to read the data, please set ``return_list`` as True. "
+                    "Anyway, the data will not be saved in the solver. "
+                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
+                )
                 raise Exception(message) from e
         
         nodes_coords = np.array(nodes_coords)

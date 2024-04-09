@@ -101,8 +101,7 @@ class TSPDataGenerator:
         for sample_type in self.sample_types:
             self.samples_num += getattr(self, f"{sample_type}_samples_num")
             if self.samples_num % self.num_threads != 0:
-                message = f"The {self.sample_types}_samples_num must be "
-                message += "evenly divided by the number of threads"
+                message = "``samples_num`` must be divisible by the number of threads. "
                 raise ValueError(message)
     
     def check_data_type(self):
@@ -113,8 +112,10 @@ class TSPDataGenerator:
         }
         supported_data_type = generate_func_dict.keys()
         if self.data_type not in supported_data_type:
-            message = f"The input data_type({self.data_type}) is not a valid type, "
-            message += f"and the generator only supports {supported_data_type}"
+            message =  (
+                f"The input data_type ({self.data_type}) is not a valid type, "
+                f"and the generator only supports {supported_data_type}."
+            )
             raise ValueError(message)
         self.generate_func = generate_func_dict[self.data_type]
         
@@ -128,8 +129,10 @@ class TSPDataGenerator:
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
-                message = f"The input solver_type({self.solver_type}) is not a valid type, "
-                message += f"and the generator only supports {supported_solver_type}"
+                message = (
+                    f"The input solver_type ({self.solver_type}) is not a valid type, "
+                    f"and the generator only supports {supported_solver_type}."
+                )
                 raise ValueError(message)
             self.solver = supported_solver_dict[self.solver_type]()
         else:
@@ -150,13 +153,14 @@ class TSPDataGenerator:
             self.download_lkh()
         # check again
         if shutil.which(self.solver.lkh_path) is None:
-            message = f"The LKH solver cannot be found in the path '{self.solver.lkh_path}'. "
-            message += "Please verify that the input lkh_path is correct. "
-            message += "If you have not installed the LKH solver, "
-            message += "please use the 'self.download_lkh()' function to download it."
-            message += "If you are sure that the installation is correct, "
-            message += "please confirm whether the Conda environment of the terminal "
-            message += "is consistent with the Python environment."
+            message = (
+                f"The LKH solver cannot be found in the path '{self.solver.lkh_path}'. "
+                "Please make sure that you have entered the correct ``lkh_path``."
+                "If you have not installed the LKH solver, "
+                "please use function ``self.download_lkh()`` to download it."
+                "Please also confirm whether the Conda environment of the terminal "
+                "is consistent with the Python environment."
+            )
             raise ValueError(message)
     
     def check_concorde(self):

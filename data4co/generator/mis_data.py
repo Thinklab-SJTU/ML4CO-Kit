@@ -109,8 +109,10 @@ class MISDataGenerator:
         }
         supported_data_type = generate_func_dict.keys()
         if self.data_type not in supported_data_type:
-            message = f"The input data_type({self.data_type}) is not a valid type, "
-            message += f"and the generator only supports {supported_data_type}"
+            message = (
+                f"The input data type ({self.data_type}) is not a valid type, "
+                f"and the generator only supports {supported_data_type}."
+            )
             raise ValueError(message)
         self.generate_func = generate_func_dict[self.data_type]    
     
@@ -137,8 +139,10 @@ class MISDataGenerator:
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver not in supported_solver_type:
-                message = f"The input solver_type({self.solver}) is not a valid type, "
-                message += f"and the generator only supports {supported_solver_type}"
+                message = (
+                    f"The input solver type ({self.solver}) is not a valid type, "
+                    f"and the generator only supports {supported_solver_type}."
+                )
                 raise ValueError(message)
             self.solver = supported_solver_dict[self.solver]()
         else:
@@ -146,7 +150,7 @@ class MISDataGenerator:
             self.solver_type = self.solver.solver_type
         # check weighted
         if self.mis_weighted != self.solver.weighted:
-            message = "Mismatch between mis_weighted and solver.weighted"
+            message = "``mis_weighted`` and ``solver.weighted`` do not match."
             raise ValueError(message)
 
     def random_weight(self, n, mu = 1, sigma = 0.1):

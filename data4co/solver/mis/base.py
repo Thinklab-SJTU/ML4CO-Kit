@@ -80,8 +80,10 @@ class MISSolver:
                     node_labels = [int(_) for _ in f.read().splitlines()]
                 node_labels = np.array(node_labels, dtype=np.int64)
                 if node_labels.shape[0] != nodes_num:
-                    message = "The number of nodes in the solution does not match that of" 
-                    message += "the problem. Please check the solution."
+                    message = (
+                        "The number of nodes in the solution does not match that of"
+                        "the problem. Please check the solution."
+                    )
                     raise ValueError(message)
             # edges
             edges = np.array(graph.edges, dtype=np.int64)
@@ -114,9 +116,11 @@ class MISSolver:
     def evaluate(self, calculate_gap: bool = False):
         sel_nodes_num = np.array(self.sel_nodes_num)
         if self.sel_nodes_num is None:
-            message = "``sel_nodes_num`` cannot be None, please use the method "
-            message += "``solve`` to obtain solutions and use the method ``from_folder`` to "
-            message += "get ``sel_nodes_num``."
+            message = (
+                "``sel_nodes_num`` cannot be None, please use the method "
+                "``solve`` to obtain solutions and use the method ``from_folder`` to "
+                "get ``sel_nodes_num``."
+            )
             raise ValueError(message)
         if not calculate_gap:
             return_dict = {

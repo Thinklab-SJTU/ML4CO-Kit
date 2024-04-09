@@ -16,8 +16,10 @@ def _test_tsp_lkh_solver():
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
-        message = "The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
-        message += "is larger than or equal to 1e-2%."
+        message = (
+            f"The average gap ({gap_avg}) of TSP50 solved by TSPLKHSolver " 
+            "is larger than or equal to 1e-2%."
+        )
         raise ValueError(message)
 
 
@@ -28,8 +30,10 @@ def _test_tsp_concorde_solver():
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
-        message = f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
-        message += "is larger than or equal to 1e-3%."
+        message = (
+            f"The average gap ({gap_avg}) of TSP50 solved by TSPConcordeSolver " 
+            "is larger than or equal to 1e-3%."
+        )
         raise ValueError(message)
     
 
@@ -53,8 +57,10 @@ def _test_kamis_solver():
     gap_avg = kamis_solver.evaluate(calculate_gap=True)["avg_gap"]
     print(f"KaMISSolver Gap: {gap_avg}")
     if gap_avg >= 0.1:
-        message = f"The average gap ({gap_avg}) of MIS solved by KaMISSolver " 
-        message += "is larger than or equal to 0.1%."
+        message = (
+            f"The average gap ({gap_avg}) of MIS solved by KaMISSolver " 
+            "is larger than or equal to 0.1%."
+        )
         raise ValueError(message)    
 
 
