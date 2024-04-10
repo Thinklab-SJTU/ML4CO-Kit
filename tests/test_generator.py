@@ -13,7 +13,8 @@ from data4co import TSPDataGenerator, MISDataGenerator, KaMISSolver
 
 
 def _test_tsp_lkh_generator(
-    num_threads: int, nodes_num: int, data_type: str, regret: bool
+    num_threads: int, nodes_num: int, data_type: str, 
+    regret: bool, re_download: bool=False
 ):
     """
     Test TSPDataGenerator using LKH Solver
@@ -34,13 +35,17 @@ def _test_tsp_lkh_generator(
         save_path=save_path,
         regret=regret,
     )
+    if re_download:
+        tsp_data_lkh.download_lkh()
     # generate data
     tsp_data_lkh.generate()
     # remove the save path
     shutil.rmtree(save_path)
 
 
-def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: str):
+def _test_tsp_concorde_generator(
+    num_threads: int, nodes_num: int, data_type: str
+):
     """
     Test TSPDataGenerator using Concorde Solver
     """
@@ -70,7 +75,7 @@ def test_tsp():
     Test TSPDataGenerator
     """
     _test_tsp_lkh_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", regret=False
+        num_threads=4, nodes_num=50, data_type="uniform", regret=False, re_download=True
     )
     _test_tsp_lkh_generator(
         num_threads=1, nodes_num=50, data_type="uniform", regret=True
@@ -90,7 +95,9 @@ def test_tsp():
 ##############################################
 
 
-def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
+def _test_mis_kamis(
+    nodes_num_min: int, nodes_num_max: int, data_type: str
+):
     """
     Test MISDataGenerator using KaMIS
     """
@@ -117,7 +124,9 @@ def _test_mis_kamis(nodes_num_min: int, nodes_num_max: int, data_type: str):
     shutil.rmtree(save_path)
 
 
-def _test_mis_gurobi(nodes_num_min: int, nodes_num_max: int, data_type: str):
+def _test_mis_gurobi(
+    nodes_num_min: int, nodes_num_max: int, data_type: str
+):
     """
     Test MISDataGenerator using MISGurobi
     """

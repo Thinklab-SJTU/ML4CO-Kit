@@ -3,6 +3,7 @@
 [![PyPi version](https://badgen.net/pypi/v/data4co/)](https://pypi.org/pypi/data4co/)
 [![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fdata4co%2Fjson)](https://pypi.python.org/pypi/data4co/)
 [![Downloads](https://static.pepy.tech/badge/data4co)](https://pepy.tech/project/data4co)
+[![codecov](https://codecov.io/gh/heatingma/ML4CO-Kit/graph/badge.svg?token=N18LNMQNKS)](https://codecov.io/gh/heatingma/ML4CO-Kit)
 [![GitHub stars](https://img.shields.io/github/stars/heatingma/Data4CO.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/heatingma/Data4CO/stargazers/) 
 
 A data generator tool for Combinatorial Optimization (CO) problems, enabling customizable, diverse, and scalable datasets for benchmarking optimization algorithms.

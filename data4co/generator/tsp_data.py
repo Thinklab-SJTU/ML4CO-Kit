@@ -233,14 +233,17 @@ class TSPDataGenerator:
                 if self.regret:
                     p1.close()  # Close the pool to indicate that no more tasks will be submitted
                     p1.join()  # Wait for all processes in the pool to complete
-                    with Pool(self.num_threads) as p2:
-                        p2.starmap(
-                            self.generate_regret,
-                            [
-                                (tour, batch_nodes_coord[idx], cnt + idx)
-                                for idx, tour in enumerate(tours)
-                            ],
-                        )
+                    if self.num_threads == 1:
+                        self.generate_regret(tours[0], batch_nodes_coord[0], cnt)    
+                    else:
+                        with Pool(self.num_threads) as p2:
+                            p2.starmap(
+                                self.generate_regret,
+                                [
+                                    (tour, batch_nodes_coord[idx], cnt + idx)
+                                    for idx, tour in enumerate(tours)
+                                ],
+                            )
                     cnt += self.num_threads
                 # write to txt
                 for idx, tour in enumerate(tours):
