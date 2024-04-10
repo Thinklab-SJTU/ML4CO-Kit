@@ -1,1 +1,1 @@
-from .satlib import SATLIBData, SATLIBDataset
+from .satlib_original import SATLIBOriDataset

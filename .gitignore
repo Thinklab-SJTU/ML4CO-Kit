@@ -19,3 +19,4 @@ data4co/solver/tsp/pyconcorde/concorde/_concorde.c
 tmp.py
 tests/mis_test/*
 repos/**
+tests/mis_test/**

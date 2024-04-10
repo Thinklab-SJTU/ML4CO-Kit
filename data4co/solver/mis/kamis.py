@@ -84,8 +84,13 @@ class KaMISSolver(MISSolver):
         self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path] = None
     ):
         message = (
-            "Please check KaMIS compilation." "you can try ``self.recompile_kamis()``. "
-        )
+            "Please check KaMIS compilation. " 
+            "you can try ``self.recompile_kamis()``. "
+            "If you are sure that the KaMIS is correct, "
+            "please confirm whether the Conda environment of the terminal"
+            "is consistent with the Python environment."
+        )    
+
         src = Path(src)
         if out is None:
             out = src / "solve"

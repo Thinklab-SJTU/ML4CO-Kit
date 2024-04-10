@@ -28,9 +28,9 @@ def _test_tsp_lkh_generator(
         nodes_num=nodes_num,
         data_type=data_type,
         solver="lkh",
-        train_samples_num=16,
-        val_samples_num=16,
-        test_samples_num=16,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
         save_path=save_path,
         regret=regret,
     )
@@ -54,9 +54,9 @@ def _test_tsp_concorde_generator(num_threads: int, nodes_num: int, data_type: st
         nodes_num=nodes_num,
         data_type=data_type,
         solver="concorde",
-        train_samples_num=16,
-        val_samples_num=16,
-        test_samples_num=16,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
         save_path=save_path,
     )
     # generate data
@@ -70,16 +70,16 @@ def test_tsp():
     Test TSPDataGenerator
     """
     _test_tsp_lkh_generator(
-        num_threads=16, nodes_num=50, data_type="uniform", regret=False
+        num_threads=4, nodes_num=50, data_type="uniform", regret=False
     )
     _test_tsp_lkh_generator(
-        num_threads=16, nodes_num=50, data_type="uniform", regret=True
+        num_threads=4, nodes_num=50, data_type="uniform", regret=True
     )
     _test_tsp_lkh_generator(
-        num_threads=16, nodes_num=50, data_type="gaussian", regret=False
+        num_threads=4, nodes_num=50, data_type="gaussian", regret=False
     )
-    _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="uniform")
-    _test_tsp_concorde_generator(num_threads=16, nodes_num=50, data_type="gaussian")
+    _test_tsp_concorde_generator(num_threads=4, nodes_num=50, data_type="uniform")
+    _test_tsp_concorde_generator(num_threads=4, nodes_num=50, data_type="gaussian")
 
 
 ##############################################

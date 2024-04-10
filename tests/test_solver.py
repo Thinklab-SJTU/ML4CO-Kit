@@ -4,6 +4,7 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from data4co.solver import TSPLKHSolver, TSPConcordeSolver, KaMISSolver
+from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
 ##############################################
@@ -54,9 +55,16 @@ def test_tsp():
 
 def _test_kamis_solver():
     kamis_solver = KaMISSolver(time_limit=30)
-    kamis_solver.solve(src="tests/mis_test", out="tests/mis_test/solve")
-    kamis_solver.from_folder("tests/mis_test")
-    kamis_solver.from_satlib_pickle("tests/mis_test.pickle")
+    cnf_folder_to_gpickle_folder(
+        cnf_folder="tests/mis_test_cnf",
+        gpickle_foler="tests/mis_test"
+    )
+    kamis_solver.solve(
+        src="tests/mis_test/mis_graph", 
+        out="tests/mis_test/mis_graph/solve"
+    )
+    kamis_solver.from_gpickle_folder("tests/mis_test/mis_graph")
+    kamis_solver.read_ref_sel_nodes_num_from_txt("tests/mis_test/ref_solution.txt")
     gap_avg = kamis_solver.evaluate(calculate_gap=True)["avg_gap"]
     print(f"KaMISSolver Gap: {gap_avg}")
     if gap_avg >= 0.1:

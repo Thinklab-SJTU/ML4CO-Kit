@@ -2,7 +2,7 @@ import importlib.util
 
 # base
 from .data import TSPLIBOriDataset, TSPUniformDataset
-from .data import SATLIBData, SATLIBDataset
+from .data import SATLIBOriDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator

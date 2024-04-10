@@ -1,11 +1,15 @@
 import os
 import bz2
 import lzma
-import codecs
 import gzip
+import codecs
+import pickle
 import itertools
 import numpy as np
 import networkx as nx
+from tqdm import tqdm
+from typing import Tuple
+from collections import OrderedDict
 
 
 class FileObject(object):
@@ -69,12 +73,9 @@ class FileObject(object):
 class CNF(object):
     def __init__(
         self,
-        from_file=None,
-        from_fp=None,
-        from_string=None,
-        from_clauses=[],
-        from_aiger=None,
-        comment_lead=["c"],
+        from_file = None,
+        from_fp = None,
+        comment_lead = ["c"],
     ):
         self.nv = 0
         self.clauses = []
@@ -84,12 +85,6 @@ class CNF(object):
             self.from_file(from_file, comment_lead, compressed_with="use_ext")
         elif from_fp:
             self.from_fp(from_fp, comment_lead)
-        elif from_string:
-            self.from_string(from_string, comment_lead)
-        elif from_clauses:
-            self.from_clauses(from_clauses)
-        elif from_aiger:
-            self.from_aiger(from_aiger)
 
     def __repr__(self):
         """
@@ -98,7 +93,7 @@ class CNF(object):
         s = self.to_dimacs().replace("\n", "\\n")
         return f'CNF(from_string="{s}")'
 
-    def from_file(self, fname, comment_lead=["c"], compressed_with="use_ext"):
+    def from_file(self, fname, comment_lead = ["c"], compressed_with = "use_ext"):
         with FileObject(fname, mode="r", compression=compressed_with) as fobj:
             self.from_fp(fobj.fp, comment_lead)
 
@@ -124,9 +119,10 @@ class CNF(object):
         )
 
 
-def sat_to_mis_graph(sat_path: str) -> nx.Graph:
+def sat_to_mis_graph(sat_path: str) -> Tuple[nx.Graph, int]:
     cnf = CNF(sat_path)
     nv = cnf.nv
+    clauses_num = len(cnf.clauses)
     clauses = list(filter(lambda x: x, cnf.clauses))
     ind = {k: [] for k in np.concatenate([np.arange(1, nv + 1), -np.arange(1, nv + 1)])}
     edges = []
@@ -148,4 +144,45 @@ def sat_to_mis_graph(sat_path: str) -> nx.Graph:
             for v in ind[-i]:
                 edges.append((u, v))
     graph = nx.from_edgelist(edges)
-    return graph
+    return graph, clauses_num
+
+
+def cnf_to_gpickle(file_path: str, save_path: str = None) -> Tuple[nx.Graph, int]:
+    # check the file format
+    if not file_path.endswith(".cnf"):
+        raise ValueError("Invalid file format. Expected a ``.cnf`` file.")
+    if save_path is not None:
+        if not save_path.endswith(".gpickle"):
+            raise ValueError("Invalid file format. Expected a ``.gpickle`` file.")
+    
+    # convert sat to mis graph
+    graph, clauses_num = sat_to_mis_graph(sat_path=file_path)
+    if save_path is not None:
+        if not save_path.endswith(".gpickle"):
+            save_path += ".gpickle"
+        with open(save_path, "wb") as f:
+            pickle.dump(graph, f, pickle.HIGHEST_PROTOCOL)
+    return graph, clauses_num
+        
+
+def cnf_folder_to_gpickle_folder(cnf_folder: str, gpickle_foler: str):
+    # check the folder
+    mis_graph_save_dir = os.path.join(gpickle_foler, "mis_graph")
+    if not os.path.exists(mis_graph_save_dir):
+        os.makedirs(mis_graph_save_dir)
+        
+    # cnf to gpickle
+    ref_dict = OrderedDict()
+    cnf_files = os.listdir(cnf_folder)
+    for cnf_file in tqdm(cnf_files, desc=f"Processing files in {cnf_folder}"):
+        file_path = os.path.join(cnf_folder, cnf_file)
+        gpickle_file = cnf_file.replace(".cnf", ".gpickle")
+        save_path = os.path.join(mis_graph_save_dir, gpickle_file)
+        _, clauses_num = cnf_to_gpickle(file_path, save_path)
+        ref_dict[gpickle_file] = clauses_num
+    
+    # save the ref. solution
+    ref_save_path = os.path.join(gpickle_foler, "ref_solution.txt")
+    with open(ref_save_path, 'w') as ref_file:
+        for gpickle_file, clauses_num in ref_dict.items():
+            ref_file.write(f"{gpickle_file}: {clauses_num}\n")
