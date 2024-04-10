@@ -56,7 +56,7 @@ def test_tsp():
 def _test_kamis_solver():
     kamis_solver = KaMISSolver(time_limit=30)
     cnf_folder_to_gpickle_folder(
-        cnf_folder="tests/solver_test/mis_test",
+        cnf_folder="tests/solver_test/mis_test_cnf",
         gpickle_foler="tests/solver_test/mis_test"
     )
     kamis_solver.solve(
