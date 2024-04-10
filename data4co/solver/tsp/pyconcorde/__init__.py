@@ -4,7 +4,7 @@ import pathlib
 
 
 try:
-    from .concorde.tsp import TSPSolver as TSPConSolver
+    from .concorde.solve import TSPSolver as TSPConSolver
 except:
     concorde_path = pathlib.Path(__file__).parent.parent / "pyconcorde"
     ori_dir = os.getcwd()
@@ -13,4 +13,4 @@ except:
     os.chdir(ori_dir)
     if os.path.exists(f"{concorde_path}/build"):
         shutil.rmtree(f"{concorde_path}/build")
-    from .concorde.tsp import TSPSolver as TSPConSolver
+    from .concorde.solve import TSPSolver as TSPConSolver

@@ -241,6 +241,10 @@ class TSPSolver:
         self.check_tours_not_none()
         points = self.ori_points if original else self.points
 
+        # makedirs
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        
         # write
         for idx in range(points.shape[0]):
             save_path = os.path.join(save_dir, filename + f"-{idx}.tsp")
@@ -268,6 +272,10 @@ class TSPSolver:
         self.check_tours_not_none()
         tours = self.tours
 
+        # makedirs
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
         # write
         for idx in range(tours.shape[0]):
             save_path = os.path.join(save_dir, filename + f"-{idx}.opt.tour")
@@ -277,7 +285,7 @@ class TSPSolver:
                 f.write(f"DIMENSION: {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{tours[i]}\n")
+                    f.write(f"{tours[idx][i]}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 

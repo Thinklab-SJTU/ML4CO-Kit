@@ -6,13 +6,51 @@ import os
 import shutil
 import tempfile
 import uuid
+import numpy as np
 
 from ._concorde import _CCutil_gettsplib, _CCtsp_solve_dat
-from .util import write_tsp_file, EDGE_WEIGHT_TYPES
 
 ComputedTour = namedtuple(
     "ComputedTour", ["tour", "optimal_value", "success", "found_tour", "hit_timebound"]
 )
+
+
+EDGE_WEIGHT_TYPES = {
+    "EXPLICIT",
+    "EUC_2D",
+    "EUC_3D",
+    "MAX_2D",
+    "MAN_2D",
+    "GEO",
+    "GEOM",
+    "ATT",
+    "CEIL_2D",
+    "DSJRAND",
+}
+
+
+def write_tsp_file(fp, xs, ys, norm, name):
+    """Write data to a TSPLIB file."""
+    if len(xs) != len(ys):
+        raise ValueError(
+            "x and y coordinate vector must have the "
+            "same length ({} != {})".format(len(xs), len(ys))
+        )
+    if norm not in EDGE_WEIGHT_TYPES:
+        raise ValueError(
+            "Norm {!r} must be one of {}".format(norm, ", ".join(EDGE_WEIGHT_TYPES))
+        )
+
+    fp.write("NAME: {}\n".format(name))
+    fp.write("TYPE: TSP\n")
+    fp.write("DIMENSION: {}\n".format(len(xs)))
+    fp.write("EDGE_WEIGHT_TYPE: {}\n".format(norm))
+    fp.write("NODE_COORD_SECTION\n")
+    for n, (x, y) in enumerate(zip(xs, ys), start=1):
+        fp.write("{} {} {}\n".format(n, x, y))
+    fp.write("EOF\n")
+
+
 
 
 class TSPSolver(object):

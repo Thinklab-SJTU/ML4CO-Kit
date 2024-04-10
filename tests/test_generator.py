@@ -73,6 +73,9 @@ def test_tsp():
         num_threads=4, nodes_num=50, data_type="uniform", regret=False
     )
     _test_tsp_lkh_generator(
+        num_threads=1, nodes_num=50, data_type="uniform", regret=True
+    )
+    _test_tsp_lkh_generator(
         num_threads=4, nodes_num=50, data_type="uniform", regret=True
     )
     _test_tsp_lkh_generator(

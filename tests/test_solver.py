@@ -3,7 +3,7 @@ import sys
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.solver import TSPLKHSolver, TSPConcordeSolver, KaMISSolver
+from data4co.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, KaMISSolver
 from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
@@ -11,11 +11,26 @@ from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
 #             Test Func For TSP              #
 ##############################################
 
+def test_tsp_base_solver():
+    solver = TSPSolver()
+    solver.from_txt("tests/solver_test/tsp50_test_small.txt")
+    os.remove("tests/solver_test/tsp50_test_small.txt")
+    solver.read_tours(solver.ref_tours)
+    solver.to_tsp(
+        save_dir="tests/solver_test/tsp50_test_small",
+        filename="problem"
+    )
+    solver.to_opt_tour(
+        save_dir="tests/solver_test/tsp50_test_small",
+        filename="solution"
+    )
+    solver.to_txt("tests/solver_test/tsp50_test_small.txt")
+    
 
-def _test_tsp_lkh_solver():
+def _test_tsp_lkh_solver(show_time: bool, num_threads: int):
     tsp_lkh_solver = TSPLKHSolver(lkh_max_trials=100)
     tsp_lkh_solver.from_txt("tests/solver_test/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True, num_threads=2)
+    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
@@ -26,10 +41,17 @@ def _test_tsp_lkh_solver():
         raise ValueError(message)
 
 
-def _test_tsp_concorde_solver():
+def test_tsp_lkh_solver():
+    _test_tsp_lkh_solver(True, 1)
+    _test_tsp_lkh_solver(True, 2)
+    _test_tsp_lkh_solver(False, 1)
+    _test_tsp_lkh_solver(False, 2)
+    
+
+def _test_tsp_concorde_solver(show_time: bool, num_threads: int):
     tsp_lkh_solver = TSPConcordeSolver()
     tsp_lkh_solver.from_txt("tests/solver_test/tsp50_test.txt")
-    tsp_lkh_solver.solve(show_time=True, num_threads=2)
+    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
@@ -40,12 +62,20 @@ def _test_tsp_concorde_solver():
         raise ValueError(message)
 
 
+def test_tsp_concorde_solver():
+    _test_tsp_concorde_solver(True, 1)
+    _test_tsp_concorde_solver(True, 2)
+    _test_tsp_concorde_solver(False, 1)
+    _test_tsp_concorde_solver(False, 2)
+
+
 def test_tsp():
     """
     Test TSPSolver
     """
-    _test_tsp_lkh_solver()
-    _test_tsp_concorde_solver()
+    test_tsp_base_solver()
+    # test_tsp_lkh_solver()
+    # test_tsp_concorde_solver()
 
 
 ##############################################
@@ -88,4 +118,4 @@ def test_mis():
 
 if __name__ == "__main__":
     test_tsp()
-    test_mis()
+    # test_mis()
