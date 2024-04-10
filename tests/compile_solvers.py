@@ -4,12 +4,6 @@ import wget
 import shutil
 
 
-# pyconcorde
-ori_dir = os.getcwd()
-os.chdir("data4co/solver/tsp/pyconcorde")
-os.system("python ./setup.py build_ext --inplace")
-os.chdir(ori_dir)
-
 # LKH
 lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
 wget.download(url=lkh_url, out="LKH-3.0.7.tgz")
@@ -22,6 +16,7 @@ os.system(f"cp LKH {target_dir}")
 os.chdir(ori_dir)
 os.remove("LKH-3.0.7.tgz")
 shutil.rmtree("LKH-3.0.7")
+
 
 # KaMIS
 if os.path.exists("data4co/solver/mis/KaMIS"):

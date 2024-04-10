@@ -44,7 +44,8 @@ def _test_tsp_lkh_generator(
 
 
 def _test_tsp_concorde_generator(
-    num_threads: int, nodes_num: int, data_type: str
+    num_threads: int, nodes_num: int, data_type: str,
+    recompile_concorde: bool = False
 ):
     """
     Test TSPDataGenerator using Concorde Solver
@@ -64,6 +65,9 @@ def _test_tsp_concorde_generator(
         test_samples_num=4,
         save_path=save_path,
     )
+    if recompile_concorde:
+        tsp_data_concorde.recompile_concorde()
+        
     # generate data
     tsp_data_concorde.generate()
     # remove the save path
@@ -86,8 +90,15 @@ def test_tsp():
     _test_tsp_lkh_generator(
         num_threads=4, nodes_num=50, data_type="gaussian", regret=False
     )
-    _test_tsp_concorde_generator(num_threads=4, nodes_num=50, data_type="uniform")
-    _test_tsp_concorde_generator(num_threads=4, nodes_num=50, data_type="gaussian")
+    _test_tsp_concorde_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", recompile_concorde=True
+    )
+    _test_tsp_concorde_generator(
+        num_threads=4, nodes_num=50, data_type="gaussian"
+    )
+    _test_tsp_concorde_generator(
+        num_threads=4, nodes_num=50, data_type="cluster"
+    )
 
 
 ##############################################
