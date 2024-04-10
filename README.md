@@ -223,7 +223,7 @@ mis_solver.solve(src="docs/mis_example")
 # draw
 draw_mis_problem(
     save_path="docs/mis_problem.png", 
-    ckle_path="docs/mis_example/mis_example.gpickle"
+    gpickle_path="docs/mis_example/mis_example.gpickle"
 )
 draw_mis_solution(
     save_path="docs/mis_solution.png",

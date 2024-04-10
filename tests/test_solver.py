@@ -14,7 +14,7 @@ from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 def _test_tsp_lkh_solver():
     tsp_lkh_solver = TSPLKHSolver(lkh_max_trials=100)
-    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
+    tsp_lkh_solver.from_txt("tests/solver_test/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True, num_threads=2)
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPLKHSolver Gap: {gap_avg}")
@@ -28,7 +28,7 @@ def _test_tsp_lkh_solver():
 
 def _test_tsp_concorde_solver():
     tsp_lkh_solver = TSPConcordeSolver()
-    tsp_lkh_solver.from_txt("tests/tsp50_test.txt")
+    tsp_lkh_solver.from_txt("tests/solver_test/tsp50_test.txt")
     tsp_lkh_solver.solve(show_time=True, num_threads=2)
     _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
     print(f"TSPConcordeSolver Gap: {gap_avg}")
@@ -56,15 +56,15 @@ def test_tsp():
 def _test_kamis_solver():
     kamis_solver = KaMISSolver(time_limit=30)
     cnf_folder_to_gpickle_folder(
-        cnf_folder="tests/mis_test_cnf",
-        gpickle_foler="tests/mis_test"
+        cnf_folder="tests/solver_test/solver_test/mis_test",
+        gpickle_foler="tests/solver_test/mis_test"
     )
     kamis_solver.solve(
-        src="tests/mis_test/mis_graph", 
-        out="tests/mis_test/mis_graph/solve"
+        src="tests/solver_test/mis_test/mis_graph", 
+        out="tests/solver_test/mis_test/mis_graph/solve"
     )
-    kamis_solver.from_gpickle_folder("tests/mis_test/mis_graph")
-    kamis_solver.read_ref_sel_nodes_num_from_txt("tests/mis_test/ref_solution.txt")
+    kamis_solver.from_gpickle_folder("tests/solver_test/mis_test/mis_graph")
+    kamis_solver.read_ref_sel_nodes_num_from_txt("tests/solver_test/mis_test/ref_solution.txt")
     gap_avg = kamis_solver.evaluate(calculate_gap=True)["avg_gap"]
     print(f"KaMISSolver Gap: {gap_avg}")
     if gap_avg >= 0.1:
