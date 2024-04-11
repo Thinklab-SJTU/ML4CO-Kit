@@ -11,3 +11,7 @@ coverage:
       default:
         # non-blocking checks
         informational: true
+  
+ignore:
+ - data4co/solver/mis/gurobi.py
+ - data4co/solver/tsp/pyconcorde/setup.py

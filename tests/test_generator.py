@@ -107,7 +107,8 @@ def test_tsp():
 
 
 def _test_mis_kamis(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
+    nodes_num_min: int, nodes_num_max: int, data_type: str,
+    recompile_kamis: bool = False
 ):
     """
     Test MISDataGenerator using KaMIS
@@ -118,6 +119,8 @@ def _test_mis_kamis(
         os.makedirs(save_path)
     # create TSPDataGenerator using lkh solver
     solver = KaMISSolver(time_limit=10)
+    if recompile_kamis:
+        solver.recompile_kamis()
     mis_data_kamis = MISDataGenerator(
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
@@ -168,7 +171,9 @@ def test_mis():
     """
     Test MISDataGenerator
     """
-    _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mis_kamis(
+        nodes_num_min=600, nodes_num_max=700, data_type="er", recompile_kamis=True
+    )
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ba")
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="hk")
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ws")
