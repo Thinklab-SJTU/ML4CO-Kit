@@ -25,9 +25,9 @@ def get_property(prop, project):
 
 
 # Package meta-data.
-NAME = "data4co"
-DESCRIPTION = "data4co provides convenient dataset generators for the combinatorial optimization problem"
-URL = "https://github.com/heatingma/Data4CO"
+NAME = "ml4co-kit"
+DESCRIPTION = "ml4co-kit provides convenient dataset generators for the combinatorial optimization problem"
+URL = "https://github.com/Thinklab-SJTU/ML4CO-Kit"
 AUTHOR = get_property("__author__", NAME)
 VERSION = get_property("__version__", NAME)
 REQUIRED = [
@@ -109,6 +109,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: Unix",

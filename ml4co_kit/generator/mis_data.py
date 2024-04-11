@@ -6,8 +6,8 @@ import networkx as nx
 import numpy as np
 from tqdm import tqdm
 from typing import Union
-from data4co.solver.mis import KaMISSolver, MISGurobi
-from data4co.solver import MISSolver, KaMISSolver, MISGurobi
+from ml4co_kit.solver.mis import KaMISSolver, MISGurobi
+from ml4co_kit.solver import MISSolver, KaMISSolver, MISGurobi
 
 
 class MISDataGenerator:

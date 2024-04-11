@@ -1,5 +1,5 @@
 import os
-from data4co.utils import download, extract_archive
+from ml4co_kit.utils import download, extract_archive
 
 
 TSP_UNIFORM_50 = [

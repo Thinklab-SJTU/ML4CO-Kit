@@ -1,13 +1,11 @@
 import os
-from data4co.solver.mis.base import MISSolver
-from data4co.data.mis.satlib_original import SATLIBOriDataset
-from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
+from ml4co_kit.solver.mis.base import MISSolver
+from ml4co_kit.data.mis.satlib_original import SATLIBOriDataset
+from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
 class SATLIBEvaluator:
-    def __init__(
-        self, test_folder: str = "dataset/satlib_original/test_files", samples_num: int = -1
-    ) -> None:
+    def __init__(self, test_folder: str = "dataset/satlib_original/test_files") -> None:
         self.dataset = SATLIBOriDataset()
         self.test_folder = test_folder
         gpickle_root_foler = test_folder + "_gpickle"

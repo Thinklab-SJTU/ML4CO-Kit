@@ -19,17 +19,17 @@ shutil.rmtree("LKH-3.0.7")
 
 
 # KaMIS
-if os.path.exists("data4co/solver/mis/KaMIS"):
-    shutil.rmtree("data4co/solver/mis/KaMIS")
+if os.path.exists("ml4co_kit/solver/mis/KaMIS"):
+    shutil.rmtree("ml4co_kit/solver/mis/KaMIS")
 shutil.copytree(
-    "data4co/solver/mis/kamis-source/", "data4co/solver/mis/KaMIS/tmp_build/"
+    "ml4co_kit/solver/mis/kamis-source/", "ml4co_kit/solver/mis/KaMIS/tmp_build/"
 )
 ori_dir = os.getcwd()
-os.chdir("data4co/solver/mis/KaMIS/tmp_build")
+os.chdir("ml4co_kit/solver/mis/KaMIS/tmp_build")
 os.system("bash cleanup.sh")
 os.system("bash compile_withcmake.sh")
 os.chdir(ori_dir)
 shutil.copytree(
-    "data4co/solver/mis/KaMIS/tmp_build/deploy/", "data4co/solver/mis/KaMIS/deploy/"
+    "ml4co_kit/solver/mis/KaMIS/tmp_build/deploy/", "ml4co_kit/solver/mis/KaMIS/deploy/"
 )
-shutil.rmtree("data4co/solver/mis/KaMIS/tmp_build")
+shutil.rmtree("ml4co_kit/solver/mis/KaMIS/tmp_build")

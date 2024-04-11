@@ -8,9 +8,9 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
-from data4co.solver.tsp import TSPLKHSolver
-from data4co.evaluate.tsp.base import TSPEvaluator
-from data4co.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
+from ml4co_kit.solver.tsp import TSPLKHSolver
+from ml4co_kit.evaluate.tsp.base import TSPEvaluator
+from ml4co_kit.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -163,7 +163,7 @@ class TSPDataGenerator:
 
     def check_concorde(self):
         try:
-            from data4co.solver.tsp.pyconcorde import TSPConSolver
+            from ml4co_kit.solver.tsp.pyconcorde import TSPConSolver
         except:
             self.recompile_concorde()
 

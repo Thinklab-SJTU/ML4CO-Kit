@@ -2,7 +2,7 @@ import os
 import tsplib95
 import numpy as np
 from typing import Union
-from data4co.evaluate.tsp.base import TSPEvaluator
+from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 
 
 SUPPORT_TSPLIB_TYPE = ["EUC_2D", "GEO"]

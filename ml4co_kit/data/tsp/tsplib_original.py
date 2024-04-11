@@ -1,5 +1,5 @@
 import os
-from data4co.utils import download, extract_archive
+from ml4co_kit.utils import download, extract_archive
 
 
 TSPLIB_LARGE_EUC_2D_PATH = "dataset/tsplib_original/large/EUC_2D"

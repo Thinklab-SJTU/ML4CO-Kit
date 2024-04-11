@@ -3,8 +3,8 @@ import sys
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, KaMISSolver
-from data4co.utils.mis_utils import cnf_folder_to_gpickle_folder
+from ml4co_kit.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, KaMISSolver
+from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
 ##############################################
@@ -74,8 +74,8 @@ def test_tsp():
     Test TSPSolver
     """
     test_tsp_base_solver()
-    # test_tsp_lkh_solver()
-    # test_tsp_concorde_solver()
+    test_tsp_lkh_solver()
+    test_tsp_concorde_solver()
 
 
 ##############################################
@@ -118,4 +118,4 @@ def test_mis():
 
 if __name__ == "__main__":
     test_tsp()
-    # test_mis()
+    test_mis()

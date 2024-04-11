@@ -13,5 +13,5 @@ coverage:
         informational: true
   
 ignore:
- - data4co/solver/mis/gurobi.py
- - data4co/solver/tsp/pyconcorde/setup.py
+ - ml4co_kit/solver/mis/gurobi.py
+ - ml4co_kit/solver/tsp/pyconcorde/setup.py

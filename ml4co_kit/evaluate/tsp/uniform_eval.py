@@ -1,5 +1,5 @@
-from data4co.data.tsp.tsp_uniform import TSPUniformDataset
-from data4co.solver.tsp.base import TSPSolver
+from ml4co_kit.data.tsp.tsp_uniform import TSPUniformDataset
+from ml4co_kit.solver.tsp.base import TSPSolver
 
 
 class TSPUniformEvaluator:

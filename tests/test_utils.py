@@ -4,7 +4,7 @@ import shutil
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.utils.file_utils import compress_folder, extract_archive
+from ml4co_kit.utils.file_utils import compress_folder, extract_archive
 
 
 def test_file_utils():

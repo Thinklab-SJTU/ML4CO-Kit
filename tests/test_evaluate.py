@@ -1,11 +1,12 @@
 import os
 import sys
+import shutil
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.data import SATLIBOriDataset
-from data4co.evaluate import TSPLIBOriEvaluator, TSPUniformEvaluator
-from data4co.solver import TSPConcordeSolver
+from ml4co_kit.data import SATLIBOriDataset
+from ml4co_kit.evaluate import TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator
+from ml4co_kit.solver import TSPConcordeSolver, KaMISSolver
 
 
 def test_tsplib_original_eval():
@@ -49,11 +50,29 @@ def test_tsp_uniform_eval():
         raise ValueError(message)
 
 
-def test_sat_dataset():
+def test_satlib_original_eval():
     SATLIBOriDataset()
+    test_folder_full = "dataset/satlib_original/test_files"
+    test_folder_part = "dataset/satlib_original/test_files_part"
+    os.mkdir(test_folder_part)
+    sel_files = os.listdir(test_folder_full)[:10]
+    for filename in sel_files:
+        src = os.path.join(test_folder_full, filename)
+        dst = os.path.join(test_folder_part, filename)
+        shutil.copy(src=src, dst=dst)
+    eva = SATLIBEvaluator(test_folder="dataset/satlib_original/test_files_part")
+    solver = KaMISSolver(time_limit=10)
+    gap_avg = eva.evaluate(solver)["avg_gap"]
+    print(f"KaMISSolver Gap: {gap_avg}")
+    if gap_avg >= 0.1:
+        message = (
+            f"The average gap ({gap_avg}) of MIS solved by KaMISSolver "
+            "is larger than or equal to 0.1%."
+        )
+        raise ValueError(message)
 
 
 if __name__ == "__main__":
-    test_sat_dataset()
     test_tsplib_original_eval()
     test_tsp_uniform_eval()
+    test_satlib_original_eval()

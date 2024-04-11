@@ -4,7 +4,7 @@ import pathlib
 import numpy as np
 import networkx as nx
 from tqdm import tqdm
-from data4co.utils.mis_utils import sat_to_mis_graph
+from ml4co_kit.utils.mis_utils import sat_to_mis_graph
 from collections import OrderedDict
 
 

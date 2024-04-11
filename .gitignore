@@ -1,23 +1,30 @@
+# pycache
 *.DS_Store
 *__pycache__
-*wandb/*
-*.gz
 **/__pycache__/*
 __pycache__/
 **/__pycache__/**
 
+# .zip or .gz
+*.zip
+*.gz
+
 # build
+LKH-3.0.7.tgz
 LKH-3.0.7/**
 dist/**
-data4co.egg-info/**
+ml4co_kit.egg-info/**
 build/**
 
 # C extensions
+*.pyd
 *.so
-data4co/solver/tsp/pyconcorde/build/**
-data4co/solver/mis/KaMIS/**
+ml4co_kit/solver/tsp/pyconcorde/build/**
+ml4co_kit/solver/mis/KaMIS/**
+ml4co_kit/solver/tsp/pyconcorde/concorde/_concorde.c
+
+# datasets
 dataset/**
-data4co/solver/tsp/pyconcorde/concorde/_concorde.c
 
 # tmp
 tmp/**

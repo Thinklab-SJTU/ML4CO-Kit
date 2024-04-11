@@ -4,20 +4,20 @@ import shutil
 
 # pyconcorde
 ori_dir = os.getcwd()
-os.chdir("data4co/solver/tsp/pyconcorde")
+os.chdir("ml4co_kit/solver/tsp/pyconcorde")
 os.system("python ./setup.py build_ext --inplace")
 os.chdir(ori_dir)
 
 # KaMIS
 shutil.copytree(
-    "data4co/solver/mis/kamis-source/", "data4co/solver/mis/KaMIS/tmp_build/"
+    "ml4co_kit/solver/mis/kamis-source/", "ml4co_kit/solver/mis/KaMIS/tmp_build/"
 )
 ori_dir = os.getcwd()
-os.chdir("data4co/solver/mis/KaMIS/tmp_build")
+os.chdir("ml4co_kit/solver/mis/KaMIS/tmp_build")
 os.system("bash cleanup.sh")
 os.system("bash compile_withcmake.sh")
 os.chdir(ori_dir)
 shutil.copytree(
-    "data4co/solver/mis/KaMIS/tmp_build/deploy/", "data4co/solver/mis/KaMIS/deploy/"
+    "ml4co_kit/solver/mis/KaMIS/tmp_build/deploy/", "ml4co_kit/solver/mis/KaMIS/deploy/"
 )
-shutil.rmtree("data4co/solver/mis/KaMIS/tmp_build/")
+shutil.rmtree("ml4co_kit/solver/mis/KaMIS/tmp_build/")

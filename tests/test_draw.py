@@ -3,10 +3,10 @@ import sys
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
-from data4co.draw.mis import draw_mis_solution, draw_mis_problem
+from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
+from ml4co_kit.draw.mis import draw_mis_solution, draw_mis_problem
 
-from data4co.solver import TSPConcordeSolver, KaMISSolver
+from ml4co_kit.solver import TSPConcordeSolver, KaMISSolver
 
 
 def test_draw_tsp():

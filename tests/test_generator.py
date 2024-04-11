@@ -4,7 +4,7 @@ import sys
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from data4co import TSPDataGenerator, MISDataGenerator, KaMISSolver
+from ml4co_kit import TSPDataGenerator, MISDataGenerator, KaMISSolver
 
 
 ##############################################
