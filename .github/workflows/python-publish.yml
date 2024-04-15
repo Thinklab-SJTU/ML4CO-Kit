@@ -36,7 +36,7 @@ jobs:
         python -m twine upload dist/*
       env:
         TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_DATA4CO }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_ML4CO_KIT }}
 
 
   linux:
@@ -74,4 +74,4 @@ jobs:
           python -m twine upload dist/*
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_DATA4CO }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_ML4CO_KIT }}
