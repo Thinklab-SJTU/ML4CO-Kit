@@ -1,3 +1,4 @@
 gradio
 ml4co-kit
 matplotlib
+cython
