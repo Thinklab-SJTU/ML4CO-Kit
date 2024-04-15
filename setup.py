@@ -26,10 +26,11 @@ def get_property(prop, project):
 
 # Package meta-data.
 NAME = "ml4co-kit"
+PACKAGE_NAME = "ml4co_kit"
 DESCRIPTION = "ml4co-kit provides convenient dataset generators for the combinatorial optimization problem"
 URL = "https://github.com/Thinklab-SJTU/ML4CO-Kit"
-AUTHOR = get_property("__author__", NAME)
-VERSION = get_property("__version__", NAME)
+AUTHOR = get_property("__author__", PACKAGE_NAME)
+VERSION = get_property("__version__", PACKAGE_NAME)
 REQUIRED = [
     "numpy>=1.24.4",
     "networkx>=2.8.8",
