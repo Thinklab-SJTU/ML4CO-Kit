@@ -35,7 +35,7 @@ class TSPSolver:
         elif self.ori_points.ndim == 2:
             self.ori_points = np.expand_dims(self.ori_points, axis=0)
         if self.ori_points.ndim != 3:
-            raise ValueError("the ori_points must be 2D or 3D array.")
+            raise ValueError("The ``ori_points`` must be 2D or 3D array.")
 
     def check_tours_dim(self):
         if self.tours is None:
@@ -244,7 +244,7 @@ class TSPSolver:
         # makedirs
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        
+
         # write
         for idx in range(points.shape[0]):
             save_path = os.path.join(save_dir, filename + f"-{idx}.tsp")
