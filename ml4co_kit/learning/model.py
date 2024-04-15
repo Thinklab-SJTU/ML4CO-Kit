@@ -130,8 +130,8 @@ class BaseEncoder(pl.LightningModule):
 class ModelConfigurator:
     """ModelConfigurator class is used to configure the models."""
 
-    def __init__(self):
-        self.model_class = {}  # model classes
+    def __init__(self, model_class):
+        self.model_class = model_class  # model classes
 
     def get_model(self, task, model_type):
         return self.model_class(task, model_type)
