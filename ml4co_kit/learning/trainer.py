@@ -1,16 +1,14 @@
 import os
-from wandb.util import generate_id
-from typing import Optional
 import torch
 from torch import nn
+from typing import Optional
+from wandb.util import generate_id
 from typing import Union, Optional
-from pytorch_lightning import Trainer
-from pytorch_lightning.strategies.strategy import Strategy
-from pytorch_lightning.strategies.ddp import DDPStrategy
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from pytorch_lightning.callbacks.progress.tqdm_progress import TQDMProgressBar
+from pytorch_lightning.trainer import Trainer
+from pytorch_lightning.strategies import Strategy, DDPStrategy
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint, TQDMProgressBar
 from pytorch_lightning.utilities import rank_zero_info
-from pytorch_lightning.loggers.wandb import WandbLogger
+from pytorch_lightning.loggers import WandbLogger
 
 
 class Checkpoint(ModelCheckpoint):
@@ -46,7 +44,7 @@ class Logger(WandbLogger):
         resume_id: Optional[str] = None,
     ):
         if not os.path.exists(save_dir):
-            os.mkdir(save_dir)
+            os.makedirs(save_dir)
         if id is None and resume_id is None:
             wandb_id = os.getenv("WANDB_RUN_ID") or generate_id()
         else:

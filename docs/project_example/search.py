@@ -1,7 +1,13 @@
 import numpy as np
 
 
-def tsp_greedy(adj_mat, np_points, parallel_sampling=1, device="cpu", **kwargs):
+def tsp_greedy(
+    adj_mat: np.ndarray, 
+    np_points: np.ndarray, 
+    parallel_sampling: int=1, 
+    device: str="cpu", 
+    **kwargs
+):
     raise NotImplementedError
 
 

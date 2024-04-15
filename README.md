@@ -157,16 +157,16 @@ from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
 solver = TSPConcordeSolver(scale=1)
-solver.from_tsp("docs/kroA150.tsp")
+solver.from_tsp("examples/tsp/kroA150.tsp")
 solver.solve(norm="EUC_2D")
 
 # draw
 draw_tsp_problem(
-    save_path="docs/kroA150_problem.png",
+    save_path="docs/assets/kroA150_problem.png",
     points=solver.ori_points,
 )
 draw_tsp_solution(
-    save_path="docs/kroA150_solution.png",
+    save_path="docs/assets/kroA150_solution.png",
     points=solver.ori_points,
     tours=solver.tours
 )
@@ -187,17 +187,17 @@ from data4co import draw_mis_problem, draw_mis_solution
 
 # use KaMISSolver to solve the problem
 mis_solver = KaMISSolver()
-mis_solver.solve(src="docs/mis_example")
+mis_solver.solve(src="examples/mis_example")
 
 # draw
 draw_mis_problem(
-    save_path="docs/mis_problem.png", 
-    ckle_path="docs/mis_example/mis_example.gpickle"
+    save_path="docs/assets/mis_problem.png", 
+    gpickle_path="examples/mis/mis_example.gpickle"
 )
 draw_mis_solution(
     save_path="docs/mis_solution.png",
-    gpickle_path="docs/mis_example/mis_example.gpickle",
-    result_path="docs/mis_example/solve/mis_example_unweighted.result"
+    gpickle_path="examples/mis/mis_example.gpickle",
+    result_path="examples/mis/solve/mis_example_unweighted.result"
 )
 ```
 

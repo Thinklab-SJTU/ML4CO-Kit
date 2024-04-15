@@ -1,5 +1,4 @@
 import time
-import torch
 import numpy as np
 from tqdm import tqdm
 from typing import Union, Any
@@ -84,6 +83,12 @@ class TSPNARSolver(TSPSolver):
         decoded_tours = list()
         for idx in tqdm(range(self.points.shape[0]), desc="Decoding"):
             adj_mat = np.expand_dims(heatmap[idx], axis=0)
+            tour = self.decoding_func(
+                adj_mat=adj_mat, 
+                np_points=self.points[idx], 
+                edge_index_np=None,
+                **decoding_kwargs
+            )
             decoded_tours.append(tour[0])
         decoded_tours = np.array(decoded_tours)
 

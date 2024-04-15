@@ -1,7 +1,7 @@
 import torch
 import torch.utils.data
-from ml4co_kit.learning.env import BaseEnv
 from data import TSPDataset
+from ml4co_kit.learning.env import BaseEnv
 from torch_geometric.data import DataLoader as GraphDataLoader
 
 

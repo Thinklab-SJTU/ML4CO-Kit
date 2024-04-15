@@ -1,9 +1,5 @@
-import os
 import torch
-import pickle
 import numpy as np
-from sklearn.neighbors import KDTree
-from torch_geometric.data import Data as GraphData
 
 
 class TSPDataset(torch.utils.data.Dataset):
