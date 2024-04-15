@@ -15,3 +15,4 @@ coverage:
 ignore:
  - ml4co_kit/solver/mis/gurobi.py
  - ml4co_kit/solver/tsp/pyconcorde/setup.py
+ - ml4co_kit/learning/**
