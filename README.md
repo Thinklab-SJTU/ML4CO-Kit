@@ -1,10 +1,10 @@
 <img src="docs/assets/ml4co-kit-logo.png" alt="ML4CO-Kit" width="800"/>
 
-[![PyPi version](https://badgen.net/pypi/v/ml4co-kit/)](https://pypi.org/pypi/data4co/) [![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fdata4co%2Fjson)](https://pypi.python.org/pypi/ml4co-kit/) [![GitHub stars](https://img.shields.io/github/stars/Thinklab-SJTU/ML4CO-Kit.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Thinklab-SJTU/ML4CO-Kit/stargazers/)
+[![PyPi version](https://badgen.net/pypi/v/ml4co-kit/)](https://pypi.org/pypi/data4co/) [![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fdata4co%2Fjson)](https://pypi.python.org/pypi/ml4co-kit/) [![Downloads](https://static.pepy.tech/badge/ml4co-kit)](https://pepy.tech/project/ml4co-kit) [![GitHub stars](https://img.shields.io/github/stars/Thinklab-SJTU/ML4CO-Kit.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Thinklab-SJTU/ML4CO-Kit/stargazers/)
 
 `ML4CO-Kit` is a in-development toolkit for machine learning practices on combinatorial optimization problems, which is a by-product of our research for a unified modular framework that integrates existing ML4CO practices, minimizing disparities among methods and supporting the investigations via in-depth analysis and transparent ablation. 
 
-This reposity focuses on the supporting code for method development instead of implementing core technologies, which will be presented in the future  in our full implementation and organization. `ML4CO-Kit` has the following features:
+This reposity focuses on the supporting code for method development instead of implementing core technologies, which will be presented in the future in our full implementation and organization. `ML4CO-Kit` has the following features:
 
 * The skeleton of framework organization for ML4CO projects;
 * Implemented base classes that facilitate method development;
@@ -62,7 +62,7 @@ $ pip install matplotlib>=3.7.5
 
 ## Usage Examples
 
-### Solve with  Traditional Solver Baselines
+### Solve with Traditional Solver Baselines
 
 We provide base classes that offer a user-friendly approach for implementing traditional and learning-based solvers. Taking `TSPSolver` as an example, which includes functionalities for data input and output, as well as an evaluation function. The solver supports different data inputs, such as Numpy arrays and .txt and .tsp files. The outputs can be saved to corresponding types of files as needed. Additionally, the solver offers an evaluation function, by which users can quickly obtain the average tour length, average gap, and standard deviation of the test dataset. Traditional solvers are directly incorporated in our library inheriting `TSPSolver`.
 
