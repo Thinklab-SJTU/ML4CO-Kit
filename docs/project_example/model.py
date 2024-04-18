@@ -148,7 +148,7 @@ class TSPGNN(BaseEncoder):
         for idx in range(len(solved_tours)):
             assert sorted(solved_tours[idx][:-1]) == [i for i in range(self.nodes_num)]
 
-        # Caculate the gap
+        # Calculate the gap
         tsp_solver = TSPEvaluator(np_points)
         ref_cost = tsp_solver.evaluate(np_ref_tour)
         all_solved_costs = [

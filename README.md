@@ -1,10 +1,10 @@
 <img src="docs/assets/ml4co-kit-logo.png" alt="ML4CO-Kit" width="800"/>
 
-[![PyPi version](https://badgen.net/pypi/v/ml4co-kit/)](https://pypi.org/pypi/data4co/) [![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fdata4co%2Fjson)](https://pypi.python.org/pypi/ml4co-kit/) [![Downloads](https://static.pepy.tech/badge/ml4co-kit)](https://pepy.tech/project/ml4co-kit) [![GitHub stars](https://img.shields.io/github/stars/Thinklab-SJTU/ML4CO-Kit.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Thinklab-SJTU/ML4CO-Kit/stargazers/)
+[![PyPi version](https://badgen.net/pypi/v/ml4co-kit/)](https://pypi.org/pypi/ml4co_kit/) [![PyPI pyversions](https://img.shields.io/badge/dynamic/json?color=blue&label=python&query=info.requires_python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fml4co_kit%2Fjson)](https://pypi.python.org/pypi/ml4co-kit/) [![Downloads](https://static.pepy.tech/badge/ml4co-kit)](https://pepy.tech/project/ml4co-kit) [![GitHub stars](https://img.shields.io/github/stars/Thinklab-SJTU/ML4CO-Kit.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Thinklab-SJTU/ML4CO-Kit/stargazers/)
 
 `ML4CO-Kit` is a in-development toolkit for machine learning practices on combinatorial optimization problems, which is a by-product of our research for a unified modular framework that integrates existing ML4CO practices, minimizing disparities among methods and supporting the investigations via in-depth analysis and transparent ablation. 
 
-This reposity focuses on the supporting code for method development instead of implementing core technologies, which will be presented in the future in our full implementation and organization. `ML4CO-Kit` has the following features:
+This repository focuses on the supporting code for method development instead of implementing core technologies, which will be presented in the future in our full implementation and organization. `ML4CO-Kit` has the following features:
 
 * The skeleton of framework organization for ML4CO projects;
 * Implemented base classes that facilitate method development;
@@ -79,7 +79,7 @@ We provide base classes that offer a user-friendly approach for implementing tra
 >>> tsp_lkh_solver.solve()
 
 # evaluate
->>> tsp_lkh_solver.evaluate(caculate_gap=True)
+>>> tsp_lkh_solver.evaluate(calculate_gap=True)
 (16.583557978549532, 0.21424058722308548, 0.09031979488795724)
 
 # save solving results
@@ -152,8 +152,8 @@ AVG             80850.6   80719.8  0.044436
 #### TSP
 
 ```python
-from data4co.solver import TSPConcordeSolver
-from data4co.draw.tsp import draw_tsp_solution, draw_tsp_problem
+from ml4co_kit.solver import TSPConcordeSolver
+from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
 solver = TSPConcordeSolver(scale=1)
@@ -182,8 +182,8 @@ Visualization Results:
 #### MIS
 
 ```python
-from data4co.solver import KaMISSolver
-from data4co import draw_mis_problem, draw_mis_solution
+from ml4co_kit.solver import KaMISSolver
+from ml4co_kit import draw_mis_problem, draw_mis_solution
 
 # use KaMISSolver to solve the problem
 mis_solver = KaMISSolver()
