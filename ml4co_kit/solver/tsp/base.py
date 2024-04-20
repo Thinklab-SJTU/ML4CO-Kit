@@ -5,7 +5,7 @@ from typing import Union
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 
 
-SUPPORT_TSPLIB_TYPE = ["EUC_2D", "GEO"]
+SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
 
 
 class TSPSolver:
@@ -20,7 +20,6 @@ class TSPSolver:
         self.nodes_num = None
 
     def check_points_dim(self):
-        self.check_ori_points_dim()
         if self.points is None:
             return
         elif self.points.ndim == 2:
@@ -30,6 +29,7 @@ class TSPSolver:
         self.nodes_num = self.points.shape[1]
 
     def check_ori_points_dim(self):
+        self.check_ori_points_dim()
         if self.ori_points is None:
             return
         elif self.ori_points.ndim == 2:
@@ -84,10 +84,10 @@ class TSPSolver:
     def set_norm(self, norm: str):
         if norm is None:
             return
-        if norm not in SUPPORT_TSPLIB_TYPE:
+        if norm not in SUPPORT_NORM_TYPE:
             message = (
                 f"The norm type ({norm}) is not a valid type, "
-                f"only {SUPPORT_TSPLIB_TYPE} are supported."
+                f"only {SUPPORT_NORM_TYPE} are supported."
             )
             raise ValueError(message)
         if norm == "GEO" and self.scale != 1:
@@ -113,7 +113,7 @@ class TSPSolver:
             raise RuntimeError("Error in loading {}".format(file_path))
         self.ori_points = points
         self.points = points.astype(np.float32)
-        self.check_points_dim()
+        self.check_ori_points_dim()
         if normalize:
             self.normalize_points()
 
@@ -175,7 +175,7 @@ class TSPSolver:
         nodes_coords = np.array(nodes_coords)
         self.ori_points = nodes_coords
         self.points = nodes_coords.astype(np.float32)
-        self.check_points_dim()
+        self.check_ori_points_dim()
         self.check_ref_tours_dim()
         if normalize:
             self.normalize_points()
@@ -192,8 +192,9 @@ class TSPSolver:
         self.ori_points = points
         if type(points) == list:
             points = np.array(points)
+        self.ori_points = points
         self.points = points.astype(np.float32)
-        self.check_points_dim()
+        self.check_ori_points_dim()
         if normalize:
             self.normalize_points()
 
@@ -335,7 +336,8 @@ class TSPSolver:
         self.read_ref_tours(ref_tours)
         self.check_points_not_none()
         self.check_tours_not_none()
-        self.check_ref_tours_not_none()
+        if calculate_gap:
+            self.check_ref_tours_not_none()
         points = self.ori_points if original else self.points
         tours = self.tours
         ref_tours = self.ref_tours

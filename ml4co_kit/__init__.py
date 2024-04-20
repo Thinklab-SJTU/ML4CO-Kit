@@ -5,9 +5,11 @@ from .data import TSPLIBOriDataset, TSPUniformDataset
 from .data import SATLIBOriDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
+from .evaluate import CVRPEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobi
+from .solver import CVRPSolver, CVRPPyVRPSolver
 from .utils import download, compress_folder, extract_archive, _get_md5
 
 # expand

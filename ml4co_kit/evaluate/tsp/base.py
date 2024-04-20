@@ -3,7 +3,7 @@ import numpy as np
 import scipy.spatial
 from typing import Union
 
-SUPPORT_TSPLIB_TYPE = ["EUC_2D", "GEO"]
+SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
 
 
 class TSPEvaluator(object):
@@ -19,10 +19,10 @@ class TSPEvaluator(object):
         self.edge_weights = self.get_weight()
 
     def set_norm(self, norm: str):
-        if norm not in SUPPORT_TSPLIB_TYPE:
+        if norm not in SUPPORT_NORM_TYPE:
             message = (
                 f"The norm type ({norm}) is not a valid type, "
-                f"only {SUPPORT_TSPLIB_TYPE} are supported."
+                f"only {SUPPORT_NORM_TYPE} are supported."
             )
             raise ValueError(message)
         self.norm = norm
@@ -44,7 +44,7 @@ class TSPEvaluator(object):
                     edge_weights[j_idx][i_idx] = weight
             return edge_weights
 
-    def evaluate(self, route):
+    def evaluate(self, route: Union[np.ndarray, list]):
         total_cost = 0
         for i in range(len(route) - 1):
             total_cost += self.edge_weights[route[i], route[i + 1]]
