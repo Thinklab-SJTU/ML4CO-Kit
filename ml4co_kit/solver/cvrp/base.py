@@ -14,8 +14,8 @@ class CVRPSolver:
         solver_type: str = None, 
         depots_scale: int = 1e6,
         points_scale: int = 1e6,
-        demands_scale: int = 1e6,
-        capacities_scale: int = 1e6,
+        demands_scale: int = 1,
+        capacities_scale: int = 1,
     ):
         self.solver_type = solver_type
         self.depots_scale = depots_scale
@@ -158,10 +158,10 @@ class CVRPSolver:
         self,
         depots: Union[list, np.ndarray] = None,
         points: Union[list, np.ndarray] = None,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
         demands: Union[list, np.ndarray] = None,
         capacities: Union[int, float, np.ndarray] = None,
+        norm: str = "EUC_2D",
+        normalize: bool = False
     ):
         # norm
         self.set_norm(norm)
@@ -247,10 +247,10 @@ class CVRPSolver:
         self,
         depots: Union[list, np.ndarray] = None,
         points: Union[list, np.ndarray] = None,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
         demands: Union[list, np.ndarray] = None,
         capacities: Union[list, np.ndarray] = None,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
         num_threads: int = 1,
         show_time: bool = False,
         **kwargs,
@@ -296,17 +296,17 @@ class CVRPSolver:
         original: bool = True,
         depots: Union[list, np.ndarray] = None,
         points: Union[list, np.ndarray] = None,
-        norm: str = None,
-        normalize: bool = False,
         demands: Union[list, np.ndarray] = None,
         capacities: Union[list, np.ndarray] = None,
+        norm: str = None,
+        normalize: bool = False,
         tours: Union[np.ndarray, list] = None,
         ref_tours: Union[np.ndarray, list] = None,
         calculate_gap: bool = False,
         check_demands: bool = True
     ):
         # read and check
-        self.from_data(depots, points, norm, normalize, demands, capacities)
+        self.from_data(depots, points, demands, capacities, norm, normalize)
         self.read_tours(tours)
         self.read_ref_tours(ref_tours)
         self.check_points_not_none()

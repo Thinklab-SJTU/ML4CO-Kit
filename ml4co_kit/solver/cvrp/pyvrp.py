@@ -15,9 +15,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         self,
         depots_scale: int = 1e6,
         points_scale: int = 1e6,
-        demands_scale: int = 1e6,
-        capacities_scale: int = 1e6,
-        time_limit: float = 10.0,
+        demands_scale: int = 100,
+        capacities_scale: int = 100,
+        time_limit: float = 1.0,
     ):
         super(CVRPPyVRPSolver, self).__init__(
             solver_type="pyvrp", 
@@ -72,11 +72,13 @@ class CVRPPyVRPSolver(CVRPSolver):
         points: Union[list, np.ndarray] = None,
         demands: Union[list, np.ndarray] = None,
         capacities: Union[list, np.ndarray] = None,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
         # prepare
-        self.from_data(depots, points, demands, capacities)
+        self.from_data(depots, points, demands, capacities, norm, normalize)
         start_time = time.time()
 
         # solve
