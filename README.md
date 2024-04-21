@@ -17,6 +17,7 @@ This repository focuses on the supporting code for method development instead of
 | :-----: | :--------------------------------: | :-----------: | :-------------------: | :-------: | :---------------------: |
 |   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
 |   MIS   |       SATLIB, ER, BA, HK, WS       | KaMIS, Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
+|  CVRP   |    Uniform, Gaussian, VRPLIB       | PyVRP         |       Solution        |     ✔     | Problem Graph, Solution |
 
 ###### ML4CO Organization:
 

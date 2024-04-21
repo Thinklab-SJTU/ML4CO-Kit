@@ -29,9 +29,6 @@ class CVRPDataGenerator:
         gaussian_mean_x: float = 0.0,
         gaussian_mean_y: float = 0.0,
         gaussian_std: float = 1.0,
-        # special for cluster
-        cluster_nums: int = 10,
-        cluster_std: float = 0.1
     ):
         """
         CVRPDataGenerator
@@ -80,9 +77,6 @@ class CVRPDataGenerator:
         self.gaussian_mean_x = gaussian_mean_x
         self.gaussian_mean_y = gaussian_mean_y
         self.gaussian_std = gaussian_std
-        # special for cluster
-        self.cluster_nums = cluster_nums
-        self.cluster_std = cluster_std
         # check the input variables
         self.sample_types = ["train", "val", "test"]
         self.check_num_threads()
@@ -102,7 +96,6 @@ class CVRPDataGenerator:
         generate_func_dict = {
             "uniform": self.generate_uniform,
             "gaussian": self.generate_gaussian,
-            "cluster": self.generate_cluster,
         }
         supported_data_type = generate_func_dict.keys()
         if self.data_type not in supported_data_type:
@@ -237,19 +230,4 @@ class CVRPDataGenerator:
             scale=self.gaussian_std,
             size=(self.num_threads, self.nodes_num, 2),
         )
-        return depots, points 
-
-    def generate_cluster(self):
-        nodes_coords = np.zeros([self.num_threads, self.nodes_num, 2])
-        for i in range(self.num_threads):
-            cluster_centers = np.random.random([self.cluster_nums, 2])
-            cluster_points = []
-        for center in cluster_centers:
-            points = np.random.normal(
-                loc=center,
-                scale=self.cluster_std,
-                size=(self.nodes_num // self.cluster_nums, 2),
-            )
-            cluster_points.append(points)
-        nodes_coords[i] = np.concatenate(cluster_points, axis=0)
-        return nodes_coords
+        return depots, points
