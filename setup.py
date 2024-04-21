@@ -41,6 +41,7 @@ REQUIRED = [
     "pandas>=2.0.0",
     "scipy>=1.10.1",
     "aiohttp>=3.9.3",
+    "pyvrp>=0.6.3"
 ]
 
 EXTRAS = {}

@@ -1,8 +1,13 @@
 import math
 import numpy as np
 from typing import Union
+from pyvrp import Model
+from pyvrp import read as read_vrp
+from pyvrp import read_solution
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
+
+
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -228,7 +233,7 @@ class CVRPSolver:
         
         # points
         if points is not None:
-            if type(points) == np.ndarray:
+            if type(points) == list:
                 points = np.array(points)
             self.ori_points = points
             self.points = points.astype(np.float32)
@@ -337,7 +342,35 @@ class CVRPSolver:
         self.check_capacities_dim()
         if normalize:
             self.normalize_points_depots()
-        
+    
+    def from_vrp(
+        self, 
+        file_path: str, 
+        round_func: str = "none",
+        norm: str = "EUC_2D",
+        normalize: bool = False
+    ):
+        instance = read_vrp(where=file_path, round_func=round_func)
+        vrp_model = Model.from_data(instance)
+        _depots = vrp_model._depots[0]
+        _clients = vrp_model._clients
+        _vehicle_types = vrp_model._vehicle_types[0]
+        depots = np.array([_depots.x, _depots.y])
+        points_list = list()
+        demands_list = list()
+        for client in _clients:
+            points_list.append([client.x, client.y])
+            demands_list.append(client.demand)
+        capacity = _vehicle_types.capacity
+        self.from_data(
+            depots=depots,
+            points=points_list,
+            demands=demands_list,
+            capacities=capacity,
+            norm=norm,
+            normalize=normalize
+        )        
+     
     def read_tours(self, tours: Union[list, np.ndarray]):
         if tours is None:
             return
@@ -380,6 +413,49 @@ class CVRPSolver:
         self.ref_tours = ref_tours
         self.check_ref_tours_dim()
 
+    def read_ref_tours_from_sol(self, file_path: str):
+        if not file_path.endswith(".sol"):
+            raise ValueError("Invalid file format. Expected a ``.sol`` file.")
+        
+        # check the .sol type
+        route_flag = None
+        with open(file_path, "r") as file:
+            first_line = file.readline()
+            if "Route" in first_line:
+                # Like this
+                # Route #1: 15 17 9 3 16 29
+                # Route #2: 12 5 26 7 8 13 32 2
+                route_flag = True
+            else:
+                # Like this
+                # 36395
+                # 37
+                # 1893900
+                # 1133620
+                # 0 1 1 1144 12  14 0 217 236 105 2 169 8 311 434 362 187 136 59 0
+                # 0 1 1 1182 12  14 0 3 370 133 425 349 223 299 386 267 410 411 348 0
+                route_flag = False
+        
+        # read the data form .sol
+        if route_flag == True:
+            solution = read_solution(where=file_path)
+            tour = [0]
+            for _solution in solution:
+                tour = tour + _solution + [0]
+        elif route_flag == False:
+            with open(file_path, "r") as file:
+                line_idx = 0
+                tour = [0]
+                for line in file:
+                    line_idx += 1
+                    if line_idx < 5:
+                        continue
+                    split_line = line.split(" ")[7:-1]
+                    for node in split_line:
+                        tour.append(int(node))
+                    tour.append(0)
+        self.read_ref_tours(tour)
+        
     def to_txt(
         self,
         filename: str = "example.txt",
