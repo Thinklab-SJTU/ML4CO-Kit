@@ -102,30 +102,42 @@ class CVRPSolver:
     def check_depots_not_none(self):
         if self.depots is None:
             message = (
+                "``depots`` cannot be None! You can load the points using the methods"
+                "``from_data``, ``from_txt``, or ``from_vrp``."
             )
             raise ValueError(message)
          
     def check_points_not_none(self):
         if self.points is None:
             message = (
+                "``points`` cannot be None! You can load the points using the methods"
+                "``from_data``, ``from_txt``, or ``from_vrp``."
             )
             raise ValueError(message)
 
     def check_demands_not_none(self):
         if self.demands is None:
             message = (
+                "``demands`` cannot be None! You can load the points using the methods"
+                "``from_data``, ``from_txt``, or ``from_vrp``."
             )
             raise ValueError(message)
     
     def check_tours_not_none(self):
         if self.tours is None:
             message = (
+                "``tours`` cannot be None! You can use solvers based on ``CVRPSolver`` "
+                "like ``CVRPPyVRPSolver`` or the method ``read_tours`` to get the tours."
             )
             raise ValueError(message)
         
     def check_ref_tours_not_none(self):
         if self.ref_tours is None:
             message = (
+                "``ref_tours`` cannot be None! You can use solvers based on ``CVRPSolver`` "
+                "like ``CVRPPyVRPSolver`` to obtain the tours and set them as the ``ref_tours``. "
+                "Or you can use the methods ``read_ref_tours``, ``from_txt``, "
+                "or ``read_ref_tours_from_sol`` to load them."
             )
             raise ValueError(message)
     
@@ -153,6 +165,38 @@ class CVRPSolver:
             cur_depots = (cur_depots - min_value) / (max_value - min_value)
             self.points[idx] = cur_points
             self.depots[idx] = cur_depots
+    
+    def check_demands_meet(
+        self,
+        demands: Union[list, np.ndarray] = None,
+        capacities: Union[list, np.ndarray] = None,
+        tours: Union[np.ndarray, list] = None,
+    ):
+        self.from_data(demands=demands, capacities=capacities)
+        self.read_tours(tours)
+        tours_shape = self.tours.shape
+        for idx in range(tours_shape[0]):
+            cur_demand = self.demands[idx]
+            cur_capacity = self.capacities[idx]
+            cur_tour = self.tours[idx]
+            split_tours = np.split(cur_tour, np.where(cur_tour == 0)[0])[1: -1]
+            for split_idx in range(len(split_tours)):
+                split_tour = split_tours[split_idx][1:]
+                split_demand_need = np.sum(cur_demand[split_tour.astype(int) - 1])
+                if split_demand_need > cur_capacity:
+                    message = (
+                        f"Capacity constraint not met in tour {idx}. "
+                        f"The split tour is ``{split_tour}`` with the demand of {split_demand_need}."
+                        f"However, the maximum capacity of the vehicle is {cur_capacity}."
+                    )
+                    raise ValueError(message)
+
+    def get_distance(self, x1: float, x2: float, norm: str = None):
+        self.set_norm(norm)
+        if self.norm == "EUC_2D":
+            return math.sqrt((x1[0] - x2[0]) ** 2 + (x1[1] - x2[1]) ** 2)
+        elif self.norm == "GEO":
+            return geographical(x1, x2)
                     
     def from_data(
         self,
@@ -201,6 +245,91 @@ class CVRPSolver:
         if normalize:
             self.normalize_points_depots()
     
+    def from_txt(
+        self,
+        file_path: str,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
+        load_ref_tours: str = True,
+        return_list: bool = False,
+    ):
+        self.set_norm(norm)
+
+        # check the file format
+        if not file_path.endswith(".txt"):
+            raise ValueError("Invalid file format. Expected a ``.txt`` file.")
+
+        # read the data form .txt
+        with open(file_path, "r") as file:
+            # record to lists
+            depot_list = list()
+            points_list = list()
+            demands_list = list()
+            capacity_list = list()
+            ref_tours = list()
+            
+            # read by lines
+            for line in file:
+                # line to strings
+                line = line.strip()
+                split_line_0 = line.split("depots ")[1]
+                split_line_1 = split_line_0.split(" points ")
+                depot = split_line_1[0]
+                split_line_2 = split_line_1[1].split(" demands ")
+                points = split_line_2[0]
+                split_line_3 = split_line_2[1].split(" capacity ")
+                demands = split_line_3[0]
+                split_line_4 = split_line_3[1].split(" output ")
+                capacity = split_line_4[0]
+                ref_tour = split_line_4[1]
+                
+                # strings to array
+                depot = depot.split(" ")
+                depot = np.array([float(depot[0]), float(depot[1])])
+                points = points.split(" ")
+                points = np.array(
+                    [
+                        [float(points[i]), float(points[i + 1])]
+                        for i in range(0, len(points), 2)
+                    ]
+                )
+                demands = demands.split(" ")
+                demands = np.array([
+                    float(demands[i]) for i in range(len(demands))
+                ])
+                capacity = float(capacity)
+                ref_tour = ref_tour.split(" ")
+                ref_tour = [int(t) for t in ref_tour]
+                
+                # add to the list
+                depot_list.append(depot)
+                points_list.append(points)
+                demands_list.append(demands)
+                capacity_list.append(capacity)
+                ref_tours.append(ref_tour)
+
+        if return_list:
+            return depot_list, points_list, demands_list, capacity_list, ref_tours
+        
+        if load_ref_tours:
+            self.read_ref_tours(ref_tours)
+        
+        depots = np.array(depot_list)
+        self.ori_depots = depots
+        self.depots = depots.astype(np.float32)
+        nodes_coords = np.array(points)
+        self.ori_points = nodes_coords
+        self.points = nodes_coords.astype(np.float32)
+        self.demands = np.array(demands_list).astype(np.float32)
+        self.capacities = np.array(capacity_list).astype(np.float32)
+        self.check_ori_depots_dim()
+        self.check_ori_points_dim()
+        self.check_ref_tours_dim()
+        self.check_demands_dim()
+        self.check_capacities_dim()
+        if normalize:
+            self.normalize_points_depots()
+        
     def read_tours(self, tours: Union[list, np.ndarray]):
         if tours is None:
             return
@@ -236,61 +365,43 @@ class CVRPSolver:
                 len_ref_tours = len(ref_tours)
                 np_ref_tours = np.zeros(shape=(len_ref_tours, max_length)) - 1
                 for idx in range(len_ref_tours):
-                    ref_tours = ref_tours[idx]
-                    len_ref_tours = len(ref_tours)
-                    np_ref_tours[idx][:len_ref_tours] = ref_tours
+                    ref_tour = ref_tours[idx]
+                    len_ref_tour = len(ref_tour)
+                    np_ref_tours[idx][:len_ref_tour] = ref_tour
                 ref_tours = np_ref_tours
         self.ref_tours = ref_tours
         self.check_ref_tours_dim()
-    
-    def solve(
-        self,
-        depots: Union[list, np.ndarray] = None,
-        points: Union[list, np.ndarray] = None,
-        demands: Union[list, np.ndarray] = None,
-        capacities: Union[list, np.ndarray] = None,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
-        num_threads: int = 1,
-        show_time: bool = False,
-        **kwargs,
-    ) -> np.ndarray:
-        raise NotImplementedError(
-            "The ``solve`` function is required to implemented in subclasses."
-        )
-    
-    def check_demands_meet(
-        self,
-        demands: Union[list, np.ndarray] = None,
-        capacities: Union[list, np.ndarray] = None,
-        tours: Union[np.ndarray, list] = None,
-    ):
-        self.from_data(demands=demands, capacities=capacities)
-        self.read_tours(tours)
-        tours_shape = self.tours.shape
-        for idx in range(tours_shape[0]):
-            cur_demand = self.demands[idx]
-            cur_capacity = self.capacities[idx]
-            cur_tour = self.tours[idx]
-            split_tours = np.split(cur_tour, np.where(cur_tour == 0)[0])[1: -1]
-            for split_idx in range(len(split_tours)):
-                split_tour = split_tours[split_idx][1:]
-                split_demand_need = np.sum(cur_demand[split_tour.astype(int) - 1])
-                if split_demand_need > cur_capacity:
-                    message = (
-                        f"Capacity constraint not met in tour {idx}. "
-                        f"The split tour is ``{split_tour}`` with the demand of {split_demand_need}."
-                        f"However, the maximum capacity of the vehicle is {cur_capacity}."
-                    )
-                    raise ValueError(message)
 
-    def get_distance(self, x1: float, x2: float, norm: str = None):
-        self.set_norm(norm)
-        if self.norm == "EUC_2D":
-            return math.sqrt((x1[0] - x2[0]) ** 2 + (x1[1] - x2[1]) ** 2)
-        elif self.norm == "GEO":
-            return geographical(x1, x2)
-    
+    def to_txt(
+        self,
+        filename: str = "example.txt",
+        original: bool = True,
+        points: Union[np.ndarray, list] = None,
+        tours: Union[np.ndarray, list] = None,
+        norm: str = None,
+        normalize: bool = False,
+    ):
+        # read and check
+        self.from_data(points, norm, normalize)
+        self.read_tours(tours)
+        if self.tours is None:
+            raise ValueError(
+                "``tours`` cannot be None, please use method 'solve' to get solutions."
+            )
+        self.check_points_not_none()
+        self.check_tours_not_none()
+        points = self.ori_points if original else self.points
+        tours = self.tours
+
+        # write
+        with open(filename, "w") as f:
+            for node_coordes, tour in zip(points, tours):
+                f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
+                f.write(str(" ") + str("output") + str(" "))
+                f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
+                f.write("\n")
+            f.close()
+
     def evaluate(
         self,
         original: bool = True,
@@ -352,3 +463,20 @@ class CVRPSolver:
             return costs_avg, ref_costs_avg, gap_avg, gap_std
         else:
             return costs_avg
+        
+    def solve(
+        self,
+        depots: Union[list, np.ndarray] = None,
+        points: Union[list, np.ndarray] = None,
+        demands: Union[list, np.ndarray] = None,
+        capacities: Union[list, np.ndarray] = None,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
+        num_threads: int = 1,
+        show_time: bool = False,
+        **kwargs,
+    ) -> np.ndarray:
+        raise NotImplementedError(
+            "The ``solve`` function is required to implemented in subclasses."
+        )
+    
