@@ -1,3 +1,4 @@
+import os
 import math
 import numpy as np
 from typing import Union
@@ -6,8 +7,6 @@ from pyvrp import read as read_vrp
 from pyvrp import read_solution
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
-
-
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -454,6 +453,10 @@ class CVRPSolver:
                     for node in split_line:
                         tour.append(int(node))
                     tour.append(0)
+        else:
+            raise ValueError(f"Unable to read route information from {file_path}.")
+        
+        # read ref tours
         self.read_ref_tours(tour)
         
     def to_txt(
@@ -513,6 +516,98 @@ class CVRPSolver:
                 f.write("\n")
             f.close()
 
+    def to_vrp(
+        self,
+        save_dir: str,
+        filename: str,
+        original: bool = True,
+        depots: Union[list, np.ndarray] = None,
+        points: Union[list, np.ndarray] = None,
+        demands: Union[list, np.ndarray] = None,
+        capacities: Union[int, float, np.ndarray] = None,
+        norm: str = None,
+        normalize: bool = False,
+    ):
+        # prepare
+        self.from_data(depots, points, demands, capacities, norm, normalize)
+        if filename.endswith(".vrp"):
+            filename = filename.replace(".vrp", "")
+        self.check_depots_not_none()
+        self.check_points_not_none()
+        self.check_demands_not_none()
+        self.check_capacities_not_none()
+        
+        # variables
+        depots = self.ori_depots if original else self.ori_depots
+        points = self.ori_points if original else self.points
+        demands = self.demands
+        capacities = self.capacities
+        
+        # makedirs
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # write
+        for idx in range(points.shape[0]):
+            save_path = os.path.join(save_dir, filename + f"-{idx}.vrp")
+            with open(save_path, "w") as f:
+                f.write(f"NAME : {save_path}\n")
+                f.write("TYPE : CVRP\n")
+                f.write(f"DIMENSION : {self.nodes_num + 1}\n")
+                f.write(f"EDGE_WEIGHT_TYPE : {self.norm}\n")
+                f.write(f"CAPACITY : {self.capacities[idx]}\n")
+                f.write("NODE_COORD_SECTION\n")
+                x, y = depots[idx]
+                f.write(f"1 {x} {y}\n")
+                for i in range(self.nodes_num):
+                    x, y = points[idx][i]
+                    f.write(f"{i+2} {x} {y}\n")
+                f.write("DEMAND_SECTION \n")
+                f.write(f"1 0\n")
+                for i in range(self.nodes_num):
+                    f.write(f"{i+2} {demands[idx][i]}\n")
+                f.write("DEPOT_SECTION \n")
+                f.write("	1\n")
+                f.write("	-1\n")
+                f.write("EOF\n")
+    
+    def to_sol(
+        self,
+        save_dir: str,
+        filename: str,
+        tours: Union[np.ndarray, list] = None,
+        dtype: str = "int",
+        round_func: str = "round"
+    ):
+        # read and check
+        self.read_tours(tours)
+        if filename.endswith(".sol"):
+            filename = filename.replace(".sol", "")
+        self.check_tours_not_none()
+        tours = self.tours
+        
+        # makedirs
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # write
+        for idx in range(tours.shape[0]):
+            save_path = os.path.join(save_dir, filename + f"-{idx}.sol")
+            tour = tours[idx]
+            split_tours = np.split(tour, np.where(tour == 0)[0])[1: -1]
+            with open(save_path, "w") as f:
+                for i in range(len(split_tours)):
+                    part_tour = split_tours[i][1:]
+                    f.write(f"Route #{i+1}: ")
+                    f.write(f" ".join(str(int(node)) for node in part_tour))
+                    f.write("\n")
+                cost = self.evaluate(
+                    calculate_gap=False, 
+                    dtype=dtype, 
+                    round_func=round_func
+                )
+                f.write(f"Cost {cost}\n")
+        
     def evaluate(
         self,
         original: bool = True,
@@ -525,7 +620,9 @@ class CVRPSolver:
         tours: Union[np.ndarray, list] = None,
         ref_tours: Union[np.ndarray, list] = None,
         calculate_gap: bool = False,
-        check_demands: bool = True
+        check_demands: bool = True,
+        dtype: str = "float",
+        round_func: str = "none"
     ):
         # read and check
         self.from_data(depots, points, demands, capacities, norm, normalize)
@@ -553,10 +650,10 @@ class CVRPSolver:
         for idx in range(samples):
             evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
             solved_tour = tours[idx]
-            solved_cost = evaluator.evaluate(solved_tour)
+            solved_cost = evaluator.evaluate(solved_tour, dtype, round_func)
             tours_cost_list.append(solved_cost)
             if calculate_gap:
-                ref_cost = evaluator.evaluate(ref_tours[idx])
+                ref_cost = evaluator.evaluate(ref_tours[idx], dtype, round_func)
                 ref_tours_cost_list.append(ref_cost)
                 gap = (solved_cost - ref_cost) / ref_cost * 100
                 gap_list.append(gap)
@@ -567,6 +664,8 @@ class CVRPSolver:
             ref_costs = np.array(ref_tours_cost_list)
             gaps = np.array(gap_list)
         costs_avg = np.average(tours_costs)
+        if dtype == "int":
+            costs_avg = int(costs_avg)
         if calculate_gap:
             ref_costs_avg = np.average(ref_costs)
             gap_avg = np.sum(gaps) / samples

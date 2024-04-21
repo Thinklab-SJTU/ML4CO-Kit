@@ -2,6 +2,7 @@ import math
 import numpy as np
 import scipy.spatial
 from typing import Union
+from pyvrp.read import ROUND_FUNCS
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
 
@@ -44,10 +45,32 @@ class TSPEvaluator(object):
                     edge_weights[j_idx][i_idx] = weight
             return edge_weights
 
-    def evaluate(self, route: Union[np.ndarray, list]):
+    def evaluate(
+        self, route: Union[np.ndarray, list], 
+        dtype: str = "float", round_func: str="none"
+    ):
+        # check dtype
+        if dtype == "float":
+            round_func = "none"
+        elif dtype == "int":
+            round_func = round_func
+        else:
+            raise ValueError("``dtype`` must be ``float`` or ``int``.")
+        
+        if (key := str(round_func)) in ROUND_FUNCS:
+            round_func = ROUND_FUNCS[key]
+        
+        if not callable(round_func):
+            raise TypeError(
+                f"round_func = {round_func} is not understood. Can be a function,"
+                f" or one of {ROUND_FUNCS.keys()}."
+            )
+        
         total_cost = 0
         for i in range(len(route) - 1):
-            total_cost += self.edge_weights[route[i], route[i + 1]]
+            cost = self.edge_weights[route[i], route[i + 1]]
+            total_cost += round_func(cost)
+
         return total_cost
 
 

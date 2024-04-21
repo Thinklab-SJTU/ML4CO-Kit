@@ -237,9 +237,8 @@ class TSPSolver:
         # prepare
         self.from_data(points, norm, normalize)
         if filename.endswith(".tsp"):
-            filename = os.path.basename(filename)
+            filename = filename.replace(".tsp", "")
         self.check_points_not_none()
-        self.check_tours_not_none()
         points = self.ori_points if original else self.points
 
         # makedirs
