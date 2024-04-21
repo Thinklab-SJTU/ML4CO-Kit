@@ -123,6 +123,14 @@ class CVRPSolver:
             )
             raise ValueError(message)
     
+    def check_capacities_not_none(self):
+        if self.demands is None:
+            message = (
+                "``capacities`` cannot be None! You can load the points using the methods"
+                "``from_data``, ``from_txt``, or ``from_vrp``."
+            )
+            raise ValueError(message)
+    
     def check_tours_not_none(self):
         if self.tours is None:
             message = (
@@ -317,7 +325,7 @@ class CVRPSolver:
         depots = np.array(depot_list)
         self.ori_depots = depots
         self.depots = depots.astype(np.float32)
-        nodes_coords = np.array(points)
+        nodes_coords = np.array(points_list)
         self.ori_points = nodes_coords
         self.points = nodes_coords.astype(np.float32)
         self.demands = np.array(demands_list).astype(np.float32)
@@ -376,29 +384,56 @@ class CVRPSolver:
         self,
         filename: str = "example.txt",
         original: bool = True,
-        points: Union[np.ndarray, list] = None,
+        depots: Union[list, np.ndarray] = None,
+        points: Union[list, np.ndarray] = None,
+        demands: Union[list, np.ndarray] = None,
+        capacities: Union[int, float, np.ndarray] = None,
         tours: Union[np.ndarray, list] = None,
         norm: str = None,
         normalize: bool = False,
     ):
         # read and check
-        self.from_data(points, norm, normalize)
+        self.from_data(depots, points, demands, capacities, norm, normalize)
         self.read_tours(tours)
         if self.tours is None:
             raise ValueError(
                 "``tours`` cannot be None, please use method 'solve' to get solutions."
             )
+        self.check_depots_not_none()
         self.check_points_not_none()
+        self.check_demands_not_none()
+        self.check_capacities_not_none()
         self.check_tours_not_none()
-        points = self.ori_points if original else self.points
-        tours = self.tours
+        
+        # variables
+        _depots = self.ori_depots if original else self.depots
+        _points = self.ori_points if original else self.points
+        _demands = self.demands
+        _capacities = self.capacities
+        _tours = self.tours
 
         # write
         with open(filename, "w") as f:
-            for node_coordes, tour in zip(points, tours):
-                f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
-                f.write(str(" ") + str("output") + str(" "))
-                f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
+            # write to txt
+            for idx in range(len(_tours)):
+                tour = _tours[idx]
+                tour = np.split(tour, np.where(tour == -1)[0])[0]
+                depot = _depots[idx]
+                points = _points[idx]
+                demands = _demands[idx]
+                capicity = _capacities[idx]
+                f.write("depots " + str(depot[0]) + str(" ") + str(depot[1]))
+                f.write(" points" + str(" "))
+                f.write(
+                    " ".join(
+                        str(x) + str(" ") + str(y)
+                        for x, y in points
+                    )
+                )
+                f.write(" demands " + str(" ").join(str(demand) for demand in demands))
+                f.write(" capacity " + str(capicity))
+                f.write(str(" output "))
+                f.write(str(" ").join(str(node_idx) for node_idx in tour.tolist()))
                 f.write("\n")
             f.close()
 
