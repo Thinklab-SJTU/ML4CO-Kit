@@ -153,6 +153,9 @@ class CVRPSolver:
             )
             raise ValueError(message)
     
+    def round_nearest(self, vals: np.ndarray):
+        return np.round(vals).astype(int)
+    
     def set_norm(self, norm: str):
         if norm is None:
             return

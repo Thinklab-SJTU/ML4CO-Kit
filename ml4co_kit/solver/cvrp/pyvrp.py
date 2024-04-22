@@ -13,8 +13,8 @@ class CVRPPyVRPSolver(CVRPSolver):
         self,
         depots_scale: int = 1e6,
         points_scale: int = 1e6,
-        demands_scale: int = 100,
-        capacities_scale: int = 100,
+        demands_scale: int = 1e6,
+        capacities_scale: int = 1e6,
         time_limit: float = 1.0,
     ):
         super(CVRPPyVRPSolver, self).__init__(
@@ -25,9 +25,6 @@ class CVRPPyVRPSolver(CVRPSolver):
             capacities_scale = capacities_scale,
         )
         self.time_limit = time_limit
-
-    def round_nearest(self, vals: np.ndarray):
-        return np.round(vals).astype(int)
 
     def _solve(
         self, 
@@ -49,11 +46,11 @@ class CVRPPyVRPSolver(CVRPSolver):
         cvrp_model.add_vehicle_type(capacity=capacity, num_available=max_num_available)
         clients = [
             cvrp_model.add_client(
-                x=int(nodes_coord[idx][0]), 
-                y=int(nodes_coord[idx][1]), 
-                demand=int(demands[idx])
+                x=self.round_nearest(nodes_coord[idx][0]), 
+                y=self.round_nearest(nodes_coord[idx][1]), 
+                demand=self.round_nearest(demands[idx])
             ) for idx in range(0, len(nodes_coord))
-        ] 
+        ]
         locations = [depot] + clients
         for frm in locations:
             for to in locations:
