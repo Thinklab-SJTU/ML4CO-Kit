@@ -29,7 +29,7 @@ class TSPSolver:
         self.nodes_num = self.points.shape[1]
 
     def check_ori_points_dim(self):
-        self.check_ori_points_dim()
+        self.check_points_dim()
         if self.ori_points is None:
             return
         elif self.ori_points.ndim == 2:
@@ -309,6 +309,24 @@ class TSPSolver:
         self.check_tours_not_none()
         points = self.ori_points if original else self.points
         tours = self.tours
+
+        # deal with different shapes
+        samples = points.shape[0]
+        if tours.shape[0] != samples:
+            # a problem has more than one solved tour
+            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
+            best_tour_list = list()
+            for idx, solved_tours in enumerate(samples_tours):
+                cur_eva = TSPEvaluator(points[idx])
+                best_tour = solved_tours[0]
+                best_cost = cur_eva.evaluate(best_tour)
+                for tour in solved_tours:
+                    cur_cost = cur_eva.evaluate(tour)
+                    if cur_cost < best_cost:
+                        best_cost = cur_cost
+                        best_tour = tour
+                best_tour_list.append(best_tour)
+            tours = np.array(best_tour_list)
 
         # write
         with open(filename, "w") as f:
