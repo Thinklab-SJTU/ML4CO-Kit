@@ -21,10 +21,10 @@ class CVRPDataGenerator:
         save_path: pathlib.Path = "data/cvrp/uniform",
         filename: str = None,
         # special for demand and capacity
-        min_demand: float = 1.0,
-        max_demand: float = 10.0,
-        min_capacity: float = 40.0,
-        max_capacity: float = 40.0,
+        min_demand: int = 1,
+        max_demand: int = 10,
+        min_capacity: int = 40,
+        max_capacity: int = 40,
         # special for gaussian
         gaussian_mean_x: float = 0.0,
         gaussian_mean_y: float = 0.0,
@@ -201,14 +201,16 @@ class CVRPDataGenerator:
                 file.writelines(data_content)
 
     def generate_demands(self) -> np.ndarray:
-        return np.random.uniform(
+        return np.random.randint(
             low=self.min_demand,
             high=self.max_demand,
             size=(self.num_threads, self.nodes_num)
         )
         
     def generate_capacities(self) -> np.ndarray:
-        return np.random.uniform(
+        if self.min_capacity == self.max_capacity:
+            return np.ones(shape=(self.num_threads, 1)) * self.min_capacity
+        return np.random.randint(
             low=self.min_capacity,
             high=self.max_capacity,
             size=(self.num_threads, 1)
