@@ -194,8 +194,8 @@ class CVRPSolver:
             split_tours = np.split(cur_tour, np.where(cur_tour == 0)[0])[1: -1]
             for split_idx in range(len(split_tours)):
                 split_tour = split_tours[split_idx][1:]
-                split_demand_need = np.sum(cur_demand[split_tour.astype(int) - 1])
-                if split_demand_need > cur_capacity:
+                split_demand_need = np.sum(cur_demand[split_tour.astype(int) - 1], dtype=np.float32)
+                if split_demand_need > cur_capacity + 1e-5:
                     message = (
                         f"Capacity constraint not met in tour {idx}. "
                         f"The split tour is ``{split_tour}`` with the demand of {split_demand_need}."

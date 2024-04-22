@@ -26,6 +26,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         )
         self.time_limit = time_limit
 
+    def round_nearest(self, vals: np.ndarray):
+        return np.round(vals).astype(int)
+
     def _solve(
         self, 
         depot_coord: np.ndarray, 
@@ -55,7 +58,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         for frm in locations:
             for to in locations:
                 distance = self.get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
-                cvrp_model.add_edge(frm, to, distance=int(distance))
+                cvrp_model.add_edge(frm, to, distance=self.round_nearest(distance))
         res = cvrp_model.solve(stop=MaxRuntime(self.time_limit))
         routes = res.best.get_routes()
         tours = [0]
