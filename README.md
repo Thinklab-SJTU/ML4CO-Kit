@@ -209,6 +209,42 @@ Visualization Results:
 <img src="docs/assets/mis_solution.png" width="35%" alt="" />
 </p>
 
+#### CVRP
+
+```python
+from ml4co_kit import CVRPPyVRPSolver
+from ml4co_kit import draw_cvrp_problem, draw_cvrp_solution
+
+# use KaMISSolver to solve the problem
+solver = CVRPPyVRPSolver(
+    depots_scale=1,
+    points_scale=1,
+    time_limit=1
+)
+solver.from_vrp("examples/cvrp/A-n32-k5.vrp")
+solver.solve()
+
+# draw
+draw_cvrp_problem(
+    save_path="docs/assets/cvrp_problem.png",
+    depots=solver.depots[0],
+    points=solver.points[0]
+)
+draw_cvrp_solution(
+    save_path="docs/assets/cvrp_solution.png",
+    depots=solver.depots[0],
+    points=solver.points[0],
+    tour=solver.tours
+)
+```
+
+Visualization Results:
+
+<p>
+<img src="docs/assets/cvrp_problem.png" width="35%" alt="" />
+<img src="docs/assets/cvrp_solution.png" width="35%" alt="" />
+</p>
+
 ### Develop ML4CO Algorithms
 
 Please refer to `ml4co_kit/learning` for the base classes that facilitate a quick establishment of a ML4CO project. You can easily build a project by inheriting the base classes and additionally implement task-specific and methodology-specific functions according to [ML4CO Organization](#ML4CO Organization:). We provide an minimalistic exmple of build a simple ML4TSP project in `docs/project_example`.

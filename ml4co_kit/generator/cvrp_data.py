@@ -23,8 +23,8 @@ class CVRPDataGenerator:
         # special for demand and capacity
         min_demand: float = 1.0,
         max_demand: float = 10.0,
-        min_capacity: float = 100.0,
-        max_capacity: float = 200.0,
+        min_capacity: float = 40.0,
+        max_capacity: float = 40.0,
         # special for gaussian
         gaussian_mean_x: float = 0.0,
         gaussian_mean_y: float = 0.0,
