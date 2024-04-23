@@ -5,6 +5,7 @@ from typing import Union
 from pyvrp import Model
 from pyvrp import read as read_vrp
 from pyvrp import read_solution
+from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
 
@@ -18,8 +19,8 @@ class CVRPSolver:
         solver_type: str = None, 
         depots_scale: int = 1e6,
         points_scale: int = 1e6,
-        demands_scale: int = 1,
-        capacities_scale: int = 1,
+        demands_scale: int = 1e6,
+        capacities_scale: int = 1e6,
     ):
         self.solver_type = solver_type
         self.depots_scale = depots_scale
@@ -227,24 +228,21 @@ class CVRPSolver:
         
         # depots
         if depots is not None:
-            if type(depots) == list:
-                depots = np.array(depots)
+            depots = to_numpy(depots)
             self.ori_depots = depots
             self.depots = depots.astype(np.float32)
             self.check_ori_depots_dim()
         
         # points
         if points is not None:
-            if type(points) == list:
-                points = np.array(points)
+            points = to_numpy(points)
             self.ori_points = points
             self.points = points.astype(np.float32)
             self.check_ori_points_dim()
         
         # demands
         if demands is not None:
-            if type(demands) == list:
-                demands = np.array(demands)
+            demands = to_numpy(demands)
             self.demands = demands.astype(np.float32)
             self.check_demands_dim()
         
@@ -378,7 +376,7 @@ class CVRPSolver:
             return
         if type(tours) == list:
             # 1D tours
-            if type(tours[0]) != list:
+            if type(tours[0]) != list and type(tours[0]) != np.ndarray:
                 tours = np.array(tours)
             # 2D tours
             else:
@@ -399,7 +397,7 @@ class CVRPSolver:
             return
         if type(ref_tours) == list:
             # 1D tours
-            if type(ref_tours[0]) != list:
+            if type(ref_tours[0]) != list and type(ref_tours[0]) != np.ndarray:
                 ref_tours = np.array(ref_tours)
             # 2D tours
             else:
@@ -412,7 +410,7 @@ class CVRPSolver:
                     len_ref_tour = len(ref_tour)
                     np_ref_tours[idx][:len_ref_tour] = ref_tour
                 ref_tours = np_ref_tours
-        self.ref_tours = ref_tours
+        self.ref_tours = ref_tours.astype(np.int32)
         self.check_ref_tours_dim()
 
     def read_ref_tours_from_sol(self, file_path: str):
@@ -641,7 +639,7 @@ class CVRPSolver:
         points = self.ori_points if original else self.points
         tours = self.tours
         ref_tours = self.ref_tours
-        
+
         # prepare for evaluate
         tours_cost_list = list()
         samples = points.shape[0]

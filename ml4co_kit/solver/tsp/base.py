@@ -2,6 +2,7 @@ import os
 import tsplib95
 import numpy as np
 from typing import Union
+from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 
 
@@ -190,8 +191,7 @@ class TSPSolver:
         if points is None:
             return
         self.ori_points = points
-        if type(points) == list:
-            points = np.array(points)
+        points = to_numpy(points)
         self.ori_points = points
         self.points = points.astype(np.float32)
         self.check_ori_points_dim()
@@ -201,16 +201,14 @@ class TSPSolver:
     def read_tours(self, tours: Union[list, np.ndarray]):
         if tours is None:
             return
-        if type(tours) == list:
-            tours = np.array(tours)
+        tours = to_numpy(tours)
         self.tours = tours
         self.check_tours_dim()
 
     def read_ref_tours(self, ref_tours: Union[list, np.ndarray]):
         if ref_tours is None:
             return
-        if type(ref_tours) == list:
-            ref_tours = np.array(ref_tours)
+        ref_tours = to_numpy(ref_tours)
         self.ref_tours = ref_tours
         self.check_ref_tours_dim()
 
