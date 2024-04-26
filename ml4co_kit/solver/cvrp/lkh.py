@@ -1,31 +1,75 @@
+import os
 import time
+import uuid
+import pathlib
+import tsplib95
 import numpy as np
 from tqdm import tqdm
+from subprocess import check_call
 from multiprocessing import Pool
 from typing import Union
-from pyvrp import Model
-from pyvrp.stop import MaxRuntime
 from .base import CVRPSolver
 
 
-class CVRPPyVRPSolver(CVRPSolver):
+class CVRPLKHSolver(CVRPSolver):
     def __init__(
         self,
         depots_scale: int = 1e6,
         points_scale: int = 1e6,
         demands_scale: int = 1e6,
         capacities_scale: int = 1e6,
-        time_limit: float = 1.0,
+        lkh_max_trials: int = 1000,
+        lkh_path: pathlib.Path = "LKH",
+        lkh_runs: int = 10,
+        lkh_seed: int = 1234,
     ):
-        super(CVRPPyVRPSolver, self).__init__(
-            solver_type="pyvrp", 
+        """
+        TSPLKHSolver
+        Args:
+            lkh_max_trials (int, optional): The maximum number of trials for
+                the LKH solver. Defaults to 1000.
+            lkh_path (pathlib.Path, optional): The path to the LKH solver.
+                Defaults to "LKH".
+            scale (int, optional): The scale factor for coordinates in the
+                LKH solver. Defaults to 1e6.
+            lkh_runs (int, optional): The number of runs for the LKH solver.
+                Defaults to 10.
+        """
+        super(CVRPLKHSolver, self).__init__(
+            solver_type="lkh", 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,
             capacities_scale = capacities_scale,
         )
-        self.time_limit = time_limit
+        self.lkh_max_trials = lkh_max_trials
+        self.lkh_path = lkh_path
+        self.lkh_runs = lkh_runs
+        self.lkh_seed = lkh_seed
 
+    def write_parameter_file(
+        self,
+        save_path: str,
+        vrp_file_path: str,
+        tour_path: str
+    ):
+        with open(save_path, "w") as f:
+            f.write(f"PROBLEM_FILE = {vrp_file_path}\n")
+            f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
+            f.write(f"SPECIAL\nRUNS = {self.lkh_runs}\n")
+            f.write(f"SEED = {self.lkh_seed}\n")
+            f.write(f"TOUR_FILE = {tour_path}\n")
+    
+    def read_lkh_solution(self, tour_path: str) -> list:
+        tour = tsplib95.load(tour_path).tours[0]
+        np_tour = np.array(tour) - 1
+        over_index = np.where(np_tour > self.nodes_num)[0]
+        np_tour[over_index] = 0
+        tour = np_tour.tolist()
+        tour: list
+        tour.append(0)
+        return tour
+        
     def _solve(
         self, 
         depot_coord: np.ndarray, 
@@ -39,31 +83,41 @@ class CVRPPyVRPSolver(CVRPSolver):
         demands = (demands * self.demands_scale).astype(np.int64)
         capacity = int(capacity * self.capacities_scale)
         
-        # solve
-        cvrp_model = Model()
-        depot = cvrp_model.add_depot(x=depot_coord[0], y=depot_coord[1])
-        max_num_available = len(demands)
-        cvrp_model.add_vehicle_type(capacity=capacity, num_available=max_num_available)
-        clients = [
-            cvrp_model.add_client(
-                x=self.round_func(nodes_coord[idx][0]), 
-                y=self.round_func(nodes_coord[idx][1]), 
-                demand=self.round_func(demands[idx])
-            ) for idx in range(0, len(nodes_coord))
-        ]
-        locations = [depot] + clients
-        for frm in locations:
-            for to in locations:
-                distance = self.get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
-                cvrp_model.add_edge(frm, to, distance=self.round_func(distance))
-        res = cvrp_model.solve(stop=MaxRuntime(self.time_limit))
-        routes = res.best.get_routes()
-        tours = [0]
-        for route in routes:
-            tours += route.visits()
-            tours.append(0)
-        return tours
+        # Intermediate files
+        tmp_name = uuid.uuid4().hex[:9]
+        para_save_path = f"{tmp_name}.para"
+        vrp_save_path = f"{tmp_name}.vrp"
+        real_vrp_save_path = f"{tmp_name}-0.vrp"
+        tour_save_path = f"{tmp_name}.tour"
+        log_save_path = f"{tmp_name}.log"
         
+        # prepare for solve
+        self.to_vrp(save_dir="./", filename=vrp_save_path)
+        self.write_parameter_file(
+            save_path=para_save_path,
+            vrp_file_path=real_vrp_save_path,
+            tour_path=tour_save_path
+        )
+        
+        # solve
+        with open(log_save_path, "w") as f:
+            check_call([self.lkh_path, para_save_path], stdout=f)
+            
+        # read solution
+        tour = self.read_lkh_solution(tour_save_path)
+        
+        # delete files
+        files_path = [
+            para_save_path, real_vrp_save_path,
+            tour_save_path, log_save_path
+        ]
+        for file_path in files_path:
+           if os.path.exists(file_path):
+               os.remove(file_path)
+        
+        # return
+        return tour
+            
     def solve(
         self,
         depots: Union[list, np.ndarray] = None,
@@ -72,17 +126,10 @@ class CVRPPyVRPSolver(CVRPSolver):
         capacities: Union[list, np.ndarray] = None,
         norm: str = "EUC_2D",
         normalize: bool = False,
-        dtype: str = "int",
-        round_func: str = "round",
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
         # prepare
-        if dtype != "int":
-            import warnings
-            warnings.warn("Solver input requires data of type int.")
-            dtype = "int"
-        self.round_func = self.get_round_func(round_func)
         self.from_data(depots, points, demands, capacities, norm, normalize)
         start_time = time.time()
 
@@ -115,7 +162,7 @@ class CVRPPyVRPSolver(CVRPSolver):
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             if show_time:
                 for idx in tqdm(
-                    range(num_points // num_threads), desc="Solving CVRP Using PyVRP"
+                    range(num_points // num_threads), desc="Solving CVRP Using LKH"
                 ):
                     with Pool(num_threads) as p1:
                         cur_tours = p1.starmap(
@@ -149,4 +196,4 @@ class CVRPPyVRPSolver(CVRPSolver):
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return self.tours
+        return self.tours    

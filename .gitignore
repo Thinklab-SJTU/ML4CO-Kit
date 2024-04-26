@@ -25,6 +25,7 @@ ml4co_kit/solver/tsp/pyconcorde/concorde/_concorde.c
 
 # datasets
 dataset/**
+data/**
 
 # tmp
 tmp/**

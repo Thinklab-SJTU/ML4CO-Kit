@@ -175,17 +175,21 @@ class TSPDataGenerator:
         os.chdir(ori_dir)
 
     def download_lkh(self):
+        # download
         import wget
-
         lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
         wget.download(url=lkh_url, out="LKH-3.0.7.tgz")
+        # tar .tgz file
         os.system("tar xvfz LKH-3.0.7.tgz")
+        # build LKH
         ori_dir = os.getcwd()
         os.chdir("LKH-3.0.7")
         os.system("make")
+        # move LKH to the bin dir
         target_dir = os.path.join(sys.prefix, "bin")
         os.system(f"cp LKH {target_dir}")
         os.chdir(ori_dir)
+        # delete .tgz file
         os.remove("LKH-3.0.7.tgz")
         shutil.rmtree("LKH-3.0.7")
 

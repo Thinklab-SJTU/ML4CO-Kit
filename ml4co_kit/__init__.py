@@ -10,7 +10,7 @@ from .evaluate import CVRPEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobi
-from .solver import CVRPSolver, CVRPPyVRPSolver
+from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
 from .utils import download, compress_folder, extract_archive, _get_md5
 
 # expand

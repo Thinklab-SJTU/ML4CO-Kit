@@ -5,6 +5,7 @@ from typing import Union
 from pyvrp import Model
 from pyvrp import read as read_vrp
 from pyvrp import read_solution
+from pyvrp.read import ROUND_FUNCS
 from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
@@ -154,8 +155,15 @@ class CVRPSolver:
             )
             raise ValueError(message)
     
-    def round_nearest(self, vals: np.ndarray):
-        return np.round(vals).astype(int)
+    def get_round_func(self, round_func: str):
+        if (key := str(round_func)) in ROUND_FUNCS:
+            round_func = ROUND_FUNCS[key]
+        if not callable(round_func):
+            raise TypeError(
+                f"round_func = {round_func} is not understood. Can be a function,"
+                f" or one of {ROUND_FUNCS.keys()}."
+            )
+        return round_func
     
     def set_norm(self, norm: str):
         if norm is None:
@@ -528,6 +536,8 @@ class CVRPSolver:
         capacities: Union[int, float, np.ndarray] = None,
         norm: str = None,
         normalize: bool = False,
+        dtype: str = "int",
+        round_func: str = "round"
     ):
         # prepare
         self.from_data(depots, points, demands, capacities, norm, normalize)
@@ -543,7 +553,13 @@ class CVRPSolver:
         points = self.ori_points if original else self.points
         demands = self.demands
         capacities = self.capacities
-        
+        if dtype == "int":
+            self.round_func = self.get_round_func(round_func)
+            depots = self.round_func(depots)
+            points = self.round_func(points)
+            demands = self.round_func(demands)
+            capacities = self.round_func(capacities)
+            
         # makedirs
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
