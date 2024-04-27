@@ -624,7 +624,11 @@ class CVRPSolver:
                     round_func=round_func
                 )
                 f.write(f"Cost {cost}\n")
-        
+    
+    def modify_tour(self, tour: np.ndarray):
+        index = np.where(tour == -1)[0][0]
+        return tour[: index]
+    
     def evaluate(
         self,
         original: bool = True,
@@ -667,10 +671,10 @@ class CVRPSolver:
         for idx in range(samples):
             evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
             solved_tour = tours[idx]
-            solved_cost = evaluator.evaluate(solved_tour, dtype, round_func)
+            solved_cost = evaluator.evaluate(self.modify_tour(solved_tour), dtype, round_func)
             tours_cost_list.append(solved_cost)
             if calculate_gap:
-                ref_cost = evaluator.evaluate(ref_tours[idx], dtype, round_func)
+                ref_cost = evaluator.evaluate(self.modify_tour(ref_tours[idx]), dtype, round_func)
                 ref_tours_cost_list.append(ref_cost)
                 gap = (solved_cost - ref_cost) / ref_cost * 100
                 gap_list.append(gap)
