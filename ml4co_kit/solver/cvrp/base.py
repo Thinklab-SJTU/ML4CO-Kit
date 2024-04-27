@@ -626,8 +626,9 @@ class CVRPSolver:
                 f.write(f"Cost {cost}\n")
     
     def modify_tour(self, tour: np.ndarray):
-        index = np.where(tour == -1)[0][0]
-        return tour[: index]
+        if not np.isin(-1, tour):
+            return tour
+        return tour[: np.where(tour == -1)[0][0]]
     
     def evaluate(
         self,
