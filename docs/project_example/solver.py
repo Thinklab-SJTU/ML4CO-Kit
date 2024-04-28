@@ -4,7 +4,7 @@ from tqdm import tqdm
 from typing import Union, Any
 from pytorch_lightning.utilities import rank_zero_info
 from ml4co_kit.solver import TSPSolver
-from ml4co_kit.learning.model import BaseEncoder, ModelConfigurator
+from ml4co_kit.learning.model import BaseModel, ModelConfigurator
 from ml4co_kit.learning.search import SearchConfigurator
 from model import TSPGNN
 from search import tsp_greedy, tsp_2opt
@@ -22,7 +22,7 @@ class TSPNARSolver(TSPSolver):
     def solve(
         self,
         batch_size: int = 16,
-        encoder: Union[BaseEncoder, str] = "gnn",
+        encoder: Union[BaseModel, str] = "gnn",
         encoder_kwargs: dict = {},
         decoding_type: Union[Any, str] = "greedy",
         decoding_kwargs: dict = {},
