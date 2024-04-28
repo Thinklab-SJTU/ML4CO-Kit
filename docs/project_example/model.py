@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-from ml4co_kit.learning.model import BaseEncoder
+from ml4co_kit.learning.model import BaseModel
 from ml4co_kit.evaluate import TSPEvaluator
 from ml4co_kit.learning.search import SearchConfigurator
 from env import TSPEnv
@@ -9,7 +9,7 @@ from search import tsp_greedy, tsp_2opt
 from typing import Any, Union
 
 
-class TSPGNN(BaseEncoder):
+class TSPGNN(BaseModel):
     def __init__(
         self,
         nodes_num: int,
