@@ -57,8 +57,9 @@ async_timeout>=4.0.3
 
 To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:
 
-```bash
-$ pip install matplotlib>=3.7.5
+```
+matplotlib
+pytorch_lightning
 ```
 
 ## Usage Examples
