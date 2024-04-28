@@ -13,14 +13,23 @@ from .solver import MISSolver, KaMISSolver, MISGurobi
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
 from .utils import download, compress_folder, extract_archive, _get_md5
 
-# expand
+# expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")
 if found_matplotlib is not None:
     from .draw.tsp import draw_tsp_problem, draw_tsp_solution
     from .draw.mis import draw_mis_problem, draw_mis_solution
     from .draw.cvrp import draw_cvrp_problem, draw_cvrp_solution
-else:
-    print("matplotlib not installed")
+
+# expand - pytorch_lightning
+found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
+if found_pytorch_lightning is not None:
+    from .learning.env import BaseEnv
+    from .learning.model import BaseModel
+    from .learning.search import SearchConfigurator
+    from .learning.train import Checkpoint, Logger, Trainer
+    from .learning.utils import to_numpy, to_tensor
+    from .learning.utils import check_dim
+    from .learning.utils import points_to_distmat, sparse_points
 
 
 __version__ = "0.0.2a1"

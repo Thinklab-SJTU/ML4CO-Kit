@@ -2,14 +2,13 @@ import torch
 import pytorch_lightning as pl
 from torch import nn
 from typing import Any
-from pytorch_lightning.utilities import rank_zero_info
-from env import BaseEnv
-import torch
 from functools import partial
 from torch.optim.lr_scheduler import LambdaLR
+from pytorch_lightning.utilities import rank_zero_info
+from .env import BaseEnv
 
 
-class BaseEncoder(pl.LightningModule):
+class BaseModel(pl.LightningModule):
     def __init__(
         self,
         env: BaseEnv,
@@ -18,7 +17,7 @@ class BaseEncoder(pl.LightningModule):
         learning_rate: float = 2e-4,
         weight_decay: float = 1e-4,
     ):
-        super(BaseEncoder, self).__init__()
+        super(BaseModel, self).__init__()
         self.env = env
         self.model = model
         self.lr_scheduler = lr_scheduler
