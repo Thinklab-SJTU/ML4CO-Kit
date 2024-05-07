@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 import numpy as np
 from typing import Union
@@ -12,6 +13,10 @@ from ml4co_kit.evaluate.tsp.base import geographical
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
+if sys.version_info.major == 3 and sys.version_info.minor == 8:
+    CP38 = True
+else:
+    CP38 = False
 
 
 class CVRPSolver:
@@ -368,7 +373,7 @@ class CVRPSolver:
         demands_list = list()
         for client in _clients:
             points_list.append([client.x, client.y])
-            demands_list.append(client.demand)
+            demands_list.append(client.demand if CP38 else client.delivery)
         capacity = _vehicle_types.capacity
         self.from_data(
             depots=depots,
