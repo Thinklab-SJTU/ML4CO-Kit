@@ -3,7 +3,9 @@ import sys
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from ml4co_kit.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, KaMISSolver
+from ml4co_kit.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
+from ml4co_kit.solver import KaMISSolver
+from ml4co_kit.solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
 from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
@@ -79,12 +81,12 @@ def test_tsp():
 
 
 ##############################################
-#            Test Func For KaMIS             #
+#             Test Func For MIS              #
 ##############################################
 
 
-def _test_kamis_solver():
-    kamis_solver = KaMISSolver(time_limit=30)
+def test_mis_kamis_solver():
+    kamis_solver = KaMISSolver(time_limit=10)
     cnf_folder_to_gpickle_folder(
         cnf_folder="tests/solver_test/mis_test_cnf",
         gpickle_foler="tests/solver_test/mis_test"
@@ -109,8 +111,81 @@ def test_mis():
     """
     Test MISSolver
     """
-    _test_kamis_solver()
+    test_mis_kamis_solver()
 
+
+##############################################
+#             Test Func For CVRP             #
+##############################################
+
+def test_cvrp_base_solver():
+    solver = CVRPSolver()
+    solver.from_txt("tests/solver_test/cvrp50_test.txt")
+    os.remove("tests/solver_test/cvrp50_test.txt")
+    solver.read_tours(solver.ref_tours)
+    solver.to_vrp(
+        save_dir="tests/solver_test/cvrp50_test",
+        filename="problem",
+        dtype="float"
+    )
+    solver.to_sol(
+        save_dir="tests/solver_test/cvrp50_test",
+        filename="solution",
+        dtype="float"
+    )
+    solver.to_txt("tests/solver_test/cvrp50_test.txt")
+
+
+def _test_cvrp_pyvrp_solver(show_time: bool, num_threads: int):
+    cvrp_pyvrp_solver = CVRPPyVRPSolver(time_limit=10)
+    cvrp_pyvrp_solver.from_txt("tests/solver_test/cvrp50_test_small.txt")
+    cvrp_pyvrp_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = cvrp_pyvrp_solver.evaluate(calculate_gap=True)
+    print(f"CVRPPyVRPSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-5:
+        message = (
+            f"The average gap ({gap_avg}) of CVRP50 solved by CVRPPyVRPSolver "
+            "is larger than or equal to 1e-5%."
+        )
+        raise ValueError(message)
+
+
+def test_cvrp_pyvrp_solver():
+    _test_cvrp_pyvrp_solver(True, 1)
+    _test_cvrp_pyvrp_solver(True, 2)
+    _test_cvrp_pyvrp_solver(False, 1)
+    _test_cvrp_pyvrp_solver(False, 2)
+
+
+def _test_cvrp_lkh_solver(show_time: bool, num_threads: int):
+    cvrp_lkh_solver = CVRPLKHSolver(lkh_max_trials=500)
+    cvrp_lkh_solver.from_txt("tests/solver_test/cvrp50_test_small.txt")
+    cvrp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = cvrp_lkh_solver.evaluate(calculate_gap=True)
+    print(f"CVRPLKHSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-5:
+        message = (
+            f"The average gap ({gap_avg}) of CVRP50 solved by CVRPLKHSolver "
+            "is larger than or equal to 1e-5%."
+        )
+        raise ValueError(message)
+
+
+def test_cvrp_lkh_solver():
+    _test_cvrp_lkh_solver(True, 1)
+    _test_cvrp_lkh_solver(True, 2)
+    _test_cvrp_lkh_solver(False, 1)
+    _test_cvrp_lkh_solver(False, 2)
+    
+
+def test_cvrp():
+    """
+    Test CVRPSolver
+    """
+    test_cvrp_base_solver()
+    test_cvrp_pyvrp_solver()
+    test_cvrp_lkh_solver()
+    
 
 ##############################################
 #                    MAIN                    #
@@ -119,3 +194,4 @@ def test_mis():
 if __name__ == "__main__":
     test_tsp()
     test_mis()
+    test_cvrp()

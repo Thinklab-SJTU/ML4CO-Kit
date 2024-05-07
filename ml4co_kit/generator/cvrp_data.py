@@ -5,7 +5,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
-from ml4co_kit.solver.cvrp import CVRPSolver, CVRPPyVRPSolver
+from ml4co_kit.solver.cvrp import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
 
 
 class CVRPDataGenerator:
@@ -110,7 +110,10 @@ class CVRPDataGenerator:
         # get solver
         if type(self.solver) == str:
             self.solver_type = self.solver
-            supported_solver_dict = {"pyvrp": CVRPPyVRPSolver}
+            supported_solver_dict = {
+                "pyvrp": CVRPPyVRPSolver,
+                "lkh": CVRPLKHSolver
+            }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
                 message = (

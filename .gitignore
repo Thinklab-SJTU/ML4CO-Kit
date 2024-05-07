@@ -37,8 +37,9 @@ coverage.xml
 .coverage
 
 # tests/solver_test
-tests/solver_test/mis_test/**
 tests/solver_test/tsp50_test_small/**
+tests/solver_test/mis_test/**
+tests/solver_test/cvrp50_test/**
 
 # tests/draw_test
 tests/draw_test/mis_example/preprocessed/**
@@ -47,3 +48,5 @@ tests/draw_test/mis_problem.png
 tests/draw_test/mis_solution.png
 tests/draw_test/eil101_solution.png
 tests/draw_test/eil101_problem.png
+tests/draw_test/cvrp_solution.png
+tests/draw_test/cvrp_problem.png

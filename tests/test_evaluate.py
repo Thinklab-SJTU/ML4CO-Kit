@@ -4,7 +4,7 @@ import shutil
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
-from ml4co_kit.data import SATLIBOriDataset
+from ml4co_kit.data import SATLIBOriDataset, VRPLIBOriDataset
 from ml4co_kit.evaluate import TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator
 from ml4co_kit.solver import TSPConcordeSolver, KaMISSolver
 
@@ -72,7 +72,12 @@ def test_satlib_original_eval():
         raise ValueError(message)
 
 
+def test_vrplib_original_eval():
+    VRPLIBOriDataset()
+    
+
 if __name__ == "__main__":
     test_tsplib_original_eval()
     test_tsp_uniform_eval()
     test_satlib_original_eval()
+    test_vrplib_original_eval()

@@ -92,7 +92,16 @@ class CVRPLKHSolver(CVRPSolver):
         log_save_path = f"{tmp_name}.log"
         
         # prepare for solve
-        self.to_vrp(save_dir="./", filename=vrp_save_path)
+        self.tmp_solver.from_data(
+            depots=depot_coord,
+            points=nodes_coord,
+            demands=demands,
+            capacities=capacity
+        )
+        self.tmp_solver.to_vrp(
+            save_dir="./", 
+            filename=vrp_save_path
+        )
         self.write_parameter_file(
             save_path=para_save_path,
             vrp_file_path=real_vrp_save_path,
@@ -131,6 +140,7 @@ class CVRPLKHSolver(CVRPSolver):
     ) -> np.ndarray:
         # prepare
         self.from_data(depots, points, demands, capacities, norm, normalize)
+        self.tmp_solver = CVRPSolver()
         start_time = time.time()
 
         # solve
@@ -139,7 +149,7 @@ class CVRPLKHSolver(CVRPSolver):
         num_points = p_shape[0]
         if num_threads == 1:
             if show_time:
-                for idx in tqdm(range(num_points), desc="Solving CVRP Using PyVRP"):
+                for idx in tqdm(range(num_points), desc="Solving CVRP Using LKH"):
                     tours.append(self._solve(
                         depot_coord=self.depots[idx],
                         nodes_coord=self.points[idx],
