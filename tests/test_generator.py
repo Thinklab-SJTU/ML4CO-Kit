@@ -276,7 +276,7 @@ def test_cvrp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
-    # test_mis()
+    test_tsp()
+    test_mis()
     test_cvrp()
     shutil.rmtree("tmp")
