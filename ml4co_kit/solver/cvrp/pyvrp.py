@@ -1,3 +1,4 @@
+import sys
 import time
 import numpy as np
 from tqdm import tqdm
@@ -6,6 +7,12 @@ from typing import Union
 from pyvrp import Model
 from pyvrp.stop import MaxRuntime
 from .base import CVRPSolver
+
+
+if sys.version_info.major == 3 and sys.version_info.minor == 8:
+    CP38 = True
+else:
+    CP38 = False
 
 
 class CVRPPyVRPSolver(CVRPSolver):
@@ -46,9 +53,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         cvrp_model.add_vehicle_type(capacity=capacity, num_available=max_num_available)
         clients = [
             cvrp_model.add_client(
-                x=self.round_func(nodes_coord[idx][0]), 
-                y=self.round_func(nodes_coord[idx][1]), 
-                demand=self.round_func(demands[idx])
+                self.round_func(nodes_coord[idx][0]), 
+                self.round_func(nodes_coord[idx][1]), 
+                self.round_func(demands[idx])
             ) for idx in range(0, len(nodes_coord))
         ]
         locations = [depot] + clients
@@ -57,7 +64,8 @@ class CVRPPyVRPSolver(CVRPSolver):
                 distance = self.get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
                 cvrp_model.add_edge(frm, to, distance=self.round_func(distance))
         res = cvrp_model.solve(stop=MaxRuntime(self.time_limit))
-        routes = res.best.get_routes()
+        
+        routes = res.best.get_routes() if CP38 else res.best.routes()
         tours = [0]
         for route in routes:
             tours += route.visits()
