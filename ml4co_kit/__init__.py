@@ -32,5 +32,5 @@ if found_pytorch_lightning is not None:
     from .learning.utils import points_to_distmat, sparse_points
 
 
-__version__ = "0.0.2a1"
+__version__ = "0.0.2"
 __author__ = "SJTU-ReThinkLab"
