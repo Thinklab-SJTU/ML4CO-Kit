@@ -1,7 +1,8 @@
 import os
 import torch
+import torch.distributed
 from torch import nn
-from typing import Optional
+from typing import Optional, List
 from wandb.util import generate_id
 from typing import Union, Optional
 from pytorch_lightning.trainer import Trainer
@@ -70,18 +71,21 @@ class Trainer(Trainer):
         log_every_n_steps: Optional[int] = 50,
         inference_mode: bool = False,
         accelerator: str = "auto",
-        strategy: Union[str, Strategy] = DDPStrategy(static_graph=True),
+        strategy: Union[str, Strategy] = None,
+        devices: Union[List[int], str, int] = "auto",
         max_epochs: int = 100,
         max_steps: int = -1,
         fp16: bool = False,
         ckpt_path: Optional[str] = None,
-        weight_path: Optional[str] = None,
-        **kwargs,
+        weight_path: Optional[str] = None
     ):
+        # logger
         if logger is None:
             self.logger = Logger(name=wandb_logger_name, resume_id=resume_id)
         else:
             self.logger = logger
+        
+        # checkpoint
         if ckpt_save_path is None:
             self.ckpt_save_path = os.path.join(
                 "train_ckpts", self.logger._name, self.logger._id
@@ -93,9 +97,26 @@ class Trainer(Trainer):
             every_n_train_steps=every_n_train_steps,
             filename="epoch={epoch}-step={step}",
         )
+        
+        # learning rate
         self.lr_callback = LearningRateMonitor(logging_interval="step")
 
-        devices = torch.cuda.device_count() if torch.cuda.is_available() else "auto"
+        # strategy
+        if strategy is None:
+            strategy = DDPStrategy(
+                static_graph=True,
+                find_unused_parameters=True,
+                gradient_as_bucket_view=True
+            )
+            
+        # disable JIT profiling executor
+        try:
+            torch._C._jit_set_profiling_executor(False)
+            torch._C._jit_set_profiling_mode(False)
+        except AttributeError:
+            pass
+        
+        # super
         super().__init__(
             accelerator=accelerator,
             strategy=strategy,

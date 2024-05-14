@@ -53,6 +53,7 @@ scipy>=1.10.1
 requests>=2.31.0
 aiohttp>=3.9.3
 async_timeout>=4.0.3
+pyvrp>=0.6.3
 ```
 
 To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:

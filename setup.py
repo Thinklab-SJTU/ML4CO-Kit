@@ -98,7 +98,7 @@ setup(
     long_description_content_type="text/markdown",
     author=AUTHOR,
     url=URL,
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*", "docs/**"]),
+    packages=find_packages(),
     package_data={PACKAGE_NAME: ["**"], NAME: ["**"], "docs": ["**"]},
     install_requires=REQUIRED,
     extras_require=EXTRAS,
