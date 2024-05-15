@@ -60,22 +60,31 @@ class Trainer(Trainer):
     def __init__(
         self,
         model: nn.Module,
+        # logger
         logger: Optional[Logger] = None,
         wandb_logger_name: str = "wandb",
         resume_id: Optional[str] = None,
+        # checkpoint
         ckpt_save_path: Optional[str] = None,
-        monitor: str = "val/loss",
-        every_n_epochs: int = 1,
-        every_n_train_steps: Optional[int] = None,
-        val_check_interval: Optional[int] = None,
-        log_every_n_steps: Optional[int] = 50,
-        inference_mode: bool = False,
+        ckpt_monitor: str = "val/loss",
+        ckpt_every_n_epochs: int = 1,
+        ckpt_every_n_train_steps: Optional[int] = None,
+        ckpt_filename: str = None,
+        # trainer basic
         accelerator: str = "auto",
         strategy: Union[str, Strategy] = None,
         devices: Union[List[int], str, int] = "auto",
+        fp16: bool = False,
         max_epochs: int = 100,
         max_steps: int = -1,
-        fp16: bool = False,
+        val_check_interval: Optional[int] = None,
+        log_every_n_steps: Optional[int] = 50,
+        gradient_clip_val: int = 1,
+        inference_mode: bool = False,
+        reload_dataloaders_every_n_epochs: int = 0,
+        # Disable JIT profiling executor.
+        disable_profiling_executor: bool = True,
+        # pretrained
         ckpt_path: Optional[str] = None,
         weight_path: Optional[str] = None
     ):
@@ -92,10 +101,10 @@ class Trainer(Trainer):
             )
         self.ckpt_callback = Checkpoint(
             dirpath=self.ckpt_save_path,
-            monitor=monitor,
-            every_n_epochs=every_n_epochs,
-            every_n_train_steps=every_n_train_steps,
-            filename="epoch={epoch}-step={step}",
+            monitor=ckpt_monitor,
+            every_n_epochs=ckpt_every_n_epochs,
+            every_n_train_steps=ckpt_every_n_train_steps,
+            filename="epoch={epoch}-step={step}" if ckpt_filename is None else ckpt_filename,
         )
         
         # learning rate
@@ -109,12 +118,13 @@ class Trainer(Trainer):
                 gradient_as_bucket_view=True
             )
             
-        # disable JIT profiling executor
-        try:
-            torch._C._jit_set_profiling_executor(False)
-            torch._C._jit_set_profiling_mode(False)
-        except AttributeError:
-            pass
+        # Disable JIT profiling executor
+        if disable_profiling_executor:
+            try:
+                torch._C._jit_set_profiling_executor(False)
+                torch._C._jit_set_profiling_mode(False)
+            except AttributeError:
+                pass
         
         # super
         super().__init__(
@@ -133,7 +143,9 @@ class Trainer(Trainer):
             check_val_every_n_epoch=1,
             val_check_interval=val_check_interval,
             log_every_n_steps=log_every_n_steps,
+            gradient_clip_val=gradient_clip_val,
             inference_mode=inference_mode,
+            reload_dataloaders_every_n_epochs=reload_dataloaders_every_n_epochs
         )
         if ckpt_path is not None:
             model.load_from_checkpoint(ckpt_path)

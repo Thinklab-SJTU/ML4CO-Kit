@@ -24,8 +24,7 @@ if found_matplotlib is not None:
 found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
 if found_pytorch_lightning is not None:
     from .learning.env import BaseEnv
-    from .learning.model import BaseModel, ModelConfigurator
-    from .learning.search import SearchConfigurator
+    from .learning.model import BaseModel
     from .learning.train import Checkpoint, Logger, Trainer
     from .learning.utils import to_numpy, to_tensor
     from .learning.utils import check_dim

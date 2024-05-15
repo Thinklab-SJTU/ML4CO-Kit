@@ -126,16 +126,6 @@ class BaseModel(pl.LightningModule):
         )
 
 
-class ModelConfigurator:
-    """ModelConfigurator class is used to configure the models."""
-
-    def __init__(self, model_class):
-        self.model_class = model_class  # model classes
-
-    def get_model(self, task, model_type):
-        return self.model_class(task, model_type)
-
-
 def get_schedule_fn(scheduler, num_training_steps):
     """Returns a callable scheduler_fn(optimizer).
     Todo: Sanitize and unify these schedulers...

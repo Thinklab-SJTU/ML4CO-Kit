@@ -10,6 +10,7 @@ class BaseEnv:
         val_batch_size: int = 1,
         test_batch_size: int = 1,
         num_workers: int = 0,
+        device: str = "cpu"
     ):
         self.name = name
         self.mode = mode
@@ -23,7 +24,8 @@ class BaseEnv:
         self.test_batch_size = test_batch_size
         self.val_batch_size = val_batch_size
         self.num_workers = num_workers
-
+        self.device = device
+        
     def load_data(self):
         raise NotImplementedError(
             "``load_data`` is required to implemented in subclasses."
