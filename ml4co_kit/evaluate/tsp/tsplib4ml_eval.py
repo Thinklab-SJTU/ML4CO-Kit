@@ -1,20 +1,21 @@
 import os
 import numpy as np
 import pandas as pd
-from ml4co_kit.data.tsp.tsplib_original import TSPLIBOriDataset
+from ml4co_kit.data.tsp.tsplib4ml import TSPLIB4MLDataset
 from ml4co_kit.solver.tsp.base import TSPSolver
 
 
-class TSPLIBOriEvaluator:
+class TSPLIB4MLEvaluator:
     def __init__(self) -> None:
-        self.dataset = TSPLIBOriDataset()
+        self.dataset = TSPLIB4MLDataset()
         self.support = self.dataset.support["resolved"]
 
     def evaluate(
         self,
         solver: TSPSolver,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
+        normalize: bool = True,
+        min_nodes_num: int = 51,
+        max_nodes_num: int = 1002,
         **solver_args
     ):
         # record
@@ -23,20 +24,25 @@ class TSPLIBOriEvaluator:
         gaps = dict()
 
         # get the evaluate files' dir and the problem name list
-        evaluate_dir = self.support[norm]["path"]
-        solution_dir = self.support[norm]["solution"]
-        problem_list = self.support[norm]["problem"]
-
+        if normalize:
+            evaluate_dir = self.support["txt_normalize"]
+        else:
+            evaluate_dir = self.support["txt_raw"]
+        problem_list = self.support["problem"]
+               
         # solve
-        for problem in problem_list:
+        for problem, nodes_num in problem_list:
+            # check the nodes_num
+            if nodes_num > max_nodes_num or nodes_num < min_nodes_num:
+                continue
+            
             # read problem
-            file_path = os.path.join(evaluate_dir, problem + ".tsp")
-            ref_tour_path = os.path.join(solution_dir, problem + ".opt.tour")
-            solver.from_tsp(file_path, norm, normalize)
-            solver.read_ref_tours_from_opt_tour(ref_tour_path)
+            problem: str
+            file_path = os.path.join(evaluate_dir, problem + ".txt")
+            solver.from_txt(file_path)
             
             # real solve
-            solver.solve(norm=norm, normalize=normalize, **solver_args)
+            solver.solve(**solver_args)
             solved_cost, ref_cost, gap, _ = solver.evaluate(calculate_gap=True)
             
             # record

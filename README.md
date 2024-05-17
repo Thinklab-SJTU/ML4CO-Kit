@@ -120,7 +120,6 @@ tsp_data_lkh.generate()
 >>> evaluator = TSPLIBOriEvaluator()
 >>> evaluator.evaluate(lkh_solver, norm="EUC_2D")
            solved_costs       ref_costs          gaps
-att48      33523.708507   33523.708507  0.000000e+00
 eil51        429.983312     429.983312  0.000000e+00
 berlin52    7544.365902    7544.365902  3.616585e-14
 st70         678.557469     678.597452 -5.892021e-03
@@ -138,7 +137,7 @@ tsp225      3859.000000    3859.000000  0.000000e+00
 a280        2588.301213    2586.769648  5.920765e-02
 pr1002    260277.189980  259066.663053  4.672646e-01
 pr2392    384469.093320  378062.826191  1.694498e+00
-AVG        50054.634253   49631.448887  1.250504e-01
+AVG        51027.041650   50578.963027  1.324063e-01
 
 >>> eva.evaluate(lkh_solver, norm="GEO")
            solved_costs  ref_costs      gaps

@@ -2,44 +2,19 @@ import os
 from ml4co_kit.utils import download, extract_archive
 
 
-TSPLIB_LARGE_EUC_2D_PATH = "dataset/tsplib_original/large/EUC_2D"
-TSPLIB_LARGE_EUC_2D = [
-    "u1060",
-    "vm1084",
-    "pcb1173",
-    "d1291",
-    "rl1304",
-    "rl1323",
-    "nrw1379",
-    "fl1400",
-    "u1432",
-    "fl1577",
-    "d1655",
-    "vm1748",
-    "u1817",
-    "rl1889",
-    "d2103",
-    "u2152",
-    "u2319",
-    "pcb3038",
-    "fl3795",
-    "fnl4461",
-    "rl5915",
-    "rl5934",
-    "rl11849",
-    "usa13509",
-    "brd14051",
-    "d15112",
-    "d18512",
-]
+#############################################
+#                  RESOLVE                  #
+#############################################
 
-TSPLIB_LARGE_CEIL_2D_PATH = "dataset/tsplib_original/large/CEIL_2D"
-TSPLIB_LARGE_CEIL_2D = ["pla7397", "pla33810", "pla85900"]
+# ATT (only one instance)
+TSPLIB_RESOLVE_ATT_PATH = "dataset/tsplib_original/resolved/ATT/problem"
+TSPLIB_RESOLVE_ATT_SOLUTION = "dataset/tsplib_original/resolved/ATT/solution"
+TSPLIB_RESOLVE_ATT = ["att48"]
 
+# EUC_2D (17 instances)
 TSPLIB_RESOLVE_EUC_2D_PATH = "dataset/tsplib_original/resolved/EUC_2D/problem"
 TSPLIB_RESOLVE_EUC_2D_SOLUTION = "dataset/tsplib_original/resolved/EUC_2D/solution"
 TSPLIB_RESOLVE_EUC_2D = [
-    "att48",
     "eil51",
     "berlin52",
     "st70",
@@ -59,23 +34,30 @@ TSPLIB_RESOLVE_EUC_2D = [
     "pr2392",
 ]
 
+# EXXPLICIT (8 instances)
 TSPLIB_RESOLVE_EXPLICIT_PATH = "dataset/tsplib_original/resolved/EXPLICIT/problem"
 TSPLIB_RESOLVE_EXPLICIT_SOLUTION = "dataset/tsplib_original/resolved/EXPLICIT/solution"
-TSPLIB_RESOLVE_EXPLICIT = [
-    "gr24",
-    "fri26",
-    "bayg29",
-    "bays29",
-    "gr48",
-    "gr120",
-    "brg180",
-    "pa561",
-]
+TSPLIB_RESOLVE_EXPLICIT = ["gr24", "fri26", "bayg29", "bays29", "gr48", "gr120", "brg180", "pa561"]
 
+# GEO (5 instances)
 TSPLIB_RESOLVE_GEO_PATH = "dataset/tsplib_original/resolved/GEO/problem"
 TSPLIB_RESOLVE_GEO_SOLUTION = "dataset/tsplib_original/resolved/GEO/solution"
 TSPLIB_RESOLVE_GEO = ["ulysses16", "ulysses22", "gr96", "gr202", "gr666"]
 
+
+###################################################
+#                    UNRESOLVE                    #
+###################################################
+
+# ATT (only one instance)
+TSPLIB_UNRESOLVE_ATT_PATH = "dataset/tsplib_original/unresolved/ATT"
+TSPLIB_UNRESOLVE_ATT = ["att532"]
+
+# CEIL_2D (4 instanceds)
+TSPLIB_UNRESOLVE_CEIL_2D_PATH = "dataset/tsplib_original/unresolved/CEIL_2D"
+TSPLIB_UNRESOLVE_CEIL_2D = ["dsj1000", "pla7397", "pla33810", "pla85900"]
+
+# EUC_2D (61 instances)
 TSPLIB_UNRESOLVE_EUC_2D_PATH = "dataset/tsplib_original/unresolved/EUC_2D"
 TSPLIB_UNRESOLVE_EUC_2D = [
     "rat99",
@@ -106,27 +88,58 @@ TSPLIB_UNRESOLVE_EUC_2D = [
     "pr439",
     "pcb442",
     "d493",
-    "att532",
     "u574",
     "rat575",
     "p654",
     "d657",
     "u724",
     "rat783",
-    "dsj1000",
+    "u1060",
+    "vm1084",
+    "pcb1173",
+    "d1291",
+    "rl1304",
+    "rl1323",
+    "nrw1379",
+    "fl1400",
+    "u1432",
+    "fl1577",
+    "d1655",
+    "vm1748",
+    "u1817",
+    "rl1889",
+    "d2103",
+    "u2152",
+    "u2319",
+    "pcb3038",
+    "fl3795",
+    "fnl4461",
+    "rl5915",
+    "rl5934",
+    "rl11849",
+    "usa13509",
+    "brd14051",
+    "d15112",
+    "d18512"
 ]
 
+# EXPLICIT (6 instances)
 TSPLIB_UNRESOLVE_EXPLICIT_PATH = "dataset/tsplib_original/unresolved/EXPLICIT"
 TSPLIB_UNRESOLVE_EXPLICIT = ["gr17", "gr21", "dantzig42", "swiss42", "hk48", "brazil58"]
 
+# GEO (2 instances)
 TSPLIB_UNRESOLVE_GEO_PATH = "dataset/tsplib_original/unresolved/GEO"
 TSPLIB_UNRESOLVE_GEO = ["burma14", "ali535"]
 
 
+###################################################
+#                 TSPLIBOriDataset                #
+###################################################
+
 class TSPLIBOriDataset:
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPLIBOriDataset/resolve/main/tsplib_original.tar.gz?download=true"
-        self.md5 = "1dc8dc14888808bb29167ac4fe052983"
+        self.md5 = "a25f78ef610b6c4ff1cde27f9d5fa6f9"
         self.dir = "dataset/tsplib_original"
         self.raw_data_path = "dataset/tsplib_original.tar.gz"
         if not os.path.exists("dataset"):
@@ -138,17 +151,12 @@ class TSPLIBOriDataset:
     @property
     def support(self):
         return {
-            "large": {
-                "EUC_2D": {
-                    "path": TSPLIB_LARGE_EUC_2D_PATH,
-                    "problem": TSPLIB_LARGE_EUC_2D,
-                },
-                "CEIL_2D": {
-                    "path": TSPLIB_LARGE_CEIL_2D_PATH,
-                    "problem": TSPLIB_LARGE_CEIL_2D,
-                },
-            },
             "resolved": {
+                "ATT": {
+                    "path": TSPLIB_RESOLVE_ATT_PATH,
+                    "solution": TSPLIB_RESOLVE_ATT_SOLUTION,
+                    "problem": TSPLIB_RESOLVE_ATT,
+                },
                 "EUC_2D": {
                     "path": TSPLIB_RESOLVE_EUC_2D_PATH,
                     "solution": TSPLIB_RESOLVE_EUC_2D_SOLUTION,
@@ -166,6 +174,10 @@ class TSPLIBOriDataset:
                 },
             },
             "unresolved": {
+                "ATT": {
+                    "path": TSPLIB_UNRESOLVE_ATT_PATH,
+                    "problem": TSPLIB_UNRESOLVE_ATT,
+                },
                 "EUC_2D": {
                     "path": TSPLIB_UNRESOLVE_EUC_2D_PATH,
                     "problem": TSPLIB_UNRESOLVE_EUC_2D,

@@ -5,7 +5,9 @@ import shutil
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from ml4co_kit.data import SATLIBOriDataset, VRPLIBOriDataset
-from ml4co_kit.evaluate import TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator
+from ml4co_kit.evaluate import (
+    TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator, TSPLIB4MLEvaluator
+)
 from ml4co_kit.solver import TSPConcordeSolver, KaMISSolver
 
 
@@ -25,6 +27,22 @@ def test_tsplib_original_eval():
     if gap_avg >= 1e-2:
         message = (
             f"The average gap ({gap_avg}) of TSPLIB(GEO) solved by TSPConcordeSolver "
+            "is larger than or equal to 1e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_tsplib4ml_eval():
+    eva = TSPLIB4MLEvaluator()
+    con_solver = TSPConcordeSolver()
+    result = eva.evaluate(
+        con_solver, normalize=True,
+        min_nodes_num=50, max_nodes_num=200
+    )
+    gap_avg = result["gaps"][-1]
+    if gap_avg >= 1e-2:
+        message = (
+            f"The average gap ({gap_avg}) of TSPLIB4ML(normalize=True) solved by TSPConcordeSolver "
             "is larger than or equal to 1e-2%."
         )
         raise ValueError(message)
@@ -78,6 +96,7 @@ def test_vrplib_original_eval():
 
 if __name__ == "__main__":
     test_tsplib_original_eval()
+    test_tsplib4ml_eval()
     test_tsp_uniform_eval()
     test_satlib_original_eval()
     test_vrplib_original_eval()

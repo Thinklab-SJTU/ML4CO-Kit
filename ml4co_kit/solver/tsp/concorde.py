@@ -116,7 +116,7 @@ class TSPConcordeSolver(TSPSolver):
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return tours
+        return self.tours
 
     def clear_tmp_files(self, name):
         real_name = name[0:9]

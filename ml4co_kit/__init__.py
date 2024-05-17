@@ -4,7 +4,7 @@ import importlib.util
 from .data import TSPLIBOriDataset, TSPUniformDataset
 from .data import SATLIBOriDataset
 from .data import VRPLIBOriDataset
-from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPUniformEvaluator
+from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
 from .evaluate import CVRPEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator

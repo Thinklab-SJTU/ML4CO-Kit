@@ -117,7 +117,7 @@ class TSPLKHSolver(TSPSolver):
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
-        return tours
+        return self.tours
 
     def regret_solve(
         self, points: np.ndarray, fixed_edges: tuple, norm: str = "EUC_2D"
