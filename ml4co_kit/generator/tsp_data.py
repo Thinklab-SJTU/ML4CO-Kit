@@ -220,19 +220,21 @@ class TSPDataGenerator:
             os.makedirs(self.regret_save_path)
 
     def generate(self):
+        start_time = time.time()
         with open(self.file_save_path, "w") as f:
-            start_time = time.time()
             cnt = 0
             for _ in tqdm(
                 range(self.samples_num // self.num_threads),
                 desc=f"Solving TSP Using {self.solver_type}",
             ):
+                # call generate_func to generate the points 
                 batch_nodes_coord = self.generate_func()
                 with Pool(self.num_threads) as p1:
                     tours = p1.map(
                         self.solver.solve,
                         [batch_nodes_coord[idx] for idx in range(self.num_threads)],
                     )
+                
                 # deal with regret
                 if self.regret:
                     p1.close()  # Close the pool to indicate that no more tasks will be submitted
@@ -249,6 +251,7 @@ class TSPDataGenerator:
                                 ],
                             )
                     cnt += self.num_threads
+                
                 # write to txt
                 for idx, tour in enumerate(tours):
                     tour = tour[:-1]
@@ -263,13 +266,15 @@ class TSPDataGenerator:
                         f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
                         f.write(str(" ") + str(tour[0] + 1) + str(" "))
                         f.write("\n")
-            end_time = time.time() - start_time
             f.close()
-            print(
-                f"Completed generation of {self.samples_num} samples of TSP{self.nodes_num}."
-            )
-            print(f"Total time: {end_time/60:.1f}m")
-            print(f"Average time: {end_time/self.samples_num:.1f}s")
+        
+        # info
+        end_time = time.time() - start_time
+        print(
+            f"Completed generation of {self.samples_num} samples of TSP{self.nodes_num}."
+        )
+        print(f"Total time: {end_time/60:.1f}m")
+        print(f"Average time: {end_time/self.samples_num:.1f}s")
         self.devide_file()
 
     def generate_regret(self, tour: np.ndarray, nodes_coord: np.ndarray, cnt: int):
