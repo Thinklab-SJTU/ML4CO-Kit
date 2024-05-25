@@ -221,41 +221,41 @@ class TSPDataGenerator:
 
     def generate(self):
         start_time = time.time()
-        with open(self.file_save_path, "w") as f:
-            cnt = 0
-            for _ in tqdm(
-                range(self.samples_num // self.num_threads),
-                desc=f"Solving TSP Using {self.solver_type}",
-            ):
-                # call generate_func to generate the points 
-                batch_nodes_coord = self.generate_func()
-                with Pool(self.num_threads) as p1:
-                    tours = p1.map(
-                        self.solver.solve,
-                        [batch_nodes_coord[idx] for idx in range(self.num_threads)],
-                    )
-                
-                # deal with regret
-                if self.regret:
-                    p1.close()  # Close the pool to indicate that no more tasks will be submitted
-                    p1.join()  # Wait for all processes in the pool to complete
-                    if self.num_threads == 1:
-                        self.generate_regret(tours[0], batch_nodes_coord[0], cnt)    
-                    else:
-                        with Pool(self.num_threads) as p2:
-                            p2.starmap(
-                                self.generate_regret,
-                                [
-                                    (tour, batch_nodes_coord[idx], cnt + idx)
-                                    for idx, tour in enumerate(tours)
-                                ],
-                            )
-                    cnt += self.num_threads
-                
-                # write to txt
-                for idx, tour in enumerate(tours):
-                    tour = tour[:-1]
-                    if (np.sort(tour) == np.arange(self.nodes_num)).all():
+        cnt = 0
+        for _ in tqdm(
+            range(self.samples_num // self.num_threads),
+            desc=f"Solving TSP Using {self.solver_type}",
+        ):
+            # call generate_func to generate the points 
+            batch_nodes_coord = self.generate_func()
+            with Pool(self.num_threads) as p1:
+                tours = p1.map(
+                    self.solver.solve,
+                    [batch_nodes_coord[idx] for idx in range(self.num_threads)],
+                )
+            
+            # deal with regret
+            if self.regret:
+                p1.close()  # Close the pool to indicate that no more tasks will be submitted
+                p1.join()  # Wait for all processes in the pool to complete
+                if self.num_threads == 1:
+                    self.generate_regret(tours[0], batch_nodes_coord[0], cnt)    
+                else:
+                    with Pool(self.num_threads) as p2:
+                        p2.starmap(
+                            self.generate_regret,
+                            [
+                                (tour, batch_nodes_coord[idx], cnt + idx)
+                                for idx, tour in enumerate(tours)
+                            ],
+                        )
+                cnt += self.num_threads
+            
+            # write to txt
+            for idx, tour in enumerate(tours):
+                tour = tour[:-1]
+                if (np.sort(tour) == np.arange(self.nodes_num)).all():
+                    with open(self.file_save_path, "a+") as f:
                         f.write(
                             " ".join(
                                 str(x) + str(" ") + str(y)
@@ -266,7 +266,7 @@ class TSPDataGenerator:
                         f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
                         f.write(str(" ") + str(tour[0] + 1) + str(" "))
                         f.write("\n")
-            f.close()
+                    f.close()
         
         # info
         end_time = time.time() - start_time

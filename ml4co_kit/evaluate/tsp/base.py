@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import scipy.spatial
 from typing import Union
 from pyvrp.read import ROUND_FUNCS
 
@@ -17,7 +16,6 @@ class TSPEvaluator(object):
             raise ValueError("points must be 2D array.")
         self.points = points
         self.set_norm(norm)
-        self.edge_weights = self.get_weight()
 
     def set_norm(self, norm: str):
         if norm not in SUPPORT_NORM_TYPE:
@@ -28,22 +26,11 @@ class TSPEvaluator(object):
             raise ValueError(message)
         self.norm = norm
 
-    def get_weight(self):
+    def get_weight(self, x: np.ndarray, y: np.ndarray):
         if self.norm == "EUC_2D":
-            return scipy.spatial.distance_matrix(self.points, self.points)
+            return math.sqrt((x[0] - y[0])**2 + (x[1] - y[1])**2)
         elif self.norm == "GEO":
-            nodes_num = self.points.shape[0]
-            edge_weights = np.zeros(shape=(nodes_num, nodes_num), dtype=np.int32)
-            for i_idx in range(nodes_num):
-                for j_idx in range(nodes_num):
-                    if j_idx <= i_idx:
-                        continue
-                    node_coord_1 = self.points[i_idx]
-                    node_coord_2 = self.points[j_idx]
-                    weight = geographical(node_coord_1, node_coord_2)
-                    edge_weights[i_idx][j_idx] = weight
-                    edge_weights[j_idx][i_idx] = weight
-            return edge_weights
+            return geographical(x, y)
 
     def evaluate(
         self, route: Union[np.ndarray, list], 
@@ -68,7 +55,7 @@ class TSPEvaluator(object):
         
         total_cost = 0
         for i in range(len(route) - 1):
-            cost = self.edge_weights[route[i], route[i + 1]]
+            cost = self.get_weight(self.points[route[i]], self.points[route[i + 1]])
             total_cost += round_func(cost)
 
         return total_cost
