@@ -1,7 +1,7 @@
 import importlib.util
 
 # base
-from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset
+from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
 from .data import SATLIBOriDataset
 from .data import VRPLIBOriDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator

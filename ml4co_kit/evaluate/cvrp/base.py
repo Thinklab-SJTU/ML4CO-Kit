@@ -32,4 +32,3 @@ class CVRPEvaluator(TSPEvaluator):
         coords[1:] = points
         self.points = coords
         self.set_norm(norm)
-        self.edge_weights = self.get_weight()
