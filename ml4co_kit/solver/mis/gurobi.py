@@ -11,7 +11,7 @@ import numpy as np
 import networkx as nx
 import pandas as pd
 from pathlib import Path
-from .base import MISSolver
+from ml4co_kit.solver.mis.base import MISSolver
 
 
 class MISGurobi(MISSolver):

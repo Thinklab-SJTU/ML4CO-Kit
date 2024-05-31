@@ -2,11 +2,11 @@ import os
 import time
 import uuid
 import numpy as np
-from tqdm import tqdm
-from multiprocessing import Pool
 from typing import Union
-from .pyconcorde import TSPConSolver
-from .base import TSPSolver
+from multiprocessing import Pool
+from ml4co_kit.solver.tsp.pyconcorde import TSPConSolver
+from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.utils.run_utils import iterative_execution
 
 
 class TSPConcordeSolver(TSPSolver):
@@ -50,61 +50,35 @@ class TSPConcordeSolver(TSPSolver):
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            if show_time:
-                for idx in tqdm(range(num_points), desc="Solving TSP Using Concorde"):
-                    name = uuid.uuid4().hex
-                    tours.append(self._solve(self.points[idx], name))
-                    self.clear_tmp_files(name)
-            else:
-                for idx in range(num_points):
-                    name = uuid.uuid4().hex
-                    tours.append(self._solve(self.points[idx], name))
-                    self.clear_tmp_files(name)
+            for idx in iterative_execution(
+                range, num_points, "Solving TSP Using Concorde", show_time
+            ):
+                name = uuid.uuid4().hex
+                tours.append(self._solve(self.points[idx], name))
+                self.clear_tmp_files(name)
         else:
-            batch_points = self.points.reshape(
-                -1, num_threads, p_shape[-2], p_shape[-1]
-            )
+            batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             name_list = list()
-            if show_time:
-                for idx in tqdm(
-                    range(num_points // num_threads), desc="Solving TSP Using Concorde"
-                ):
-                    for _ in range(num_threads):
-                        name_list.append(uuid.uuid4().hex)
-                    with Pool(num_threads) as p1:
-                        name = uuid.uuid4().hex
-                        cur_tours = p1.starmap(
-                            self._solve,
-                            [
-                                (batch_points[idx][inner_idx], name)
-                                for inner_idx, name in zip(
-                                    range(num_threads), name_list
-                                )
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
-                    for name in name_list:
-                        self.clear_tmp_files(name)
-            else:
-                for idx in range(num_points // num_threads):
-                    for _ in range(num_threads):
-                        name_list.append(uuid.uuid4().hex)
-                    with Pool(num_threads) as p1:
-                        name = uuid.uuid4().hex
-                        cur_tours = p1.starmap(
-                            self._solve,
-                            [
-                                (batch_points[idx][inner_idx], name)
-                                for inner_idx, name in zip(
-                                    range(num_threads), name_list
-                                )
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
-                    for name in name_list:
-                        self.clear_tmp_files(name)
+            for idx in iterative_execution(
+                range, num_points // num_threads, "Solving TSP Using Concorde", show_time
+            ):
+                for _ in range(num_threads):
+                    name_list.append(uuid.uuid4().hex)
+                with Pool(num_threads) as p1:
+                    name = uuid.uuid4().hex
+                    cur_tours = p1.starmap(
+                        self._solve,
+                        [
+                            (batch_points[idx][inner_idx], name)
+                            for inner_idx, name in zip(
+                                range(num_threads), name_list
+                            )
+                        ],
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
+                for name in name_list:
+                    self.clear_tmp_files(name)
 
         # format
         tours = np.array(tours)

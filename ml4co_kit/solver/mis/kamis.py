@@ -10,7 +10,7 @@ import pathlib
 from tqdm import tqdm
 from pathlib import Path
 from typing import Union
-from .base import MISSolver
+from ml4co_kit.solver.mis.base import MISSolver
 
 
 class KaMISSolver(MISSolver):

@@ -4,11 +4,11 @@ import uuid
 import pathlib
 import tsplib95
 import numpy as np
-from tqdm import tqdm
-from subprocess import check_call
-from multiprocessing import Pool
 from typing import Union
-from .base import CVRPSolver
+from multiprocessing import Pool
+from subprocess import check_call
+from ml4co_kit.solver.cvrp.base import CVRPSolver
+from ml4co_kit.utils.run_utils import iterative_execution
 
 
 class CVRPLKHSolver(CVRPSolver):
@@ -148,58 +148,36 @@ class CVRPLKHSolver(CVRPSolver):
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            if show_time:
-                for idx in tqdm(range(num_points), desc="Solving CVRP Using LKH"):
-                    tours.append(self._solve(
-                        depot_coord=self.depots[idx],
-                        nodes_coord=self.points[idx],
-                        demands=self.demands[idx],
-                        capacity=self.capacities[idx]
-                    ))
-            else:
-                for idx in range(num_points):
-                    tours.append(self._solve(
-                        depot_coord=self.depots[idx],
-                        nodes_coord=self.points[idx],
-                        demands=self.demands[idx],
-                        capacity=self.capacities[idx]
-                    ))
+            for idx in iterative_execution(
+                range, num_points, "Solving CVRP Using LKH", show_time
+            ):
+                tours.append(self._solve(
+                    depot_coord=self.depots[idx],
+                    nodes_coord=self.points[idx],
+                    demands=self.demands[idx],
+                    capacity=self.capacities[idx]
+                ))
         else:
             num_tqdm = num_points // num_threads
             batch_depots = self.depots.reshape(num_tqdm, num_threads, -1)
             batch_demands = self.demands.reshape(num_tqdm, num_threads, -1)
             batch_capacities = self.capacities.reshape(num_tqdm, num_threads)
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
-            if show_time:
-                for idx in tqdm(
-                    range(num_points // num_threads), desc="Solving CVRP Using LKH"
-                ):
-                    with Pool(num_threads) as p1:
-                        cur_tours = p1.starmap(
-                            self._solve,
-                            [  (batch_depots[idx][inner_idx], 
-                                batch_points[idx][inner_idx], 
-                                batch_demands[idx][inner_idx], 
-                                batch_capacities[idx][inner_idx]) 
-                                for inner_idx in range(num_threads)
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
-            else:
-                for idx in range(num_points // num_threads):
-                    with Pool(num_threads) as p1:
-                        cur_tours = p1.starmap(
-                            self._solve,
-                            [  (batch_depots[idx][inner_idx], 
-                                batch_points[idx][inner_idx], 
-                                batch_demands[idx][inner_idx], 
-                                batch_capacities[idx][inner_idx]) 
-                                for inner_idx in range(num_threads)
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
+            for idx in iterative_execution(
+                range, num_points // num_threads, "Solving CVRP Using LKH", show_time
+            ):
+                with Pool(num_threads) as p1:
+                    cur_tours = p1.starmap(
+                        self._solve,
+                        [  (batch_depots[idx][inner_idx], 
+                            batch_points[idx][inner_idx], 
+                            batch_demands[idx][inner_idx], 
+                            batch_capacities[idx][inner_idx]) 
+                            for inner_idx in range(num_threads)
+                        ],
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
 
         # format
         self.read_tours(tours)

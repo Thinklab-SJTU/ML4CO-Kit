@@ -2,11 +2,11 @@ import time
 import numpy as np
 import tsplib95
 import pathlib
-from tqdm import tqdm
-from multiprocessing import Pool
 from typing import Union
-from .base import TSPSolver
-from .lkh_solver import lkh_solve
+from multiprocessing import Pool
+from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.solver.tsp.lkh_solver import lkh_solve
+from ml4co_kit.utils.run_utils import iterative_execution
 
 
 class TSPLKHSolver(TSPSolver):
@@ -70,43 +70,26 @@ class TSPLKHSolver(TSPSolver):
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            if show_time:
-                for idx in tqdm(range(num_points), desc="Solving TSP Using LKH"):
-                    tours.append(self._solve(self.points[idx]))
-            else:
-                for idx in range(num_points):
-                    tours.append(self._solve(self.points[idx]))
+            for idx in iterative_execution(
+                range, num_points, "Solving TSP Using LKH", show_time
+            ):
+                tours.append(self._solve(self.points[idx]))
         else:
-            batch_points = self.points.reshape(
-                -1, num_threads, p_shape[-2], p_shape[-1]
-            )
-            if show_time:
-                for idx in tqdm(
-                    range(num_points // num_threads), desc="Solving TSP Using LKH"
-                ):
-                    with Pool(num_threads) as p1:
-                        cur_tours = p1.map(
-                            self._solve,
-                            [
-                                batch_points[idx][inner_idx]
-                                for inner_idx in range(num_threads)
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
-            else:
-                for idx in range(num_points // num_threads):
-                    with Pool(num_threads) as p1:
-                        cur_tours = p1.map(
-                            self._solve,
-                            [
-                                batch_points[idx][inner_idx]
-                                for inner_idx in range(num_threads)
-                            ],
-                        )
-                    for tour in cur_tours:
-                        tours.append(tour)
-
+            batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
+            for idx in iterative_execution(
+                range, num_points // num_threads, "Solving TSP Using LKH", show_time
+            ):
+                with Pool(num_threads) as p1:
+                    cur_tours = p1.map(
+                        self._solve,
+                        [
+                            batch_points[idx][inner_idx]
+                            for inner_idx in range(num_threads)
+                        ],
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
+        
         # format
         tours = np.array(tours)
         zeros = np.zeros((tours.shape[0], 1))

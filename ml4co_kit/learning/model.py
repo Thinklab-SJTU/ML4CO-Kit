@@ -5,7 +5,7 @@ from typing import Any
 from functools import partial
 from torch.optim.lr_scheduler import LambdaLR
 from pytorch_lightning.utilities import rank_zero_info
-from .env import BaseEnv
+from ml4co_kit.learning.env import BaseEnv
 
 
 class BaseModel(pl.LightningModule):
