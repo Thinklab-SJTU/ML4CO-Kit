@@ -11,7 +11,7 @@ from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobi
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
-from .utils import download, compress_folder, extract_archive, _get_md5
+from .utils import download, compress_folder, extract_archive, _get_md5, iterative_execution
 
 # expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")
@@ -31,5 +31,5 @@ if found_pytorch_lightning is not None:
     from .learning.utils import points_to_distmat, sparse_points
 
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 __author__ = "SJTU-ReThinkLab"

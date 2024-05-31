@@ -1,7 +1,7 @@
 import pickle
 import networkx as nx
 import matplotlib.pyplot as plt
-from .utils import get_pos_layer
+from ml4co_kit.draw.utils import get_pos_layer
 
 
 def draw_mis_problem(
