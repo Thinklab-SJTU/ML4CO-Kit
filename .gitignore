@@ -15,10 +15,12 @@ LKH-3.0.7/**
 dist/**
 ml4co_kit.egg-info/**
 build/**
+ml4co_kit/solver/cvrp/hgs/source/cvrp_hgs_solver
 
 # C extensions
 *.pyd
 *.so
+*.o
 ml4co_kit/solver/tsp/pyconcorde/build/**
 ml4co_kit/solver/mis/KaMIS/**
 ml4co_kit/solver/tsp/pyconcorde/concorde/_concorde.c
@@ -31,6 +33,7 @@ data/**
 tmp/**
 tmp.py
 repos/**
+ml4co_kit/solver/cvrp/c_hgs/tmp/**
 
 # coverage
 coverage.xml

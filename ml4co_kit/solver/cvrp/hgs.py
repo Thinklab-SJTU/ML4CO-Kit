@@ -1,31 +1,25 @@
-import sys
+import os
+import uuid
 import time
 import numpy as np
 from typing import Union
 from multiprocessing import Pool
-from pyvrp import Model
-from pyvrp.stop import MaxRuntime
 from ml4co_kit.solver.cvrp.base import CVRPSolver
+from ml4co_kit.solver.cvrp.c_hgs import cvrp_hgs_solver, HGS_TMP_PATH
 from ml4co_kit.utils.run_utils import iterative_execution
 
 
-if sys.version_info.major == 3 and sys.version_info.minor == 8:
-    CP38 = True
-else:
-    CP38 = False
-
-
-class CVRPPyVRPSolver(CVRPSolver):
+class CVRPHGSSolver(CVRPSolver):
     def __init__(
         self,
-        depots_scale: int = 1e6,
-        points_scale: int = 1e6,
+        depots_scale: int = 1e4,
+        points_scale: int = 1e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
         time_limit: float = 1.0,
     ):
-        super(CVRPPyVRPSolver, self).__init__(
-            solver_type="pyvrp", 
+        super(CVRPHGSSolver, self).__init__(
+            solver_type="hgs", 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,
@@ -46,30 +40,32 @@ class CVRPPyVRPSolver(CVRPSolver):
         demands = (demands * self.demands_scale).astype(np.int64)
         capacity = int(capacity * self.capacities_scale)
         
-        # solve
-        cvrp_model = Model()
-        depot = cvrp_model.add_depot(x=depot_coord[0], y=depot_coord[1])
-        max_num_available = len(demands)
-        cvrp_model.add_vehicle_type(capacity=capacity, num_available=max_num_available)
-        clients = [
-            cvrp_model.add_client(
-                self.round_func(nodes_coord[idx][0]), 
-                self.round_func(nodes_coord[idx][1]), 
-                self.round_func(demands[idx])
-            ) for idx in range(0, len(nodes_coord))
-        ]
-        locations = [depot] + clients
-        for frm in locations:
-            for to in locations:
-                distance = self.get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
-                cvrp_model.add_edge(frm, to, distance=self.round_func(distance))
-        res = cvrp_model.solve(stop=MaxRuntime(self.time_limit))
+        # generate .vrp file
+        name = uuid.uuid4().hex[:9]
+        tmp_solver = CVRPSolver()
+        tmp_solver.from_data(depot_coord, nodes_coord, demands, capacity)
+        tmp_solver.to_vrp(HGS_TMP_PATH, filename=name)
         
-        routes = res.best.get_routes() if CP38 else res.best.routes()
-        tour = [0]
-        for route in routes:
-            tour += route.visits()
-            tour.append(0)
+        # Intermediate files
+        vrp_name = f"{name}-0.vrp"
+        sol_name = f"{name}.sol"
+        vrp_abs_path = os.path.join(HGS_TMP_PATH, vrp_name)
+        sol_abs_path = os.path.join(HGS_TMP_PATH, sol_name)
+        pg_abs_path = os.path.join(HGS_TMP_PATH, f"{name}.sol.PG.csv")
+        
+        # solve
+        cvrp_hgs_solver(vrp_name, sol_name, self.time_limit)
+        
+        # read data from .sol
+        tmp_solver.read_ref_tours_from_sol(sol_abs_path)
+        tour = tmp_solver.ref_tours[0]
+        
+        # clear files
+        intermediate_files = [vrp_abs_path, sol_abs_path, pg_abs_path]
+        for file_path in intermediate_files:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
         return tour
         
     def solve(
@@ -100,7 +96,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         num_points = p_shape[0]
         if num_threads == 1:   
             for idx in iterative_execution(
-                range, num_points, "Solving CVRP Using PyVRP", show_time
+                range, num_points, "Solving CVRP Using HGS", show_time
             ):
                 tours.append(self._solve(
                     depot_coord=self.depots[idx],
@@ -115,7 +111,7 @@ class CVRPPyVRPSolver(CVRPSolver):
             batch_capacities = self.capacities.reshape(num_tqdm, num_threads)
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
-                range, num_points // num_threads, "Solving CVRP Using PyVRP", show_time
+                range, num_points // num_threads, "Solving CVRP Using HGS", show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.starmap(

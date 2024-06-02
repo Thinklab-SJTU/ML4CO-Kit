@@ -14,7 +14,7 @@ from pathlib import Path
 from ml4co_kit.solver.mis.base import MISSolver
 
 
-class MISGurobi(MISSolver):
+class MISGurobiSolver(MISSolver):
     def __init__(
         self,
         weighted: bool = False,
@@ -38,7 +38,7 @@ class MISGurobi(MISSolver):
             write_mps (bool, optional):
                 Instead of solving, write mps output (e.g., for tuning)
         """
-        super(MISGurobi, self).__init__()
+        super(MISGurobiSolver, self).__init__()
         self.solver_type = "gurobi"
         self.weighted = weighted
         self.time_limit = time_limit

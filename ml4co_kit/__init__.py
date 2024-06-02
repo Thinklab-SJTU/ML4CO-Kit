@@ -9,8 +9,8 @@ from .evaluate import SATLIBEvaluator
 from .evaluate import CVRPEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
-from .solver import MISSolver, KaMISSolver, MISGurobi
-from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
+from .solver import MISSolver, KaMISSolver, MISGurobiSolver
+from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from .utils import download, compress_folder, extract_archive, _get_md5, iterative_execution
 
 # expand - matplotlib

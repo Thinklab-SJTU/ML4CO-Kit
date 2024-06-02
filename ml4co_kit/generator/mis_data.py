@@ -6,8 +6,8 @@ import networkx as nx
 import numpy as np
 from tqdm import tqdm
 from typing import Union
-from ml4co_kit.solver.mis import KaMISSolver, MISGurobi
-from ml4co_kit.solver import MISSolver, KaMISSolver, MISGurobi
+from ml4co_kit.solver.mis import KaMISSolver, MISGurobiSolver
+from ml4co_kit.solver import MISSolver, KaMISSolver, MISGurobiSolver
 
 
 class MISDataGenerator:
@@ -135,7 +135,7 @@ class MISDataGenerator:
         # check solver
         if type(self.solver) == str:
             self.solver_type = self.solver
-            supported_solver_dict = {"kamis": KaMISSolver, "gurobi": MISGurobi}
+            supported_solver_dict = {"kamis": KaMISSolver, "gurobi": MISGurobiSolver}
             supported_solver_type = supported_solver_dict.keys()
             if self.solver not in supported_solver_type:
                 message = (

@@ -5,7 +5,7 @@ root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from ml4co_kit.solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
 from ml4co_kit.solver import KaMISSolver
-from ml4co_kit.solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver
+from ml4co_kit.solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
@@ -176,7 +176,28 @@ def test_cvrp_lkh_solver():
     _test_cvrp_lkh_solver(True, 2)
     _test_cvrp_lkh_solver(False, 1)
     _test_cvrp_lkh_solver(False, 2)
-    
+
+
+def _test_cvrp_hgs_solver(show_time: bool, num_threads: int):
+    cvrp_hgs_solver = CVRPHGSSolver(time_limit=2)
+    cvrp_hgs_solver.from_txt("tests/solver_test/cvrp50_test_small.txt")
+    cvrp_hgs_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = cvrp_hgs_solver.evaluate(calculate_gap=True)
+    print(f"CVRPHGSSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-5:
+        message = (
+            f"The average gap ({gap_avg}) of CVRP50 solved by CVRPHGSSolver "
+            "is larger than or equal to 1e-5%."
+        )
+        raise ValueError(message)
+
+
+def test_cvrp_hgs_solver():
+    _test_cvrp_hgs_solver(True, 1)
+    _test_cvrp_hgs_solver(True, 2)
+    _test_cvrp_hgs_solver(False, 1)
+    _test_cvrp_hgs_solver(False, 2)
+
 
 def test_cvrp():
     """
@@ -185,6 +206,7 @@ def test_cvrp():
     test_cvrp_base_solver()
     test_cvrp_pyvrp_solver()
     test_cvrp_lkh_solver()
+    test_cvrp_hgs_solver()
     
 
 ##############################################
