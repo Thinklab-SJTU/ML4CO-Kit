@@ -18,7 +18,7 @@ class CVRPDataGenerator:
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[str, CVRPSolver] = "pyvrp",
+        solver: Union[str, CVRPSolver] = "PyVRP",
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -115,9 +115,9 @@ class CVRPDataGenerator:
         if type(self.solver) == str:
             self.solver_type = self.solver
             supported_solver_dict = {
-                "pyvrp": CVRPPyVRPSolver,
-                "lkh": CVRPLKHSolver,
-                "hgs": CVRPHGSSolver
+                "PyVRP": CVRPPyVRPSolver,
+                "LKH": CVRPLKHSolver,
+                "HGS": CVRPHGSSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
@@ -132,9 +132,9 @@ class CVRPDataGenerator:
             self.solver_type = self.solver.solver_type
         # check solver
         check_solver_dict = {
-            "lkh": self.check_lkh,
-            "pyvrp": self.check_free,
-            "hgs": self.check_free
+            "PyVRP": self.check_free,
+            "LKH": self.check_lkh,
+            "HGS": self.check_free
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
@@ -194,25 +194,38 @@ class CVRPDataGenerator:
             os.makedirs(self.save_path)
 
     def generate(self):
-        with open(self.file_save_path, "w") as f:
-            start_time = time.time()
-            for _ in tqdm(
-                range(self.samples_num // self.num_threads),
-                desc=f"Solving CVRP Using {self.solver_type}",
-            ):
-                batch_depots_coord, batch_nodes_coord= self.generate_func()
-                batch_demands = self.generate_demands()
-                batch_capacities = self.generate_capacities()
+        start_time = time.time()
+        for _ in tqdm(
+            range(self.samples_num // self.num_threads),
+            desc=f"Solving CVRP Using {self.solver_type}",
+        ):
+            # call generate_func to generate the points
+            batch_depots_coord, batch_nodes_coord = self.generate_func()
+            batch_demands = self.generate_demands()
+            batch_capacities = self.generate_capacities()
+            
+            # solve
+            if self.num_threads == 1:
+                tours = self.solver.solve(
+                    depots=batch_depots_coord[0],
+                    points=batch_nodes_coord[0],
+                    demands=batch_demands[0],
+                    capacities=batch_capacities[0]
+                )
+                tours = [tours]
+            else:
                 with Pool(self.num_threads) as p1:
                     tours = p1.starmap(
                         self.solver.solve,
                         [(batch_depots_coord[idx],
-                          batch_nodes_coord[idx],
-                          batch_demands[idx],
-                          batch_capacities[idx])
-                         for idx in range(self.num_threads)],
+                        batch_nodes_coord[idx],
+                        batch_demands[idx],
+                        batch_capacities[idx])
+                        for idx in range(self.num_threads)],
                     )
-                # write to txt
+            
+            # write to txt
+            with open(self.file_save_path, "w") as f:
                 for idx, tour in enumerate(tours):
                     depot = batch_depots_coord[idx]
                     points = batch_nodes_coord[idx]
@@ -231,13 +244,15 @@ class CVRPDataGenerator:
                     f.write(str(" output "))
                     f.write(str(" ").join(str(node_idx) for node_idx in tour[0]))
                     f.write("\n")
-            end_time = time.time() - start_time
             f.close()
-            print(
-                f"Completed generation of {self.samples_num} samples of CVRP{self.nodes_num}."
-            )
-            print(f"Total time: {end_time/60:.1f}m")
-            print(f"Average time: {end_time/self.samples_num:.1f}s")
+        
+        # info
+        end_time = time.time() - start_time
+        print(
+            f"Completed generation of {self.samples_num} samples of CVRP{self.nodes_num}."
+        )
+        print(f"Total time: {end_time/60:.1f}m")
+        print(f"Average time: {end_time/self.samples_num:.1f}s")
         self.devide_file()
 
     def devide_file(self):
