@@ -19,7 +19,7 @@ class CVRPHGSSolver(CVRPSolver):
         time_limit: float = 1.0,
     ):
         super(CVRPHGSSolver, self).__init__(
-            solver_type="hgs", 
+            solver_type="HGS", 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,

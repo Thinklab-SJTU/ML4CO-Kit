@@ -27,8 +27,7 @@ class KaMISSolver(MISSolver):
             time_limit (float, optional):
                 Time limit in seconds.
         """
-        super(KaMISSolver, self).__init__()
-        self.solver_type = "kamis"
+        super(KaMISSolver, self).__init__(solver_type="KaMIS")
         self.weighted = weighted
         self.time_limit = time_limit
         self.kamis_path = pathlib.Path(__file__).parent

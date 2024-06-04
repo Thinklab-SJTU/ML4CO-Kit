@@ -20,7 +20,7 @@ class TSPConcordeSolver(TSPSolver):
             scale (int, optional):
                 The scale factor for coordinates in the Concorde solver.
         """
-        super(TSPConcordeSolver, self).__init__(solver_type="concorde", scale=scale)
+        super(TSPConcordeSolver, self).__init__(solver_type="Concorde", scale=scale)
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
         solver = TSPConSolver.from_data(

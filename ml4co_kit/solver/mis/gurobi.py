@@ -38,8 +38,7 @@ class MISGurobiSolver(MISSolver):
             write_mps (bool, optional):
                 Instead of solving, write mps output (e.g., for tuning)
         """
-        super(MISGurobiSolver, self).__init__()
-        self.solver_type = "gurobi"
+        super(MISGurobiSolver, self).__init__(solver_type="Gurobi")
         self.weighted = weighted
         self.time_limit = time_limit
         self.num_threads = num_threads

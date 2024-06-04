@@ -13,7 +13,7 @@ TSP_UNIFORM_100 = [
     "dataset/tsp_uniform/tsp100_lkh_500_7.75598.txt",
     "dataset/tsp_uniform/tsp100_lkh_1k_7.75592.txt",
     "dataset/tsp_uniform/tsp100_lkh_5k_7.75588.txt",
-    "dataset/tsp_uniform/tsp100_concorde_5_7.75585.txt",
+    "dataset/tsp_uniform/tsp100_concorde_7.75585.txt",
 ]
 
 TSP_UNIFORM_500 = [
@@ -33,6 +33,7 @@ TSP_UNIFORM_10000 = [
     "dataset/tsp_uniform/tsp10000_lkh_100k_72.23920.txt",
     "dataset/tsp_uniform/tsp10000_lkh_1m_72.00978.txt",
     "dataset/tsp_uniform/tsp10000_lkh_5m_71.93551.txt",
+    "dataset/tsp_uniform/tsp10000_concorde_large_71.84185.txt"
 ]
 
 

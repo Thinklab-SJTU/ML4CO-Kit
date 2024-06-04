@@ -25,7 +25,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         time_limit: float = 1.0,
     ):
         super(CVRPPyVRPSolver, self).__init__(
-            solver_type="pyvrp", 
+            solver_type="PyVRP", 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,

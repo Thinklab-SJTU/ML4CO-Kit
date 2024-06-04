@@ -12,9 +12,9 @@ from ml4co_kit.utils.run_utils import iterative_execution
 class TSPLKHSolver(TSPSolver):
     def __init__(
         self,
+        scale: int = 1e6,
         lkh_max_trials: int = 1000,
         lkh_path: pathlib.Path = "LKH",
-        scale: int = 1e6,
         lkh_runs: int = 10,
     ):
         """
@@ -29,10 +29,9 @@ class TSPLKHSolver(TSPSolver):
             lkh_runs (int, optional): The number of runs for the LKH solver.
                 Defaults to 10.
         """
-        super(TSPLKHSolver, self).__init__(solver_type="lkh", scale=scale)
+        super(TSPLKHSolver, self).__init__(solver_type="LKH", scale=scale)
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
-        self.scale = scale
         self.lkh_runs = lkh_runs
 
     def _solve(self, nodes_coord: np.ndarray) -> list:

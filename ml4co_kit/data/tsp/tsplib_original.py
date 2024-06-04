@@ -34,7 +34,7 @@ TSPLIB_RESOLVE_EUC_2D = [
     "pr2392",
 ]
 
-# EXXPLICIT (8 instances)
+# EXPLICIT (8 instances)
 TSPLIB_RESOLVE_EXPLICIT_PATH = "dataset/tsplib_original/resolved/EXPLICIT/problem"
 TSPLIB_RESOLVE_EXPLICIT_SOLUTION = "dataset/tsplib_original/resolved/EXPLICIT/solution"
 TSPLIB_RESOLVE_EXPLICIT = ["gr24", "fri26", "bayg29", "bays29", "gr48", "gr120", "brg180", "pa561"]

@@ -36,7 +36,7 @@ class CVRPLKHSolver(CVRPSolver):
                 Defaults to 10.
         """
         super(CVRPLKHSolver, self).__init__(
-            solver_type="lkh", 
+            solver_type="LKH", 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,
