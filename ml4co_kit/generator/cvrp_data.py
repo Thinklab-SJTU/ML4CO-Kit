@@ -1,5 +1,7 @@
 import os
+import sys
 import time
+import shutil
 import numpy as np
 import pathlib
 from tqdm import tqdm
@@ -128,7 +130,53 @@ class CVRPDataGenerator:
         else:
             self.solver: CVRPSolver
             self.solver_type = self.solver.solver_type
+        # check solver
+        check_solver_dict = {
+            "lkh": self.check_lkh,
+            "pyvrp": self.check_free,
+            "hgs": self.check_free
+        }
+        check_func = check_solver_dict[self.solver_type]
+        check_func()
+    
+    def check_lkh(self):
+        # check if lkh is downloaded
+        if shutil.which(self.solver.lkh_path) is None:
+            self.download_lkh()
+        # check again
+        if shutil.which(self.solver.lkh_path) is None:
+            message = (
+                f"The LKH solver cannot be found in the path '{self.solver.lkh_path}'. "
+                "Please make sure that you have entered the correct ``lkh_path``."
+                "If you have not installed the LKH solver, "
+                "please use function ``self.download_lkh()`` to download it."
+                "Please also confirm whether the Conda environment of the terminal "
+                "is consistent with the Python environment."
+            )
+            raise ValueError(message)
 
+    def check_free(self):
+        return
+    
+    def download_lkh(self):
+        # download
+        import wget
+        lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
+        wget.download(url=lkh_url, out="LKH-3.0.7.tgz")
+        # tar .tgz file
+        os.system("tar xvfz LKH-3.0.7.tgz")
+        # build LKH
+        ori_dir = os.getcwd()
+        os.chdir("LKH-3.0.7")
+        os.system("make")
+        # move LKH to the bin dir
+        target_dir = os.path.join(sys.prefix, "bin")
+        os.system(f"cp LKH {target_dir}")
+        os.chdir(ori_dir)
+        # delete .tgz file
+        os.remove("LKH-3.0.7.tgz")
+        shutil.rmtree("LKH-3.0.7")
+    
     def get_filename(self):
         self.filename = (
             f"cvrp{self.nodes_num}_{self.data_type}"

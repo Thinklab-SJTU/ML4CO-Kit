@@ -113,8 +113,6 @@ class TSPGAEAXSolver(TSPSolver):
         
         # format
         tours = np.array(tours)
-        zeros = np.zeros((tours.shape[0], 1))
-        tours = np.append(tours, zeros, axis=1).astype(np.int32)
         if tours.ndim == 2 and tours.shape[0] == 1:
             tours = tours[0]
         self.read_tours(tours)

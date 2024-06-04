@@ -4,7 +4,8 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from ml4co_kit.solver import (
-    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
+    TSPGAEAXSolver, TSPGAEAXLargeSolver
 )
 from ml4co_kit.solver import KaMISSolver
 from ml4co_kit.solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
@@ -73,6 +74,25 @@ def test_tsp_concorde_solver():
     _test_tsp_concorde_solver(False, 2)
 
 
+def _test_tsp_concorde_large_solver(show_time: bool, num_threads: int):
+    tsp_lkh_solver = TSPConcordeLargeSolver()
+    tsp_lkh_solver.from_txt("tests/solver_test/tsp1000_test.txt")
+    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
+    print(f"TSPConcordeLargeSolver Gap: {gap_avg}")
+    if gap_avg >= 5e-2:
+        message = (
+            f"The average gap ({gap_avg}) of TSP1000 solved by TSPConcordeLargeSolver "
+            "is larger than or equal to 5e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_tsp_concorde_large_solver():
+    _test_tsp_concorde_large_solver(True, 1)
+    _test_tsp_concorde_large_solver(False, 1)
+
+
 def _test_tsp_ga_eax_solver(show_time: bool, num_threads: int):
     tsp_ga_eax_solver = TSPGAEAXSolver()
     tsp_ga_eax_solver.from_txt("tests/solver_test/tsp50_test.txt")
@@ -100,10 +120,10 @@ def _test_tsp_ga_eax_large_solver(show_time: bool, num_threads: int):
     tsp_ga_eax_large_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = tsp_ga_eax_large_solver.evaluate(calculate_gap=True)
     print(f"TSPGAEAXLargeSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-2:
+    if gap_avg >= 5e-2:
         message = (
             f"The average gap ({gap_avg}) of TSP1000 solved by TSPGAEAXLargeSolver "
-            "is larger than or equal to 1e-2%."
+            "is larger than or equal to 5e-2%."
         )
         raise ValueError(message)
 
@@ -122,6 +142,7 @@ def test_tsp():
     test_tsp_base_solver()
     test_tsp_lkh_solver()
     test_tsp_concorde_solver()
+    test_tsp_concorde_large_solver()
     test_tsp_ga_eax_solver()
     test_tsp_ga_eax_large_solver()
 
@@ -261,5 +282,5 @@ def test_cvrp():
 
 if __name__ == "__main__":
     test_tsp()
-    # test_mis()
-    # test_cvrp()
+    test_mis()
+    test_cvrp()

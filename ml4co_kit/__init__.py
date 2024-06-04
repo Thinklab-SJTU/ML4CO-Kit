@@ -8,7 +8,7 @@ from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPU
 from .evaluate import SATLIBEvaluator
 from .evaluate import CVRPEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
-from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver
+from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver
 from .solver import TSPGAEAXSolver, TSPGAEAXLargeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver

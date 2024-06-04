@@ -38,7 +38,7 @@ tmp.py
 repos/**
 ml4co_kit/solver/cvrp/c_hgs/tmp/**
 ml4co_kit/solver/tsp/c_ga_eax_large/tmp/**
-ml4co_kit/solver/tsp/c_ga_eax/tmp/**
+ml4co_kit/solver/tsp/c_ga_eax_normal/tmp/**
 
 # coverage
 coverage.xml

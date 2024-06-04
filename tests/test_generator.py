@@ -54,7 +54,7 @@ def _test_tsp_concorde_generator(
     save_path = f"tmp/tsp{nodes_num}_concorde"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    # create TSPDataGenerator using lkh solver
+    # create TSPDataGenerator using concorde solver
     tsp_data_concorde = TSPDataGenerator(
         num_threads=num_threads,
         nodes_num=nodes_num,
@@ -72,8 +72,95 @@ def _test_tsp_concorde_generator(
     tsp_data_concorde.generate()
     # remove the save path
     shutil.rmtree(save_path)
+    
+
+def _test_tsp_concorde_large_generator(
+    num_threads: int, nodes_num: int, data_type: str,
+    recompile_concorde: bool = False
+):
+    """
+    Test TSPDataGenerator using Concorde-Large Solver
+    """
+    # save path
+    save_path = f"tmp/tsp{nodes_num}_concorde_large"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create TSPDataGenerator using concorde-large solver
+    tsp_data_concorde_large = TSPDataGenerator(
+        num_threads=num_threads,
+        nodes_num=nodes_num,
+        data_type=data_type,
+        solver="concorde-large",
+        train_samples_num=1,
+        val_samples_num=0,
+        test_samples_num=0,
+        save_path=save_path,
+    )
+    if recompile_concorde:
+        tsp_data_concorde_large.recompile_concorde()
+        
+    # generate data
+    tsp_data_concorde_large.generate()
+    # remove the save path
+    shutil.rmtree(save_path)
 
 
+def _test_tsp_ga_eax_generator(
+    num_threads: int, nodes_num: int, data_type: str
+):
+    """
+    Test TSPDataGenerator using GA-EAX Solver
+    """
+    # save path
+    save_path = f"tmp/tsp{nodes_num}_ga_eax"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create TSPDataGenerator using ga-eax solver
+    tsp_data_ga_eax = TSPDataGenerator(
+        num_threads=num_threads,
+        nodes_num=nodes_num,
+        data_type=data_type,
+        solver="ga-eax",
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path,
+    )
+        
+    # generate data
+    tsp_data_ga_eax.generate()
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+    
+def _test_tsp_ga_eax_large_generator(
+    num_threads: int, nodes_num: int, data_type: str
+):
+    """
+    Test TSPDataGenerator using GA-EAX Solver
+    """
+    # save path
+    save_path = f"tmp/tsp{nodes_num}_ga_eax_large"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create TSPDataGenerator using ga-eax-large solver
+    tsp_data_ga_eax_large = TSPDataGenerator(
+        num_threads=num_threads,
+        nodes_num=nodes_num,
+        data_type=data_type,
+        solver="ga-eax-large",
+        train_samples_num=1,
+        val_samples_num=0,
+        test_samples_num=0,
+        save_path=save_path,
+    )
+        
+    # generate data
+    tsp_data_ga_eax_large.generate()
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+ 
 def test_tsp():
     """
     Test TSPDataGenerator
@@ -85,15 +172,27 @@ def test_tsp():
     )
     # regret & threads
     _test_tsp_lkh_generator(
-        num_threads=1, nodes_num=50, data_type="uniform", regret=True
+        num_threads=1, nodes_num=10, data_type="uniform", regret=True
     )
     _test_tsp_lkh_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", regret=True
+        num_threads=4, nodes_num=10, data_type="uniform", regret=True
     )
     # concorde
     _test_tsp_concorde_generator(
         num_threads=4, nodes_num=50, data_type="uniform", 
         recompile_concorde=True
+    )
+    # concorde-large
+    _test_tsp_concorde_large_generator(
+        num_threads=1, nodes_num=1000, data_type="uniform"
+    )
+    # ga-eax
+    _test_tsp_ga_eax_generator(
+        num_threads=4, nodes_num=50, data_type="uniform"
+    )
+    # ga-eax-large
+    _test_tsp_ga_eax_large_generator(
+        num_threads=1, nodes_num=1000, data_type="uniform"
     )
     # gaussian & cluster
     _test_tsp_concorde_generator(
@@ -229,11 +328,11 @@ def _test_cvrp_lkh_generator(
     Test CVRPDataGenerator using LKH
     """
     # save path
-    save_path = f"tmp/cvrp_{data_type}_pyvrp"
+    save_path = f"tmp/cvrp_{data_type}_lkh"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     # create CVRPDataGenerator using lkh solver
-    cvrp_data_pyvrp = CVRPDataGenerator(
+    cvrp_data_lkh = CVRPDataGenerator(
         num_threads=num_threads,
         nodes_num=nodes_num,
         data_type=data_type,
@@ -246,10 +345,39 @@ def _test_cvrp_lkh_generator(
         max_capacity=capacity
     )
     # generate data
-    cvrp_data_pyvrp.generate()
+    cvrp_data_lkh.generate()
     # remove the save path
     shutil.rmtree(save_path)
 
+
+def _test_cvrp_hgs_generator(
+    num_threads: int, nodes_num: int, data_type: str, capacity: int
+):
+    """
+    Test CVRPDataGenerator using HGS
+    """
+    # save path
+    save_path = f"tmp/cvrp_{data_type}_pyvrp"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create CVRPDataGenerator using lkh solver
+    cvrp_data_hgs = CVRPDataGenerator(
+        num_threads=num_threads,
+        nodes_num=nodes_num,
+        data_type=data_type,
+        solver="hgs",
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path,
+        min_capacity=capacity,
+        max_capacity=capacity
+    )
+    # generate data
+    cvrp_data_hgs.generate()
+    # remove the save path
+    shutil.rmtree(save_path)
+    
 
 def test_cvrp():
     """
@@ -270,7 +398,12 @@ def test_cvrp():
     _test_cvrp_lkh_generator(
         num_threads=4, nodes_num=50, data_type="uniform", capacity=40
     )
-    
+    # hgs
+    _test_cvrp_hgs_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", capacity=40
+    )
+
+
 ##############################################
 #                    MAIN                    #
 ##############################################

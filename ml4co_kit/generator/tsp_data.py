@@ -10,7 +10,10 @@ from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.solver.tsp import TSPLKHSolver
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
-from ml4co_kit.solver.tsp import TSPSolver, TSPLKHSolver, TSPConcordeSolver
+from ml4co_kit.solver.tsp import (
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
+    TSPGAEAXSolver, TSPGAEAXLargeSolver
+)
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -124,7 +127,13 @@ class TSPDataGenerator:
         # get solver
         if type(self.solver) == str:
             self.solver_type = self.solver
-            supported_solver_dict = {"lkh": TSPLKHSolver, "concorde": TSPConcordeSolver}
+            supported_solver_dict = {
+                "lkh": TSPLKHSolver, 
+                "concorde": TSPConcordeSolver,
+                "concorde-large": TSPConcordeLargeSolver,
+                "ga-eax": TSPGAEAXSolver, 
+                "ga-eax-large": TSPGAEAXLargeSolver 
+            }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
                 message = (
@@ -141,6 +150,8 @@ class TSPDataGenerator:
             "lkh": self.check_lkh,
             "concorde": self.check_concorde,
             "concorde-large": self.check_concorde,
+            "ga-eax": self.check_free,
+            "ga-eax-large": self.check_free
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
@@ -161,6 +172,9 @@ class TSPDataGenerator:
             )
             raise ValueError(message)
 
+    def check_free(self):
+        return
+    
     def check_concorde(self):
         try:
             from ml4co_kit.solver.tsp.pyconcorde import TSPConSolver
@@ -226,13 +240,16 @@ class TSPDataGenerator:
             range(self.samples_num // self.num_threads),
             desc=f"Solving TSP Using {self.solver_type}",
         ):
-            # call generate_func to generate the points 
-            batch_nodes_coord = self.generate_func()
-            with Pool(self.num_threads) as p1:
-                tours = p1.map(
-                    self.solver.solve,
-                    [batch_nodes_coord[idx] for idx in range(self.num_threads)],
-                )
+            # call generate_func to generate the points
+            batch_nodes_coord = self.generate_func() 
+            if self.num_threads == 1:
+                tours = [self.solver.solve(batch_nodes_coord[0])]
+            else:
+                with Pool(self.num_threads) as p1:
+                    tours = p1.map(
+                        self.solver.solve,
+                        [batch_nodes_coord[idx] for idx in range(self.num_threads)],
+                    )
             
             # deal with regret
             if self.regret:
