@@ -15,7 +15,7 @@ This repository focuses on the supporting code for method development instead of
 
 | Problem |                Data                |    solver     |      Supervision      | evaluator |      visualization      |
 | :-----: | :--------------------------------: | :-----------: | :-------------------: | :-------: | :---------------------: |
-|   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
+|   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde, Concorde-Large, GA-EAX, GA-EAX-Large | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
 |   MIS   |       SATLIB, ER, BA, HK, WS       | KaMIS, Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
 |  CVRP   |    Uniform, Gaussian, VRPLIB       | PyVRP, LKH, HGS |       Solution        |     ✔     | Problem Graph, Solution |
 
