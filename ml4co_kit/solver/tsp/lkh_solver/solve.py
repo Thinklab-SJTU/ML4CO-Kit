@@ -49,7 +49,7 @@ def lkh_solve(solver="LKH", problem=None, **params):
         tour_file.close()
 
     par_file = tempfile.NamedTemporaryFile(mode="w+", delete=False)
-    par_file.write("SPECIAL\n")
+    # par_file.write("SPECIAL\n")
     for k, v in params.items():
         par_file.write(f"{k.upper()} = {v}\n")
     par_file.close()

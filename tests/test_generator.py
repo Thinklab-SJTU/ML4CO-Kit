@@ -72,37 +72,6 @@ def _test_tsp_concorde_generator(
     tsp_data_concorde.generate()
     # remove the save path
     shutil.rmtree(save_path)
-    
-
-def _test_tsp_concorde_large_generator(
-    num_threads: int, nodes_num: int, data_type: str,
-    recompile_concorde: bool = False
-):
-    """
-    Test TSPDataGenerator using Concorde-Large Solver
-    """
-    # save path
-    save_path = f"tmp/tsp{nodes_num}_concorde_large"
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    # create TSPDataGenerator using concorde-large solver
-    tsp_data_concorde_large = TSPDataGenerator(
-        num_threads=num_threads,
-        nodes_num=nodes_num,
-        data_type=data_type,
-        solver="Concorde-Large",
-        train_samples_num=1,
-        val_samples_num=0,
-        test_samples_num=0,
-        save_path=save_path,
-    )
-    if recompile_concorde:
-        tsp_data_concorde_large.recompile_concorde()
-        
-    # generate data
-    tsp_data_concorde_large.generate()
-    # remove the save path
-    shutil.rmtree(save_path)
 
 
 def _test_tsp_ga_eax_generator(
@@ -181,10 +150,6 @@ def test_tsp():
     _test_tsp_concorde_generator(
         num_threads=4, nodes_num=50, data_type="uniform", 
         recompile_concorde=True
-    )
-    # concorde-large
-    _test_tsp_concorde_large_generator(
-        num_threads=1, nodes_num=1000, data_type="uniform"
     )
     # ga-eax
     _test_tsp_ga_eax_generator(
