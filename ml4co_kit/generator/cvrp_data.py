@@ -225,7 +225,7 @@ class CVRPDataGenerator:
                     )
             
             # write to txt
-            with open(self.file_save_path, "w") as f:
+            with open(self.file_save_path, "a+") as f:
                 for idx, tour in enumerate(tours):
                     depot = batch_depots_coord[idx]
                     points = batch_nodes_coord[idx]
