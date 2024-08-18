@@ -5,8 +5,6 @@ import numpy as np
 from typing import Union
 from pyvrp import Model
 from pyvrp import read as read_vrp
-from pyvrp import read_solution
-from pyvrp.read import ROUND_FUNCS
 from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
@@ -15,8 +13,10 @@ from ml4co_kit.evaluate.tsp.base import geographical
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
 if sys.version_info.major == 3 and sys.version_info.minor == 8:
     CP38 = True
+    from pyvrp.read import ROUND_FUNCS
 else:
     CP38 = False
+    from ml4co_kit.utils.round import ROUND_FUNCS
 
 
 class CVRPSolver:
@@ -451,10 +451,14 @@ class CVRPSolver:
         
         # read the data form .sol
         if route_flag == True:
-            solution = read_solution(where=file_path)
-            tour = [0]
-            for _solution in solution:
-                tour = tour + _solution + [0]
+            with open(file_path, "r") as file:
+                tour = [0]
+                for line in file:
+                    if line.startswith("Route"):
+                        split_line = line.replace("\n", "").split(":")[1][1:].split(" ")
+                        for node in split_line:
+                            tour.append(int(node))
+                        tour.append(0)
         elif route_flag == False:
             with open(file_path, "r") as file:
                 line_idx = 0
@@ -717,4 +721,13 @@ class CVRPSolver:
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )
-    
+
+
+def infer_type(s: str) -> Union[int, float, str]:
+    try:
+        return int(s)
+    except ValueError:
+        try:
+            return float(s)
+        except ValueError:
+            return s

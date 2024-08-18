@@ -90,14 +90,6 @@ class CVRPPyVRPSolver(CVRPSolver):
             import warnings
             warnings.warn("Solver input requires data of type int.")
             dtype = "int"
-        if num_threads > 1:
-            import warnings
-            warnings.warn(
-                (
-                    "Some versions of PyVRP do not support multithreading, ",
-                    "it's recommended to use version 0.6.3 and version 0.8.2."
-                )
-            )
         self.round_func = self.get_round_func(round_func)
         self.from_data(depots, points, demands, capacities, norm, normalize)
         start_time = time.time()

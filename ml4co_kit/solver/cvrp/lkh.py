@@ -14,8 +14,8 @@ from ml4co_kit.utils.run_utils import iterative_execution
 class CVRPLKHSolver(CVRPSolver):
     def __init__(
         self,
-        depots_scale: int = 1e6,
-        points_scale: int = 1e6,
+        depots_scale: int = 1e4,
+        points_scale: int = 1e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
         lkh_max_trials: int = 1000,
