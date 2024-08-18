@@ -16,7 +16,7 @@ class MISDataGenerator:
         nodes_num_min: int = 700,
         nodes_num_max: int = 800,
         data_type: str = "er",
-        solver: Union[str, MISSolver] = "kamis",
+        solver: Union[str, MISSolver] = "KaMIS",
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
