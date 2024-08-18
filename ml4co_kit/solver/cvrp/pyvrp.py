@@ -18,8 +18,8 @@ else:
 class CVRPPyVRPSolver(CVRPSolver):
     def __init__(
         self,
-        depots_scale: int = 1e6,
-        points_scale: int = 1e6,
+        depots_scale: int = 1e4,
+        points_scale: int = 1e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
         time_limit: float = 1.0,
@@ -90,6 +90,14 @@ class CVRPPyVRPSolver(CVRPSolver):
             import warnings
             warnings.warn("Solver input requires data of type int.")
             dtype = "int"
+        if num_threads > 1:
+            import warnings
+            warnings.warn(
+                (
+                    "Some versions of PyVRP do not support multithreading, ",
+                    "it's recommended to use version 0.6.3 and version 0.8.2."
+                )
+            )
         self.round_func = self.get_round_func(round_func)
         self.from_data(depots, points, demands, capacities, norm, normalize)
         start_time = time.time()
