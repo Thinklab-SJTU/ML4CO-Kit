@@ -19,12 +19,14 @@ if not os.path.exists(HGS_TMP_PATH):
     os.makedirs(HGS_TMP_PATH)
 
 
-def cvrp_hgs_solver(vrp_name: str, sol_name: str, time_limit: float):
+def cvrp_hgs_solver(vrp_name: str, sol_name: str, time_limit: float, show_info: bool):
     vrp_path = os.path.join("tmp", vrp_name)
     sol_path = os.path.join("tmp", sol_name)
     ori_dir = os.getcwd()
     os.chdir(HGS_BASE_PATH)
-    os.system(f"./cvrp_hgs_solver {vrp_path} {sol_path} -t {time_limit}")
+    command = f"./cvrp_hgs_solver {vrp_path} {sol_path} -t {time_limit} "
+    command += ("-si 1" if show_info else "-si 0")
+    os.system(command)
     os.chdir(ori_dir)
 
     

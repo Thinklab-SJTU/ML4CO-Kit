@@ -115,9 +115,11 @@ void Population::removeWorstBiasedFitness(SubPopulation & pop)
 	delete worstIndividual; // Freeing memory
 }
 
-void Population::restart()
+void Population::restart(int show_info)
 {
-	std::cout << "----- RESET: CREATING A NEW POPULATION -----" << std::endl;
+	if (show_info) {
+		std::cout << "----- RESET: CREATING A NEW POPULATION -----" << std::endl;
+	}
 	for (Individual * indiv : feasibleSubpopulation) delete indiv ;
 	for (Individual * indiv : infeasibleSubpopulation) delete indiv;
 	feasibleSubpopulation.clear();
@@ -231,7 +233,7 @@ double Population::getAverageCost(const SubPopulation & pop)
 	else return -1.0;
 }
 
-void Population::exportBKS(std::string fileName)
+void Population::exportBKS(std::string fileName, int show_info)
 {
 	double readCost;
 	std::vector<std::vector<int>> readSolution;
@@ -240,7 +242,7 @@ void Population::exportBKS(std::string fileName)
 	if (bestSolutionOverall.myCostSol.penalizedCost < 1.e29 && (!readOK || bestSolutionOverall.myCostSol.penalizedCost < readCost - MY_EPSILON))
 	{
 		std::cout << "----- NEW BKS: " << bestSolutionOverall.myCostSol.penalizedCost << " !!!" << std::endl;
-		bestSolutionOverall.exportCVRPLibFormat(fileName);
+		bestSolutionOverall.exportCVRPLibFormat(fileName, show_info);
 	}
 }
 

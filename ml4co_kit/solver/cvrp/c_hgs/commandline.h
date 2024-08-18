@@ -32,9 +32,10 @@ class CommandLine
 public:
 
 	int nbIter		= 20000;		// Number of iterations without improvement until termination. Default value: 20,000 iterations
-	int timeLimit   = INT_MAX;		// CPU time limit until termination in seconds. Default value: infinity
+	double timeLimit = INT_MAX;		// CPU time limit until termination in seconds. Default value: infinity
 	int seed		= 0;			// Random seed. Default value: 0
 	int nbVeh		= INT_MAX;		// Number of vehicles. Default value: infinity
+	int show_info   = 0;            // Whether to print the information
 	std::string pathInstance;		// Instance path
 	std::string pathSolution;		// Solution path
 	std::string pathBKS = "";		// BKS path
@@ -54,7 +55,9 @@ public:
 			for (int i = 3; i < argc; i += 2)
 			{
 				if (std::string(argv[i]) == "-t")
-					timeLimit = atoi(argv[i+1]);
+					timeLimit = std::stod(argv[i+1]);
+				else if (std::string(argv[i]) == "-si")
+					show_info = atoi(argv[i+1]);
 				else if (std::string(argv[i]) == "-it")
 					nbIter  = atoi(argv[i+1]);
 				else if (std::string(argv[i]) == "-bks")

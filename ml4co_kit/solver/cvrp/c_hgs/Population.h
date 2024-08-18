@@ -60,7 +60,7 @@ class Population
    bool addIndividual (const Individual * indiv, bool updateFeasible);
 
    // Cleans all solutions and generates a new initial population (only used when running HGS until a time limit, in which case the algorithm restarts until the time limit is reached)
-   void restart();
+   void restart(int show_info);
 
    // Adaptation of the penalty parameters
    void managePenalties();
@@ -87,7 +87,7 @@ class Population
    double getAverageCost(const SubPopulation & pop);
 
    // Overwrites a solution written in a file if the current solution is better
-   void exportBKS(std::string fileName);
+   void exportBKS(std::string fileName, int show_info);
 
    // Exports in a file the history of solution improvements
    void exportSearchProgress(std::string fileName, std::string instanceName, int seedRNG);

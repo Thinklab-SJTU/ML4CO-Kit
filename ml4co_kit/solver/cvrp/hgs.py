@@ -12,11 +12,12 @@ from ml4co_kit.utils.run_utils import iterative_execution
 class CVRPHGSSolver(CVRPSolver):
     def __init__(
         self,
-        depots_scale: int = 1e4,
-        points_scale: int = 1e4,
+        depots_scale: int = 2e4,
+        points_scale: int = 2e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
         time_limit: float = 1.0,
+        show_info: bool = False
     ):
         super(CVRPHGSSolver, self).__init__(
             solver_type="HGS", 
@@ -26,6 +27,7 @@ class CVRPHGSSolver(CVRPSolver):
             capacities_scale = capacities_scale,
         )
         self.time_limit = time_limit
+        self.show_info = show_info
 
     def _solve(
         self, 
@@ -54,7 +56,7 @@ class CVRPHGSSolver(CVRPSolver):
         pg_abs_path = os.path.join(HGS_TMP_PATH, f"{name}.sol.PG.csv")
         
         # solve
-        cvrp_hgs_solver(vrp_name, sol_name, self.time_limit)
+        cvrp_hgs_solver(vrp_name, sol_name, self.time_limit, self.show_info)
         
         # read data from .sol
         tmp_solver.read_ref_tours_from_sol(sol_abs_path)

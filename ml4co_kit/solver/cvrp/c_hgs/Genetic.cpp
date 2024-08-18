@@ -1,9 +1,9 @@
 #include "Genetic.h"
 
-void Genetic::run(int maxIterNonProd, int timeLimit)
+void Genetic::run(int maxIterNonProd, double timeLimit, int show_info)
 {	
 	int nbIterNonProd = 1;
-	for (int nbIter = 0 ; nbIterNonProd <= maxIterNonProd && clock()/CLOCKS_PER_SEC < timeLimit ; nbIter++)
+	for (int nbIter = 0 ; nbIterNonProd <= maxIterNonProd && (double)clock()/(double)CLOCKS_PER_SEC < timeLimit ; nbIter++)
 	{	
 		/* SELECTION AND CROSSOVER */
 		crossoverOX(offspring, population->getBinaryTournament(),population->getBinaryTournament());
@@ -22,13 +22,15 @@ void Genetic::run(int maxIterNonProd, int timeLimit)
 		else nbIterNonProd ++ ;
 
 		/* DIVERSIFICATION, PENALTY MANAGEMENT AND TRACES */
-		if (nbIter % 100 == 0) population->managePenalties() ;
-		if (nbIter % 500 == 0) population->printState(nbIter, nbIterNonProd);
+		if (nbIter % 100 == 0) population->managePenalties();
+		if (show_info) {
+			if (nbIter % 500 == 0) population->printState(nbIter, nbIterNonProd);
+		}
 
 		/* FOR TESTS INVOLVING SUCCESSIVE RUNS UNTIL A TIME LIMIT: WE RESET THE ALGORITHM/POPULATION EACH TIME maxIterNonProd IS ATTAINED*/
 		if (timeLimit != INT_MAX && nbIterNonProd == maxIterNonProd)
 		{
-			population->restart();
+			population->restart(show_info);
 			nbIterNonProd = 1;
 		}
 	}

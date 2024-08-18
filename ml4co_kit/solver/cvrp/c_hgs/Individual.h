@@ -64,7 +64,7 @@ public:
   double averageBrokenPairsDistanceClosest(int nbClosest) ;
 
   // Exports a solution in CVRPLib format (adds a final line with the computational time)
-  void exportCVRPLibFormat(std::string fileName);
+  void exportCVRPLibFormat(std::string fileName, int show_info);
 
   // Reads a solution in CVRPLib format, returns TRUE if the process worked, or FALSE if the file does not exist or is not readable
   static bool readCVRPLibFormat(std::string fileName, std::vector<std::vector<int>> & readSolution, double & readCost);

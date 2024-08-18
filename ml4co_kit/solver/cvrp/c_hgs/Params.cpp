@@ -1,6 +1,6 @@
 #include "Params.h"
 
-Params::Params(std::string pathToInstance, int nbVeh, int seedRNG) : nbVehicles(nbVeh)
+Params::Params(std::string pathToInstance, int nbVeh, int seedRNG, int show_info) : nbVehicles(nbVeh)
 {
 	std::string content, content2, content3;
 	double serviceTimeData = 0.;
@@ -67,11 +67,14 @@ Params::Params(std::string pathToInstance, int nbVeh, int seedRNG) : nbVehicles(
 	if (nbVehicles == INT_MAX)
 	{
 		nbVehicles = std::ceil(1.2*totalDemand/vehicleCapacity) + 2;  // Safety margin: 20% + 2 more vehicles than the trivial bin packing LB
-		std::cout << "----- FLEET SIZE WAS NOT SPECIFIED: DEFAULT INITIALIZATION TO " << nbVehicles << " VEHICLES" << std::endl;
+		if (show_info){
+			std::cout << "----- FLEET SIZE WAS NOT SPECIFIED: DEFAULT INITIALIZATION TO " << nbVehicles << " VEHICLES" << std::endl;
+		}
 	}
 	else
-	{
-		std::cout << "----- FLEET SIZE SPECIFIED IN THE COMMANDLINE: SET TO " << nbVehicles << " VEHICLES" << std::endl;
+	{	if (show_info){
+			std::cout << "----- FLEET SIZE SPECIFIED IN THE COMMANDLINE: SET TO " << nbVehicles << " VEHICLES" << std::endl;
+		}
 	}
 
 	// Calculation of the distance matrix

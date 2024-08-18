@@ -4,7 +4,7 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from ml4co_kit.solver import (
-    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver,
     TSPGAEAXSolver, TSPGAEAXLargeSolver
 )
 from ml4co_kit.solver import KaMISSolver
@@ -226,7 +226,7 @@ def test_cvrp_lkh_solver():
 
 
 def _test_cvrp_hgs_solver(show_time: bool, num_threads: int):
-    cvrp_hgs_solver = CVRPHGSSolver(time_limit=2)
+    cvrp_hgs_solver = CVRPHGSSolver(time_limit=0.5)
     cvrp_hgs_solver.from_txt("tests/solver_test/cvrp50_test_small.txt")
     cvrp_hgs_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = cvrp_hgs_solver.evaluate(calculate_gap=True)
