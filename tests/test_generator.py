@@ -1,9 +1,8 @@
 import os
-import shutil
 import sys
-
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
+import shutil
 from ml4co_kit import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
 from ml4co_kit import KaMISSolver, CVRPPyVRPSolver
 
