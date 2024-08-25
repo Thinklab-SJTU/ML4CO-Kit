@@ -18,22 +18,22 @@ class CVRPLKHSolver(CVRPSolver):
         points_scale: int = 1e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
-        lkh_max_trials: int = 1000,
+        lkh_max_trials: int = 500,
         lkh_path: pathlib.Path = "LKH",
-        lkh_runs: int = 10,
+        lkh_runs: int = 1,
         lkh_seed: int = 1234,
     ):
         """
         TSPLKHSolver
         Args:
             lkh_max_trials (int, optional): The maximum number of trials for
-                the LKH solver. Defaults to 1000.
+                the LKH solver. Defaults to 500.
             lkh_path (pathlib.Path, optional): The path to the LKH solver.
                 Defaults to "LKH".
             scale (int, optional): The scale factor for coordinates in the
                 LKH solver. Defaults to 1e6.
             lkh_runs (int, optional): The number of runs for the LKH solver.
-                Defaults to 10.
+                Defaults to 1.
         """
         super(CVRPLKHSolver, self).__init__(
             solver_type="LKH", 
