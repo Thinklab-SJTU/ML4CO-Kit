@@ -5,10 +5,10 @@ from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decod
 from .algorithm import tsp_mcts_local_search
 from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
 from .data import SATLIBOriDataset
-from .data import VRPLIBOriDataset
+from .data import VRPLIBOriDataset, CVRPUniformDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
-from .evaluate import CVRPEvaluator
+from .evaluate import CVRPEvaluator, CVRPUniformEvaluator
 from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver
 from .solver import TSPGAEAXSolver, TSPGAEAXLargeSolver

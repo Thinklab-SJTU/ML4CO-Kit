@@ -5,7 +5,8 @@ sys.path.append(root_folder)
 import shutil
 from ml4co_kit.data import SATLIBOriDataset, VRPLIBOriDataset
 from ml4co_kit.evaluate import (
-    TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator, TSPLIB4MLEvaluator
+    TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator, 
+    TSPLIB4MLEvaluator, CVRPUniformEvaluator
 )
 from ml4co_kit.solver import TSPConcordeSolver, KaMISSolver
 
@@ -93,9 +94,14 @@ def test_vrplib_original_eval():
     VRPLIBOriDataset()
     
 
+def test_cvrp_uniform_eval():
+    CVRPUniformEvaluator()
+
+
 if __name__ == "__main__":
     test_tsplib_original_eval()
     test_tsplib4ml_eval()
     test_tsp_uniform_eval()
     test_satlib_original_eval()
     test_vrplib_original_eval()
+    test_cvrp_uniform_eval()

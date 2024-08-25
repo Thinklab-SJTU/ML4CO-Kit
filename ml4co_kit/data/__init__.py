@@ -5,4 +5,7 @@ from .tsp import (
     ML4TSPDataset
 )
 from .mis import SATLIBOriDataset
-from .vrp import VRPLIBOriDataset
+from .vrp import (
+    VRPLIBOriDataset,
+    CVRPUniformDataset
+)
