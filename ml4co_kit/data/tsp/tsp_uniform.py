@@ -42,7 +42,7 @@ class TSPUniformDataset:
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform_20240825.tar.gz?download=true"
         self.md5 = "44371d7c99b35d77fe18220122c564c1"
-        self.dir = "dataset/tsp_uniform"
+        self.dir = "dataset/tsp_uniform_20240825"
         self.raw_data_path = "dataset/tsp_uniform_20240825.tar.gz"
         if not os.path.exists("dataset"):
             os.mkdir("dataset")

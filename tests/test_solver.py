@@ -204,7 +204,7 @@ def test_cvrp_pyvrp_solver():
 
 
 def _test_cvrp_lkh_solver(show_time: bool, num_threads: int):
-    cvrp_lkh_solver = CVRPLKHSolver(lkh_max_trials=500)
+    cvrp_lkh_solver = CVRPLKHSolver(lkh_max_trials=500, lkh_runs=10)
     cvrp_lkh_solver.from_txt("tests/solver_test/cvrp50_test_small.txt")
     cvrp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = cvrp_lkh_solver.evaluate(calculate_gap=True)
