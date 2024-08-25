@@ -8,9 +8,8 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
-from ml4co_kit.solver.tsp import TSPLKHSolver
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
-from ml4co_kit.solver.tsp import (
+from ml4co_kit.solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
     TSPGAEAXSolver, TSPGAEAXLargeSolver
 )

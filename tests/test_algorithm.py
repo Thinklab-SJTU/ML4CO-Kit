@@ -7,7 +7,7 @@ from ml4co_kit.algorithm import (
     tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, 
     tsp_mcts_local_search
 )
-from ml4co_kit.solver import TSPSolver
+from ml4co_kit.solver.tsp.base import TSPSolver
 
 
 ##############################################

@@ -42,7 +42,7 @@ $ pip install -U https://github.com/Thinklab-SJTU/ML4CO-Kit/archive/master.zip #
 The following packages are required and shall be automatically installed by ``pip``:
 
 ```
-Python >= 3.8
+Python>=3.8
 numpy>=1.24.4
 networkx==2.8.8
 tsplib95==0.7.1

@@ -6,7 +6,6 @@ import networkx as nx
 import numpy as np
 from tqdm import tqdm
 from typing import Union
-from ml4co_kit.solver.mis import KaMISSolver, MISGurobiSolver
 from ml4co_kit.solver import MISSolver, KaMISSolver, MISGurobiSolver
 
 

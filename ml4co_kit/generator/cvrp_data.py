@@ -7,7 +7,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
-from ml4co_kit.solver.cvrp import (
+from ml4co_kit.solver import (
     CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 )
 
