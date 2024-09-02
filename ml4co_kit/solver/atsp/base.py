@@ -1,42 +1,39 @@
 import os
+import math
 import tsplib95
 import numpy as np
 from typing import Union
 from ml4co_kit.utils.type import to_numpy
-from ml4co_kit.evaluate.tsp.base import TSPEvaluator
+from ml4co_kit.evaluate.atsp.base import ATSPEvaluator
 
 
-SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
-
-
-class TSPSolver:
+class ATSPSolver:
     def __init__(self, solver_type: str = None, scale: int = 1e6):
         self.solver_type = solver_type
         self.scale = scale
-        self.points = None
-        self.norm = None
-        self.ori_points = None
+        self.dists = None
+        self.ori_dists = None
         self.tours = None
         self.ref_tours = None
         self.nodes_num = None
 
-    def check_points_dim(self):
-        if self.points is None:
+    def check_dists_dim(self):
+        if self.dists is None:
             return
-        elif self.points.ndim == 2:
-            self.points = np.expand_dims(self.points, axis=0)
-        if self.points.ndim != 3:
-            raise ValueError("``points`` must be a 2D or 3D array.")
-        self.nodes_num = self.points.shape[1]
+        elif self.dists.ndim == 2:
+            self.dists = np.expand_dims(self.dists, axis=0)
+        if self.dists.ndim != 3:
+            raise ValueError("``dists`` must be a 2D or 3D array.")
+        self.nodes_num = self.dists.shape[-1]
 
-    def check_ori_points_dim(self):
-        self.check_points_dim()
-        if self.ori_points is None:
+    def check_ori_dists_dim(self):
+        self.check_dists_dim()
+        if self.ori_dists is None:
             return
-        elif self.ori_points.ndim == 2:
-            self.ori_points = np.expand_dims(self.ori_points, axis=0)
-        if self.ori_points.ndim != 3:
-            raise ValueError("The ``ori_points`` must be 2D or 3D array.")
+        elif self.ori_dists.ndim == 2:
+            self.ori_dists = np.expand_dims(self.ori_dists, axis=0)
+        if self.ori_dists.ndim != 3:
+            raise ValueError("The ``ori_dists`` must be 2D or 3D array.")
 
     def check_tours_dim(self):
         if self.tours is None:
@@ -56,110 +53,106 @@ class TSPSolver:
                 "The dimensions of the ``ref_tours`` cannot be larger than 2."
             )
 
-    def check_points_not_none(self):
-        if self.points is None:
+    def check_dists_not_none(self):
+        if self.dists is None:
             message = (
-                "``points`` cannot be None! You can load the points using the methods"
-                "``from_data``, ``from_txt``, or ``from_tsp``."
+                "``dists`` cannot be None! You can load the dists using the methods"
+                "``from_data``, ``from_txt``, ``from_atsp`` or ``from_atsp_folder``."
             )
             raise ValueError(message)
 
     def check_tours_not_none(self):
         if self.tours is None:
             message = (
-                "``tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
-                "like ``TSPLKHSolver`` or the method ``read_tours`` to get the tours."
+                "``tours`` cannot be None! You can use solvers based on ``ATSPSolver`` "
+                "like ``ATSPLKHSolver`` or the method ``read_tours`` to get the tours."
             )
             raise ValueError(message)
 
     def check_ref_tours_not_none(self):
         if self.ref_tours is None:
             message = (
-                "``ref_tours`` cannot be None! You can use solvers based on ``TSPSolver`` "
-                "like ``TSPLKHSolver`` to obtain the tours and set them as the ``ref_tours``. "
-                "Or you can use the methods ``read_ref_tours``, ``from_txt``, "
+                "``ref_tours`` cannot be None! You can use solvers based on ``ATSPSolver`` "
+                "like ``ATSPLKHSolver`` to obtain the tours and set them as the ``ref_tours``. "
+                "Or you can use the methods ``read_ref_tours``, ``from_txt``, ``read_ref_tours_from_folder``, "
                 "or ``read_ref_tours_from_opt_tour`` to load them."
             )
             raise ValueError(message)
 
-    def set_norm(self, norm: str):
-        if norm is None:
-            return
-        if norm not in SUPPORT_NORM_TYPE:
-            message = (
-                f"The norm type ({norm}) is not a valid type, "
-                f"only {SUPPORT_NORM_TYPE} are supported."
-            )
-            raise ValueError(message)
-        if norm == "GEO" and self.scale != 1:
-            message = "The scale must be 1 for ``GEO`` norm type."
-            raise ValueError(message)
-        self.norm = norm
-
-    def normalize_points(self):
-        for idx in range(self.points.shape[0]):
-            cur_points = self.points[idx]
-            max_value = np.max(cur_points)
-            min_value = np.min(cur_points)
-            cur_points = (cur_points - min_value) / (max_value - min_value)
-            self.points[idx] = cur_points
-
-    def from_tsp(self, file_path: str, norm: str = "EUC_2D", normalize: bool = False):
-        self.set_norm(norm)
-        if not file_path.endswith(".tsp"):
-            raise ValueError("Invalid file format. Expected a ``.tsp`` file.")
+    def from_atsp(self, file_path: str):
+        if not file_path.endswith(".atsp"):
+            raise ValueError("Invalid file format. Expected a ``.atsp`` file.")
         tsplib_data = tsplib95.load(file_path)
-        points = np.array(list(tsplib_data.node_coords.values()))
-        if points is None:
+        dists = np.array(tsplib_data.edge_weights)
+        if dists is None:
             raise RuntimeError("Error in loading {}".format(file_path))
-        self.ori_points = points
-        self.points = points.astype(np.float32)
-        self.check_ori_points_dim()
-        if normalize:
-            self.normalize_points()
+        self.ori_dists = dists
+        self.dists = dists.astype(np.float32)
+        self.check_ori_dists_dim()
+
+    def from_atsp_folder(self, folder_path: str, return_list: bool = False):
+        dists = list()
+        files = os.listdir(folder_path)
+        for file_name in files:
+            file_path = os.path.join(folder_path, file_name)
+            if not file_path.endswith(".atsp"):
+                continue
+            tsplib_data = tsplib95.load(file_path)
+            dist = np.array(tsplib_data.edge_weights)
+            if dist is None:
+                raise RuntimeError("Error in loading {}".format(file_path))
+            dists.append(dist)
+        
+        if return_list:
+            return dists
+        else:
+            try:
+                dists = np.array(dists)
+            except Exception as e:
+                message = (
+                    "This method does not support instances of different numbers of nodes. "
+                    "If you want to read the data, please set ``return_list`` as True. "
+                    "Anyway, the data will not be saved in the solver. "
+                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
+                )
+                raise Exception(message) from e 
+            self.ori_dists = dists     
+            self.dists = dists.astype(np.float32)
+            self.check_ori_dists_dim()
 
     def from_txt(
-        self,
-        file_path: str,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
-        load_ref_tours: str = True,
-        return_list: bool = False,
+        self, file_path: str, load_ref_tours: str = True, return_list: bool = False
     ):
-        self.set_norm(norm)
-
         # check the file format
         if not file_path.endswith(".txt"):
             raise ValueError("Invalid file format. Expected a ``.txt`` file.")
 
         # read the data form .txt
         with open(file_path, "r") as file:
-            nodes_coords = list()
+            dists = list()
             ref_tours = list()
             for line in file:
                 line = line.strip()
                 if "output" in line:
                     split_line = line.split(" output ")
-                    points = split_line[0]
+                    dist = split_line[0]
                     tour = split_line[1]
                     tour = tour.split(" ")
                     tour = np.array([int(t) for t in tour])
                     tour -= 1
                     ref_tours.append(tour)
                 else:
-                    points = line
+                    dist = line
                     load_ref_tours = False
-                points = points.split(" ")
-                points = np.array(
-                    [
-                        [float(points[i]), float(points[i + 1])]
-                        for i in range(0, len(points), 2)
-                    ]
-                )
-                nodes_coords.append(points)
+                dist = dist.split(" ")
+                dist.append('')           
+                dist = np.array([float(dist[2*i]) for i in range(len(dist) // 2)])
+                num_nodes = int(math.sqrt(len(dist)))
+                dist = dist.reshape(num_nodes, num_nodes)
+                dists.append(dist)
 
         if return_list:
-            return nodes_coords, ref_tours
+            return dists, ref_tours
 
         if load_ref_tours:
             try:
@@ -173,29 +166,20 @@ class TSPSolver:
                 )
                 raise Exception(message) from e
 
-        nodes_coords = np.array(nodes_coords)
-        self.ori_points = nodes_coords
-        self.points = nodes_coords.astype(np.float32)
-        self.check_ori_points_dim()
+        dists = np.array(dists)
+        self.ori_dists = dists
+        self.dists = dists.astype(np.float32)
+        self.check_ori_dists_dim()
         self.check_ref_tours_dim()
-        if normalize:
-            self.normalize_points()
 
-    def from_data(
-        self,
-        points: Union[list, np.ndarray],
-        norm: str = "EUC_2D",
-        normalize: bool = False,
-    ):
-        self.set_norm(norm)
-        if points is None:
+    def from_data(self, dists: Union[list, np.ndarray]):
+        if dists is None:
             return
-        points = to_numpy(points)
-        self.ori_points = points
-        self.points = points.astype(np.float32)
-        self.check_ori_points_dim()
-        if normalize:
-            self.normalize_points()
+        self.ori_dists = dists
+        dists = to_numpy(dists)
+        self.ori_dists = dists
+        self.dists = dists.astype(np.float32)
+        self.check_ori_dists_dim()
 
     def read_tours(self, tours: Union[list, np.ndarray]):
         if tours is None:
@@ -222,42 +206,72 @@ class TSPSolver:
         self.ref_tours = np.array(tsp_tour) - 1
         self.check_ref_tours_dim()
 
-    def to_tsp(
+    def read_ref_tours_from_folder(self, folder_path: str, return_list: bool = False):
+        ref_tours = list()
+        files = os.listdir(folder_path)
+        for file_name in files:
+            file_path = os.path.join(folder_path, file_name)
+            if not file_path.endswith(".opt.tour"):
+                continue
+            tsp_tour = tsplib95.load(file_path)
+            tsp_tour = tsp_tour.tours
+            tsp_tour: list
+            tsp_tour = tsp_tour[0]
+            tsp_tour.append(1)
+            ref_tour = np.array(tsp_tour) - 1
+            ref_tours.append(ref_tour)
+        
+        if return_list:
+            return ref_tours
+        else:
+            try:
+                ref_tours = np.array(ref_tours)
+            except Exception as e:
+                message = (
+                    "This method does not support instances of different numbers of nodes. "
+                    "If you want to read the data, please set ``return_list`` as True. "
+                    "Anyway, the data will not be saved in the solver. "
+                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
+                )
+                raise Exception(message) from e 
+            self.ref_tours = ref_tours.astype(np.int32)     
+            self.check_ref_tours_dim()
+
+    def to_atsp_folder(
         self,
         save_dir: str,
         filename: str,
         original: bool = True,
-        points: Union[np.ndarray, list] = None,
-        norm: str = None,
-        normalize: bool = False,
+        dists: Union[np.ndarray, list] = None
     ):
         # prepare
-        self.from_data(points, norm, normalize)
-        if filename.endswith(".tsp"):
-            filename = filename.replace(".tsp", "")
-        self.check_points_not_none()
-        points = self.ori_points if original else self.points
+        self.from_data(dists)
+        if filename.endswith(".atsp"):
+            filename = filename.replace(".atsp", "")
+        self.check_dists_not_none()
+        dists = self.ori_dists if original else self.dists
 
         # makedirs
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
         # write
-        for idx in range(points.shape[0]):
-            save_path = os.path.join(save_dir, filename + f"-{idx}.tsp")
+        for idx in range(dists.shape[0]):
+            save_path = os.path.join(save_dir, filename + f"-{idx}.atsp")
             with open(save_path, "w") as f:
                 f.write(f"NAME : Generated by ML4CO-Kit\n")
                 f.write(f"COMMENT : Generated by ML4CO-Kit\n")
-                f.write("TYPE : TSP\n")
+                f.write("TYPE : ATSP\n")
                 f.write(f"DIMENSION : {self.nodes_num}\n")
-                f.write(f"EDGE_WEIGHT_TYPE : {self.norm}\n")
-                f.write("NODE_COORD_SECTION\n")
+                f.write(f"EDGE_WEIGHT_TYPE : EXPLICIT\n")
+                f.write(f"EDGE_WEIGHT_FORMAT: FULL_MATRIX\n")
+                f.write("EDGE_WEIGHT_SECTION:\n")
                 for i in range(self.nodes_num):
-                    x, y = points[idx][i]
-                    f.write(f"{i+1} {x} {y}\n")
+                    line = ' '.join([str(elem) for elem in dists[idx][i]])
+                    f.write(f"{line}\n")
                 f.write("EOF\n")
 
-    def to_opt_tour(
+    def to_opt_tour_folder(
         self,
         save_dir: str,
         filename: str,
@@ -291,31 +305,29 @@ class TSPSolver:
         self,
         filename: str = "example.txt",
         original: bool = True,
-        points: Union[np.ndarray, list] = None,
+        dists: Union[np.ndarray, list] = None,
         tours: Union[np.ndarray, list] = None,
-        norm: str = None,
-        normalize: bool = False,
     ):
         # read and check
-        self.from_data(points, norm, normalize)
+        self.from_data(dists)
         self.read_tours(tours)
         if self.tours is None:
             raise ValueError(
                 "``tours`` cannot be None, please use method 'solve' to get solutions."
             )
-        self.check_points_not_none()
+        self.check_dists_not_none()
         self.check_tours_not_none()
-        points = self.ori_points if original else self.points
+        dists = self.ori_dists if original else self.dists
         tours = self.tours
 
         # deal with different shapes
-        samples = points.shape[0]
+        samples = dists.shape[0]
         if tours.shape[0] != samples:
             # a problem has more than one solved tour
             samples_tours = tours.reshape(samples, -1, tours.shape[-1])
             best_tour_list = list()
             for idx, solved_tours in enumerate(samples_tours):
-                cur_eva = TSPEvaluator(points[idx])
+                cur_eva = ATSPEvaluator(dists[idx])
                 best_tour = solved_tours[0]
                 best_cost = cur_eva.evaluate(best_tour)
                 for tour in solved_tours:
@@ -328,9 +340,10 @@ class TSPSolver:
 
         # write
         with open(filename, "w") as f:
-            for node_coordes, tour in zip(points, tours):
-                f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
-                f.write(str(" ") + str("output") + str(" "))
+            for dist, tour in zip(dists, tours):
+                dist: np.ndarray = dist.reshape(-1)
+                f.write(" ".join(str(x) + str(" ") for x in dist))
+                f.write(str("output") + str(" "))
                 f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
                 f.write("\n")
             f.close()
@@ -338,28 +351,26 @@ class TSPSolver:
     def evaluate(
         self,
         original: bool = True,
-        points: Union[np.ndarray, list] = None,
+        dists: Union[np.ndarray, list] = None,
         tours: Union[np.ndarray, list] = None,
         ref_tours: Union[np.ndarray, list] = None,
-        norm: str = None,
-        normalize: bool = False,
         calculate_gap: bool = False,
     ):
         # read and check
-        self.from_data(points, norm, normalize)
+        self.from_data(dists)
         self.read_tours(tours)
         self.read_ref_tours(ref_tours)
-        self.check_points_not_none()
+        self.check_dists_not_none()
         self.check_tours_not_none()
         if calculate_gap:
             self.check_ref_tours_not_none()
-        points = self.ori_points if original else self.points
+        dists = self.ori_dists if original else self.dists
         tours = self.tours
         ref_tours = self.ref_tours
 
         # prepare for evaluate
         tours_cost_list = list()
-        samples = points.shape[0]
+        samples = dists.shape[0]
         if calculate_gap:
             ref_tours_cost_list = list()
             gap_list = list()
@@ -369,7 +380,7 @@ class TSPSolver:
             # a problem has more than one solved tour
             tours = tours.reshape(samples, -1, tours.shape[-1])
             for idx in range(samples):
-                evaluator = TSPEvaluator(points[idx], self.norm)
+                evaluator = ATSPEvaluator(dists[idx])
                 solved_tours = tours[idx]
                 solved_costs = list()
                 for tour in solved_tours:
@@ -384,7 +395,7 @@ class TSPSolver:
         else:
             # a problem only one solved tour
             for idx in range(samples):
-                evaluator = TSPEvaluator(points[idx], self.norm)
+                evaluator = ATSPEvaluator(dists[idx])
                 solved_tour = tours[idx]
                 solved_cost = evaluator.evaluate(solved_tour)
                 tours_cost_list.append(solved_cost)
@@ -410,9 +421,7 @@ class TSPSolver:
 
     def solve(
         self,
-        points: Union[np.ndarray, list] = None,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
+        dists: Union[np.ndarray, list] = None,
         num_threads: int = 1,
         show_time: bool = False,
         **kwargs,

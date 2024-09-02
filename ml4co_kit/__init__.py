@@ -9,11 +9,13 @@ from .data import VRPLIBOriDataset, CVRPUniformDataset
 from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
 from .evaluate import SATLIBEvaluator
 from .evaluate import CVRPEvaluator, CVRPUniformEvaluator
-from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
+from .evaluate import ATSPEvaluator
+from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator, ATSPDataGenerator
 from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver
 from .solver import TSPGAEAXSolver, TSPGAEAXLargeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
+from .solver import ATSPSolver, ATSPLKHSolver
 from .utils import download, compress_folder, extract_archive, _get_md5, iterative_execution
 
 # expand - matplotlib

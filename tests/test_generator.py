@@ -3,7 +3,9 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import shutil
-from ml4co_kit import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator
+from ml4co_kit import (
+    TSPDataGenerator, MISDataGenerator, CVRPDataGenerator, ATSPDataGenerator
+)
 from ml4co_kit import KaMISSolver, CVRPPyVRPSolver
 
 
@@ -369,11 +371,64 @@ def test_cvrp():
 
 
 ##############################################
+#             Test Func For ATSP             #
+##############################################
+
+def _test_atsp_lkh_generator(
+    num_threads: int, nodes_num: int, data_type: str, 
+    sat_vars_num: int = None, sat_clauses_nums: int = None
+):
+    """
+    Test ATSPDataGenerator using LKH Solver
+    """
+    # save path
+    save_path = f"tmp/atsp{nodes_num}_lkh"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    # create TSPDataGenerator using lkh solver
+    tsp_data_lkh = ATSPDataGenerator(
+        num_threads=num_threads,
+        nodes_num=nodes_num,
+        data_type=data_type,
+        solver="LKH",
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path,
+        sat_vars_nums=sat_vars_num,
+        sat_clauses_nums=sat_clauses_nums,
+    )
+    # generate data
+    tsp_data_lkh.generate()
+    # remove the save path
+    shutil.rmtree(save_path)
+
+
+def test_atsp():
+    """
+    Test ATSPDataGenerator
+    """
+    # sat
+    _test_atsp_lkh_generator(
+        num_threads=4, nodes_num=55, data_type="sat", sat_clauses_nums=5, sat_vars_num=5
+    )
+    # threads
+    _test_atsp_lkh_generator(
+        num_threads=1, nodes_num=55, data_type="sat", sat_clauses_nums=5, sat_vars_num=5
+    )
+    # hcp
+    _test_atsp_lkh_generator(
+        num_threads=1, nodes_num=50, data_type="hcp"
+    )
+    
+    
+##############################################
 #                    MAIN                    #
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
-    test_mis()
-    test_cvrp()
+    # test_tsp()
+    # test_mis()
+    # test_cvrp()
+    test_atsp()
     shutil.rmtree("tmp")

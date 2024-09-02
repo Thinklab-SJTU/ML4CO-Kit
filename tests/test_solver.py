@@ -3,11 +3,10 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 from ml4co_kit.solver import (
-    TSPSolver, TSPLKHSolver, TSPConcordeSolver,
-    TSPGAEAXSolver, TSPGAEAXLargeSolver
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPGAEAXSolver, 
+    TSPGAEAXLargeSolver, KaMISSolver, CVRPSolver, CVRPPyVRPSolver, 
+    CVRPLKHSolver, CVRPHGSSolver, ATSPSolver, ATSPLKHSolver
 )
-from ml4co_kit.solver import KaMISSolver
-from ml4co_kit.solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
 
@@ -256,10 +255,54 @@ def test_cvrp():
     
 
 ##############################################
+#             Test Func For TSP              #
+##############################################
+
+def test_atsp_base_solver():
+    solver = ATSPSolver()
+    solver.from_txt("tests/solver_test/atsp55_test.txt")
+    solver.read_tours(solver.ref_tours)
+    solver.to_atsp_folder("tests/solver_test/atsp_test/problem", filename="atsp55")
+    solver.from_atsp_folder("tests/solver_test/atsp_test/problem")
+    solver.to_opt_tour_folder("tests/solver_test/atsp_test/solution", filename="astsp55")
+    solver.read_ref_tours_from_folder("tests/solver_test/atsp_test/solution")
+
+
+def _test_atsp_lkh_solver(show_time: bool, num_threads: int):
+    tsp_lkh_solver = ATSPLKHSolver(scale=1000, lkh_max_trials=500)
+    tsp_lkh_solver.from_txt("tests/solver_test/atsp55_test.txt")
+    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    costs_avg = tsp_lkh_solver.evaluate(calculate_gap=False)
+    print(f"ATSPLKHSolver Cost Avg: {costs_avg}")
+    if costs_avg >= 0.1:
+        message = (
+            f"The average cost ({costs_avg}) of ATSP50 solved by ATSPLKHSolver "
+            "is larger than or equal to 0.1."
+        )
+        raise ValueError(message)
+
+
+def test_atsp_lkh_solver():
+    _test_atsp_lkh_solver(True, 1)
+    _test_atsp_lkh_solver(True, 2)
+    _test_atsp_lkh_solver(False, 1)
+    _test_atsp_lkh_solver(False, 2)
+    
+    
+def test_atsp():
+    """
+    Test ATSPSolver
+    """
+    test_atsp_base_solver()
+    test_atsp_lkh_solver()
+
+    
+##############################################
 #                    MAIN                    #
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
-    test_mis()
-    test_cvrp()
+    # test_tsp()
+    # test_mis()
+    # test_cvrp()
+    test_atsp()

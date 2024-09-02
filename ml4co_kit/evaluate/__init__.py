@@ -7,3 +7,5 @@ from .mis.satlib_eval import SATLIBEvaluator
 
 from .cvrp.base import CVRPEvaluator
 from .cvrp.uniform_eval import CVRPUniformEvaluator
+
+from .atsp.base import ATSPEvaluator

@@ -13,3 +13,6 @@ from .cvrp.base import CVRPSolver
 from .cvrp.pyvrp import CVRPPyVRPSolver
 from .cvrp.lkh import CVRPLKHSolver
 from .cvrp.hgs import CVRPHGSSolver
+
+from .atsp.base import ATSPSolver
+from .atsp.lkh import ATSPLKHSolver

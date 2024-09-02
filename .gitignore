@@ -48,6 +48,7 @@ coverage.xml
 tests/solver_test/tsp50_test_small/**
 tests/solver_test/mis_test/**
 tests/solver_test/cvrp50_test/**
+tests/solver_test/atsp_test/**
 
 # tests/draw_test
 tests/draw_test/mis_example/preprocessed/**

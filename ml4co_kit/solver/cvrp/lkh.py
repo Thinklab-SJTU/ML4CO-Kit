@@ -56,7 +56,7 @@ class CVRPLKHSolver(CVRPSolver):
         with open(save_path, "w") as f:
             f.write(f"PROBLEM_FILE = {vrp_file_path}\n")
             f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
-            f.write(f"SPECIAL\nRUNS = {self.lkh_runs}\n")
+            f.write(f"RUNS = {self.lkh_runs}\n")
             f.write(f"SEED = {self.lkh_seed}\n")
             f.write(f"TOUR_FILE = {tour_path}\n")
     
