@@ -297,7 +297,7 @@ class ATSPSolver:
                 f.write(f"DIMENSION: {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{tours[idx][i]}\n")
+                    f.write(f"{tours[idx][i] + 1}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 

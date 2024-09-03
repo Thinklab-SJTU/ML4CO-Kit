@@ -9,7 +9,9 @@ def atsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
     tours = list()
     
     # check the number of dimension
+    dim_2 = False
     if heatmap.ndim == 2:
+        dim_2 = True
         heatmap = np.expand_dims(heatmap, axis=0)
     if heatmap.ndim != 3:
         raise ValueError("``heatmap`` must be a 2D or 3D array.")
@@ -22,11 +24,11 @@ def atsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
         _heatmap = (ctypes.c_double *(nodes_num**2))(*_heatmap.reshape(nodes_num*nodes_num).tolist())
         c_atsp_greedy_decoder(nodes_num, _heatmap, tour, ctypes.byref(cost))
         tour = np.array(list(tour))
-        np.append(tour, tour[0])
+        tour = np.append(tour, tour[0])
         tours.append(tour)
 
     # check shape
     tours = np.array(tours)
-    if tours.shape[0] == 1:
+    if dim_2:
         tours = tours[0]
     return tours

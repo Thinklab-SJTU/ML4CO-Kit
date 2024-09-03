@@ -8,6 +8,7 @@ def tsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
     tours = list()
     
     # check the number of dimension
+    dim_2 = False
     if heatmap.ndim == 2:
         heatmap = np.expand_dims(heatmap, axis=0)
     if heatmap.ndim != 3:
@@ -32,6 +33,6 @@ def tsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
             
     # check shape
     tours = np.array(tours)
-    if tours.shape[0] == 1:
+    if dim_2:
         tours = tours[0]
     return tours

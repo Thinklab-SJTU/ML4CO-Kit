@@ -112,8 +112,8 @@ class BaseModel(pl.LightningModule):
     def test_step(self, batch: Any, batch_idx: int):
         return self.shared_step(batch, batch_idx, phase="test")
 
-    def forward(self, x, graph, edge_index, t=None) -> torch.Tensor:
-        return self.model(x, graph=graph, edge_index=edge_index, timesteps=t)
+    def forward(self, *args, **kwargs) -> torch.Tensor:
+        return self.model(*args, **kwargs)
 
     def solve(self, data: Any, batch_size: int = 16, device="cpu"):
         """solve function, return heatmap"""

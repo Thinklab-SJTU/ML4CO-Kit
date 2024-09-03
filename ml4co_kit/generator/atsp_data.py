@@ -349,8 +349,9 @@ class ATSPDataGenerator:
             ref_tour: list = hpath.tolist()
             ref_tour.append(ref_tour[0])
             
-        dists.append(dist)
-        ref_tours.append(ref_tour)
+            dists.append(dist)
+            ref_tours.append(ref_tour)
+        
         return np.array(dists), np.array(ref_tours)
 
     def generate_uniform(self) -> Union[np.ndarray, np.ndarray]:

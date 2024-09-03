@@ -97,10 +97,10 @@ def test_atsp_greedy_decoder():
     solver.read_tours(tours)
     costs_avg = solver.evaluate()
     print(f"Greedy Decoder Costs: {costs_avg}")
-    if (costs_avg-2.39802) >= 1e-5:
+    if (costs_avg-2.52839) >= 1e-5:
         message = (
             f"The average costs ({costs_avg}) of TSP50 solved by Greedy Decoder "
-            "is not equal to 2.39802."
+            "is not equal to 2.52839."
         )
         raise ValueError(message)
 
@@ -113,5 +113,5 @@ def test_atsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
+    # test_tsp()
     test_atsp()
