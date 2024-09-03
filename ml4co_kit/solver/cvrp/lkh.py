@@ -22,6 +22,7 @@ class CVRPLKHSolver(CVRPSolver):
         lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
+        lkh_special: bool = True
     ):
         """
         TSPLKHSolver
@@ -46,6 +47,7 @@ class CVRPLKHSolver(CVRPSolver):
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
         self.lkh_seed = lkh_seed
+        self.lkh_special = lkh_special
 
     def write_parameter_file(
         self,
@@ -56,6 +58,8 @@ class CVRPLKHSolver(CVRPSolver):
         with open(save_path, "w") as f:
             f.write(f"PROBLEM_FILE = {vrp_file_path}\n")
             f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
+            if self.lkh_special:
+                f.write("SPECIAL\n")
             f.write(f"RUNS = {self.lkh_runs}\n")
             f.write(f"SEED = {self.lkh_seed}\n")
             f.write(f"TOUR_FILE = {tour_path}\n")

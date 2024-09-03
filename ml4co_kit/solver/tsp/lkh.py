@@ -16,6 +16,8 @@ class TSPLKHSolver(TSPSolver):
         lkh_max_trials: int = 500,
         lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
+        lkh_seed: int = 1234,
+        lkh_special: bool = False
     ):
         """
         TSPLKHSolver
@@ -33,6 +35,8 @@ class TSPLKHSolver(TSPSolver):
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
+        self.lkh_seed = lkh_seed
+        self.lkh_special = lkh_special
 
     def _solve(self, nodes_coord: np.ndarray) -> list:
         problem = tsplib95.models.StandardProblem()
@@ -48,6 +52,8 @@ class TSPLKHSolver(TSPSolver):
             problem=problem,
             max_trials=self.lkh_max_trials,
             runs=self.lkh_runs,
+            seed=self.lkh_seed,
+            special=self.lkh_special
         )
         tour = [n - 1 for n in solution[0]]
         return tour

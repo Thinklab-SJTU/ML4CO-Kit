@@ -302,7 +302,7 @@ def test_atsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
-    # test_mis()
-    # test_cvrp()
+    test_tsp()
+    test_mis()
+    test_cvrp()
     test_atsp()

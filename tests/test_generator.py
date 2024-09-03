@@ -6,7 +6,7 @@ import shutil
 from ml4co_kit import (
     TSPDataGenerator, MISDataGenerator, CVRPDataGenerator, ATSPDataGenerator
 )
-from ml4co_kit import KaMISSolver, CVRPPyVRPSolver
+from ml4co_kit import KaMISSolver, CVRPPyVRPSolver, CVRPLKHSolver
 
 
 ##############################################
@@ -298,6 +298,7 @@ def _test_cvrp_lkh_generator(
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     # create CVRPDataGenerator using lkh solver
+    solver = CVRPLKHSolver(lkh_max_trials=100)
     cvrp_data_lkh = CVRPDataGenerator(
         num_threads=num_threads,
         nodes_num=nodes_num,
@@ -349,26 +350,26 @@ def test_cvrp():
     """
     Test CVRPDataGenerator
     """
+    # hgs
+    _test_cvrp_hgs_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", capacity=40
+    )
     # threads
-    _test_cvrp_pyvrp_generator(
+    _test_cvrp_hgs_generator(
         num_threads=1, nodes_num=50, data_type="uniform", capacity=40
     )
+    # lkh
+    _test_cvrp_lkh_generator(
+        num_threads=4, nodes_num=20, data_type="uniform", capacity=30
+    )
+    # pyvrp
     _test_cvrp_pyvrp_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", capacity=40
+        num_threads=1, nodes_num=50, data_type="uniform", capacity=40
     )
     # gaussian
     _test_cvrp_pyvrp_generator(
         num_threads=4, nodes_num=50, data_type="gaussian", capacity=40
     )
-    # lkh
-    _test_cvrp_lkh_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", capacity=40
-    )
-    # hgs
-    _test_cvrp_hgs_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", capacity=40
-    )
-
 
 ##############################################
 #             Test Func For ATSP             #
@@ -427,8 +428,8 @@ def test_atsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
-    # test_mis()
-    # test_cvrp()
+    test_tsp()
+    test_mis()
+    test_cvrp()
     test_atsp()
     shutil.rmtree("tmp")
