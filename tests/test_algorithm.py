@@ -19,7 +19,7 @@ def test_tsp_greedy_decoder():
     solver.from_txt("tests/algorithm_test/tsp50.txt")
     points = solver.points
     heatmap = np.load("tests/algorithm_test/tsp50_heatmap.npy", allow_pickle=True)
-    tours = tsp_greedy_decoder(heatmap=heatmap, points=points)
+    tours = tsp_greedy_decoder(heatmap=heatmap)
     solver.read_tours(tours)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
     print(f"Greedy Decoder Gap: {gap_avg}")
@@ -63,7 +63,7 @@ def test_tsp_mcts_local_search():
     solver.from_txt("tests/algorithm_test/tsp50.txt")
     points = solver.points
     heatmap = np.load("tests/algorithm_test/tsp50_heatmap.npy", allow_pickle=True)
-    greedy_tours = tsp_greedy_decoder(heatmap=heatmap, points=points)
+    greedy_tours = tsp_greedy_decoder(heatmap=heatmap)
     tours = tsp_mcts_local_search(
         init_tours=greedy_tours, heatmap=heatmap, points=points, time_limit=0.1
     )
