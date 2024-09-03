@@ -60,7 +60,7 @@ class ATSPLKHSolver(ATSPSolver):
         log_save_path = f"{tmp_name}.log"
         
         # prepare for solve
-        self.tmp_solver.from_data(dist)
+        self.tmp_solver.from_data(dist * self.tmp_solver.scale)
         self.tmp_solver.to_atsp_folder(
             save_dir="./", 
             filename=atsp_save_path

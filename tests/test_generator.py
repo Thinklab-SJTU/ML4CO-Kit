@@ -419,7 +419,11 @@ def test_atsp():
     )
     # hcp
     _test_atsp_lkh_generator(
-        num_threads=1, nodes_num=50, data_type="hcp"
+        num_threads=4, nodes_num=50, data_type="hcp"
+    )
+    # uniform
+    _test_atsp_lkh_generator(
+        num_threads=4, nodes_num=50, data_type="uniform"
     )
     
     

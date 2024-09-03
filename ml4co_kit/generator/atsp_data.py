@@ -1,5 +1,6 @@
 import os
 import sys
+import copy
 import time
 import shutil
 import numpy as np
@@ -85,6 +86,7 @@ class ATSPDataGenerator:
         generate_func_dict = {
             "sat": self.generate_sat,
             "hcp": self.generate_hcp,
+            "uniform": self.generate_uniform
         }
         supported_data_type = generate_func_dict.keys()
         if self.data_type not in supported_data_type:
@@ -157,7 +159,7 @@ class ATSPDataGenerator:
 
     def get_filename(self):
         self.filename = (
-            f"tsp{self.nodes_num}_{self.data_type}"
+            f"atsp{self.nodes_num}_{self.data_type}"
             if self.filename is None
             else self.filename
         )
@@ -350,3 +352,16 @@ class ATSPDataGenerator:
         dists.append(dist)
         ref_tours.append(ref_tour)
         return np.array(dists), np.array(ref_tours)
+
+    def generate_uniform(self) -> Union[np.ndarray, np.ndarray]:
+        dists = list()
+        for _ in range(self.num_threads):
+            dist = np.random.uniform(low=0, high=1, size=(self.nodes_num, self.nodes_num))
+            dist[np.arange(self.nodes_num), np.arange(self.nodes_num)] = 0
+            while True:
+                old_dist = copy.deepcopy(dist)
+                dist = (dist[:, None, :] + dist[None, :, :].transpose(0, 2, 1)).min(axis=2)
+                if (dist == old_dist).all():
+                    break
+                dists.append(dist)
+        return np.array(dists), None

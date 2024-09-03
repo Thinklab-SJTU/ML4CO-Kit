@@ -5,9 +5,9 @@ sys.path.append(root_folder)
 import numpy as np
 from ml4co_kit.algorithm import (
     tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, 
-    tsp_mcts_local_search
+    tsp_mcts_local_search, atsp_greedy_decoder
 )
-from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.solver import TSPSolver, ATSPSolver
 
 
 ##############################################
@@ -84,6 +84,29 @@ def test_tsp():
     test_tsp_mcts_decoder()
     test_tsp_mcts_local_search()
     
+
+##############################################
+#             Test Func For ATSP             #
+##############################################
+
+def test_atsp_greedy_decoder():
+    solver = ATSPSolver()
+    solver.from_txt("tests/solver_test/atsp50_test.txt")
+    dists = solver.dists
+    tours = atsp_greedy_decoder(dists)
+    solver.read_tours(tours)
+    costs_avg = solver.evaluate()
+    print(f"Greedy Decoder Costs: {costs_avg}")
+    if (costs_avg-2.39802) >= 1e-5:
+        message = (
+            f"The average costs ({costs_avg}) of TSP50 solved by Greedy Decoder "
+            "is not equal to 2.39802."
+        )
+        raise ValueError(message)
+
+def test_atsp():
+    test_atsp_greedy_decoder()
+    
     
 ##############################################
 #                    MAIN                    #
@@ -91,3 +114,4 @@ def test_tsp():
 
 if __name__ == "__main__":
     test_tsp()
+    test_atsp()

@@ -17,11 +17,8 @@ from libc.stdio cimport printf
 # • Return the extracted tour.
 
 
-cpdef cython_tsp_greedy(double[:,:] coords, double[:,:] adj_mat):
-    cdef double[:,:] points = coords
-    cdef double[:,:] dists = np.linalg.norm(np.asarray(points)[:, None] - np.asarray(points), axis=-1)
-
-    cdef long N = dists.shape[0]
+cpdef cython_tsp_greedy(double[:,:] adj_mat):
+    cdef long N = adj_mat.shape[0]
 
     # we initialize the real adjacency matrix
     cdef double[:,:] A = np.zeros((N, N))
@@ -31,11 +28,8 @@ cpdef cython_tsp_greedy(double[:,:] coords, double[:,:] adj_mat):
     cdef int[:] route_begin = np.arange(N, dtype='int32')
     cdef int[:] route_end = np.arange(N, dtype='int32')
 
-    # we calculate the dist between each pair of nodes
-    dist = np.linalg.norm(np.asarray(points)[:, None] - np.asarray(points), axis=-1)
-
     # we sort all the possible edges (i, j) in decreasing order of Aij/kvi − vjk
-    cdef int[:] sorted_edges = np.argsort((-np.asarray(adj_mat) / dist).flatten()).astype('int32')
+    cdef int[:] sorted_edges = np.argsort(-np.asarray(adj_mat).flatten()).astype('int32')
     cdef int i, j
 
     # • For each edge (i, j) in the list:

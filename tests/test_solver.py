@@ -269,15 +269,27 @@ def test_atsp_base_solver():
 
 
 def _test_atsp_lkh_solver(show_time: bool, num_threads: int):
-    tsp_lkh_solver = ATSPLKHSolver(scale=1000, lkh_max_trials=500)
-    tsp_lkh_solver.from_txt("tests/solver_test/atsp55_test.txt")
-    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
-    costs_avg = tsp_lkh_solver.evaluate(calculate_gap=False)
+    atsp_lkh_solver = ATSPLKHSolver(lkh_max_trials=500)
+    atsp_lkh_solver.from_txt("tests/solver_test/atsp55_test.txt")
+    atsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    costs_avg = atsp_lkh_solver.evaluate(calculate_gap=False)
     print(f"ATSPLKHSolver Cost Avg: {costs_avg}")
     if costs_avg >= 0.1:
         message = (
             f"The average cost ({costs_avg}) of ATSP50 solved by ATSPLKHSolver "
             "is larger than or equal to 0.1."
+        )
+        raise ValueError(message)
+
+    atsp_lkh_solver = ATSPLKHSolver(lkh_max_trials=500)
+    atsp_lkh_solver.from_txt("tests/solver_test/atsp50_test.txt")
+    atsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = atsp_lkh_solver.evaluate(calculate_gap=True)
+    print(f"ATSPLKHSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-4:
+        message = (
+            f"The average gap ({gap_avg}) of CVRP50 solved by ATSPLKHSolver "
+            "is larger than or equal to 1e-4%."
         )
         raise ValueError(message)
 
