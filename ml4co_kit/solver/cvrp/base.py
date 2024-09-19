@@ -8,6 +8,7 @@ from pyvrp import read as read_vrp
 from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.evaluate.tsp.base import geographical
+from ml4co_kit.utils.run_utils import iterative_execution_for_file
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -278,6 +279,7 @@ class CVRPSolver:
         normalize: bool = False,
         load_ref_tours: str = True,
         return_list: bool = False,
+        show_time: bool = False
     ):
         self.set_norm(norm)
 
@@ -295,7 +297,7 @@ class CVRPSolver:
             ref_tours = list()
             
             # read by lines
-            for line in file:
+            for line in iterative_execution_for_file(file, "Loading", show_time):
                 # line to strings
                 line = line.strip()
                 split_line_0 = line.split("depots ")[1]

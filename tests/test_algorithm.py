@@ -5,7 +5,7 @@ sys.path.append(root_folder)
 import numpy as np
 from ml4co_kit.algorithm import (
     tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, 
-    tsp_mcts_local_search, atsp_greedy_decoder
+    tsp_mcts_local_search, atsp_greedy_decoder, atsp_mcts_local_search
 )
 from ml4co_kit.solver import TSPSolver, ATSPSolver
 
@@ -104,8 +104,24 @@ def test_atsp_greedy_decoder():
         )
         raise ValueError(message)
 
+
+def test_atsp_mcts_local_search():
+    solver = ATSPSolver()
+    solver.from_txt("tests/algorithm_test/atsp50.txt")
+    dists = solver.dists
+    heatmap = np.load("tests/algorithm_test/atsp50_heatmap.npy", allow_pickle=True)
+    greedy_tours = atsp_greedy_decoder(heatmap=-heatmap)
+    tours = atsp_mcts_local_search(
+        init_tours=greedy_tours, heatmap=heatmap, dists=dists, time_limit=0.1
+    )
+    solver.read_tours(tours)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"MCTS Decoder Gap: {gap_avg}")
+
+
 def test_atsp():
     test_atsp_greedy_decoder()
+    test_atsp_mcts_local_search()
     
     
 ##############################################
@@ -113,5 +129,5 @@ def test_atsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
+    test_tsp()
     test_atsp()

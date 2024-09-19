@@ -332,9 +332,6 @@ class ATSPDataGenerator:
             # Random permutation of nodes (equivalent to torch.randperm)
             hpath = np.random.permutation(num_nodes)
 
-            # Initialize the distance matrix (dist) as a NumPy array
-            dist = np.zeros((num_nodes, num_nodes))
-
             # Set distances to 0 along the hpath
             dist[hpath, np.roll(hpath, -1)] = 0
 
@@ -355,14 +352,15 @@ class ATSPDataGenerator:
         return np.array(dists), np.array(ref_tours)
 
     def generate_uniform(self) -> Union[np.ndarray, np.ndarray]:
+        scaler = 1e6
         dists = list()
         for _ in range(self.num_threads):
-            dist = np.random.uniform(low=0, high=1, size=(self.nodes_num, self.nodes_num))
+            dist = np.random.randint(low=0, high=scaler, size=(self.nodes_num, self.nodes_num))
             dist[np.arange(self.nodes_num), np.arange(self.nodes_num)] = 0
             while True:
                 old_dist = copy.deepcopy(dist)
                 dist = (dist[:, None, :] + dist[None, :, :].transpose(0, 2, 1)).min(axis=2)
                 if (dist == old_dist).all():
                     break
-                dists.append(dist)
+                dists.append(dist / scaler)
         return np.array(dists), None

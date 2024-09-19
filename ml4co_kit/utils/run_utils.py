@@ -15,3 +15,14 @@ def iterative_execution(
         return tqdm(func(iterable), desc=desc)
     else:
         return func(iterable)
+    
+
+def iterative_execution_for_file(
+    iterable: Iterable[T], 
+    desc: str = "Runing", 
+    show_time: bool = False
+) -> Iterable[T]:
+    if show_time:
+        return tqdm(iterable, desc=desc)
+    else:
+        return iterable

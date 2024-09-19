@@ -4,6 +4,7 @@ import numpy as np
 from typing import Union
 from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
+from ml4co_kit.utils.run_utils import iterative_execution_for_file
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -125,6 +126,7 @@ class TSPSolver:
         normalize: bool = False,
         load_ref_tours: str = True,
         return_list: bool = False,
+        show_time = False
     ):
         self.set_norm(norm)
 
@@ -136,7 +138,7 @@ class TSPSolver:
         with open(file_path, "r") as file:
             nodes_coords = list()
             ref_tours = list()
-            for line in file:
+            for line in iterative_execution_for_file(file, "Loading", show_time):
                 line = line.strip()
                 if "output" in line:
                     split_line = line.split(" output ")
