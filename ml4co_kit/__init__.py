@@ -4,7 +4,7 @@ import importlib.util
 from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder
 from .algorithm import tsp_mcts_local_search
 from .algorithm import atsp_greedy_decoder
-from .algorithm import atsp_mcts_local_search
+from .algorithm import atsp_2opt_local_search
 from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
 from .data import SATLIBOriDataset
 from .data import VRPLIBOriDataset, CVRPUniformDataset
