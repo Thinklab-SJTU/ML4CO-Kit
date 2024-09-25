@@ -1,8 +1,8 @@
 import os
 import math
-import tsplib95
 import numpy as np
 from typing import Union
+from ml4co_kit.utils import tsplib95
 from ml4co_kit.utils.type import to_numpy
 from ml4co_kit.evaluate.atsp.base import ATSPEvaluator
 from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file

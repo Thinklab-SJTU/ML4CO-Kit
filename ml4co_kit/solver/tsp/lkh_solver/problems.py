@@ -1,7 +1,6 @@
 import math
-import tsplib95 as tsplib
-
-from tsplib95 import transformers, distances
+from ml4co_kit.utils import tsplib95 as tsplib
+from ml4co_kit.utils.tsplib95 import transformers, distances
 
 
 distances.TYPES.update(

@@ -1,9 +1,9 @@
 import time
 import numpy as np
-import tsplib95
 import pathlib
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.tsp.base import TSPSolver
 from ml4co_kit.solver.tsp.lkh_solver import lkh_solve
 from ml4co_kit.utils.run_utils import iterative_execution

@@ -45,16 +45,16 @@ The following packages are required and shall be automatically installed by ``pi
 ```
 Python>=3.8
 numpy>=1.24.4
-networkx==2.8.8
-tsplib95==0.7.1
+networkx>=2.8.8
 tqdm>=4.66.1
 pulp>=2.8.0, 
 pandas>=2.0.0,
 scipy>=1.10.1
-requests>=2.31.0
 aiohttp>=3.9.3
+requests>=2.31.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
+cython>=3.0.8
 ```
 
 To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:
