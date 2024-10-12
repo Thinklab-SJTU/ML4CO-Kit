@@ -18,6 +18,6 @@ class SATLIBEvaluator:
 
     def evaluate(self, solver: MISSolver, **solver_args):
         solver.from_gpickle_result_folder(gpickle_folder_path=self.gpickle_foler, ref=False)
-        solver.from_txt_only_sel_nodes_num(self.ref_solution_path, ref=True)
         solver.solve(**solver_args)
+        solver.from_txt_only_sel_nodes_num(self.ref_solution_path, ref=True)
         return solver.evaluate(calculate_gap=True)
