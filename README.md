@@ -120,34 +120,34 @@ tsp_data_lkh.generate()
 >>> lkh_solver = TSPLKHSolver(scale=1)
 >>> evaluator = TSPLIBOriEvaluator()
 >>> evaluator.evaluate(lkh_solver, norm="EUC_2D")
-           solved_costs       ref_costs          gaps
+           solved_costs      ref_costs          gaps
 eil51        429.983312     429.983312  0.000000e+00
 berlin52    7544.365902    7544.365902  3.616585e-14
-st70         678.557469     678.597452 -5.892021e-03
-eil76        545.229738     545.387552 -2.893612e-02
+st70         677.881928     678.597452 -1.054416e-01
+eil76        544.837795     545.387552 -1.008012e-01
 pr76      108159.438274  108159.438274 -1.345413e-14
 kroA100    21285.443182   21285.443182  0.000000e+00
 kroC100    20750.762504   20750.762504  0.000000e+00
 kroD100    21294.290821   21294.290821  3.416858e-14
 rd100       7910.396210    7910.396210  0.000000e+00
-eil101       642.856874     642.309536  8.521414e-02
+eil101       642.244814     642.309536 -1.007642e-02
 lin105     14382.995933   14382.995933  0.000000e+00
-ch130       6110.900592    6110.860950  6.487238e-04
-ch150       6530.902722    6532.280933 -2.109847e-02
+ch130       6110.739012    6110.860950 -1.995428e-03
+ch150       6532.280933    6532.280933 -2.784616e-14
 tsp225      3859.000000    3859.000000  0.000000e+00
-a280        2588.301213    2586.769648  5.920765e-02
-pr1002    260277.189980  259066.663053  4.672646e-01
-pr2392    384469.093320  378062.826191  1.694498e+00
-AVG        51027.041650   50578.963027  1.324063e-01
+a280        2587.930486    2586.769648  4.487600e-02
+pr1002    259066.663053  259066.663053  0.000000e+00
+pr2392    378062.826191  378062.826191  0.000000e+00
+AVG        50578.945903   50578.963027 -1.020227e-02
 
->>> eva.evaluate(lkh_solver, norm="GEO")
-           solved_costs  ref_costs      gaps
-ulysses16        6859.0    6859.0  0.000000
-ulysses22        7013.0    7013.0  0.000000
-gr96            55209.0   55209.0  0.000000
-gr202           40160.0   40160.0  0.000000
-gr666          295012.0  294358.0  0.222178
-AVG             80850.6   80719.8  0.044436
+>>> evaluator.evaluate(lkh_solver, norm="GEO")
+           solved_costs    ref_costs          gaps
+ulysses16     74.108736    74.108736  1.917568e-14
+ulysses22     75.665149    75.665149  3.756248e-14
+gr96         512.309380   512.309380  0.000000e+00
+gr202        549.998070   549.998070 -8.268163e-14
+gr666       3843.137961  3952.535702 -2.767786e+00
+AVG         1011.043859  1032.923407 -5.535573e-01
 ```
 
 ### Visualization
@@ -160,7 +160,7 @@ from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
 solver = TSPConcordeSolver(scale=1)
-solver.from_tsp("examples/tsp/kroA150.tsp")
+solver.from_tsplib("examples/tsp/kroA150.tsp")
 solver.solve(norm="EUC_2D")
 
 # draw
@@ -195,12 +195,12 @@ mis_solver.solve(src="examples/mis_example")
 # draw
 draw_mis_problem(
     save_path="docs/assets/mis_problem.png", 
-    gpickle_path="examples/mis/mis_example.gpickle"
+    gpickle_path="examples/mis/instance/mis_example.gpickle"
 )
 draw_mis_solution(
     save_path="docs/mis_solution.png",
-    gpickle_path="examples/mis/mis_example.gpickle",
-    result_path="examples/mis/solve/mis_example_unweighted.result"
+    gpickle_path="examples/mis/instance/mis_example.gpickle",
+    result_path="examples/mis/solution/mis_example_unweighted.result"
 )
 ```
 
@@ -223,7 +223,7 @@ solver = CVRPPyVRPSolver(
     points_scale=1,
     time_limit=1
 )
-solver.from_vrp("examples/cvrp/A-n32-k5.vrp")
+solver.from_vrplib("examples/cvrp/A-n32-k5.vrp")
 solver.solve()
 
 # draw

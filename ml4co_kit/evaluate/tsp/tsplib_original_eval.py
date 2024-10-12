@@ -38,7 +38,7 @@ class TSPLIBOriEvaluator:
             )
 
             # real solve
-            solver.solve(**solver_args)
+            solver.solve(norm=norm, **solver_args)
             solved_cost, ref_cost, gap, _ = solver.evaluate(calculate_gap=True)
             
             # record

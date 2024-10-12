@@ -136,22 +136,22 @@ def test_tsp():
     Test TSPDataGenerator
     """
     # re-download lkh
-    # _test_tsp_lkh_generator(
-    #     num_threads=4, nodes_num=50, data_type="uniform", 
-    #     regret=False, re_download=True
-    # )
-    # # regret & threads
-    # _test_tsp_lkh_generator(
-    #     num_threads=1, nodes_num=10, data_type="uniform", regret=True
-    # )
-    # _test_tsp_lkh_generator(
-    #     num_threads=4, nodes_num=10, data_type="uniform", regret=True
-    # )
-    # # concorde
-    # _test_tsp_concorde_generator(
-    #     num_threads=4, nodes_num=50, data_type="uniform", 
-    #     recompile_concorde=True
-    # )
+    _test_tsp_lkh_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", 
+        regret=False, re_download=True
+    )
+    # regret & threads
+    _test_tsp_lkh_generator(
+        num_threads=1, nodes_num=10, data_type="uniform", regret=True
+    )
+    _test_tsp_lkh_generator(
+        num_threads=4, nodes_num=10, data_type="uniform", regret=True
+    )
+    # concorde
+    _test_tsp_concorde_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", 
+        recompile_concorde=True
+    )
     # ga-eax
     _test_tsp_ga_eax_generator(
         num_threads=4, nodes_num=50, data_type="uniform"
@@ -451,8 +451,8 @@ def test_atsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_tsp()
-    # test_mis()
-    # test_cvrp()
+    test_tsp()
+    test_mis()
+    test_cvrp()
     test_atsp()
     shutil.rmtree("tmp")

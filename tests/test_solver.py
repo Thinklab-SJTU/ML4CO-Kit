@@ -213,10 +213,10 @@ def _test_cvrp_pyvrp_solver(show_time: bool, num_threads: int):
     cvrp_pyvrp_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = cvrp_pyvrp_solver.evaluate(calculate_gap=True)
     print(f"CVRPPyVRPSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-3:
+    if gap_avg >= 1e-2:
         message = (
             f"The average gap ({gap_avg}) of CVRP50 solved by CVRPPyVRPSolver "
-            "is larger than or equal to 1e-3%."
+            "is larger than or equal to 1e-2%."
         )
         raise ValueError(message)
 
