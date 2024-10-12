@@ -32,11 +32,13 @@ class TSPLIBOriEvaluator:
             # read problem
             file_path = os.path.join(evaluate_dir, problem + ".tsp")
             ref_tour_path = os.path.join(solution_dir, problem + ".opt.tour")
-            solver.from_tsp(file_path, norm, normalize)
-            solver.read_ref_tours_from_opt_tour(ref_tour_path)
-            
+            solver.from_tsplib(
+                tsp_file_path=file_path, tour_file_path=ref_tour_path,
+                ref=True, norm=norm, normalize=normalize
+            )
+
             # real solve
-            solver.solve(norm=norm, normalize=normalize, **solver_args)
+            solver.solve(**solver_args)
             solved_cost, ref_cost, gap, _ = solver.evaluate(calculate_gap=True)
             
             # record

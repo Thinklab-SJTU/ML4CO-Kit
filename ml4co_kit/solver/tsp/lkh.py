@@ -66,10 +66,12 @@ class TSPLKHSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        self.from_data(points, norm, normalize)
+        # preparation
+        self.from_data(points=points, norm=norm, normalize=normalize)
+        
+        # start time
         start_time = time.time()
-
+        
         # solve
         tours = list()
         p_shape = self.points.shape
@@ -101,7 +103,7 @@ class TSPLKHSolver(TSPSolver):
         tours = np.append(tours, zeros, axis=1).astype(np.int32)
         if tours.ndim == 2 and tours.shape[0] == 1:
             tours = tours[0]
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
@@ -128,3 +130,6 @@ class TSPLKHSolver(TSPSolver):
         tour = [n - 1 for n in solution[0]] + [0]
         np_tour = np.array(tour)
         return np_tour
+
+    def __str__(self) -> str:
+        return "TSPLKHSolver"

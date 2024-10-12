@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from torch import Tensor
 from typing import Union, Tuple
 from sklearn.neighbors import KDTree
 
@@ -8,11 +9,11 @@ from sklearn.neighbors import KDTree
 #                    Check Utils                    #
 #####################################################
 
-def check_dim(array: Union[np.ndarray, torch.Tensor], dim: int):
-    if type(array) == np.ndarray:
+def check_dim(array: Union[np.ndarray, Tensor], dim: int):
+    if isinstance(array, np.ndarray):
         if array.ndim != dim:
             raise ValueError("Dimension mismatch!")
-    if type(array) == torch.Tensor:
+    if isinstance(array, Tensor):
         if array.ndim != dim:
             raise ValueError("Dimension mismatch!")
         
@@ -22,25 +23,25 @@ def check_dim(array: Union[np.ndarray, torch.Tensor], dim: int):
 #####################################################
 
 def to_numpy(
-    x: Union[np.ndarray, torch.Tensor, list]
+    x: Union[np.ndarray, Tensor, list]
 ) -> np.ndarray:
-    if type(x) == np.ndarray:
+    if isinstance(x, np.ndarray):
         return x
-    elif type(x) == torch.Tensor:
+    elif isinstance(x, Tensor):
         return x.cpu().detach().numpy()
-    elif type(x) == list:
+    elif isinstance(x, list):
         return np.array(x)
     
     
 def to_tensor(
-    x: Union[np.ndarray, torch.Tensor, list]
-) -> torch.Tensor:
-    if type(x) == torch.Tensor:
+    x: Union[np.ndarray, Tensor, list]
+) -> Tensor:
+    if isinstance(x, Tensor):
         return x
-    elif type(x) == np.ndarray:
+    elif isinstance(x, np.ndarray):
         return torch.from_numpy(x)
-    elif type(x) == list:
-        return torch.tensor(x)
+    elif isinstance(x, list):
+        return Tensor(x)
     
 
 #####################################################
@@ -48,10 +49,8 @@ def to_tensor(
 #####################################################
 
 def sparse_points(
-    points: Union[np.ndarray, torch.Tensor],
-    sparse_factor: int,
-    device: str = "cpu"
-) -> Tuple[torch.Tensor, torch.Tensor]:
+    points: Union[np.ndarray, Tensor], sparse_factor: int, device: str = "cpu"
+) -> Tuple[Tensor, Tensor]:
     points = to_numpy(points)
     if points.ndim == 2:
         points = np.expand_dims(points, axis=0)
@@ -73,9 +72,7 @@ def sparse_points(
     return points, edge_index
 
 
-def points_to_distmat(
-    points: torch.Tensor, edge_index: torch.Tensor = None
-) -> torch.Tensor:
+def points_to_distmat(points: Tensor, edge_index: Tensor = None) -> Tensor:
     device = points.device
     if edge_index is None:
         if points.ndim == 2:

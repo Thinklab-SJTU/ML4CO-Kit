@@ -39,7 +39,7 @@ class TSPLIB4MLEvaluator:
             # read problem
             problem: str
             file_path = os.path.join(evaluate_dir, problem + ".txt")
-            solver.from_txt(file_path)
+            solver.from_txt(file_path, ref=True)
             
             # real solve
             solver.solve(**solver_args)

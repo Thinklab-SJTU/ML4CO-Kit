@@ -136,7 +136,7 @@ TSPLIB_UNRESOLVE_GEO = ["burma14", "ali535"]
 #                 TSPLIBOriDataset                #
 ###################################################
 
-class TSPLIBOriDataset:
+class TSPLIBOriDataset(object):
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPLIBOriDataset/resolve/main/tsplib_original.tar.gz?download=true"
         self.md5 = "a25f78ef610b6c4ff1cde27f9d5fa6f9"

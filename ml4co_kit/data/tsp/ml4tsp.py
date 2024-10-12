@@ -2,7 +2,7 @@ import os
 from ml4co_kit.utils.file_utils import _get_md5
 
 
-class ML4TSPDataset:
+class ML4TSPDataset(object):
     def __init__(self):
         self.supported = {
             "tsp50_uniform_lkh_5k_1.28m.txt": "d049c9e86d7b26d2e6d25d896e0545fd",

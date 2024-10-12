@@ -1,58 +1,61 @@
 import os
+import sys
 import math
 import numpy as np
 from typing import Union
 from ml4co_kit.utils import tsplib95
-from ml4co_kit.utils.type import to_numpy
+from ml4co_kit.utils.type_utils import to_numpy
 from ml4co_kit.evaluate.atsp.base import ATSPEvaluator
 from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
 
 
-class ATSPSolver:
+if sys.version_info.major == 3 and sys.version_info.minor == 8:
+    from pyvrp.read import ROUND_FUNCS
+else:
+    from ml4co_kit.utils.round import ROUND_FUNCS
+
+
+class ATSPSolver(object):
     def __init__(self, solver_type: str = None, scale: int = 1e6):
         self.solver_type = solver_type
         self.scale = scale
-        self.dists = None
-        self.ori_dists = None
-        self.tours = None
-        self.ref_tours = None
-        self.nodes_num = None
+        self.dists: np.ndarray = None
+        self.ori_dists: np.ndarray= None
+        self.tours: np.ndarray = None
+        self.ref_tours: np.ndarray = None
+        self.nodes_num: int = None
 
     def check_dists_dim(self):
-        if self.dists is None:
-            return
-        elif self.dists.ndim == 2:
-            self.dists = np.expand_dims(self.dists, axis=0)
-        if self.dists.ndim != 3:
-            raise ValueError("``dists`` must be a 2D or 3D array.")
-        self.nodes_num = self.dists.shape[-1]
+        if self.dists is not None:
+            if self.dists.ndim == 2:
+                self.dists = np.expand_dims(self.dists, axis=0)
+            if self.dists.ndim != 3:
+                raise ValueError("``dists`` must be a 2D or 3D array.")
+            self.nodes_num = self.dists.shape[-1]
 
     def check_ori_dists_dim(self):
         self.check_dists_dim()
-        if self.ori_dists is None:
-            return
-        elif self.ori_dists.ndim == 2:
-            self.ori_dists = np.expand_dims(self.ori_dists, axis=0)
-        if self.ori_dists.ndim != 3:
-            raise ValueError("The ``ori_dists`` must be 2D or 3D array.")
+        if self.ori_dists is not None:
+            if self.ori_dists.ndim == 2:
+                self.ori_dists = np.expand_dims(self.ori_dists, axis=0)
+            if self.ori_dists.ndim != 3:
+                raise ValueError("The ``ori_dists`` must be 2D or 3D array.")
 
     def check_tours_dim(self):
-        if self.tours is None:
-            return
-        elif self.tours.ndim == 1:
-            self.tours = np.expand_dims(self.tours, axis=0)
-        if self.tours.ndim != 2:
-            raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
+        if self.tours is not None:
+            if self.tours.ndim == 1:
+                self.tours = np.expand_dims(self.tours, axis=0)
+            if self.tours.ndim != 2:
+                raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
     def check_ref_tours_dim(self):
-        if self.ref_tours is None:
-            return
-        elif self.ref_tours.ndim == 1:
-            self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
-        if self.ref_tours.ndim != 2:
-            raise ValueError(
-                "The dimensions of the ``ref_tours`` cannot be larger than 2."
-            )
+        if self.ref_tours is not None:
+            if self.ref_tours.ndim == 1:
+                self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
+            if self.ref_tours.ndim != 2:
+                raise ValueError(
+                    "The dimensions of the ``ref_tours`` cannot be larger than 2."
+                )
 
     def check_dists_not_none(self):
         if self.dists is None:
@@ -62,76 +65,202 @@ class ATSPSolver:
             )
             raise ValueError(message)
 
-    def check_tours_not_none(self):
-        if self.tours is None:
-            message = (
-                "``tours`` cannot be None! You can use solvers based on ``ATSPSolver`` "
-                "like ``ATSPLKHSolver`` or the method ``read_tours`` to get the tours."
-            )
-            raise ValueError(message)
+    def check_tours_not_none(self, ref: bool):
+        msg = "ref_tours" if ref else "tours"
+        message = (
+            f"``{msg}`` cannot be None! You can use solvers based on "
+            "``ATSPSolver`` like ``ATSPLKHSolver`` or use methods including "
+            "``from_data``, ``from_txt`` or ``from_tsplib`` to obtain them."
+        )  
+        if ref:
+            if self.ref_tours is None:
+                raise ValueError(message)
+        else:
+            if self.tours is None:    
+                raise ValueError(message)
 
-    def check_ref_tours_not_none(self):
-        if self.ref_tours is None:
-            message = (
-                "``ref_tours`` cannot be None! You can use solvers based on ``ATSPSolver`` "
-                "like ``ATSPLKHSolver`` to obtain the tours and set them as the ``ref_tours``. "
-                "Or you can use the methods ``read_ref_tours``, ``from_txt``, ``read_ref_tours_from_folder``, "
-                "or ``read_ref_tours_from_opt_tour`` to load them."
-            )
-            raise ValueError(message)
+    def normalize_dists(self):
+        for idx in range(self.dists.shape[0]):
+            cur_dists = self.dists[idx]
+            max_value = np.max(cur_dists)
+            min_value = np.min(cur_dists)
+            cur_dists = (cur_dists - min_value) / (max_value - min_value)
+            self.dists[idx] = cur_dists
 
-    def from_atsp(self, file_path: str):
-        if not file_path.endswith(".atsp"):
-            raise ValueError("Invalid file format. Expected a ``.atsp`` file.")
-        tsplib_data = tsplib95.load(file_path)
+    def get_round_func(self, round_func: str):
+        if (key := str(round_func)) in ROUND_FUNCS:
+            round_func = ROUND_FUNCS[key]
+        if not callable(round_func):
+            raise TypeError(
+                f"round_func = {round_func} is not understood. Can be a function,"
+                f" or one of {ROUND_FUNCS.keys()}."
+            )
+        return round_func
+
+    def apply_scale_and_dtype(
+        self, dists: np.ndarray, apply_scale: bool, to_int: bool, round_func: str
+    ):
+        # apply scale
+        if apply_scale:
+            dists = dists * self.scale
+
+        # dtype
+        if to_int:
+            round_func = self.get_round_func(round_func)
+            dists = round_func(dists)
+        
+        return dists
+
+    def _read_data_from_atsp_file(self, atsp_file_path: str) -> np.ndarray:
+        tsplib_data = tsplib95.load(atsp_file_path)
         dists = np.array(tsplib_data.edge_weights)
         if dists is None:
-            raise RuntimeError("Error in loading {}".format(file_path))
-        self.ori_dists = dists
-        self.dists = dists.astype(np.float32)
-        self.check_ori_dists_dim()
+            raise RuntimeError("Error in loading {}".format(atsp_file_path))
+        return dists
 
-    def from_atsp_folder(
+    def _read_tour_from_tour_file(self, tour_file_path: str) -> np.ndarray:
+        tsp_tour = tsplib95.load(tour_file_path)
+        tsp_tour = tsp_tour.tours
+        tsp_tour: list
+        tsp_tour = tsp_tour[0]
+        tsp_tour.append(1)
+        tour = np.array(tsp_tour) - 1
+        return tour
+    
+    def from_tsplib(
         self, 
-        folder_path: str, 
-        return_list: bool = False, 
+        atsp_file_path: str = None,
+        tour_file_path: str = None,
+        ref: bool = False,
+        normalize: bool = False
+    ):
+        # init
+        dists = None
+        tour = None
+        
+        # read dists from .tsp file
+        if atsp_file_path is not None:
+            if not atsp_file_path.endswith(".atsp"):
+                raise ValueError("Invalid file format. Expected a ``.atsp`` file.")
+            dists = self._read_data_from_atsp_file(atsp_file_path)
+        
+        # read tour from .tour file
+        if tour_file_path is not None:
+            if not tour_file_path[-5:] == ".tour":
+                raise ValueError(
+                    "Invalid file format. Expected a ``.tour`` or ``.opt.tour`` file."
+                )
+            tour = self._read_tour_from_tour_file(tour_file_path)
+        
+        # use ``from_data``
+        self.from_data(
+            dists=dists, tours=tour, ref=ref, normalize=normalize
+        )
+
+    def from_tsplib_folder(
+        self, 
+        atsp_folder_path: str = None,
+        tour_folder_path: str = None,
+        ref: bool = False,
+        return_list: bool = False,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
         show_time: bool = False
     ):
-        dists = list()
-        files = os.listdir(folder_path)
-        for file_name in iterative_execution_for_file(files, "Loading", show_time):
-            file_path = os.path.join(folder_path, file_name)
-            if not file_path.endswith(".atsp"):
-                continue
-            tsplib_data = tsplib95.load(file_path)
-            dist = np.array(tsplib_data.edge_weights)
-            if dist is None:
-                raise RuntimeError("Error in loading {}".format(file_path))
-            dists.append(dist)
+        # init
+        dists = None
+        tours = None
+        dists_flag = False if atsp_folder_path is None else True
+        tours_flag = False if tour_folder_path is None else True
         
-        if return_list:
-            return dists
-        else:
-            try:
-                dists = np.array(dists)
-            except Exception as e:
-                message = (
-                    "This method does not support instances of different numbers of nodes. "
-                    "If you want to read the data, please set ``return_list`` as True. "
-                    "Anyway, the data will not be saved in the solver. "
-                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
+        # only dists
+        if dists_flag and not tours_flag:
+            dists_list = list()
+            files = os.listdir(atsp_folder_path)
+            files.sort()
+            load_msg = f"Loading data from {atsp_folder_path}"
+            for file_name in iterative_execution_for_file(files, load_msg, show_time):
+                atsp_file_path = os.path.join(atsp_folder_path, file_name)
+                if not atsp_file_path.endswith(".atsp"):
+                    continue
+                dists = self._read_data_from_atsp_file(atsp_file_path)
+                dists_list.append(dists)
+
+        # only tours
+        if not dists_flag and tours_flag:
+            tours_list = list()
+            files = os.listdir(tour_folder_path)
+            files.sort()
+            load_msg = f"Loading solutions from {tour_folder_path}"
+            for file_name in iterative_execution_for_file(files, load_msg, show_time):
+                tour_file_path = os.path.join(tour_folder_path, file_name)
+                if not tour_file_path[-5:] == ".tour":
+                    continue
+                tour = self._read_tour_from_tour_file(tour_file_path)
+                tours_list.append(tour)
+        
+        # both dists and tours [must have the same filename]
+        if dists_flag and tours_flag:
+            dists_list = list()
+            tours_list = list()
+            files = os.listdir(atsp_folder_path)
+            files.sort()
+            load_msg = f"Loading data from {atsp_folder_path} and solutions from {tour_folder_path}"
+            for file_name in iterative_execution_for_file(files, load_msg, show_time):
+                # dists
+                atsp_file_path = os.path.join(atsp_folder_path, file_name)
+                if not atsp_file_path.endswith(".atsp"):
+                    continue
+                dists = self._read_data_from_atsp_file(atsp_file_path)
+                dists_list.append(dists)
+                # tour
+                tour_file_path = os.path.join(
+                    tour_folder_path, file_name.replace(".tsp", ".opt.tour")
                 )
-                raise Exception(message) from e 
-            self.ori_dists = dists     
-            self.dists = dists.astype(np.float32)
-            self.check_ori_dists_dim()
+                tour = self._read_tour_from_tour_file(tour_file_path)
+                tours_list.append(tour)
+                
+        # return list
+        if return_list:
+            if dists_flag:
+                if tours_flag:
+                    return dists_list, tours_list
+                else:
+                    return dists_list
+            else:
+                if tours_flag:
+                    return tours_list
+        
+        # check
+        message = (
+            "This method does not support instances of different numbers of nodes. "
+            "If you want to read the data, please set ``return_list`` as True. "
+            "Anyway, the data will not be saved in the solver. "
+            "Please convert the data to ``np.ndarray`` externally before calling the solver."
+        )
+        if dists_flag:
+            try:
+                dists = np.array(dists_list)
+            except Exception as e:
+                raise Exception(message) from e
+        if tours_flag:
+            try:
+                tours = np.array(tours_list)
+            except Exception as e:
+                raise Exception(message) from e
+        
+        # use ``from_data``
+        self.from_data(
+            dists=dists, tours=tours, ref=ref, norm=norm, normalize=normalize
+        )
 
     def from_txt(
-        self, 
-        file_path: str, 
-        load_ref_tours: str = True, 
+        self,
+        file_path: str,
+        ref: bool = False,
         return_list: bool = False,
-        show_time: bool = False
+        normalize: bool = False,
+        show_time = False
     ):
         # check the file format
         if not file_path.endswith(".txt"):
@@ -139,201 +268,169 @@ class ATSPSolver:
 
         # read the data form .txt
         with open(file_path, "r") as file:
-            dists = list()
-            ref_tours = list()
-            for line in iterative_execution_for_file(file, "Loading", show_time):
+            dists_list = list()
+            tour_list = list()
+            load_msg = f"Loading data from {file_path}"
+            for line in iterative_execution_for_file(file, load_msg, show_time):
                 line = line.strip()
-                if "output" in line:
-                    split_line = line.split(" output ")
-                    dist = split_line[0]
-                    tour = split_line[1]
-                    tour = tour.split(" ")
-                    tour = np.array([int(t) for t in tour])
-                    tour -= 1
-                    ref_tours.append(tour)
-                else:
-                    dist = line
-                    load_ref_tours = False
+                split_line = line.split(" output ")
+                dist = split_line[0]
+                tour = split_line[1]
+                tour = tour.split(" ")
+                tour = np.array([int(t) for t in tour])
+                tour -= 1
+                tour_list.append(tour)
                 dist = dist.split(" ")
                 dist.append('')           
                 dist = np.array([float(dist[2*i]) for i in range(len(dist) // 2)])
                 num_nodes = int(math.sqrt(len(dist)))
                 dist = dist.reshape(num_nodes, num_nodes)
-                dists.append(dist)
+                dists_list.append(dist)
 
         if return_list:
-            return dists, ref_tours
+            return dists_list, tour_list
 
-        if load_ref_tours:
-            try:
-                self.ref_tours = np.array(ref_tours)
-            except Exception as e:
-                message = (
-                    "This method does not support instances of different numbers of nodes. "
-                    "If you want to read the data, please set ``return_list`` as True. "
-                    "Anyway, the data will not be saved in the solver. "
-                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
-                )
-                raise Exception(message) from e
+        try:
+            dists = np.array(dists_list)
+            tours = np.array(tour_list)
+        except Exception as e:
+            message = (
+                "This method does not support instances of different numbers of nodes. "
+                "If you want to read the data, please set ``return_list`` as True. "
+                "Anyway, the data will not be saved in the solver. "
+                "Please convert the data to ``np.ndarray`` externally before calling the solver."
+            )
+            raise Exception(message) from e
 
-        dists = np.array(dists)
-        self.ori_dists = dists
-        self.dists = dists.astype(np.float32)
-        self.check_ori_dists_dim()
-        self.check_ref_tours_dim()
+        self.from_data(
+            dists=dists, tours=tours, ref=ref, normalize=normalize
+        )
 
-    def from_data(self, dists: Union[list, np.ndarray]):
-        if dists is None:
-            return
-        self.ori_dists = dists
-        dists = to_numpy(dists)
-        self.ori_dists = dists
-        self.dists = dists.astype(np.float32)
-        self.check_ori_dists_dim()
-
-    def read_tours(self, tours: Union[list, np.ndarray]):
-        if tours is None:
-            return
-        tours = to_numpy(tours)
-        self.tours = tours.astype(np.int32)
-        self.check_tours_dim()
-
-    def read_ref_tours(self, ref_tours: Union[list, np.ndarray]):
-        if ref_tours is None:
-            return
-        ref_tours = to_numpy(ref_tours)
-        self.ref_tours = ref_tours.astype(np.int32)
-        self.check_ref_tours_dim()
-
-    def read_ref_tours_from_opt_tour(self, file_path: str):
-        if not file_path.endswith(".opt.tour"):
-            raise ValueError("Invalid file format. Expected a ``.opt.tour`` file.")
-        tsp_tour = tsplib95.load(file_path)
-        tsp_tour = tsp_tour.tours
-        tsp_tour: list
-        tsp_tour = tsp_tour[0]
-        tsp_tour.append(1)
-        self.ref_tours = np.array(tsp_tour) - 1
-        self.check_ref_tours_dim()
-
-    def read_ref_tours_from_folder(
+    def from_data(
         self, 
-        folder_path: str, 
-        return_list: bool = False, 
-        show_time: bool = False
+        dists: Union[list, np.ndarray] = None,
+        tours: Union[list, np.ndarray] = None,
+        ref: bool = False,
+        normalize: bool = False,
     ):
-        ref_tours = list()
-        files = os.listdir(folder_path)
-        for file_name in iterative_execution_for_file(files, "Loading", show_time):
-            file_path = os.path.join(folder_path, file_name)
-            if not file_path.endswith(".opt.tour"):
-                continue
-            tsp_tour = tsplib95.load(file_path)
-            tsp_tour = tsp_tour.tours
-            tsp_tour: list
-            tsp_tour = tsp_tour[0]
-            tsp_tour.append(1)
-            ref_tour = np.array(tsp_tour) - 1
-            ref_tours.append(ref_tour)
-        
-        if return_list:
-            return ref_tours
-        else:
-            try:
-                ref_tours = np.array(ref_tours)
-            except Exception as e:
-                message = (
-                    "This method does not support instances of different numbers of nodes. "
-                    "If you want to read the data, please set ``return_list`` as True. "
-                    "Anyway, the data will not be saved in the solver. "
-                    "Please convert the data to ``np.ndarray`` externally before calling the solver."
-                )
-                raise Exception(message) from e 
-            self.ref_tours = ref_tours.astype(np.int32)     
-            self.check_ref_tours_dim()
+        # dists
+        if dists is not None:
+            dists = to_numpy(dists)
+            self.ori_dists = dists
+            self.dists = dists.astype(np.float32)
+            self.check_ori_dists_dim()
+            if normalize:
+                self.normalize_dists()
 
-    def to_atsp_folder(
+        # tours
+        if tours is not None:
+            tours = to_numpy(tours).astype(np.int32)
+            if ref:
+                self.ref_tours = tours
+                self.check_ref_tours_dim()
+            else:
+                self.tours = tours
+                self.check_tours_dim()
+    
+    def to_tsplib_folder(
         self,
-        save_dir: str,
-        filename: str,
+        atsp_save_dir: str = None,
+        atsp_filename: str = None,
+        tour_save_dir: str = None,
+        tour_filename: str = None,
         original: bool = True,
-        dists: Union[np.ndarray, list] = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round",
         show_time: bool = False
     ):
-        # prepare
-        self.from_data(dists)
-        if filename.endswith(".atsp"):
-            filename = filename.replace(".atsp", "")
-        self.check_dists_not_none()
-        dists = self.ori_dists if original else self.dists
+        # .atsp files
+        if atsp_save_dir is not None:
+            # preparation
+            if atsp_filename.endswith(".atsp"):
+                atsp_filename = atsp_filename.replace(".atsp", "")
+            self.check_dists_not_none()
+            dists = self.ori_dists if original else self.dists
+            samples = dists.shape[0]
 
-        # makedirs
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+            # apply scale and dtype
+            dists = self.apply_scale_and_dtype(
+                dists=dists, apply_scale=apply_scale,
+                to_int=to_int, round_func=round_func
+            )
 
-        # write
-        for idx in iterative_execution(range, dists.shape[0], "Writing", show_time):
-            save_path = os.path.join(save_dir, filename + f"-{idx}.atsp")
-            with open(save_path, "w") as f:
-                f.write(f"NAME : Generated by ML4CO-Kit\n")
-                f.write(f"COMMENT : Generated by ML4CO-Kit\n")
-                f.write("TYPE : ATSP\n")
-                f.write(f"DIMENSION : {self.nodes_num}\n")
-                f.write(f"EDGE_WEIGHT_TYPE : EXPLICIT\n")
-                f.write(f"EDGE_WEIGHT_FORMAT: FULL_MATRIX\n")
-                f.write("EDGE_WEIGHT_SECTION:\n")
-                for i in range(self.nodes_num):
-                    line = ' '.join([str(elem) for elem in dists[idx][i]])
-                    f.write(f"{line}\n")
-                f.write("EOF\n")
+            # makedirs
+            if not os.path.exists(atsp_save_dir):
+                os.makedirs(atsp_save_dir)
 
-    def to_opt_tour_folder(
-        self,
-        save_dir: str,
-        filename: str,
-        tours: Union[np.ndarray, list] = None,
-        show_time: bool = False
-    ):
-        # read and check
-        self.read_tours(tours)
-        if filename.endswith(".opt.tour"):
-            filename = filename.replace(".opt.tour", "")
-        self.check_tours_not_none()
-        tours = self.tours
+            # write
+            write_msg = f"Writing tsp files to {atsp_save_dir}"
+            for idx in iterative_execution(range, samples, write_msg, show_time):
+                # file name & save path
+                if samples == 1:
+                    name = atsp_filename + f".atsp"
+                else:
+                    name = atsp_filename + f"-{idx}.atsp"
+                save_path = os.path.join(atsp_save_dir, name)
+                with open(save_path, "w") as f:
+                    f.write(f"NAME : {name}\n")
+                    f.write(f"COMMENT : Generated by ML4CO-Kit\n")
+                    f.write("TYPE : ATSP\n")
+                    f.write(f"DIMENSION : {self.nodes_num}\n")
+                    f.write(f"EDGE_WEIGHT_TYPE : EXPLICIT\n")
+                    f.write(f"EDGE_WEIGHT_FORMAT: FULL_MATRIX\n")
+                    f.write("EDGE_WEIGHT_SECTION:\n")
+                    for i in range(self.nodes_num):
+                        line = ' '.join([str(elem) for elem in dists[idx][i]])
+                        f.write(f"{line}\n")
+                    f.write("EOF\n")
 
-        # makedirs
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+        # .opt.tour files
+        if tour_save_dir is not None:
+            # preparation
+            if tour_filename.endswith(".opt.tour"):
+                tour_filename = tour_filename.replace(".opt.tour", "")
+            if tour_filename.endswith(".tour"):
+                tour_filename = tour_filename.replace(".tour", "")
+            self.check_tours_not_none(ref=False)
+            tours = self.tours
+            samples = tours.shape[0]
+            
+            # makedirs
+            if not os.path.exists(tour_save_dir):
+                os.makedirs(tour_save_dir)
 
-        # write
-        for idx in iterative_execution(range, tours.shape[0], "Writing", show_time):
-            save_path = os.path.join(save_dir, filename + f"-{idx}.opt.tour")
-            with open(save_path, "w") as f:
-                f.write(f"NAME: {save_path}\n")
-                f.write(f"TYPE: TOUR\n")
-                f.write(f"DIMENSION: {self.nodes_num}\n")
-                f.write(f"TOUR_SECTION\n")
-                for i in range(self.nodes_num):
-                    f.write(f"{tours[idx][i] + 1}\n")
-                f.write(f"-1\n")
-                f.write(f"EOF\n")
+            # write
+            write_msg = f"Writing tour files to {tour_save_dir}"
+            for idx in iterative_execution(range, samples, write_msg, show_time):
+                if samples == 1:
+                    name = tour_filename + f".opt.tour"
+                else:
+                    name = tour_filename + f"-{idx}.opt.tour"
+                save_path = os.path.join(tour_save_dir, name)
+                with open(save_path, "w") as f:
+                    f.write(f"NAME: {name} Solved by ML4CO-Kit\n")
+                    f.write(f"TYPE: TOUR\n")
+                    f.write(f"DIMENSION: {self.nodes_num}\n")
+                    f.write(f"TOUR_SECTION\n")
+                    for i in range(self.nodes_num):
+                        f.write(f"{tours[idx][i]}\n")
+                    f.write(f"-1\n")
+                    f.write(f"EOF\n")
 
     def to_txt(
         self,
         filename: str = "example.txt",
         original: bool = True,
-        dists: Union[np.ndarray, list] = None,
-        tours: Union[np.ndarray, list] = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
     ):
-        # read and check
-        self.from_data(dists)
-        self.read_tours(tours)
-        if self.tours is None:
-            raise ValueError(
-                "``tours`` cannot be None, please use method 'solve' to get solutions."
-            )
+        # check
         self.check_dists_not_none()
-        self.check_tours_not_none()
+        self.check_tours_not_none(ref=False)
+        
+        # variables
         dists = self.ori_dists if original else self.dists
         tours = self.tours
 
@@ -355,6 +452,13 @@ class ATSPSolver:
                 best_tour_list.append(best_tour)
             tours = np.array(best_tour_list)
 
+        # apply scale and dtype
+        dists = self.apply_scale_and_dtype(
+            dists=dists, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+
+
         # write
         with open(filename, "w") as f:
             for dist, tour in zip(dists, tours):
@@ -367,23 +471,28 @@ class ATSPSolver:
 
     def evaluate(
         self,
-        original: bool = True,
-        dists: Union[np.ndarray, list] = None,
-        tours: Union[np.ndarray, list] = None,
-        ref_tours: Union[np.ndarray, list] = None,
         calculate_gap: bool = False,
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round",
     ):
-        # read and check
-        self.from_data(dists)
-        self.read_tours(tours)
-        self.read_ref_tours(ref_tours)
+        # check
         self.check_dists_not_none()
-        self.check_tours_not_none()
+        self.check_tours_not_none(ref=False)
         if calculate_gap:
-            self.check_ref_tours_not_none()
+            self.check_tours_not_none(ref=True)
+            
+        # variables
         dists = self.ori_dists if original else self.dists
         tours = self.tours
         ref_tours = self.ref_tours
+
+        # apply scale and dtype
+        dists = self.apply_scale_and_dtype(
+            dists=dists, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
 
         # prepare for evaluate
         tours_cost_list = list()
@@ -401,11 +510,20 @@ class ATSPSolver:
                 solved_tours = tours[idx]
                 solved_costs = list()
                 for tour in solved_tours:
-                    solved_costs.append(evaluator.evaluate(tour))
+                    cost = evaluator.evaluate(
+                        route=tour,
+                        to_int=to_int, 
+                        round_func=round_func
+                    )
+                    solved_costs.append(cost)
                 solved_cost = np.min(solved_costs)
                 tours_cost_list.append(solved_cost)
                 if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
+                    ref_cost = evaluator.evaluate(
+                        route=ref_tours[idx], 
+                        to_int=to_int, 
+                        round_func=round_func
+                    )
                     ref_tours_cost_list.append(ref_cost)
                     gap = (solved_cost - ref_cost) / ref_cost * 100
                     gap_list.append(gap)
@@ -414,10 +532,18 @@ class ATSPSolver:
             for idx in range(samples):
                 evaluator = ATSPEvaluator(dists[idx])
                 solved_tour = tours[idx]
-                solved_cost = evaluator.evaluate(solved_tour)
+                solved_cost = evaluator.evaluate(
+                    route=solved_tour,
+                    to_int=to_int, 
+                    round_func=round_func
+                )
                 tours_cost_list.append(solved_cost)
                 if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
+                    ref_cost = evaluator.evaluate(
+                        route=ref_tours[idx], 
+                        to_int=to_int, 
+                        round_func=round_func
+                    )
                     ref_tours_cost_list.append(ref_cost)
                     gap = (solved_cost - ref_cost) / ref_cost * 100
                     gap_list.append(gap)
@@ -439,6 +565,7 @@ class ATSPSolver:
     def solve(
         self,
         dists: Union[np.ndarray, list] = None,
+        normalize: bool = False,
         num_threads: int = 1,
         show_time: bool = False,
         **kwargs,

@@ -73,34 +73,33 @@ class KaMISSolver(MISSolver):
             last_updated = os.path.getmtime(dest_path)
             if source_mtime <= last_updated:
                 return
-        print(f"Updated graph file: {source_instance_file}.")
+
         g = nx.read_gpickle(source_instance_file)
         graph = KaMISSolver.__prepare_graph(g, weighted=self.weighted)
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
 
     def solve(
-        self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path] = None
+        self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path],
     ):
         message = (
             "Please check KaMIS compilation. " 
             "you can try ``self.recompile_kamis()``. "
-            "If you are sure that the KaMIS is correct, "
+            "If you are sure that the ``KaMIS`` is correct, "
             "please confirm whether the Conda environment of the terminal"
             "is consistent with the Python environment."
-        )    
-
+        )  
         src = Path(src)
-        if out is None:
-            out = src / "solve"
-        else:
-            out = Path(out)
+        out = Path(out)
         try:
             self._solve(src, out)
         except TypeError:
             raise TypeError(message)
         except FileNotFoundError:
             raise FileNotFoundError(message)
+        self.from_gpickle_result_folder(
+            gpickle_folder_path=src, result_folder_path=out, ref=False, cover=True
+        )
 
     def _solve(self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path]):
         src = Path(src)
@@ -241,4 +240,4 @@ class KaMISSolver(MISSolver):
         shutil.rmtree(self.kamis_path / "KaMIS/tmp_build/")
 
     def __str__(self) -> str:
-        return "kamis"
+        return "KaMISSolver"

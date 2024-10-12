@@ -41,8 +41,10 @@ class TSPConcordeSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        self.from_data(points, norm, normalize)
+        # preparation
+        self.from_data(points=points, norm=norm, normalize=normalize)
+        
+        # start time
         start_time = time.time()
 
         # solve
@@ -86,7 +88,7 @@ class TSPConcordeSolver(TSPSolver):
         tours = np.append(tours, zeros, axis=1).astype(np.int32)
         if tours.ndim == 2 and tours.shape[0] == 1:
             tours = tours[0]
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
@@ -120,3 +122,6 @@ class TSPConcordeSolver(TSPSolver):
         for file in filelist:
             if os.path.exists(file):
                 os.remove(file)
+
+    def __str__(self) -> str:
+        return "TSPConcordeSolver"

@@ -121,8 +121,10 @@ class MISDataGenerator:
         for sample_type in self.sample_types:
             path = os.path.join(self.save_path, sample_type)
             setattr(self, f"{sample_type}_save_path", path)
-            if not os.path.exists(path):
-                os.mkdir(path)
+            if not os.path.exists(os.path.join(path, "instance")):
+                os.makedirs(os.path.join(path, "instance"))
+            if not os.path.exists(os.path.join(path, "solution")):
+                os.makedirs(os.path.join(path, "solution"))
 
     def get_filename(self):
         if self.filename is None:
@@ -175,7 +177,7 @@ class MISDataGenerator:
                     }
                     nx.set_node_attributes(graph, values=weight_mapping, name="weight")
                 output_file = os.path.join(
-                    getattr(self, f"{sample_type}_save_path"), f"{filename}.gpickle"
+                    getattr(self, f"{sample_type}_save_path"), "instance", f"{filename}.gpickle"
                 )
                 with open(output_file, "wb") as f:
                     pickle.dump(graph, f, pickle.HIGHEST_PROTOCOL)
@@ -183,7 +185,10 @@ class MISDataGenerator:
     def solve(self):
         for sample_type in self.sample_types:
             folder = getattr(self, f"{sample_type}_save_path")
-            self.solver.solve(folder, folder)
+            self.solver.solve(
+                os.path.join(folder, "instance"),
+                os.path.join(folder, "solution")
+            )
 
     def generate_erdos_renyi(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)

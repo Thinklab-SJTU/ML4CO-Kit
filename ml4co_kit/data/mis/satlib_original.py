@@ -2,7 +2,7 @@ import os
 from ml4co_kit.utils import download, extract_archive
 
 
-class SATLIBOriDataset:
+class SATLIBOriDataset(object):
     def __init__(self) -> None:
         self.url = "https://huggingface.co/datasets/ML4CO/SATLIBOriDataset/resolve/main/satlib_original.tar.gz?download=true"
         self.md5 = "0da8a73e2b79a6b5e6156005959ce509"

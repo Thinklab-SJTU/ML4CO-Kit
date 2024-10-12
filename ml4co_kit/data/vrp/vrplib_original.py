@@ -2,7 +2,7 @@ import os
 from ml4co_kit.utils import download, extract_archive
 
 
-class VRPLIBOriDataset:
+class VRPLIBOriDataset(object):
     def __init__(self) -> None:
         self.url = "https://huggingface.co/datasets/ML4CO/VRPLIBOriDataset/resolve/main/vrplib_original.tar.gz?download=true"
         self.md5 = "7329db3858b318b5ceeab7d0d68f646e"

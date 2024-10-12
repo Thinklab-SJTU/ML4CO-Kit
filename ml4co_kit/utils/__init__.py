@@ -1,3 +1,6 @@
 from .file_utils import download, compress_folder, extract_archive, _get_md5
-from .type import to_numpy
-from .run_utils import iterative_execution
+from .type_utils import to_numpy
+from .run_utils import iterative_execution, iterative_execution_for_file
+from .graph_utils import np_dense_to_sparse, np_sparse_to_dense, GraphData
+from .distance_utils import geographical
+from .mis_utils import MISGraphData, sat_to_mis_graph, cnf_to_gpickle, cnf_folder_to_gpickle_folder

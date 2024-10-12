@@ -55,19 +55,18 @@ class ATSPLKHSolver(ATSPSolver):
         tmp_name = uuid.uuid4().hex[:9]
         para_save_path = f"{tmp_name}.para"
         atsp_save_path = f"{tmp_name}.atsp"
-        real_atsp_save_path = f"{tmp_name}-0.atsp"
         tour_save_path = f"{tmp_name}.opt.tour"
         log_save_path = f"{tmp_name}.log"
         
         # prepare for solve
         self.tmp_solver.from_data(dist * self.tmp_solver.scale)
-        self.tmp_solver.to_atsp_folder(
-            save_dir="./", 
-            filename=atsp_save_path
+        self.tmp_solver.to_tsplib_folder(
+            atsp_save_dir="./", 
+            atsp_filename=atsp_save_path
         )
         self.write_parameter_file(
             save_path=para_save_path,
-            atsp_file_path=real_atsp_save_path,
+            atsp_file_path=atsp_save_path,
             tour_path=tour_save_path
         )
         
@@ -76,13 +75,12 @@ class ATSPLKHSolver(ATSPSolver):
             check_call([self.lkh_path, para_save_path], stdout=f)
             
         # read solution
-        self.tmp_solver.read_ref_tours_from_opt_tour(tour_save_path)
-        tour = self.tmp_solver.ref_tours[0]
+        self.tmp_solver.from_tsplib(tour_file_path=tour_save_path)
+        tour = self.tmp_solver.tours[0]
         
         # delete files
         files_path = [
-            para_save_path, real_atsp_save_path,
-            tour_save_path, log_save_path
+            para_save_path, atsp_save_path, tour_save_path, log_save_path
         ]
         for file_path in files_path:
            if os.path.exists(file_path):
@@ -94,12 +92,13 @@ class ATSPLKHSolver(ATSPSolver):
     def solve(
         self,
         dists: Union[np.ndarray, list] = None,
+        normalize: bool = False,
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
         # prepare
-        self.from_data(dists)
-        self.tmp_solver = ATSPSolver()
+        self.from_data(dists=dists, normalize=normalize)
+        self.tmp_solver = ATSPSolver(scale=self.scale)
         start_time = time.time()
 
         # solve
@@ -131,7 +130,7 @@ class ATSPLKHSolver(ATSPSolver):
         tours = np.array(tours)
         if tours.ndim == 2 and tours.shape[0] == 1:
             tours = tours[0]
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")

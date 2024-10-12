@@ -96,7 +96,7 @@ UNRESOLVED_PROBLEMS = [
 #                 TSPLIB4MLDataset                #
 ###################################################
 
-class TSPLIB4MLDataset:
+class TSPLIB4MLDataset(object):
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPLIB4MLDataset/resolve/main/tsplib4ml.tar.gz?download=true"
         self.md5 = "0696b793c3d53e15b3d95db0a20dcb18"

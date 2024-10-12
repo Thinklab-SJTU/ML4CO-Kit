@@ -44,18 +44,15 @@ ml4co_kit/solver/tsp/c_ga_eax_normal/tmp/**
 coverage.xml
 .coverage
 
-# tests/solver_test
-tests/solver_test/tsp50_test_small/**
-tests/solver_test/mis_test/**
-tests/solver_test/cvrp50_test/**
-tests/solver_test/atsp_test/**
+# tests (solver)
+tests/data_for_tests/solver/mis/mis_example/instance/preprocessed/**
 
-# tests/draw_test
-tests/draw_test/mis_example/preprocessed/**
-tests/draw_test/mis_example/solve/**
-tests/draw_test/mis_problem.png
-tests/draw_test/mis_solution.png
-tests/draw_test/eil101_solution.png
-tests/draw_test/eil101_problem.png
-tests/draw_test/cvrp_solution.png
-tests/draw_test/cvrp_problem.png
+# tests (draw)
+tests/data_for_tests/draw/tsp/tsp_draw_example_solution.png
+tests/data_for_tests/draw/tsp/tsp_draw_example_problem.png
+tests/data_for_tests/draw/mis/mis_draw_example/instance/preprocessed/**
+tests/data_for_tests/draw/mis/mis_draw_example/solution/**
+tests/data_for_tests/draw/mis/mis_draw_example_solution.png
+tests/data_for_tests/draw/mis/mis_draw_example_problem.png
+tests/data_for_tests/draw/cvrp/cvrp_draw_example_problem.png
+tests/data_for_tests/draw/cvrp/cvrp_draw_example_solution.png

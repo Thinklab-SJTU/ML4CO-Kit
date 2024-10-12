@@ -9,31 +9,31 @@ from ml4co_kit.utils.file_utils import compress_folder, extract_archive
 def test_file_utils():
     # compress .tar.gz
     compress_folder(
-        folder="tests/utils_test/file_utils_test",
-        compress_path="tests/utils_test/file_utils_test.tar.gz"
+        folder="tests/data_for_tests/utils/extract_compress",
+        compress_path="tests/data_for_tests/utils/extract_compress.tar.gz"
     )
-    shutil.rmtree("tests/utils_test/file_utils_test")
+    shutil.rmtree("tests/data_for_tests/utils/extract_compress")
     
     # extract_archive .tar.gz
     extract_archive(
-        archive_path="tests/utils_test/file_utils_test.tar.gz",
-        extract_path="tests/utils_test/file_utils_test"
+        archive_path="tests/data_for_tests/utils/extract_compress.tar.gz",
+        extract_path="tests/data_for_tests/utils/extract_compress"
     )
-    os.remove("tests/utils_test/file_utils_test.tar.gz")
+    os.remove("tests/data_for_tests/utils/extract_compress.tar.gz")
     
     # compress .zip
     compress_folder(
-        folder="tests/utils_test/file_utils_test",
-        compress_path="tests/utils_test/file_utils_test.zip"
+        folder="tests/data_for_tests/utils/extract_compress",
+        compress_path="tests/data_for_tests/utils/extract_compress.zip"
     )
-    shutil.rmtree("tests/utils_test/file_utils_test")
+    shutil.rmtree("tests/data_for_tests/utils/extract_compress")
     
     # extract_archive .zip
     extract_archive(
-        archive_path="tests/utils_test/file_utils_test.zip",
-        extract_path="tests/utils_test/file_utils_test"
+        archive_path="tests/data_for_tests/utils/extract_compress.zip",
+        extract_path="tests/data_for_tests/utils/extract_compress"
     )
-    os.remove("tests/utils_test/file_utils_test.zip")
+    os.remove("tests/data_for_tests/utils/extract_compress.zip")
 
 
 if __name__ == "__main__":

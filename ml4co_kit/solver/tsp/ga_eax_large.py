@@ -48,17 +48,19 @@ class TSPGAEAXLargeSolver(TSPSolver):
         name = uuid.uuid4().hex[:9]
         tmp_solver = TSPSolver()
         tmp_solver.from_data(nodes_coord)
-        tmp_solver.to_tsp(GA_EAX_LARGE_TMP_PATH, filename=name)
+        tmp_solver.to_tsplib_folder(
+            tsp_save_dir=GA_EAX_LARGE_TMP_PATH, tsp_filename=name
+        )
         
         # Intermediate files
-        tsp_abs_path = os.path.join(GA_EAX_LARGE_TMP_PATH, f"{name}-0.tsp")
+        tsp_abs_path = os.path.join(GA_EAX_LARGE_TMP_PATH, f"{name}.tsp")
         sol_abs_path_1 = os.path.join(GA_EAX_LARGE_TMP_PATH, f"{name}_BestSol")
         sol_abs_path_2 = os.path.join(GA_EAX_LARGE_TMP_PATH, f"{name}_Result")
         
         # solve
         tsp_ga_eax_large_solve(
             max_trials=self.max_trials, sol_name=name, population_num=self.population_num,
-            offspring_num=self.offspring_num, tsp_name=f"{name}-0.tsp"
+            offspring_num=self.offspring_num, tsp_name=tsp_abs_path
         )
         
         # read data from .sol
@@ -82,8 +84,10 @@ class TSPGAEAXLargeSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        self.from_data(points, norm, normalize)
+        # preparation
+        self.from_data(points=points, norm=norm, normalize=normalize)
+        
+        # start time
         start_time = time.time()
 
         # solve
@@ -115,8 +119,11 @@ class TSPGAEAXLargeSolver(TSPSolver):
         tours = np.array(tours)
         if tours.ndim == 2 and tours.shape[0] == 1:
             tours = tours[0]
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
         return tours
+    
+    def __str__(self) -> str:
+        return "TSPGAEAXLargeSolver"

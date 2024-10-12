@@ -18,7 +18,10 @@ from .solver import TSPGAEAXSolver, TSPGAEAXLargeSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from .solver import ATSPSolver, ATSPLKHSolver
-from .utils import download, compress_folder, extract_archive, _get_md5, iterative_execution
+from .utils import download, compress_folder, extract_archive, _get_md5
+from .utils import iterative_execution_for_file, iterative_execution
+from .utils import np_dense_to_sparse, np_sparse_to_dense, GraphData, tsplib95
+from .utils import MISGraphData, sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
 
 # expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")

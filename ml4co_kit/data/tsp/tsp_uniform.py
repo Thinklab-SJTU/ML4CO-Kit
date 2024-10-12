@@ -33,7 +33,7 @@ TSP_UNIFORM_10000 = [
 ]
 
 
-class TSPUniformDataset:
+class TSPUniformDataset(object):
     """
     Concorde: Exact
     Concorde: time_limit: 600s

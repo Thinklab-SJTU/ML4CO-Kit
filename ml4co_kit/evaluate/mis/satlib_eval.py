@@ -13,11 +13,11 @@ class SATLIBEvaluator:
             cnf_folder=test_folder,
             gpickle_foler=gpickle_root_foler
         )
-        self.gpickle_foler = os.path.join(gpickle_root_foler, "mis_graph")
+        self.gpickle_foler = os.path.join(gpickle_root_foler, "instance")
         self.ref_solution_path = os.path.join(gpickle_root_foler, "ref_solution.txt")
 
     def evaluate(self, solver: MISSolver, **solver_args):
-        solver.solve(self.gpickle_foler, **solver_args)
-        solver.from_gpickle_folder(self.gpickle_foler, ref=False)
-        solver.read_ref_sel_nodes_num_from_txt(self.ref_solution_path)
+        solver.from_gpickle_result_folder(gpickle_folder_path=self.gpickle_foler, ref=False)
+        solver.from_txt_only_sel_nodes_num(self.ref_solution_path, ref=True)
+        solver.solve(**solver_args)
         return solver.evaluate(calculate_gap=True)

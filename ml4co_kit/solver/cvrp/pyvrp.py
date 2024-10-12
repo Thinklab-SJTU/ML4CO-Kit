@@ -78,20 +78,20 @@ class CVRPPyVRPSolver(CVRPSolver):
         points: Union[list, np.ndarray] = None,
         demands: Union[list, np.ndarray] = None,
         capacities: Union[list, np.ndarray] = None,
+        round_func: str = "round",
         norm: str = "EUC_2D",
         normalize: bool = False,
-        dtype: str = "int",
-        round_func: str = "round",
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        if dtype != "int":
-            import warnings
-            warnings.warn("Solver input requires data of type int.")
-            dtype = "int"
+        # preparation
+        self.from_data(
+            depots=depots, points=points, demands=demands,
+            capacities=capacities, norm=norm, normalize=normalize
+        )
         self.round_func = self.get_round_func(round_func)
-        self.from_data(depots, points, demands, capacities, norm, normalize)
+
+        # start time
         start_time = time.time()
 
         # solve
@@ -131,7 +131,7 @@ class CVRPPyVRPSolver(CVRPSolver):
                     tours.append(tour)
 
         # format
-        self.read_tours(tours)
+        self.from_data(tours=tours)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")

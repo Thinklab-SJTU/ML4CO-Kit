@@ -33,7 +33,7 @@ CVRP_UNIFORM_5000 = [
 ]
 
 
-class CVRPUniformDataset:
+class CVRPUniformDataset(object):
     """
     CVRP20, CVRP50, CVRP100:
         10K instances

@@ -2,11 +2,11 @@ import os
 import time
 import uuid
 import pathlib
-import tsplib95
 import numpy as np
 from typing import Union
 from multiprocessing import Pool
 from subprocess import check_call
+from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.cvrp.base import CVRPSolver
 from ml4co_kit.utils.run_utils import iterative_execution
 
@@ -91,24 +91,20 @@ class CVRPLKHSolver(CVRPSolver):
         tmp_name = uuid.uuid4().hex[:9]
         para_save_path = f"{tmp_name}.para"
         vrp_save_path = f"{tmp_name}.vrp"
-        real_vrp_save_path = f"{tmp_name}-0.vrp"
         tour_save_path = f"{tmp_name}.tour"
         log_save_path = f"{tmp_name}.log"
         
         # prepare for solve
         self.tmp_solver.from_data(
-            depots=depot_coord,
-            points=nodes_coord,
-            demands=demands,
-            capacities=capacity
+            depots=depot_coord, points=nodes_coord, 
+            demands=demands, capacities=capacity
         )
-        self.tmp_solver.to_vrp(
-            save_dir="./", 
-            filename=vrp_save_path
+        self.tmp_solver.to_vrplib_folder(
+            vrp_save_dir="./", vrp_filename=vrp_save_path
         )
         self.write_parameter_file(
             save_path=para_save_path,
-            vrp_file_path=real_vrp_save_path,
+            vrp_file_path=vrp_save_path,
             tour_path=tour_save_path
         )
         
@@ -121,7 +117,7 @@ class CVRPLKHSolver(CVRPSolver):
         
         # delete files
         files_path = [
-            para_save_path, real_vrp_save_path,
+            para_save_path, vrp_save_path,
             tour_save_path, log_save_path
         ]
         for file_path in files_path:
@@ -142,11 +138,16 @@ class CVRPLKHSolver(CVRPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        self.from_data(depots, points, demands, capacities, norm, normalize)
+        # preparation
+        self.from_data(
+            depots=depots, points=points, demands=demands,
+            capacities=capacities, norm=norm, normalize=normalize
+        )
         self.tmp_solver = CVRPSolver()
+        
+        # start time
         start_time = time.time()
-
+        
         # solve
         tours = list()
         p_shape = self.points.shape
@@ -184,7 +185,7 @@ class CVRPLKHSolver(CVRPSolver):
                     tours.append(tour)
 
         # format
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")

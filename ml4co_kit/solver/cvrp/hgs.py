@@ -46,10 +46,10 @@ class CVRPHGSSolver(CVRPSolver):
         name = uuid.uuid4().hex[:9]
         tmp_solver = CVRPSolver()
         tmp_solver.from_data(depot_coord, nodes_coord, demands, capacity)
-        tmp_solver.to_vrp(HGS_TMP_PATH, filename=name)
+        tmp_solver.to_vrplib_folder(vrp_save_dir=HGS_TMP_PATH, vrp_filename=name)
         
         # Intermediate files
-        vrp_name = f"{name}-0.vrp"
+        vrp_name = f"{name}.vrp"
         sol_name = f"{name}.sol"
         vrp_abs_path = os.path.join(HGS_TMP_PATH, vrp_name)
         sol_abs_path = os.path.join(HGS_TMP_PATH, sol_name)
@@ -59,8 +59,8 @@ class CVRPHGSSolver(CVRPSolver):
         cvrp_hgs_solver(vrp_name, sol_name, self.time_limit, self.show_info)
         
         # read data from .sol
-        tmp_solver.read_ref_tours_from_sol(sol_abs_path)
-        tour = tmp_solver.ref_tours[0]
+        tmp_solver.from_vrplib(sol_file_path=sol_abs_path, ref=False)
+        tour = tmp_solver.tours[0]
         
         # clear files
         intermediate_files = [vrp_abs_path, sol_abs_path, pg_abs_path]
@@ -78,18 +78,16 @@ class CVRPHGSSolver(CVRPSolver):
         capacities: Union[list, np.ndarray] = None,
         norm: str = "EUC_2D",
         normalize: bool = False,
-        dtype: str = "int",
-        round_func: str = "round",
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-        # prepare
-        if dtype != "int":
-            import warnings
-            warnings.warn("Solver input requires data of type int.")
-            dtype = "int"
-        self.round_func = self.get_round_func(round_func)
-        self.from_data(depots, points, demands, capacities, norm, normalize)
+        # preparation
+        self.from_data(
+            depots=depots, points=points, demands=demands,
+            capacities=capacities, norm=norm, normalize=normalize
+        )
+        
+        # start time
         start_time = time.time()
 
         # solve
@@ -129,7 +127,7 @@ class CVRPHGSSolver(CVRPSolver):
                     tours.append(tour)
 
         # format
-        self.read_tours(tours)
+        self.from_data(tours=tours, ref=False)
         end_time = time.time()
         if show_time:
             print(f"Use Time: {end_time - start_time}")
