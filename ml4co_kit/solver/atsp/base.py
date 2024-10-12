@@ -573,3 +573,6 @@ class ATSPSolver(object):
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )
+
+    def __str__(self) -> str:
+        return "ATSPSolver"

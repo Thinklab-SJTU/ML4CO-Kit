@@ -291,4 +291,4 @@ class MISGurobiSolver(MISSolver):
         )
 
     def __str__(self) -> str:
-        return "gurobi"
+        return "MISGurobiSolver"

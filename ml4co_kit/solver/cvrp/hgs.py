@@ -132,3 +132,6 @@ class CVRPHGSSolver(CVRPSolver):
         if show_time:
             print(f"Use Time: {end_time - start_time}")
         return self.tours
+    
+    def __str__(self) -> str:
+        return "CVRPHGSSolver"

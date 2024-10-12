@@ -468,10 +468,10 @@ class MISSolver(object):
             snn_avg = np.average(np.array(snn_list))   
             return snn_avg
 
-    def __str__(self) -> str:
-        return "MISSolver"
-    
     def solve(self):
         raise NotImplementedError(
             "The method ``solve`` is required to implemented in subclasses."
         )
+
+    def __str__(self) -> str:
+        return "MISSolver"

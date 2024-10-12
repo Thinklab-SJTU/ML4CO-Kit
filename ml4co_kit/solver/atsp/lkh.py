@@ -135,3 +135,6 @@ class ATSPLKHSolver(ATSPSolver):
         if show_time:
             print(f"Use Time: {end_time - start_time}")
         return tours
+    
+    def __str__(self) -> str:
+        return "ATSPLKHSolver"
