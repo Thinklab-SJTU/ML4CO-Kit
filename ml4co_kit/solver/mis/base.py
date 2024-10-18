@@ -12,7 +12,7 @@ class MISSolver(object):
         self.solver_type = solver_type
         self.weighted = None
         self.time_limit = 60.0
-        self.graph_data = list()
+        self.graph_data: List[MISGraphData] = list()
 
     def check_edge_index_not_none(self):
         message = (
@@ -386,8 +386,15 @@ class MISSolver(object):
                 
                 # graph_data -> nx.Graph
                 graph: MISGraphData = self.graph_data[idx]
-                egde_index = graph.edge_index
-                nx_graph = nx.from_edgelist(egde_index.T)
+                edge_index = graph.edge_index
+                if not graph.self_loop:
+                    self_loop: np.ndarray = np.arange(graph.nodes_num)
+                    self_loop = self_loop.reshape(-1, 1).repeat(2, axis=1)
+                    edge_index = np.concatenate([self_loop, edge_index.T], axis=0)
+                    nx_graph: nx.Graph = nx.from_edgelist(edge_index)
+                    nx_graph = nx_graph.remove_edges_from(nx.selfloop_edges(nx_graph))
+                else:
+                    nx_graph = nx.from_edgelist(edge_index.T)
 
                 # to pickle file
                 with open(save_path, "wb") as f:

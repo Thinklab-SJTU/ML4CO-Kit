@@ -197,7 +197,8 @@ class MISGraphData(GraphData):
         self.ref_nodes_label: np.ndarray = None
         self.sel_nodes_num: np.ndarray = None
         self.ref_sel_nodes_num: np.ndarray = None
-    
+        self.self_loop = None
+        
     def check_edge_index(self):
         if self.edge_index is not None:
             shape = self.edge_index.shape
@@ -219,14 +220,15 @@ class MISGraphData(GraphData):
                     )
                     raise ValueError(message)
             else:
-                self.nodes_num = len(self.nodes_label)
+                self.nodes_num = len(nodes_label)
                   
     def from_adj_martix(self, adj_matrix: np.ndarray, self_loop: bool = True):
+        self.self_loop = self_loop
         return super().from_adj_martix(
             adj_matrix=adj_matrix,
             zero_or_one="one",
             type="zero-one",
-            self_loop=self_loop
+            self_loop=self.self_loop
         )
 
     def from_gpickle(
@@ -247,9 +249,11 @@ class MISGraphData(GraphData):
         # edges
         edges = np.array(graph.edges, dtype=np.int64)
         edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
-        if self_loop:
-            self_loop = np.arange(self.nodes_num).reshape(-1, 1).repeat(2, axis=1)
-            edges = np.concatenate([edges, self_loop], axis=0)
+        self.self_loop = self_loop
+        if self.self_loop:
+            self_loop: np.ndarray = np.arange(self.nodes_num)
+            self_loop = self_loop.reshape(-1, 1).repeat(2, axis=1)
+            edges = np.concatenate([self_loop, edges], axis=0)
         edges = edges.T
 
         # use ``from_data``
