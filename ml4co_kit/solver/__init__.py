@@ -16,3 +16,7 @@ from .cvrp.hgs import CVRPHGSSolver
 
 from .atsp.base import ATSPSolver
 from .atsp.lkh import ATSPLKHSolver
+
+from .mvc.base import MVCSolver
+from .mcl.base import MClSolver
+from .mc.base import MCSolver

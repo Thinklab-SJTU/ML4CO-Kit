@@ -4,3 +4,6 @@ from .run_utils import iterative_execution, iterative_execution_for_file
 from .graph_utils import np_dense_to_sparse, np_sparse_to_dense, GraphData
 from .distance_utils import geographical
 from .mis_utils import MISGraphData, sat_to_mis_graph, cnf_to_gpickle, cnf_folder_to_gpickle_folder
+from .mvc_utils import MVCGraphData
+from .mcl_utils import MClGraphData
+from .mc_utils import MCGraphData

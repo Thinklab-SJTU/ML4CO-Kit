@@ -20,12 +20,14 @@ class Checkpoint(ModelCheckpoint):
         every_n_epochs: int = 1,
         every_n_train_steps=None,
         filename=None,
+        save_top_k: int = -1,
+        mode: str = None,
     ):
         super().__init__(
             dirpath=dirpath,
             monitor=monitor,
-            mode="min",
-            save_top_k=-1,
+            mode=mode,
+            save_top_k=save_top_k,
             save_last=True,
             every_n_epochs=every_n_epochs,
             every_n_train_steps=every_n_train_steps,
@@ -67,6 +69,8 @@ class Trainer(Trainer):
         # checkpoint
         ckpt_save_path: Optional[str] = None,
         ckpt_monitor: str = "val/loss",
+        save_top_k: int = -1,
+        mode: str = None,
         ckpt_every_n_epochs: int = 1,
         ckpt_every_n_train_steps: Optional[int] = None,
         ckpt_filename: str = None,
@@ -105,6 +109,8 @@ class Trainer(Trainer):
             every_n_epochs=ckpt_every_n_epochs,
             every_n_train_steps=ckpt_every_n_train_steps,
             filename="epoch={epoch}-step={step}" if ckpt_filename is None else ckpt_filename,
+            save_top_k=save_top_k,
+            mode=mode
         )
         
         # learning rate
