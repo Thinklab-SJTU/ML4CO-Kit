@@ -6,7 +6,8 @@ from multiprocessing import Pool
 from pyvrp import Model
 from pyvrp.stop import MaxRuntime
 from ml4co_kit.solver.cvrp.base import CVRPSolver
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution
 
 
 if sys.version_info.major == 3 and sys.version_info.minor == 8:
@@ -25,7 +26,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         time_limit: float = 1.0,
     ):
         super(CVRPPyVRPSolver, self).__init__(
-            solver_type="PyVRP", 
+            solver_type=SOLVER_TYPE.PYVRP, 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,

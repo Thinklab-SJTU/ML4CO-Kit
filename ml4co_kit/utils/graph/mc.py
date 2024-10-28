@@ -1,75 +1,7 @@
-import os
-import bz2
-import lzma
-import gzip
-import codecs
 import pickle
-import itertools
 import numpy as np
 import networkx as nx
-from tqdm import tqdm
-from typing import Tuple
-from collections import OrderedDict
-from ml4co_kit.utils.graph_utils import GraphData
-from .graph_utils import np_sparse_to_dense
-
-
-class FileObject(object):
-    def __init__(self, name, mode="r", compression=None):
-        self.fp = None
-        self.ctype = None
-        self.fp_extra = None
-        self.open(name, mode=mode, compression=compression)
-
-    def open(self, name, mode="r", compression=None):
-        if compression == "use_ext":
-            self.get_compression_type(name)
-        else:
-            self.ctype = compression
-
-        if not self.ctype:
-            self.fp = open(name, mode)
-        elif self.ctype == "gzip":
-            self.fp = gzip.open(name, mode + "t")
-        elif self.ctype == "bzip2":
-            try:
-                self.fp = bz2.open(name, mode + "t")
-            except:
-                self.fp_extra = bz2.BZ2File(name, mode)
-                if mode == "r":
-                    self.fp = codecs.getreader("ascii")(self.fp_extra)
-                else:
-                    self.fp = codecs.getwriter("ascii")(self.fp_extra)
-        else:
-            self.fp = lzma.open(name, mode=mode + "t")
-
-    def close(self):
-        if self.fp:
-            self.fp.close()
-            self.fp = None
-
-        if self.fp_extra:
-            self.fp_extra.close()
-            self.fp_extra = None
-
-        self.ctype = None
-
-    def get_compression_type(self, file_name):
-        ext = os.path.splitext(file_name)[1]
-        if ext == ".gz":
-            self.ctype = "gzip"
-        elif ext == ".bz2":
-            self.ctype = "bzip2"
-        elif ext in (".xz", ".lzma"):
-            self.ctype = "lzma"
-        else:
-            self.ctype = None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
+from ml4co_kit.utils.graph.base import GraphData, np_sparse_to_dense
 
 
 class MCGraphData(GraphData):
@@ -113,47 +45,6 @@ class MCGraphData(GraphData):
             self_loop=self.self_loop
         )
 
-    def from_gpickle(
-        self, file_path: str, self_loop: bool = True
-    ):
-        # check file format
-        if not file_path.endswith(".gpickle"):
-            raise ValueError("Invalid file format. Expected a ``.gpickle`` file.")
-        
-        # read graph data from .gpickle
-        with open(file_path, "rb") as f:
-            graph = pickle.load(f)
-        graph: nx.Graph
-
-        # nodes num
-        self.nodes_num = graph.number_of_nodes()
-        
-        # edges
-        edges = np.array(graph.edges, dtype=np.int64)
-        edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
-        self.self_loop = self_loop
-        if self.self_loop:
-            self_loop: np.ndarray = np.arange(self.nodes_num)
-            self_loop = self_loop.reshape(-1, 1).repeat(2, axis=1)
-            edges = np.concatenate([self_loop, edges], axis=0)
-        edges = edges.T
-
-        # use ``from_data``
-        self.from_data(edge_index=edges)  
-        
-    def from_result(self, file_path: str, ref: bool = False):
-        # check file format
-        if not file_path.endswith(".result"):
-            raise ValueError("Invalid file format. Expected a ``.result`` file.")
-        
-        # read solution from file
-        with open(file_path, "r") as f:
-            nodes_label = [int(_) for _ in f.read().splitlines()]
-        nodes_label = np.array(nodes_label, dtype=np.int64)
-        
-        # use ``from_data``
-        self.from_data(nodes_label=nodes_label, ref=ref)  
-    
     def from_data(
         self, 
         edge_index: np.ndarray = None, 

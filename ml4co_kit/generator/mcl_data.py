@@ -7,23 +7,23 @@ import numpy as np
 import networkx as nx
 from tqdm import tqdm
 from typing import Union
-from ml4co_kit.utils.graph.mis import MISGraphData
+from ml4co_kit.utils.graph.mcl import MClGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.solver import MISSolver, KaMISSolver, MISGurobiSolver
+from ml4co_kit.solver import MClSolver, MClGurobiSolver
 
 
-class MISDataGenerator:
+class MClDataGenerator:
     def __init__(
         self,
         num_threads: int = 1,
         nodes_num_min: int = 700,
         nodes_num_max: int = 800,
         data_type: str = "er",
-        solver: Union[SOLVER_TYPE, MISSolver] = SOLVER_TYPE.KAMIS,
+        solver: Union[SOLVER_TYPE, MClSolver] = SOLVER_TYPE.GUROBI,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
-        save_path: pathlib.Path = "data/mis/er",
+        save_path: pathlib.Path = "data/mcl/er",
         filename: str = None,
         # args for generate
         graph_weighted: bool = False,
@@ -35,7 +35,7 @@ class MISDataGenerator:
         ws_ring_neighbors: int = 2,
     ):
         """
-        MISDataGenerator
+        MClDataGenerator
         Args:
             nodes_num_min (int, optional):
                 The minimum number of nodes.
@@ -45,7 +45,7 @@ class MISDataGenerator:
                 The data type. Support: ``erdos_renyi``,``er``,``barabasi_albert``,
                 ``ba``,``holme_kim``,``hk``,``watts_strogatz``,``ws``.
             solver_type (str, optional):
-                The solver type. Support: ``kamis``,``gurobi``.
+                The solver type. Support: ``gurobi``.
             train_samples_num (int, optional):
                 The number of training samples.
             val_samples_num (int, optional):
@@ -53,11 +53,11 @@ class MISDataGenerator:
             test_samples_num (int, optional):
                 The number of test samples.
             save_path (pathlib.Path, optional):
-                The save path of mis samples/datasets.
+                The save path of mcl samples/datasets.
             filename (str, optional):
-                The filename of mis samples.
+                The filename of mcl samples.
             graph_weighted (bool, optional):
-                If enabled, generate the weighted MIS problem instead of MIS.
+                If enabled, generate the weighted MCl problem instead of MCl.
             er_prob (float, optional):
                 The probability parameter for Erdos-Renyi graph generation.
             ba_conn_degree (int, optional):
@@ -142,7 +142,7 @@ class MISDataGenerator:
     def get_filename(self):
         if self.filename is None:
             self.filename = (
-                f"mis_{self.data_type}_{self.nodes_num_min}_{self.nodes_num_max}"
+                f"mcl_{self.data_type}_{self.nodes_num_min}_{self.nodes_num_max}"
             )
         self.file_save_path = os.path.join(self.save_path, self.filename + ".txt")
         for sample_type in self.sample_types:
@@ -159,8 +159,7 @@ class MISDataGenerator:
         if type(self.solver) == str:
             self.solver_type = self.solver
             supported_solver_dict = {
-                SOLVER_TYPE.KAMIS: KaMISSolver, 
-                SOLVER_TYPE.GUROBI: MISGurobiSolver
+                SOLVER_TYPE.GUROBI: MClGurobiSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver not in supported_solver_type:
@@ -171,9 +170,8 @@ class MISDataGenerator:
                 raise ValueError(message)
             self.solver = supported_solver_dict[self.solver]()
         else:
-            self.solver: MISSolver
+            self.solver: MClSolver
             self.solver_type = self.solver.solver_type
-            
         # check weighted
         if self.graph_weighted != self.solver.weighted:
             message = "``graph_weighted`` and ``solver.weighted`` do not match."
@@ -183,68 +181,38 @@ class MISDataGenerator:
         return np.around(np.random.normal(mu, sigma, n)).astype(int).clip(min=0)
 
     def generate(self):
-        if self.solver_type == SOLVER_TYPE.KAMIS:
-            # check
-            if self.num_threads != 1:
-                raise NotImplementedError(
-                    "``KaMISSolver`` only supports single-threaded execution"
-                )
-                
-            # generate data
-            for sample_type in self.sample_types:
-                samples_num = getattr(self, f"{sample_type}_samples_num")
-                for idx in tqdm(
-                    range(samples_num),
-                    desc=f"Generate MIS({self.data_type}) {sample_type}_dataset",
-                ):
-                    filename = f"{self.filename}_{idx}"
-                    nx_graph: nx.Graph = self.generate_func()
-                    output_file = os.path.join(
-                        getattr(self, f"{sample_type}_save_path"), "instance", f"{filename}.gpickle"
-                    )
-                    with open(output_file, "wb") as f:
-                        pickle.dump(nx_graph, f, pickle.HIGHEST_PROTOCOL)
-
-            # generate solution
-            for sample_type in self.sample_types:
-                folder = getattr(self, f"{sample_type}_save_path")
-                self.solver.solve(
-                    os.path.join(folder, "instance"),
-                    os.path.join(folder, "solution")
-                )
-        else:
-            start_time = time.time()
-            for _ in tqdm(
-                range(self.samples_num // self.num_threads),
-                desc=f"Solving MIS Using {self.solver_type}",
-            ):
-                # call generate_func to generate the points
-                nx_graphs = [self.generate_func() for _ in range(self.num_threads)]
-                
-                # solve
-                self.solver.from_nx_graph(nx_graphs=nx_graphs)
-                graph_data = self.solver.solve(num_threads=self.num_threads)
-                    
-                # write to txt
-                with open(self.file_save_path, "a+") as f:
-                    for graph in graph_data:
-                        graph: MISGraphData
-                        edge_index = graph.edge_index.T
-                        nodes_label = graph.nodes_label
-                        f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index))
-                        f.write(str(" ") + str("label") + str(" "))
-                        f.write(str(" ").join(str(node_label) for node_label in nodes_label))
-                        f.write("\n")
-                f.close()
+        start_time = time.time()
+        for _ in tqdm(
+            range(self.samples_num // self.num_threads),
+            desc=f"Solving MCl Using {self.solver_type}",
+        ):
+            # call generate_func to generate the points
+            nx_graphs = [self.generate_func() for _ in range(self.num_threads)]
             
-            # info
-            end_time = time.time() - start_time
-            print(
-                f"Completed generation of {self.samples_num} samples of MIS."
-            )
-            print(f"Total time: {end_time/60:.1f}m")
-            print(f"Average time: {end_time/self.samples_num:.1f}s")
-            self.devide_file()            
+            # solve
+            self.solver.from_nx_graph(nx_graphs=nx_graphs)
+            graph_data = self.solver.solve(num_threads=self.num_threads)
+            
+            # write to txt
+            with open(self.file_save_path, "a+") as f:
+                for graph in graph_data:
+                    graph: MClGraphData
+                    edge_index = graph.edge_index.T
+                    nodes_label = graph.nodes_label
+                    f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index))
+                    f.write(str(" ") + str("label") + str(" "))
+                    f.write(str(" ").join(str(node_label) for node_label in nodes_label))
+                    f.write("\n")
+            f.close()
+        
+        # info
+        end_time = time.time() - start_time
+        print(
+            f"Completed generation of {self.samples_num} samples of MCl."
+        )
+        print(f"Total time: {end_time/60:.1f}m")
+        print(f"Average time: {end_time/self.samples_num:.1f}s")
+        self.devide_file()            
 
     def devide_file(self):
         with open(self.file_save_path, "r") as f:
@@ -260,38 +228,20 @@ class MISDataGenerator:
             with open(filename, "w") as file:
                 file.writelines(data_content)
 
-    def if_need_weighted(self, nx_graph: nx.Graph):
-        if self.graph_weighted:
-            weight_mapping = {
-                vertex: int(weight)
-                for vertex, weight in zip(
-                    nx_graph.nodes,
-                    self.random_weight(
-                        nx_graph.number_of_nodes(), sigma=30, mu=100
-                    ),
-                )
-            }
-            nx.set_node_attributes(nx_graph, values=weight_mapping, name="weight")
-        return nx_graph
-    
     def generate_erdos_renyi(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
-        nx_graph = nx.erdos_renyi_graph(num_nodes, self.er_prob)
-        return self.if_need_weighted(nx_graph)
+        return nx.erdos_renyi_graph(num_nodes, self.er_prob)
 
     def generate_barabasi_albert(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
-        nx_graph = nx.barabasi_albert_graph(num_nodes, min(self.ba_conn_degree, num_nodes))
-        return self.if_need_weighted(nx_graph)
+        return nx.barabasi_albert_graph(num_nodes, min(self.ba_conn_degree, num_nodes))
 
     def generate_holme_kim(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
-        nx_graph = nx.powerlaw_cluster_graph(
+        return nx.powerlaw_cluster_graph(
             num_nodes, min(self.hk_conn_degree, num_nodes), self.hk_prob
         )
-        return self.if_need_weighted(nx_graph)
 
     def generate_watts_strogatz(self) -> nx.Graph:
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
-        nx_graph = nx.watts_strogatz_graph(num_nodes, self.ws_ring_neighbors, self.ws_prob)
-        return self.if_need_weighted(nx_graph)
+        return nx.watts_strogatz_graph(num_nodes, self.ws_ring_neighbors, self.ws_prob)

@@ -80,17 +80,21 @@ class TSPDataGenerator:
         self.test_samples_num = test_samples_num
         self.save_path = save_path
         self.filename = filename
+        
         # special for gaussian
         self.gaussian_mean_x = gaussian_mean_x
         self.gaussian_mean_y = gaussian_mean_y
         self.gaussian_std = gaussian_std
+        
         # special for cluster
         self.cluster_nums = cluster_nums
         self.cluster_std = cluster_std
+        
         # special for regret
         self.regret = regret
         self.regret_save_path = regret_save_path
         self.regret_solver = regret_solver
+        
         # check the input variables
         self.sample_types = ["train", "val", "test"]
         self.check_num_threads()
@@ -159,6 +163,7 @@ class TSPDataGenerator:
         # check if lkh is downloaded
         if shutil.which(self.solver.lkh_path) is None:
             self.download_lkh()
+            
         # check again
         if shutil.which(self.solver.lkh_path) is None:
             message = (
@@ -239,21 +244,14 @@ class TSPDataGenerator:
             range(self.samples_num // self.num_threads),
             desc=f"Solving TSP Using {self.solver_type}",
         ):
-            # call generate_func to generate the points
+            # call generate_func to generate data
             batch_nodes_coord = self.generate_func()
             
             # solve
-            if self.num_threads == 1:
-                tours = [self.solver.solve(batch_nodes_coord[0])]
-            else:
-                with Pool(self.num_threads) as p1:
-                    tours = p1.map(
-                        self.solver.solve,
-                        [batch_nodes_coord[idx] for idx in range(self.num_threads)],
-                    )
-                p1.close()  # Close the pool to indicate that no more tasks will be submitted
-                p1.join()  # Wait for all processes in the pool to complete
-                
+            tours = self.solver.solve(
+                points=batch_nodes_coord, num_threads=self.num_threads
+            )
+
             # deal with regret
             if self.regret:
                 if self.num_threads == 1:

@@ -5,8 +5,9 @@ import numpy as np
 from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.solver.cvrp.base import CVRPSolver
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution
 from ml4co_kit.solver.cvrp.c_hgs import cvrp_hgs_solver, HGS_TMP_PATH
-from ml4co_kit.utils.run_utils import iterative_execution
 
 
 class CVRPHGSSolver(CVRPSolver):
@@ -20,7 +21,7 @@ class CVRPHGSSolver(CVRPSolver):
         show_info: bool = False
     ):
         super(CVRPHGSSolver, self).__init__(
-            solver_type="HGS", 
+            solver_type=SOLVER_TYPE.HGS, 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,
@@ -95,9 +96,7 @@ class CVRPHGSSolver(CVRPSolver):
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:   
-            for idx in iterative_execution(
-                range, num_points, "Solving CVRP Using HGS", show_time
-            ):
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 tours.append(self._solve(
                     depot_coord=self.depots[idx],
                     nodes_coord=self.points[idx],
@@ -111,7 +110,7 @@ class CVRPHGSSolver(CVRPSolver):
             batch_capacities = self.capacities.reshape(num_tqdm, num_threads)
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
-                range, num_points // num_threads, "Solving CVRP Using HGS", show_time
+                range, num_points // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.starmap(

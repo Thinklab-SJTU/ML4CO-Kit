@@ -4,9 +4,10 @@ import math
 import numpy as np
 from typing import Union
 from ml4co_kit.utils import tsplib95
-from ml4co_kit.utils.type_utils import to_numpy
+from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.evaluate.atsp.base import ATSPEvaluator
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
 if sys.version_info.major == 3 and sys.version_info.minor == 8:
@@ -15,9 +16,11 @@ else:
     from ml4co_kit.utils.round import ROUND_FUNCS
 
 
-class ATSPSolver(object):
-    def __init__(self, solver_type: str = None, scale: int = 1e6):
-        self.solver_type = solver_type
+class ATSPSolver(SolverBase):
+    def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
+        super(ATSPSolver, self).__init__(
+            task_type=TASK_TYPE.ATSP, solver_type=solver_type
+        )
         self.scale = scale
         self.dists: np.ndarray = None
         self.ori_dists: np.ndarray= None

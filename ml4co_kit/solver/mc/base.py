@@ -3,15 +3,24 @@ import pickle
 import numpy as np
 import networkx as nx
 from typing import List
-from ml4co_kit.utils import MCGraphData
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.solver.base import SolverBase
+from ml4co_kit.utils.graph.mc import MCGraphData
+from ml4co_kit.utils.type_utils import TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
-class MCSolver(object):
-    def __init__(self, solver_type: str = None) -> None:
-        self.solver_type = solver_type
-        self.weighted = None
-        self.time_limit = 60.0
+class MCSolver(SolverBase):
+    def __init__(
+        self, 
+        solver_type: SOLVER_TYPE = None, 
+        weighted: bool = False, 
+        time_limit: float = 60.0
+    ):
+        super(MCSolver, self).__init__(
+            task_type=TASK_TYPE.MCl, solver_type=solver_type
+        )
+        self.weighted = weighted
+        self.time_limit = time_limit
         self.graph_data: List[MCGraphData] = list()
 
     def check_edge_index_not_none(self):
@@ -29,7 +38,7 @@ class MCSolver(object):
         msg = "ref_nodes_label" if ref else "nodes_label"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``MCSolver`` "
-            "like ``KaMCSolver`` or use methods including ``from_graph_data``, "
+            "like ``MCGurobiSolver`` or use methods including ``from_graph_data``, "
             "``from_adj_martix``, ``from_txt``, ``from_gpickle_result`` or "
             "``from_gpickle_result_folder`` to obtain them."
         )  
@@ -48,13 +57,13 @@ class MCSolver(object):
         for graph in self.graph_data:
             graph: MCGraphData
             graph.nodes_label = graph.ref_nodes_label
-            graph.sel_nodes_num = graph.ref_sel_nodes_num
+            graph.cut_edge_num = graph.ref_cut_edge_num
 
     def set_solution_as_ref(self):
         for graph in self.graph_data:
             graph: MCGraphData
             graph.ref_nodes_label = graph.nodes_label
-            graph.ref_sel_nodes_num = graph.sel_nodes_num
+            graph.ref_cut_edge_num = graph.cut_edge_num
     
     def from_gpickle_result(
         self, 
@@ -238,27 +247,6 @@ class MCSolver(object):
                 
                 # update index
                 idx += 1
-    
-    def from_txt_only_sel_nodes_num(
-        self,
-        file_path: str, 
-        ref: bool = False, 
-    ):
-        # check the file format
-        if not file_path.endswith(".txt"):
-            raise ValueError("Invalid file format. Expected a ``.txt`` file.")
-
-        # read the data form .txt
-        with open(file_path, "r") as file:
-            lines = file.readlines()
-            for idx, line in enumerate(lines):
-                line = line.strip()
-                split_line = line.split(": ")
-                sel_nodes_num = int(split_line[1])
-                if ref:
-                    self.graph_data[idx].ref_sel_nodes_num = sel_nodes_num
-                else:
-                    self.graph_data[idx].sel_nodes_num = sel_nodes_num
                         
     def from_graph_data(
         self, 
@@ -348,7 +336,13 @@ class MCSolver(object):
                     self.graph_data.append(graph)
                 else:
                     self.graph_data[idx] = graph
-    
+
+    def from_nx_graph(self, nx_graphs: List[nx.Graph]):
+        for idx in range(len(nx_graphs)):
+            graph = MCGraphData()
+            graph.from_nx_graph(nx_graphs[idx])
+            self.graph_data.append(graph)
+
     def to_gpickle_result_folder(
         self,
         gpickle_save_dir: str = None,

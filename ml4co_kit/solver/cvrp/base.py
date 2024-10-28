@@ -5,10 +5,11 @@ import numpy as np
 from typing import Union
 from pyvrp import Model
 from pyvrp import read as read_vrp
-from ml4co_kit.utils.type_utils import to_numpy
+from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
 from ml4co_kit.utils.distance_utils import geographical
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -20,7 +21,7 @@ else:
     from ml4co_kit.utils.round import ROUND_FUNCS
 
 
-class CVRPSolver(object):
+class CVRPSolver(SolverBase):
     def __init__(
         self, 
         solver_type: str = None, 
@@ -29,6 +30,9 @@ class CVRPSolver(object):
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
     ):
+        super(CVRPSolver, self).__init__(
+            task_type=TASK_TYPE.CVRP, solver_type=solver_type
+        )
         self.solver_type = solver_type
         self.depots_scale = depots_scale
         self.points_scale = points_scale

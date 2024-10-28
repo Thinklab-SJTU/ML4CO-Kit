@@ -3,15 +3,24 @@ import pickle
 import numpy as np
 import networkx as nx
 from typing import List
-from ml4co_kit.utils.mis_utils import MISGraphData
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.solver.base import SolverBase
+from ml4co_kit.utils.graph.mis import MISGraphData
+from ml4co_kit.utils.type_utils import TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
-class MISSolver(object):
-    def __init__(self, solver_type: str = None) -> None:
-        self.solver_type = solver_type
-        self.weighted = None
-        self.time_limit = 60.0
+class MISSolver(SolverBase):
+    def __init__(
+        self, 
+        solver_type: SOLVER_TYPE = None, 
+        weighted: bool = False, 
+        time_limit: float = 60.0
+    ):
+        super(MISSolver, self).__init__(
+            task_type=TASK_TYPE.MIS, solver_type=solver_type
+        )
+        self.weighted = weighted
+        self.time_limit = time_limit
         self.graph_data: List[MISGraphData] = list()
 
     def check_edge_index_not_none(self):
@@ -19,7 +28,7 @@ class MISSolver(object):
             f"``edge_index`` cannot be None! You can load ``edge_index`` using the "
             "methods including ``from_graph_data``, ``from_adj_martix``, ``from_txt``, "
             "``from_gpickle_result`` or ``from_gpickle_result_folder`` to obtain them."
-        )  
+        )
         for graph in self.graph_data:
             graph: MISGraphData
             if graph.edge_index is None:
@@ -349,6 +358,12 @@ class MISSolver(object):
                 else:
                     self.graph_data[idx] = graph
     
+    def from_nx_graph(self, nx_graphs: List[nx.Graph]):
+        for idx in range(len(nx_graphs)):
+            graph = MISGraphData()
+            graph.from_nx_graph(nx_graphs[idx])
+            self.graph_data.append(graph)
+        
     def to_gpickle_result_folder(
         self,
         gpickle_save_dir: str = None,

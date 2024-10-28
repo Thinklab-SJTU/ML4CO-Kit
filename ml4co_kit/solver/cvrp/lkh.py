@@ -8,7 +8,8 @@ from multiprocessing import Pool
 from subprocess import check_call
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.cvrp.base import CVRPSolver
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution
 
 
 class CVRPLKHSolver(CVRPSolver):
@@ -37,7 +38,7 @@ class CVRPLKHSolver(CVRPSolver):
                 Defaults to 1.
         """
         super(CVRPLKHSolver, self).__init__(
-            solver_type="LKH", 
+            solver_type=SOLVER_TYPE.LKH, 
             depots_scale = depots_scale,
             points_scale = points_scale,
             demands_scale = demands_scale,

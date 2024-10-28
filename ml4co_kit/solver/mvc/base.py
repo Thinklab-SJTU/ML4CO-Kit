@@ -4,14 +4,23 @@ import numpy as np
 import networkx as nx
 from typing import List
 from ml4co_kit.utils import MVCGraphData
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.solver.base import SolverBase
+from ml4co_kit.utils.type_utils import TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
-class MVCSolver(object):
-    def __init__(self, solver_type: str = None) -> None:
-        self.solver_type = solver_type
-        self.weighted = None
-        self.time_limit = 60.0
+class MVCSolver(SolverBase):
+    def __init__(
+        self, 
+        solver_type: SOLVER_TYPE = None, 
+        weighted: bool = False, 
+        time_limit: float = 60.0
+    ):
+        super(MVCSolver, self).__init__(
+            task_type=TASK_TYPE.MVC, solver_type=solver_type
+        )
+        self.weighted = weighted
+        self.time_limit = time_limit
         self.graph_data: List[MVCGraphData] = list()
 
     def check_edge_index_not_none(self):
@@ -29,7 +38,7 @@ class MVCSolver(object):
         msg = "ref_nodes_label" if ref else "nodes_label"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``MVCSolver`` "
-            "like ``KaMVCSolver`` or use methods including ``from_graph_data``, "
+            "like ``MVCGurobiSolver`` or use methods including ``from_graph_data``, "
             "``from_adj_martix``, ``from_txt``, ``from_gpickle_result`` or "
             "``from_gpickle_result_folder`` to obtain them."
         )  
@@ -348,6 +357,12 @@ class MVCSolver(object):
                     self.graph_data.append(graph)
                 else:
                     self.graph_data[idx] = graph
+    
+    def from_nx_graph(self, nx_graphs: List[nx.Graph]):
+        for idx in range(len(nx_graphs)):
+            graph = MVCGraphData()
+            graph.from_nx_graph(nx_graphs[idx])
+            self.graph_data.append(graph)
     
     def to_gpickle_result_folder(
         self,

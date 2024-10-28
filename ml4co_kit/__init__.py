@@ -1,28 +1,70 @@
 import importlib.util
 
-# base
-from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder
-from .algorithm import tsp_mcts_local_search
-from .algorithm import atsp_greedy_decoder
-from .algorithm import atsp_2opt_local_search
-from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
-from .data import SATLIBOriDataset
+#######################################################
+#                       Support                       #
+#######################################################
+from .utils.type_utils import TASK_TYPE, SOLVER_TYPE, TASK_SUPPORT_SOLVER 
+
+#######################################################
+#                      Algorithm                      #
+#######################################################
+from .algorithm import atsp_greedy_decoder, atsp_2opt_local_search
+from .algorithm import (
+    tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, tsp_mcts_local_search
+)
+
+#######################################################
+#                     Free Dataset                    #
+#######################################################
 from .data import VRPLIBOriDataset, CVRPUniformDataset
-from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
-from .evaluate import SATLIBEvaluator
-from .evaluate import CVRPEvaluator, CVRPUniformEvaluator
+from .data import SATLIBOriDataset
+from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
+
+#######################################################
+#                      Evaluator                      #
+#######################################################
 from .evaluate import ATSPEvaluator
-from .generator import TSPDataGenerator, MISDataGenerator, CVRPDataGenerator, ATSPDataGenerator
-from .solver import TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver
-from .solver import TSPGAEAXSolver, TSPGAEAXLargeSolver
-from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MVCSolver, MClSolver, MCSolver
-from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
+from .evaluate import CVRPEvaluator, CVRPUniformEvaluator
+from .evaluate import SATLIBEvaluator
+from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
+
+#######################################################
+#                    Data Generator                   #
+#######################################################
+from .generator import ATSPDataGenerator
+from .generator import CVRPDataGenerator
+from .generator import MCDataGenerator
+from .generator import MClDataGenerator
+from .generator import MISDataGenerator
+from .generator import MVCDataGenerator
+from .generator import TSPDataGenerator
+
+#######################################################
+#                        Solver                       #
+#######################################################
 from .solver import ATSPSolver, ATSPLKHSolver
+from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
+from .solver import MCSolver, MCGurobiSolver
+from .solver import MClSolver, MClGurobiSolver
+from .solver import MISSolver, KaMISSolver, MISGurobiSolver
+from .solver import MVCSolver, MVCGurobiSolver
+from .solver import (
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver, 
+    TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
+)
+
+#######################################################
+#                    Utils Function                   #
+#######################################################
 from .utils import download, compress_folder, extract_archive, _get_md5
 from .utils import iterative_execution_for_file, iterative_execution
 from .utils import np_dense_to_sparse, np_sparse_to_dense, GraphData, tsplib95
-from .utils import MISGraphData, MVCGraphData, MClGraphData, MCGraphData, sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
+from .utils import MISGraphData, MVCGraphData, MClGraphData, MCGraphData
+from .utils import sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
 
+#######################################################
+#                  Extension Function                 #
+#######################################################
 # expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")
 if found_matplotlib is not None:
