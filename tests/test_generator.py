@@ -5,9 +5,8 @@ sys.path.append(root_folder)
 import shutil
 from ml4co_kit import *
 
-
-GUROBI_LICENCE = "/home/majiale/gurobi.lic"
-GUROBI_TEST = True
+GUROBI_LICENCE = "your gurobi licence"
+GUROBI_TEST = False
 
 
 ##############################################
