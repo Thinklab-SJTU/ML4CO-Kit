@@ -6,8 +6,8 @@ import shutil
 from ml4co_kit.solver import *
 from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
 
-GUROBI_LICENCE = "/home/majiale/gurobi.lic"
-GUROBI_TEST = True
+GUROBI_LICENCE = "your gurobi licence"
+GUROBI_TEST = False
 
 
 ##############################################
