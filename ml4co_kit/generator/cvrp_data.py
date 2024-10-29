@@ -113,7 +113,7 @@ class CVRPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
                 SOLVER_TYPE.HGS: CVRPHGSSolver,
@@ -131,11 +131,12 @@ class CVRPDataGenerator:
         else:
             self.solver: CVRPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "PyVRP": self.check_free,
-            "LKH": self.check_lkh,
-            "HGS": self.check_free
+            SOLVER_TYPE.HGS: self.check_free,
+            SOLVER_TYPE.LKH: self.check_lkh,
+            SOLVER_TYPE.PYVRP: self.check_free,
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()

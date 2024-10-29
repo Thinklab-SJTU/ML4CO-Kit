@@ -102,7 +102,7 @@ class ATSPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
                 SOLVER_TYPE.LKH: ATSPLKHSolver
@@ -118,9 +118,10 @@ class ATSPDataGenerator:
         else:
             self.solver: ATSPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "LKH": self.check_lkh
+            SOLVER_TYPE.LKH: self.check_lkh
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()

@@ -233,8 +233,7 @@ def test_mis():
     Test MISSolver
     """
     test_mis_base_solver()
-    if GUROBI_TEST:
-        test_mis_gurobi_solver()
+    test_mis_gurobi_solver()
     test_mis_kamis_solver()
 
 
@@ -243,6 +242,8 @@ def test_mis():
 ##############################################
 
 def _test_mc_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
     gurobi_solver = MCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mc/mc_example.txt",
@@ -270,14 +271,15 @@ def test_mc():
     """
     Test MCSolver
     """
-    if GUROBI_TEST:
-        test_mc_gurobi_solver()
+    test_mc_gurobi_solver()
 
 ##############################################
 #             Test Func For MCl              #
 ##############################################
 
 def _test_mcl_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
     gurobi_solver = MClGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mcl/mcl_example.txt",
@@ -305,8 +307,7 @@ def test_mcl():
     """
     Test MClSolver
     """
-    if GUROBI_TEST:
-        test_mcl_gurobi_solver()
+    test_mcl_gurobi_solver()
 
 
 ##############################################
@@ -332,6 +333,8 @@ def test_mvc_base_solver():
 
 
 def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
     gurobi_solver = MISGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mis/mis_example.txt",
@@ -383,8 +386,7 @@ def test_mis():
     Test MISSolver
     """
     test_mis_base_solver()
-    if GUROBI_TEST:
-        test_mis_gurobi_solver()
+    test_mis_gurobi_solver()
     test_mis_kamis_solver()
 
 
@@ -393,6 +395,8 @@ def test_mis():
 ##############################################
 
 def _test_mvc_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
     gurobi_solver = MVCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mvc/mvc_example.txt",
@@ -420,8 +424,7 @@ def test_mvc():
     """
     Test MVCSolver
     """
-    if GUROBI_TEST:
-        test_mvc_gurobi_solver()
+    test_mvc_gurobi_solver()
 
 
 ##############################################

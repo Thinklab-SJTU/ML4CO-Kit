@@ -206,6 +206,9 @@ def _test_mc_gurobi(
     """
     Test MCDataGenerator using MCGurobiSolver
     """
+    if not GUROBI_TEST:
+        return
+    
     # save path
     save_path = f"tmp/mc_{data_type}_gurobi"
     if not os.path.exists(save_path):
@@ -237,11 +240,10 @@ def test_mc():
     """
     Test MVCDataGenerator
     """
-    if GUROBI_TEST:
-        _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-        _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-        _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-        _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 
 ##############################################
@@ -254,6 +256,9 @@ def _test_mcl_gurobi(
     """
     Test MClDataGenerator using MClGurobiSolver
     """
+    if not GUROBI_TEST:
+        return
+    
     # save path
     save_path = f"tmp/mcl_{data_type}_gurobi"
     if not os.path.exists(save_path):
@@ -285,11 +290,10 @@ def test_mcl():
     """
     Test MCLDataGenerator
     """
-    if GUROBI_TEST:
-        _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-        _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-        _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-        _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 
 ##############################################
@@ -336,6 +340,9 @@ def _test_mis_gurobi(
     """
     Test MISDataGenerator using MISGurobiSolver
     """
+    if not GUROBI_TEST:
+        return
+    
     # save path
     save_path = f"tmp/mis_{data_type}_gurobi"
     if not os.path.exists(save_path):
@@ -374,11 +381,10 @@ def test_mis():
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="hk")
     _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ws")
     
-    if GUROBI_TEST:
-        _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-        _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-        _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-        _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 
 ##############################################
@@ -391,6 +397,9 @@ def _test_mvc_gurobi(
     """
     Test MVCDataGenerator using MVCGurobiSolver
     """
+    if not GUROBI_TEST:
+        return
+    
     # save path
     save_path = f"tmp/mvc_{data_type}_gurobi"
     if not os.path.exists(save_path):
@@ -422,11 +431,10 @@ def test_mvc():
     """
     Test MVCDataGenerator
     """
-    if GUROBI_TEST:
-        _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-        _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-        _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-        _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 
    

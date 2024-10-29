@@ -156,7 +156,7 @@ class MVCDataGenerator:
 
     def check_solver(self):
         # check solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
                 SOLVER_TYPE.GUROBI: MVCGurobiSolver
@@ -173,10 +173,20 @@ class MVCDataGenerator:
             self.solver: MVCSolver
             self.solver_type = self.solver.solver_type
             
+        # check solver
+        check_solver_dict = {
+            SOLVER_TYPE.GUROBI: self.check_free,
+        }
+        check_func = check_solver_dict[self.solver_type]
+        check_func()
+          
         # check weighted
         if self.graph_weighted != self.solver.weighted:
             message = "``graph_weighted`` and ``solver.weighted`` do not match."
             raise ValueError(message)
+
+    def check_free(self):
+        return
 
     def random_weight(self, n, mu=1, sigma=0.1):
         return np.around(np.random.normal(mu, sigma, n)).astype(int).clip(min=0)

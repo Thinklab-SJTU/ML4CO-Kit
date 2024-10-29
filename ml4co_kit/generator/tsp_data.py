@@ -8,6 +8,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
@@ -24,7 +25,7 @@ class TSPDataGenerator:
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[str, TSPSolver] = "LKH",
+        solver: Union[SOLVER_TYPE, TSPSolver] = SOLVER_TYPE.LKH,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -128,7 +129,7 @@ class TSPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
                 "LKH": TSPLKHSolver, 
@@ -148,13 +149,14 @@ class TSPDataGenerator:
         else:
             self.solver: TSPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "LKH": self.check_lkh,
-            "Concorde": self.check_concorde,
-            "Concorde-Large": self.check_concorde,
-            "GA-EAX": self.check_free,
-            "GA-EAX-Large": self.check_free
+            SOLVER_TYPE.CONCORDE: self.check_concorde,
+            SOLVER_TYPE.CONCORDE_LARGE: self.check_concorde,
+            SOLVER_TYPE.GA_EAX: self.check_free,
+            SOLVER_TYPE.GA_EAX_LARGE: self.check_free,
+            SOLVER_TYPE.LKH: self.check_lkh
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
