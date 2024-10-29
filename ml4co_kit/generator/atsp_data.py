@@ -8,6 +8,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver import ATSPSolver, ATSPLKHSolver
 
 import warnings
@@ -20,7 +21,7 @@ class ATSPDataGenerator:
         num_threads: int = 1,
         nodes_num: int = 55,
         data_type: str = "sat",
-        solver: Union[str, ATSPSolver] = "LKH",
+        solver: Union[SOLVER_TYPE, ATSPSolver] = SOLVER_TYPE.LKH,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -62,11 +63,13 @@ class ATSPDataGenerator:
         self.test_samples_num = test_samples_num
         self.save_path = save_path
         self.filename = filename
+        
         # special for sat
         self.sat_vars_nums = sat_vars_nums
         self.sat_clauses_nums = sat_clauses_nums
         if self.data_type == "sat":
             self.nodes_num = 2 * sat_clauses_nums * sat_vars_nums + sat_clauses_nums
+        
         # check the input variables
         self.sample_types = ["train", "val", "test"]
         self.check_num_threads()
@@ -99,10 +102,10 @@ class ATSPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                "LKH": ATSPLKHSolver
+                SOLVER_TYPE.LKH: ATSPLKHSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
@@ -115,9 +118,10 @@ class ATSPDataGenerator:
         else:
             self.solver: ATSPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "LKH": self.check_lkh
+            SOLVER_TYPE.LKH: self.check_lkh
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
@@ -179,21 +183,14 @@ class ATSPDataGenerator:
             range(self.samples_num // self.num_threads),
             desc=f"Solving ATSP Using {self.solver_type}",
         ):
-            # call generate_func to generate the points
+            # call generate_func to generate data
             batch_dists, tours = self.generate_func()
             
             # solve
             if tours is None:
-                if self.num_threads == 1:
-                    tours = [self.solver.solve(batch_dists[0])]
-                else:
-                    with Pool(self.num_threads) as p1:
-                        tours = p1.map(
-                            self.solver.solve,
-                            [batch_dists[idx] for idx in range(self.num_threads)],
-                        )
-                    p1.close()  # Close the pool to indicate that no more tasks will be submitted
-                    p1.join()  # Wait for all processes in the pool to complete
+                tours = self.solver.solve(
+                    dists=batch_dists, num_threads=self.num_threads
+                )
             
             # write to txt
             for idx, tour in enumerate(tours):
@@ -362,5 +359,5 @@ class ATSPDataGenerator:
                 dist = (dist[:, None, :] + dist[None, :, :].transpose(0, 2, 1)).min(axis=2)
                 if (dist == old_dist).all():
                     break
-                dists.append(dist / scaler)
+            dists.append(dist / scaler)
         return np.array(dists), None

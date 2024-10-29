@@ -3,9 +3,10 @@ import sys
 import numpy as np
 from typing import Union
 from ml4co_kit.utils import tsplib95
-from ml4co_kit.utils.type_utils import to_numpy
+from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
-from ml4co_kit.utils.run_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -15,9 +16,11 @@ else:
     from ml4co_kit.utils.round import ROUND_FUNCS
 
 
-class TSPSolver(object):
-    def __init__(self, solver_type: str = None, scale: int = 1e6):
-        self.solver_type = solver_type
+class TSPSolver(SolverBase):
+    def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
+        super(TSPSolver, self).__init__(
+            task_type=TASK_TYPE.TSP, solver_type=solver_type
+        )
         self.scale: np.ndarray = scale
         self.points: np.ndarray = None
         self.ori_points: np.ndarray = None

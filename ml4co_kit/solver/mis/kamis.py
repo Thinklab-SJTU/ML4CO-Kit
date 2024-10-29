@@ -2,14 +2,15 @@ import re
 import time
 import json
 import shutil
+import os.path
+import pathlib
 import subprocess
 import numpy as np
 import networkx as nx
-import os.path
-import pathlib
 from tqdm import tqdm
 from pathlib import Path
 from typing import Union
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver.mis.base import MISSolver
 
 
@@ -27,9 +28,9 @@ class KaMISSolver(MISSolver):
             time_limit (float, optional):
                 Time limit in seconds.
         """
-        super(KaMISSolver, self).__init__(solver_type="KaMIS")
-        self.weighted = weighted
-        self.time_limit = time_limit
+        super(KaMISSolver, self).__init__(
+            solver_type=SOLVER_TYPE.KAMIS, weighted=weighted, time_limit=time_limit
+        )
         self.kamis_path = pathlib.Path(__file__).parent
 
     @staticmethod
@@ -112,9 +113,7 @@ class KaMISSolver(MISSolver):
         src = Path(src)
         out = Path(out)
         files = [f for f in os.listdir(src) if f.endswith(".gpickle")]
-        for graph_path in tqdm(
-            files, desc=f"Solving all given instances using " + str(self)
-        ):
+        for graph_path in tqdm(files, desc=self.solve_msg):
             graph_path = graph_path.replace(".gpickle", "")
             if self.weighted:
                 executable = (

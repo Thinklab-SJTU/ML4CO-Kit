@@ -1,3 +1,4 @@
+import time
 from tqdm import tqdm
 from typing import Callable, Iterable, TypeVar
 
@@ -26,3 +27,24 @@ def iterative_execution_for_file(
         return tqdm(iterable, desc=desc)
     else:
         return iterable
+    
+
+class Timer(object):
+    def __init__(self, apply: bool = True):
+        self.apply = apply
+        self.start_time = None
+        self.end_time = None
+        self.use_time = None
+        
+    def start(self):
+        if self.apply:
+            self.start_time = time.time()
+    
+    def end(self):
+        if self.apply:
+            self.end_time = time.time()
+            self.use_time = self.end_time - self.start_time
+    
+    def show_time(self):
+        if self.apply:
+            print(f"Using Time: {self.use_time}")

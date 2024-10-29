@@ -5,8 +5,9 @@ from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver.tsp.lkh_solver import lkh_solve
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPLKHSolver(TSPSolver):
@@ -31,7 +32,9 @@ class TSPLKHSolver(TSPSolver):
             lkh_runs (int, optional): The number of runs for the LKH solver.
                 Defaults to 1.
         """
-        super(TSPLKHSolver, self).__init__(solver_type="LKH", scale=scale)
+        super(TSPLKHSolver, self).__init__(
+            solver_type=SOLVER_TYPE.LKH, scale=scale
+        )
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
@@ -68,23 +71,20 @@ class TSPLKHSolver(TSPSolver):
     ) -> np.ndarray:
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
-        
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
         
         # solve
         tours = list()
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            for idx in iterative_execution(
-                range, num_points, "Solving TSP Using LKH", show_time
-            ):
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 tours.append(self._solve(self.points[idx]))
         else:
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
-                range, num_points // num_threads, "Solving TSP Using LKH", show_time
+                range, num_points // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.map(
@@ -101,13 +101,14 @@ class TSPLKHSolver(TSPSolver):
         tours = np.array(tours)
         zeros = np.zeros((tours.shape[0], 1))
         tours = np.append(tours, zeros, axis=1).astype(np.int32)
-        if tours.ndim == 2 and tours.shape[0] == 1:
-            tours = tours[0]
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
-        return tours
+        
+        # show time
+        timer.end()
+        timer.show_time()
+        
+        # return
+        return self.tours
 
     def regret_solve(
         self, points: np.ndarray, fixed_edges: tuple, norm: str = "EUC_2D"

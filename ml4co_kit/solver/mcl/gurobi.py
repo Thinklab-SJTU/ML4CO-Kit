@@ -3,24 +3,24 @@ import numpy as np
 import gurobipy as gp
 from typing import List
 from multiprocessing import Pool
-from ml4co_kit.solver.mis.base import MISSolver
-from ml4co_kit.utils.graph.mis import MISGraphData
+from ml4co_kit.solver.mcl.base import MClSolver
+from ml4co_kit.utils.graph.mcl import MClGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
-class MISGurobiSolver(MISSolver):
+class MClGurobiSolver(MClSolver):
     def __init__(
         self, licence_path: str, weighted: bool = False, time_limit: float = 60.0
     ):
-        super(MISGurobiSolver, self).__init__(
+        super(MClGurobiSolver, self).__init__(
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
         self.licence_path = licence_path
-        
+
     def solve(
         self,
-        graph_data: List[MISGraphData] = None,
+        graph_data: List[MClGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
     ) -> np.ndarray:
@@ -58,27 +58,28 @@ class MISGurobiSolver(MISSolver):
         timer.end()
         timer.show_time()
         
-        return self.graph_data
+        return solutions
     
     def _solve(self, idx: int) -> np.ndarray:
         # graph
-        mis_graph: MISGraphData = self.graph_data[idx]
+        mcl_graph: MClGraphData = self.graph_data[idx]
         
         # number of graph's nodes
-        nodes_num = mis_graph.nodes_num
+        nodes_num = mcl_graph.nodes_num
         
-        # remove self loop
-        mis_graph.remove_self_loop()
+        # to complement remove self loop
+        mcl_graph.to_complement()
+        mcl_graph.remove_self_loop()
         
         # create gurobi model
-        model = gp.Model(f"MIS-{idx}")
+        model = gp.Model(f"MCL-{idx}")
         model.setParam("OutputFlag", 0)
         model.setParam("TimeLimit", self.time_limit)
         model.setParam("Threads", 1)
         
         # edge list
-        senders = mis_graph.edge_index[0]
-        receivers = mis_graph.edge_index[1]
+        senders = mcl_graph.edge_index[0]
+        receivers = mcl_graph.edge_index[1]
         edge_list = [(min([s, r]), max([s, r])) for s,r in zip(senders, receivers)]
         unique_edge_List = set(edge_list)
         
@@ -94,12 +95,12 @@ class MISGurobiSolver(MISSolver):
         model.setObjective(object, gp.GRB.MINIMIZE)
         
         # Solve
-        model.write(f"MIS-{idx}.lp")
+        model.write(f"MCL-{idx}.lp")
         model.optimize()
-        os.remove(f"MIS-{idx}.lp")
-        
+        os.remove(f"MCL-{idx}.lp")
+
         # return
         return np.array([int(var_dict[key].X) for key in var_dict])
     
     def __str__(self) -> str:
-        return "MISGurobiSolver"
+        return "MClGurobiSolver"

@@ -43,6 +43,7 @@ REQUIRED = [
     "async_timeout>=4.0.3",
     "pyvrp>=0.6.3",
     "cython>=3.0.8",
+    "gurobipy>=11.0.3"
 ]
 
 EXTRAS = {}

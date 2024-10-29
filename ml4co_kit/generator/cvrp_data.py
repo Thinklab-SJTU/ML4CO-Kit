@@ -7,6 +7,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver import (
     CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 )
@@ -18,7 +19,7 @@ class CVRPDataGenerator:
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[str, CVRPSolver] = "PyVRP",
+        solver: Union[SOLVER_TYPE, CVRPSolver] = SOLVER_TYPE.HGS,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -112,12 +113,12 @@ class CVRPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                "PyVRP": CVRPPyVRPSolver,
-                "LKH": CVRPLKHSolver,
-                "HGS": CVRPHGSSolver
+                SOLVER_TYPE.HGS: CVRPHGSSolver,
+                SOLVER_TYPE.LKH: CVRPLKHSolver,
+                SOLVER_TYPE.PYVRP: CVRPPyVRPSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
@@ -130,11 +131,12 @@ class CVRPDataGenerator:
         else:
             self.solver: CVRPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "PyVRP": self.check_free,
-            "LKH": self.check_lkh,
-            "HGS": self.check_free
+            SOLVER_TYPE.HGS: self.check_free,
+            SOLVER_TYPE.LKH: self.check_lkh,
+            SOLVER_TYPE.PYVRP: self.check_free,
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
@@ -199,31 +201,20 @@ class CVRPDataGenerator:
             range(self.samples_num // self.num_threads),
             desc=f"Solving CVRP Using {self.solver_type}",
         ):
-            # call generate_func to generate the points
+            # call generate_func to generate data
             batch_depots_coord, batch_nodes_coord = self.generate_func()
             batch_demands = self.generate_demands()
             batch_capacities = self.generate_capacities()
             
             # solve
-            if self.num_threads == 1:
-                tours = self.solver.solve(
-                    depots=batch_depots_coord[0],
-                    points=batch_nodes_coord[0],
-                    demands=batch_demands[0],
-                    capacities=batch_capacities[0]
-                )
-                tours = [tours]
-            else:
-                with Pool(self.num_threads) as p1:
-                    tours = p1.starmap(
-                        self.solver.solve,
-                        [(batch_depots_coord[idx],
-                        batch_nodes_coord[idx],
-                        batch_demands[idx],
-                        batch_capacities[idx])
-                        for idx in range(self.num_threads)],
-                    )
-            
+            tours = self.solver.solve(
+                depots=batch_depots_coord,
+                points=batch_nodes_coord,
+                demands=batch_demands,
+                capacities=batch_capacities.reshape(-1),
+                num_threads=self.num_threads
+            )
+
             # write to txt
             with open(self.file_save_path, "a+") as f:
                 for idx, tour in enumerate(tours):
@@ -242,7 +233,7 @@ class CVRPDataGenerator:
                     f.write(" demands " + str(" ").join(str(demand) for demand in demands))
                     f.write(" capacity " + str(capicity))
                     f.write(str(" output "))
-                    f.write(str(" ").join(str(node_idx) for node_idx in tour[0]))
+                    f.write(str(" ").join(str(node_idx) for node_idx in tour))
                     f.write("\n")
             f.close()
         

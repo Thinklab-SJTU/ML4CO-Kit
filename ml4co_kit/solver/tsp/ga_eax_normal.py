@@ -8,8 +8,9 @@ from ml4co_kit.solver.tsp.base import TSPSolver
 from ml4co_kit.solver.tsp.c_ga_eax_normal import (
     GA_EAX_NORMAL_TMP_PATH, tsp_ga_eax_normal_solve
 )
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPGAEAXSolver(TSPSolver):
@@ -20,7 +21,9 @@ class TSPGAEAXSolver(TSPSolver):
         population_num: int = 100,
         offspring_num: int = 30,
     ):
-        super(TSPGAEAXSolver, self).__init__(solver_type="GA-EAX", scale=scale)
+        super(TSPGAEAXSolver, self).__init__(
+            solver_type=SOLVER_TYPE.GA_EAX, scale=scale
+        )
         self.max_trials = max_trials
         self.population_num = population_num
         self.offspring_num = offspring_num
@@ -86,23 +89,20 @@ class TSPGAEAXSolver(TSPSolver):
     ) -> np.ndarray:
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
-        
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
 
         # solve
         tours = list()
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            for idx in iterative_execution(
-                range, num_points, "Solving TSP Using GA-EAX", show_time
-            ):
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 tours.append(self._solve(self.points[idx]))
         else:
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
-                range, num_points // num_threads, "Solving TSP Using GA-EAX", show_time
+                range, num_points // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.map(
@@ -117,13 +117,14 @@ class TSPGAEAXSolver(TSPSolver):
         
         # format
         tours = np.array(tours)
-        if tours.ndim == 2 and tours.shape[0] == 1:
-            tours = tours[0]
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
-        return tours
+        
+        # show time
+        timer.end()
+        timer.show_time()
+        
+        # return
+        return self.tours
     
     def __str__(self) -> str:
         return "TSPGAEAXSolver"

@@ -7,7 +7,8 @@ from typing import Union
 from multiprocessing import Pool
 from subprocess import check_call
 from ml4co_kit.solver.atsp.base import ATSPSolver
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from ml4co_kit.utils.time_utils import iterative_execution
 
 
 class ATSPLKHSolver(ATSPSolver):
@@ -31,7 +32,7 @@ class ATSPLKHSolver(ATSPSolver):
             lkh_runs (int, optional): The number of runs for the LKH solver.
                 Defaults to 1.
         """
-        super(ATSPLKHSolver, self).__init__(solver_type="LKH", scale=scale)
+        super(ATSPLKHSolver, self).__init__(solver_type=SOLVER_TYPE.LKH, scale=scale)
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
@@ -106,14 +107,12 @@ class ATSPLKHSolver(ATSPSolver):
         dists_shape = self.dists.shape
         num_dists = dists_shape[0]
         if num_threads == 1:
-            for idx in iterative_execution(
-                range, num_dists, "Solving ATSP Using LKH", show_time
-            ):
+            for idx in iterative_execution(range, num_dists, self.solve_msg, show_time):
                 tours.append(self._solve(self.dists[idx]))
         else:
             batch_dists = self.dists.reshape(-1, num_threads, dists_shape[-2], dists_shape[-1])
             for idx in iterative_execution(
-                range, num_dists // num_threads, "Solving ATSP Using LKH", show_time
+                range, num_dists // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.map(

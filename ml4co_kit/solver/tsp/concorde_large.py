@@ -4,9 +4,10 @@ import uuid
 import numpy as np
 from typing import Union
 from multiprocessing import Process
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver.tsp.pyconcorde import TSPConSolver
 from ml4co_kit.solver.tsp.concorde import TSPConcordeSolver
-from ml4co_kit.utils.run_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPConcordeLargeSolver(TSPConcordeSolver):
@@ -22,7 +23,7 @@ class TSPConcordeLargeSolver(TSPConcordeSolver):
                 The scale factor for coordinates in the Concorde solver.
         """
         super(TSPConcordeLargeSolver, self).__init__(scale=scale)
-        self.solver_type = "Concorde-Large"
+        self.solver_type = SOLVER_TYPE.CONCORDE_LARGE
         self.time_limit = time_limit
 
     def read_from_sol(self, filename: str) -> np.ndarray:
@@ -60,18 +61,15 @@ class TSPConcordeLargeSolver(TSPConcordeSolver):
     ) -> np.ndarray:
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
-        
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
 
         # solve
         tours = list()
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:
-            for idx in iterative_execution(
-                range, num_points, "Solving TSP Using Concorde-Large", show_time
-            ):
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 name = uuid.uuid4().hex
                 filename = f"{name[0:9]}.sol"
                 proc = Process(target=self._solve, args=(self.points[idx], name))
@@ -97,13 +95,14 @@ class TSPConcordeLargeSolver(TSPConcordeSolver):
 
         # format
         tours = np.array(tours)
-        if tours.ndim == 2 and tours.shape[0] == 1:
-            tours = tours[0]
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
-        return tours
+        
+        # show time
+        timer.end()
+        timer.show_time()
+        
+        # return
+        return self.tours
     
     def __str__(self) -> str:
         return "TSPConcordeLargeSolver"

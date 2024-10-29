@@ -15,11 +15,13 @@ This repository focuses on the supporting code for method development instead of
 
 | Problem |                Data                |    solver     |      Supervision      | evaluator |      visualization      |
 | :-----: | :--------------------------------: | :-----------: | :-------------------: | :-------: | :---------------------: |
-|   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde, Concorde-Large, GA-EAX, GA-EAX-Large | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
-|   MIS   |       SATLIB, ER, BA, HK, WS       | KaMIS, Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
-|  CVRP   |    Uniform, Gaussian, VRPLIB       | PyVRP, LKH, HGS |       Solution        |     ✔     | Problem Graph, Solution |
 |  ATSP   |    SAT, HCP       | LKH |       Solution        |     ✔     | -- |
-
+|  CVRP   |    Uniform, Gaussian, VRPLIB       | PyVRP, LKH, HGS |       Solution        |     ✔     | Problem Graph, Solution |
+|   MC   |       SATLIB, ER, BA, HK, WS       | Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
+|   MCl   |       SATLIB, ER, BA, HK, WS       | Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
+|   MIS   |       SATLIB, ER, BA, HK, WS       | KaMIS, Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
+|   MVC   |       SATLIB, ER, BA, HK, WS       | Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
+|   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde, Concorde-Large, GA-EAX, GA-EAX-Large | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
 ###### ML4CO Organization:
 
 <img src="docs/assets/organization.jpg" alt="Organization" width="800"/>
@@ -55,6 +57,7 @@ requests>=2.31.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
 cython>=3.0.8
+gurobipy>=11.0.3
 ```
 
 To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:

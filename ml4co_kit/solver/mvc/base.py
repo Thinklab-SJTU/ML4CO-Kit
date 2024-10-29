@@ -3,65 +3,65 @@ import pickle
 import numpy as np
 import networkx as nx
 from typing import List
+from ml4co_kit.utils import MVCGraphData
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.utils.graph.mis import MISGraphData
 from ml4co_kit.utils.type_utils import TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
-class MISSolver(SolverBase):
+class MVCSolver(SolverBase):
     def __init__(
         self, 
         solver_type: SOLVER_TYPE = None, 
         weighted: bool = False, 
         time_limit: float = 60.0
     ):
-        super(MISSolver, self).__init__(
-            task_type=TASK_TYPE.MIS, solver_type=solver_type
+        super(MVCSolver, self).__init__(
+            task_type=TASK_TYPE.MVC, solver_type=solver_type
         )
         self.weighted = weighted
         self.time_limit = time_limit
-        self.graph_data: List[MISGraphData] = list()
+        self.graph_data: List[MVCGraphData] = list()
 
     def check_edge_index_not_none(self):
         message = (
             f"``edge_index`` cannot be None! You can load ``edge_index`` using the "
             "methods including ``from_graph_data``, ``from_adj_martix``, ``from_txt``, "
             "``from_gpickle_result`` or ``from_gpickle_result_folder`` to obtain them."
-        )
+        )  
         for graph in self.graph_data:
-            graph: MISGraphData
+            graph: MVCGraphData
             if graph.edge_index is None:
                 raise ValueError(message)
 
     def check_nodes_label_not_none(self, ref: bool):
         msg = "ref_nodes_label" if ref else "nodes_label"
         message = (
-            f"``{msg}`` cannot be None! You can use solvers based on ``MISSolver`` "
-            "like ``KaMISSolver`` or use methods including ``from_graph_data``, "
+            f"``{msg}`` cannot be None! You can use solvers based on ``MVCSolver`` "
+            "like ``MVCGurobiSolver`` or use methods including ``from_graph_data``, "
             "``from_adj_martix``, ``from_txt``, ``from_gpickle_result`` or "
             "``from_gpickle_result_folder`` to obtain them."
         )  
         if ref:
             for graph in self.graph_data:
-                graph: MISGraphData
+                graph: MVCGraphData
                 if graph.ref_nodes_label is None:
                     raise ValueError(message)
         else:
             for graph in self.graph_data:
-                graph: MISGraphData
+                graph: MVCGraphData
                 if graph.nodes_label is None:
                     raise ValueError(message)
 
     def set_ref_as_solution(self):
         for graph in self.graph_data:
-            graph: MISGraphData
+            graph: MVCGraphData
             graph.nodes_label = graph.ref_nodes_label
             graph.sel_nodes_num = graph.ref_sel_nodes_num
 
     def set_solution_as_ref(self):
         for graph in self.graph_data:
-            graph: MISGraphData
+            graph: MVCGraphData
             graph.ref_nodes_label = graph.nodes_label
             graph.ref_sel_nodes_num = graph.sel_nodes_num
     
@@ -75,13 +75,13 @@ class MISSolver(SolverBase):
     ):
         # cover or not
         if cover:
-            graph = MISGraphData()
+            graph = MVCGraphData()
         else:
             if len(self.graph_data) != 1:
                 raise ValueError(
                     "Read data from only one graph, but save more than one piece of data"
                 )
-            graph: MISGraphData = self.graph_data[0]
+            graph: MVCGraphData = self.graph_data[0]
         
         # read graph data
         if gpickle_file_path is not None:
@@ -128,7 +128,7 @@ class MISSolver(SolverBase):
                     continue
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
 
                 # read graph data
                 graph.from_gpickle(file_path=gpickle_file_path, self_loop=self_loop)
@@ -153,7 +153,7 @@ class MISSolver(SolverBase):
                     continue
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
 
                 # read graph data
                 graph.from_result(file_path=result_file_path, ref=ref)
@@ -185,7 +185,7 @@ class MISSolver(SolverBase):
                 )
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
 
                 # read graph data
                 graph.from_gpickle(file_path=gpickle_file_path, self_loop=self_loop)
@@ -234,7 +234,7 @@ class MISSolver(SolverBase):
                 nodes_label = np.array([int(nodel_label) for nodel_label in nodes_label])
 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 
                 # load data
                 graph.from_data(edge_index=edge_index, nodes_label=nodes_label, ref=ref)
@@ -287,7 +287,7 @@ class MISSolver(SolverBase):
         # only data
         if data_flag and not result_flag:
             for idx in range(len(edge_index)):
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 graph.from_data(edge_index=edge_index[idx])
                 if cover:
                     self.graph_data.append(graph)
@@ -297,7 +297,7 @@ class MISSolver(SolverBase):
         # only data
         if not data_flag and result_flag:
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 graph.from_data(nodes_label=nodes_label[idx], ref=ref)
                 if cover:
                     self.graph_data.append(graph)
@@ -310,7 +310,7 @@ class MISSolver(SolverBase):
                 raise ValueError("The number of problems and solutions does not match!")
             
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 graph.from_data(
                     edge_index=edge_index[idx], nodes_label=nodes_label[idx], ref=ref
                 )
@@ -337,7 +337,7 @@ class MISSolver(SolverBase):
         # only data
         if not result_flag:
             for idx in range(len(adj_matrix)):
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 graph.from_adj_martix(adj_matrix[idx], self_loop=self_loop)
                 if cover:
                     self.graph_data.append(graph)
@@ -350,7 +350,7 @@ class MISSolver(SolverBase):
                 raise ValueError("The number of problems and solutions does not match!")
             
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MISGraphData()
+                graph = self.graph_data[idx] if not cover else MVCGraphData()
                 graph.from_data(nodes_label=nodes_label[idx], ref=ref)
                 graph.from_adj_martix(adj_matrix[idx], self_loop=self_loop)
                 if cover:
@@ -360,10 +360,10 @@ class MISSolver(SolverBase):
     
     def from_nx_graph(self, nx_graphs: List[nx.Graph]):
         for idx in range(len(nx_graphs)):
-            graph = MISGraphData()
+            graph = MVCGraphData()
             graph.from_nx_graph(nx_graphs[idx])
             self.graph_data.append(graph)
-        
+    
     def to_gpickle_result_folder(
         self,
         gpickle_save_dir: str = None,
@@ -400,7 +400,7 @@ class MISSolver(SolverBase):
                 save_path = os.path.join(gpickle_save_dir, name)
                 
                 # graph_data -> nx.Graph
-                graph: MISGraphData = self.graph_data[idx]
+                graph: MVCGraphData = self.graph_data[idx]
                 edge_index = graph.edge_index
                 if not graph.self_loop:
                     self_loop: np.ndarray = np.arange(graph.nodes_num)
@@ -443,7 +443,7 @@ class MISSolver(SolverBase):
                 save_path = os.path.join(result_save_dir, name)
                 
                 # write
-                graph: MISGraphData = self.graph_data[idx]
+                graph: MVCGraphData = self.graph_data[idx]
                 nodes_label = graph.nodes_label
                 with open(save_path, "w") as f:
                     for node_label in nodes_label:
@@ -496,4 +496,4 @@ class MISSolver(SolverBase):
         )
 
     def __str__(self) -> str:
-        return "MISSolver"
+        return "MVCSolver"

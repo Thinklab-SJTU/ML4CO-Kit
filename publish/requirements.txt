@@ -14,3 +14,4 @@ aiohttp>=3.9.3
 async_timeout>=4.0.3
 matplotlib>=3.7.5
 pyvrp>=0.6.3
+gurobipy>=11.0.3

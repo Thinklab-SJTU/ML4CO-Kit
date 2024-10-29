@@ -3,24 +3,24 @@ import numpy as np
 import gurobipy as gp
 from typing import List
 from multiprocessing import Pool
-from ml4co_kit.solver.mis.base import MISSolver
-from ml4co_kit.utils.graph.mis import MISGraphData
+from ml4co_kit.solver.mc.base import MCSolver
+from ml4co_kit.utils.graph.mc import MCGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
-class MISGurobiSolver(MISSolver):
+class MCGurobiSolver(MCSolver):
     def __init__(
         self, licence_path: str, weighted: bool = False, time_limit: float = 60.0
     ):
-        super(MISGurobiSolver, self).__init__(
+        super(MCGurobiSolver, self).__init__(
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
         self.licence_path = licence_path
-        
+
     def solve(
         self,
-        graph_data: List[MISGraphData] = None,
+        graph_data: List[MCGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
     ) -> np.ndarray:
@@ -58,48 +58,44 @@ class MISGurobiSolver(MISSolver):
         timer.end()
         timer.show_time()
         
-        return self.graph_data
+        return solutions
     
     def _solve(self, idx: int) -> np.ndarray:
         # graph
-        mis_graph: MISGraphData = self.graph_data[idx]
+        mc_graph: MCGraphData = self.graph_data[idx]
         
         # number of graph's nodes
-        nodes_num = mis_graph.nodes_num
+        nodes_num = mc_graph.nodes_num
         
-        # remove self loop
-        mis_graph.remove_self_loop()
-        
+        # edge_attr 
+        mc_graph.check_edge_attr()
+            
         # create gurobi model
-        model = gp.Model(f"MIS-{idx}")
+        model = gp.Model(f"MC-{idx}")
         model.setParam("OutputFlag", 0)
         model.setParam("TimeLimit", self.time_limit)
         model.setParam("Threads", 1)
         
-        # edge list
-        senders = mis_graph.edge_index[0]
-        receivers = mis_graph.edge_index[1]
-        edge_list = [(min([s, r]), max([s, r])) for s,r in zip(senders, receivers)]
-        unique_edge_List = set(edge_list)
-        
-        # Constr.
-        var_dict = model.addVars(nodes_num, vtype=gp.GRB.BINARY)
-        for (s, r) in unique_edge_List:
-            xs = var_dict[s]
-            xr = var_dict[r]
-            model.addConstr(xs + xr <= 1, name="e%d-%d" % (s, r))
-            
+        # edges
+        senders = mc_graph.edge_index[0]
+        receivers = mc_graph.edge_index[1]
+        edge_attr = mc_graph.edge_attr
+
         # Object
-        object = gp.quicksum(-var_dict[int(n)]  for n in range(nodes_num))
+        var_dict = model.addVars(nodes_num, vtype=gp.GRB.BINARY)
+        object = gp.quicksum( 
+            (2 * var_dict[int(s)] - 1) * weight * (2 * var_dict[int(r)] - 1) / 2 
+            for s, r, weight in zip(senders, receivers, edge_attr)
+        )
         model.setObjective(object, gp.GRB.MINIMIZE)
         
         # Solve
-        model.write(f"MIS-{idx}.lp")
+        model.write(f"MC-{idx}.lp")
         model.optimize()
-        os.remove(f"MIS-{idx}.lp")
+        os.remove(f"MC-{idx}.lp")
         
         # return
         return np.array([int(var_dict[key].X) for key in var_dict])
     
     def __str__(self) -> str:
-        return "MISGurobiSolver"
+        return "MCGurobiSolver"

@@ -8,6 +8,7 @@ import pathlib
 from tqdm import tqdm
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
@@ -24,7 +25,7 @@ class TSPDataGenerator:
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[str, TSPSolver] = "LKH",
+        solver: Union[SOLVER_TYPE, TSPSolver] = SOLVER_TYPE.LKH,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -80,17 +81,21 @@ class TSPDataGenerator:
         self.test_samples_num = test_samples_num
         self.save_path = save_path
         self.filename = filename
+        
         # special for gaussian
         self.gaussian_mean_x = gaussian_mean_x
         self.gaussian_mean_y = gaussian_mean_y
         self.gaussian_std = gaussian_std
+        
         # special for cluster
         self.cluster_nums = cluster_nums
         self.cluster_std = cluster_std
+        
         # special for regret
         self.regret = regret
         self.regret_save_path = regret_save_path
         self.regret_solver = regret_solver
+        
         # check the input variables
         self.sample_types = ["train", "val", "test"]
         self.check_num_threads()
@@ -124,14 +129,14 @@ class TSPDataGenerator:
 
     def check_solver(self):
         # get solver
-        if type(self.solver) == str:
+        if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                "LKH": TSPLKHSolver, 
-                "Concorde": TSPConcordeSolver,
-                "Concorde-Large": TSPConcordeLargeSolver,
-                "GA-EAX": TSPGAEAXSolver, 
-                "GA-EAX-Large": TSPGAEAXLargeSolver 
+                SOLVER_TYPE.CONCORDE: TSPConcordeSolver,
+                SOLVER_TYPE.LKH: TSPLKHSolver, 
+                SOLVER_TYPE.CONCORDE_LARGE: TSPConcordeLargeSolver,
+                SOLVER_TYPE.GA_EAX: TSPGAEAXSolver, 
+                SOLVER_TYPE.GA_EAX_LARGE: TSPGAEAXLargeSolver 
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
@@ -144,13 +149,14 @@ class TSPDataGenerator:
         else:
             self.solver: TSPSolver
             self.solver_type = self.solver.solver_type
+            
         # check solver
         check_solver_dict = {
-            "LKH": self.check_lkh,
-            "Concorde": self.check_concorde,
-            "Concorde-Large": self.check_concorde,
-            "GA-EAX": self.check_free,
-            "GA-EAX-Large": self.check_free
+            SOLVER_TYPE.CONCORDE: self.check_concorde,
+            SOLVER_TYPE.CONCORDE_LARGE: self.check_concorde,
+            SOLVER_TYPE.GA_EAX: self.check_free,
+            SOLVER_TYPE.GA_EAX_LARGE: self.check_free,
+            SOLVER_TYPE.LKH: self.check_lkh
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()
@@ -159,6 +165,7 @@ class TSPDataGenerator:
         # check if lkh is downloaded
         if shutil.which(self.solver.lkh_path) is None:
             self.download_lkh()
+            
         # check again
         if shutil.which(self.solver.lkh_path) is None:
             message = (
@@ -239,21 +246,14 @@ class TSPDataGenerator:
             range(self.samples_num // self.num_threads),
             desc=f"Solving TSP Using {self.solver_type}",
         ):
-            # call generate_func to generate the points
+            # call generate_func to generate data
             batch_nodes_coord = self.generate_func()
             
             # solve
-            if self.num_threads == 1:
-                tours = [self.solver.solve(batch_nodes_coord[0])]
-            else:
-                with Pool(self.num_threads) as p1:
-                    tours = p1.map(
-                        self.solver.solve,
-                        [batch_nodes_coord[idx] for idx in range(self.num_threads)],
-                    )
-                p1.close()  # Close the pool to indicate that no more tasks will be submitted
-                p1.join()  # Wait for all processes in the pool to complete
-                
+            tours = self.solver.solve(
+                points=batch_nodes_coord, num_threads=self.num_threads
+            )
+
             # deal with regret
             if self.regret:
                 if self.num_threads == 1:
