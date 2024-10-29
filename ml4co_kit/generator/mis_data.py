@@ -159,8 +159,8 @@ class MISDataGenerator:
         if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                SOLVER_TYPE.KAMIS: KaMISSolver, 
-                SOLVER_TYPE.GUROBI: MISGurobiSolver
+                SOLVER_TYPE.GUROBI: MISGurobiSolver,
+                SOLVER_TYPE.KAMIS: KaMISSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver not in supported_solver_type:
@@ -177,6 +177,7 @@ class MISDataGenerator:
         # check solver
         check_solver_dict = {
             SOLVER_TYPE.GUROBI: self.check_free,
+            SOLVER_TYPE.KAMIS: self.check_free
         }
         check_func = check_solver_dict[self.solver_type]
         check_func()

@@ -211,10 +211,10 @@ class CVRPDataGenerator:
                 depots=batch_depots_coord,
                 points=batch_nodes_coord,
                 demands=batch_demands,
-                capacities=batch_capacities,
+                capacities=batch_capacities.reshape(-1),
                 num_threads=self.num_threads
             )
-    
+
             # write to txt
             with open(self.file_save_path, "a+") as f:
                 for idx, tour in enumerate(tours):
@@ -233,7 +233,7 @@ class CVRPDataGenerator:
                     f.write(" demands " + str(" ").join(str(demand) for demand in demands))
                     f.write(" capacity " + str(capicity))
                     f.write(str(" output "))
-                    f.write(str(" ").join(str(node_idx) for node_idx in tour[0]))
+                    f.write(str(" ").join(str(node_idx) for node_idx in tour))
                     f.write("\n")
             f.close()
         

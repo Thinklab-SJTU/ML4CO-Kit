@@ -359,5 +359,5 @@ class ATSPDataGenerator:
                 dist = (dist[:, None, :] + dist[None, :, :].transpose(0, 2, 1)).min(axis=2)
                 if (dist == old_dist).all():
                     break
-                dists.append(dist / scaler)
+            dists.append(dist / scaler)
         return np.array(dists), None

@@ -14,8 +14,8 @@ GUROBI_TEST = False
 ##############################################
 
 def _test_atsp_lkh_generator(
-    num_threads: int, nodes_num: int, data_type: str, 
-    sat_vars_num: int = None, sat_clauses_nums: int = None
+    num_threads: int, nodes_num: int, data_type: str, sat_vars_num: int = None, 
+    sat_clauses_nums: int = None, re_download: bool = False
 ):
     """
     Test ATSPDataGenerator using ATSPLKHSolver
@@ -26,7 +26,7 @@ def _test_atsp_lkh_generator(
         os.makedirs(save_path)
         
     # create TSPDataGenerator using lkh solver
-    tsp_data_lkh = ATSPDataGenerator(
+    atsp_data_lkh = ATSPDataGenerator(
         num_threads=num_threads,
         nodes_num=nodes_num,
         data_type=data_type,
@@ -38,9 +38,12 @@ def _test_atsp_lkh_generator(
         sat_vars_nums=sat_vars_num,
         sat_clauses_nums=sat_clauses_nums,
     )
-    
+
+    if re_download:
+        atsp_data_lkh.download_lkh()    
+
     # generate data
-    tsp_data_lkh.generate()
+    atsp_data_lkh.generate()
     
     # remove the save path
     shutil.rmtree(save_path)
@@ -50,6 +53,10 @@ def test_atsp():
     """
     Test ATSPDataGenerator
     """
+    # uniform
+    _test_atsp_lkh_generator(
+        num_threads=4, nodes_num=50, data_type="uniform", re_download=True
+    )
     # sat
     _test_atsp_lkh_generator(
         num_threads=4, nodes_num=55, data_type="sat", sat_clauses_nums=5, sat_vars_num=5
@@ -61,10 +68,6 @@ def test_atsp():
     # hcp
     _test_atsp_lkh_generator(
         num_threads=4, nodes_num=50, data_type="hcp"
-    )
-    # uniform
-    _test_atsp_lkh_generator(
-        num_threads=4, nodes_num=50, data_type="uniform"
     )
     
 
@@ -443,8 +446,7 @@ def test_mvc():
 ##############################################
 
 def _test_tsp_lkh_generator(
-    num_threads: int, nodes_num: int, data_type: str, 
-    regret: bool, re_download: bool=False
+    num_threads: int, nodes_num: int, data_type: str, regret: bool
 ):
     """
     Test TSPDataGenerator using LKH Solver
@@ -465,8 +467,7 @@ def _test_tsp_lkh_generator(
         save_path=save_path,
         regret=regret,
     )
-    if re_download:
-        tsp_data_lkh.download_lkh()
+
     # generate data
     tsp_data_lkh.generate()
     # remove the save path
@@ -564,10 +565,9 @@ def test_tsp():
     """
     Test TSPDataGenerator
     """
-    # re-download lkh
+    # threads
     _test_tsp_lkh_generator(
-        num_threads=4, nodes_num=50, data_type="uniform", 
-        regret=False, re_download=True
+        num_threads=4, nodes_num=50, data_type="uniform", regret=False
     )
     # regret & threads
     _test_tsp_lkh_generator(
@@ -603,11 +603,11 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
+    test_atsp()
+    test_cvrp()
     test_mc()
     test_mcl()
     test_mis()
     test_mvc()
-    test_cvrp()
-    test_atsp()
+    test_tsp()
     shutil.rmtree("tmp")

@@ -132,11 +132,11 @@ class TSPDataGenerator:
         if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                "LKH": TSPLKHSolver, 
-                "Concorde": TSPConcordeSolver,
-                "Concorde-Large": TSPConcordeLargeSolver,
-                "GA-EAX": TSPGAEAXSolver, 
-                "GA-EAX-Large": TSPGAEAXLargeSolver 
+                SOLVER_TYPE.CONCORDE: TSPConcordeSolver,
+                SOLVER_TYPE.LKH: TSPLKHSolver, 
+                SOLVER_TYPE.CONCORDE_LARGE: TSPConcordeLargeSolver,
+                SOLVER_TYPE.GA_EAX: TSPGAEAXSolver, 
+                SOLVER_TYPE.GA_EAX_LARGE: TSPGAEAXLargeSolver 
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
