@@ -58,7 +58,7 @@ class MClGurobiSolver(MClSolver):
         timer.end()
         timer.show_time()
         
-        return solutions
+        return self.graph_data
     
     def _solve(self, idx: int) -> np.ndarray:
         # graph
