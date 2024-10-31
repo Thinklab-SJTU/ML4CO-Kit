@@ -1,4 +1,5 @@
 import os
+import uuid
 import numpy as np
 import gurobipy as gp
 from typing import List
@@ -17,7 +18,8 @@ class MCGurobiSolver(MCSolver):
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
         self.licence_path = licence_path
-
+        self.tmp_name = None
+        
     def solve(
         self,
         graph_data: List[MCGraphData] = None,
@@ -29,6 +31,7 @@ class MCGurobiSolver(MCSolver):
             self.graph_data = graph_data
         timer = Timer(apply=show_time)
         timer.start()
+        self.tmp_name = uuid.uuid4().hex[:9]
         
         # solve
         solutions = list()
@@ -71,7 +74,7 @@ class MCGurobiSolver(MCSolver):
         mc_graph.check_edge_attr()
             
         # create gurobi model
-        model = gp.Model(f"MC-{idx}")
+        model = gp.Model(f"MC-{self.tmp_name}-{idx}")
         model.setParam("OutputFlag", 0)
         model.setParam("TimeLimit", self.time_limit)
         model.setParam("Threads", 1)
@@ -90,9 +93,9 @@ class MCGurobiSolver(MCSolver):
         model.setObjective(object, gp.GRB.MINIMIZE)
         
         # Solve
-        model.write(f"MC-{idx}.lp")
+        model.write(f"MC-{self.tmp_name}-{idx}.lp")
         model.optimize()
-        os.remove(f"MC-{idx}.lp")
+        os.remove(f"MC-{self.tmp_name}-{idx}.lp")
         
         # return
         return np.array([int(var_dict[key].X) for key in var_dict])

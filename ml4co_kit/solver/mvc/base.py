@@ -359,6 +359,7 @@ class MVCSolver(SolverBase):
                     self.graph_data[idx] = graph
     
     def from_nx_graph(self, nx_graphs: List[nx.Graph]):
+        self.graph_data = list()
         for idx in range(len(nx_graphs)):
             graph = MVCGraphData()
             graph.from_nx_graph(nx_graphs[idx])

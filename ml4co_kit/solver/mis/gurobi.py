@@ -1,4 +1,5 @@
 import os
+import uuid
 import numpy as np
 import gurobipy as gp
 from typing import List
@@ -17,6 +18,7 @@ class MISGurobiSolver(MISSolver):
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
         self.licence_path = licence_path
+        self.tmp_name = None
         
     def solve(
         self,
@@ -29,6 +31,7 @@ class MISGurobiSolver(MISSolver):
             self.graph_data = graph_data
         timer = Timer(apply=show_time)
         timer.start()
+        self.tmp_name = uuid.uuid4().hex[:9]
         
         # solve
         solutions = list()
@@ -71,7 +74,7 @@ class MISGurobiSolver(MISSolver):
         mis_graph.remove_self_loop()
         
         # create gurobi model
-        model = gp.Model(f"MIS-{idx}")
+        model = gp.Model(f"MIS-{self.tmp_name}-{idx}")
         model.setParam("OutputFlag", 0)
         model.setParam("TimeLimit", self.time_limit)
         model.setParam("Threads", 1)
@@ -94,9 +97,9 @@ class MISGurobiSolver(MISSolver):
         model.setObjective(object, gp.GRB.MINIMIZE)
         
         # Solve
-        model.write(f"MIS-{idx}.lp")
+        model.write(f"MIS-{self.tmp_name}-{idx}.lp")
         model.optimize()
-        os.remove(f"MIS-{idx}.lp")
+        os.remove(f"MIS-{self.tmp_name}-{idx}.lp")
         
         # return
         return np.array([int(var_dict[key].X) for key in var_dict])
