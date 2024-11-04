@@ -11,13 +11,10 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class MISGurobiSolver(MISSolver):
-    def __init__(
-        self, licence_path: str, weighted: bool = False, time_limit: float = 60.0
-    ):
+    def __init__(self, weighted: bool = False, time_limit: float = 60.0):
         super(MISGurobiSolver, self).__init__(
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
-        self.licence_path = licence_path
         self.tmp_name = None
         
     def solve(

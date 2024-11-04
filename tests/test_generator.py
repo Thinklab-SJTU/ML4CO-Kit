@@ -200,56 +200,6 @@ def test_cvrp():
 
 
 ##############################################
-#             Test Func For MC               #
-##############################################
-
-def _test_mc_gurobi(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
-):
-    """
-    Test MCDataGenerator using MCGurobiSolver
-    """
-    if not GUROBI_TEST:
-        return
-    
-    # save path
-    save_path = f"tmp/mc_{data_type}_gurobi"
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    
-    # solver
-    solver = MCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
-      
-    # create MISDataGenerator using gurobi solver
-    mis_data_gurobi = MCDataGenerator(
-        nodes_num_min=nodes_num_min,
-        nodes_num_max=nodes_num_max,
-        data_type=data_type,
-        solver=solver,
-        train_samples_num=2,
-        val_samples_num=2,
-        test_samples_num=2,
-        save_path=save_path,
-    )
-    
-    # generate and solve data
-    mis_data_gurobi.generate()
-    
-    # remove the save path
-    shutil.rmtree(save_path)
-
-
-def test_mc():
-    """
-    Test MVCDataGenerator
-    """
-    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
-
-
-##############################################
 #             Test Func For MCl              #
 ##############################################
 
@@ -270,8 +220,8 @@ def _test_mcl_gurobi(
     # solver
     solver = MClGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
       
-    # create MISDataGenerator using gurobi solver
-    mis_data_gurobi = MClDataGenerator(
+    # create MClDataGenerator using gurobi solver
+    mcl_data_gurobi = MClDataGenerator(
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -283,7 +233,7 @@ def _test_mcl_gurobi(
     )
     
     # generate and solve data
-    mis_data_gurobi.generate()
+    mcl_data_gurobi.generate()
     
     # remove the save path
     shutil.rmtree(save_path)
@@ -297,6 +247,56 @@ def test_mcl():
     _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
     _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
     _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+
+
+##############################################
+#            Test Func For MCut              #
+##############################################
+
+def _test_mcut_gurobi(
+    nodes_num_min: int, nodes_num_max: int, data_type: str
+):
+    """
+    Test MCDataGenerator using MCGurobiSolver
+    """
+    if not GUROBI_TEST:
+        return
+    
+    # save path
+    save_path = f"tmp/mcut_{data_type}_gurobi"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    # solver
+    solver = MCutGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
+      
+    # create MCutDataGenerator using gurobi solver
+    mcut_data_gurobi = MCutDataGenerator(
+        nodes_num_min=nodes_num_min,
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+    )
+    
+    # generate and solve data
+    mcut_data_gurobi.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+
+
+def test_mcut():
+    """
+    Test MVCDataGenerator
+    """
+    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
+    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
+    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
+    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
 
 
 ##############################################
@@ -411,8 +411,8 @@ def _test_mvc_gurobi(
     # solver
     solver = MVCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
       
-    # create MISDataGenerator using gurobi solver
-    mis_data_gurobi = MVCDataGenerator(
+    # create MVCDataGenerator using gurobi solver
+    mvc_data_gurobi = MVCDataGenerator(
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -424,7 +424,7 @@ def _test_mvc_gurobi(
     )
     
     # generate and solve data
-    mis_data_gurobi.generate()
+    mvc_data_gurobi.generate()
     
     # remove the save path
     shutil.rmtree(save_path)
@@ -605,8 +605,8 @@ def test_tsp():
 if __name__ == "__main__":
     test_atsp()
     test_cvrp()
-    test_mc()
     test_mcl()
+    test_mcut()
     test_mis()
     test_mvc()
     test_tsp()

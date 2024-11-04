@@ -294,7 +294,7 @@ class MClSolver(SolverBase):
                 else:
                     self.graph_data[idx] = graph
                     
-        # only data
+        # only solutions
         if not data_flag and result_flag:
             for idx in range(len(nodes_label)):
                 graph = self.graph_data[idx] if not cover else MClGraphData()

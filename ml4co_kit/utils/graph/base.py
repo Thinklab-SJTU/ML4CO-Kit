@@ -118,6 +118,47 @@ class GraphData(object):
             )
         return self.adj_matrix
     
+    def to_networkx(self) -> nx.Graph:
+        """
+        Converts the GraphData instance to a networkx Graph.
+        """
+        nx_graph = nx.Graph()
+        
+        # Add nodes
+        if self.nodes_num is not None:
+            nx_graph.add_nodes_from(range(self.nodes_num))
+        
+        # Add edges with attributes
+        if self.edge_index is not None:
+            edges = self.edge_index.T  # Transpose to get pairs of edges
+            if self.edge_attr is not None:
+                edge_data = zip(edges, self.edge_attr)  
+            else:
+                edge_data = zip(edges, [1] * edges.shape[0])
+            
+            for (u, v), weight in edge_data:
+                nx_graph.add_edge(u, v, weight=weight)
+        
+        return nx_graph
+    
+    def to_complement(self):
+        """
+        Converts the current graph to its complement by reversing the edge relationships
+        between nodes. Self-loop configurations remain unchanged.
+        """
+        if self.adj_matrix is None:
+            # If no adjacency matrix is present, generate it first
+            self.to_matrix()
+        
+        # Generate the complement adjacency matrix by inverting 0s and 1s
+        complement_adj_matrix = np.logical_not(self.adj_matrix).astype(int)
+        
+        # Preserve the diagonal values for self-loops (change to 0 to remove self-loops)
+        np.fill_diagonal(complement_adj_matrix, self.adj_matrix.diagonal())
+        
+        # Update the current graph data to reflect the complement graph
+        self.from_adj_martix(complement_adj_matrix)
+    
     def remove_self_loop(self):
         """
         Removes self-loops from the edge data by filtering out edges where source and target nodes are the same.
@@ -152,24 +193,6 @@ class GraphData(object):
             self.edge_attr = np.hstack((self.edge_attr, loop_attrs))
         else:
             self.edge_attr = np.full((self.nodes_num,), loop_weight)
-    
-    def to_complement(self):
-        """
-        Converts the current graph to its complement by reversing the edge relationships
-        between nodes. Self-loop configurations remain unchanged.
-        """
-        if self.adj_matrix is None:
-            # If no adjacency matrix is present, generate it first
-            self.to_matrix()
-        
-        # Generate the complement adjacency matrix by inverting 0s and 1s
-        complement_adj_matrix = np.logical_not(self.adj_matrix).astype(int)
-        
-        # Preserve the diagonal values for self-loops (change to 0 to remove self-loops)
-        np.fill_diagonal(complement_adj_matrix, self.adj_matrix.diagonal())
-        
-        # Update the current graph data to reflect the complement graph
-        self.from_adj_martix(complement_adj_matrix)
         
     def check_edge_attr(self):
         if self.edge_attr is None:

@@ -1,5 +1,6 @@
 import os
 import uuid
+import copy
 import numpy as np
 import gurobipy as gp
 from typing import List
@@ -11,13 +12,10 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class MClGurobiSolver(MClSolver):
-    def __init__(
-        self, licence_path: str, weighted: bool = False, time_limit: float = 60.0
-    ):
+    def __init__(self, weighted: bool = False, time_limit: float = 60.0):
         super(MClGurobiSolver, self).__init__(
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
-        self.licence_path = licence_path
         self.tmp_name = None
 
     def solve(
@@ -66,13 +64,14 @@ class MClGurobiSolver(MClSolver):
     def _solve(self, idx: int) -> np.ndarray:
         # graph
         mcl_graph: MClGraphData = self.graph_data[idx]
+        cp_mcl_graph = copy.deepcopy(mcl_graph)
         
         # number of graph's nodes
-        nodes_num = mcl_graph.nodes_num
+        nodes_num = cp_mcl_graph.nodes_num
         
         # to complement remove self loop
-        mcl_graph.to_complement()
-        mcl_graph.remove_self_loop()
+        cp_mcl_graph.to_complement()
+        cp_mcl_graph.remove_self_loop()
         
         # create gurobi model
         model = gp.Model(f"MCl-{self.tmp_name}-{idx}")
@@ -81,8 +80,8 @@ class MClGurobiSolver(MClSolver):
         model.setParam("Threads", 1)
         
         # edge list
-        senders = mcl_graph.edge_index[0]
-        receivers = mcl_graph.edge_index[1]
+        senders = cp_mcl_graph.edge_index[0]
+        receivers = cp_mcl_graph.edge_index[1]
         edge_list = [(min([s, r]), max([s, r])) for s,r in zip(senders, receivers)]
         unique_edge_List = set(edge_list)
         

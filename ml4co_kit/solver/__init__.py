@@ -6,11 +6,11 @@ from .cvrp.hgs import CVRPHGSSolver
 from .cvrp.lkh import CVRPLKHSolver
 from .cvrp.pyvrp import CVRPPyVRPSolver
 
-from .mc.base import MCSolver
-from .mc.gurobi import MCGurobiSolver
-
 from .mcl.base import MClSolver
 from .mcl.gurobi import MClGurobiSolver
+
+from .mcut.base import MCutSolver
+from .mcut.gurobi import MCutGurobiSolver
 
 from .mis.base import MISSolver
 from .mis.gurobi import MISGurobiSolver

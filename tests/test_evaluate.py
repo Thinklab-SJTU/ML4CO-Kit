@@ -3,12 +3,7 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import shutil
-from ml4co_kit.data import SATLIBOriDataset, VRPLIBOriDataset
-from ml4co_kit.evaluate import (
-    TSPLIBOriEvaluator, TSPUniformEvaluator, SATLIBEvaluator, 
-    TSPLIB4MLEvaluator, CVRPUniformEvaluator
-)
-from ml4co_kit.solver import TSPConcordeSolver, TSPLKHSolver, KaMISSolver
+from ml4co_kit import *
 
 
 def test_tsplib_original_eval():

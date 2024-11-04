@@ -4,25 +4,22 @@ import numpy as np
 import gurobipy as gp
 from typing import List
 from multiprocessing import Pool
-from ml4co_kit.solver.mc.base import MCSolver
-from ml4co_kit.utils.graph.mc import MCGraphData
+from ml4co_kit.solver.mcut.base import MCutSolver
+from ml4co_kit.utils.graph.mcut import MCutGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
-class MCGurobiSolver(MCSolver):
-    def __init__(
-        self, licence_path: str, weighted: bool = False, time_limit: float = 60.0
-    ):
-        super(MCGurobiSolver, self).__init__(
+class MCutGurobiSolver(MCutSolver):
+    def __init__(self, weighted: bool = False, time_limit: float = 60.0):
+        super(MCutGurobiSolver, self).__init__(
             solver_type=SOLVER_TYPE.GUROBI, weighted=weighted, time_limit=time_limit
         )
-        self.licence_path = licence_path
         self.tmp_name = None
         
     def solve(
         self,
-        graph_data: List[MCGraphData] = None,
+        graph_data: List[MCutGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
     ) -> np.ndarray:
@@ -65,24 +62,24 @@ class MCGurobiSolver(MCSolver):
     
     def _solve(self, idx: int) -> np.ndarray:
         # graph
-        mc_graph: MCGraphData = self.graph_data[idx]
+        mcut_graph: MCutGraphData = self.graph_data[idx]
         
         # number of graph's nodes
-        nodes_num = mc_graph.nodes_num
+        nodes_num = mcut_graph.nodes_num
         
         # edge_attr 
-        mc_graph.check_edge_attr()
+        mcut_graph.check_edge_attr()
             
         # create gurobi model
-        model = gp.Model(f"MC-{self.tmp_name}-{idx}")
+        model = gp.Model(f"MCut-{self.tmp_name}-{idx}")
         model.setParam("OutputFlag", 0)
         model.setParam("TimeLimit", self.time_limit)
         model.setParam("Threads", 1)
         
         # edges
-        senders = mc_graph.edge_index[0]
-        receivers = mc_graph.edge_index[1]
-        edge_attr = mc_graph.edge_attr
+        senders = mcut_graph.edge_index[0]
+        receivers = mcut_graph.edge_index[1]
+        edge_attr = mcut_graph.edge_attr
 
         # Object
         var_dict = model.addVars(nodes_num, vtype=gp.GRB.BINARY)
@@ -93,12 +90,12 @@ class MCGurobiSolver(MCSolver):
         model.setObjective(object, gp.GRB.MINIMIZE)
         
         # Solve
-        model.write(f"MC-{self.tmp_name}-{idx}.lp")
+        model.write(f"MCut-{self.tmp_name}-{idx}.lp")
         model.optimize()
-        os.remove(f"MC-{self.tmp_name}-{idx}.lp")
+        os.remove(f"MCut-{self.tmp_name}-{idx}.lp")
         
         # return
         return np.array([int(var_dict[key].X) for key in var_dict])
     
     def __str__(self) -> str:
-        return "MCGurobiSolver"
+        return "MCutGurobiSolver"

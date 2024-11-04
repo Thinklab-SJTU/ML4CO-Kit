@@ -3,13 +3,29 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import numpy as np
-from ml4co_kit.algorithm import (
-    tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, 
-    tsp_mcts_local_search, atsp_greedy_decoder, atsp_2opt_local_search
-)
-from ml4co_kit.solver import TSPSolver, ATSPSolver
+from ml4co_kit import *
 
 
+##############################################
+#             Test Func For ATSP             #
+##############################################
+
+def test_atsp_2opt_local_search():
+    solver = ATSPSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/atsp/atsp50.txt", ref=True)
+    dists = solver.dists
+    heatmap = np.load("tests/data_for_tests/algorithm/atsp/atsp50_heatmap.npy", allow_pickle=True)
+    greedy_tours = atsp_greedy_decoder(heatmap=-heatmap)
+    tours = atsp_2opt_local_search(init_tours=greedy_tours, dists=dists)
+    solver.from_data(tours=tours, ref=False)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of ATSP using Greedy Decoder with 2OPT Local Search: {gap_avg}")
+
+
+def test_atsp():
+    test_atsp_2opt_local_search()
+    
+    
 ##############################################
 #             Test Func For TSP              #
 ##############################################
@@ -83,31 +99,11 @@ def test_tsp():
     test_tsp_mcts_decoder()
     test_tsp_mcts_local_search()
     
-
-##############################################
-#             Test Func For ATSP             #
-##############################################
-
-def test_atsp_2opt_local_search():
-    solver = ATSPSolver()
-    solver.from_txt("tests/data_for_tests/algorithm/atsp/atsp50.txt", ref=True)
-    dists = solver.dists
-    heatmap = np.load("tests/data_for_tests/algorithm/atsp/atsp50_heatmap.npy", allow_pickle=True)
-    greedy_tours = atsp_greedy_decoder(heatmap=-heatmap)
-    tours = atsp_2opt_local_search(init_tours=greedy_tours, dists=dists)
-    solver.from_data(tours=tours, ref=False)
-    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
-    print(f"Gap of ATSP using Greedy Decoder with 2OPT Local Search: {gap_avg}")
-
-
-def test_atsp():
-    test_atsp_2opt_local_search()
-    
     
 ##############################################
 #                    MAIN                    #
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
     test_atsp()
+    test_tsp()

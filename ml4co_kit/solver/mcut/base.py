@@ -4,24 +4,24 @@ import numpy as np
 import networkx as nx
 from typing import List
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.utils.graph.mc import MCGraphData
+from ml4co_kit.utils.graph.mcut import MCutGraphData
 from ml4co_kit.utils.type_utils import TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
 
-class MCSolver(SolverBase):
+class MCutSolver(SolverBase):
     def __init__(
         self, 
         solver_type: SOLVER_TYPE = None, 
         weighted: bool = False, 
         time_limit: float = 60.0
     ):
-        super(MCSolver, self).__init__(
-            task_type=TASK_TYPE.MCl, solver_type=solver_type
+        super(MCutSolver, self).__init__(
+            task_type=TASK_TYPE.MCut, solver_type=solver_type
         )
         self.weighted = weighted
         self.time_limit = time_limit
-        self.graph_data: List[MCGraphData] = list()
+        self.graph_data: List[MCutGraphData] = list()
 
     def check_edge_index_not_none(self):
         message = (
@@ -30,38 +30,38 @@ class MCSolver(SolverBase):
             "``from_gpickle_result`` or ``from_gpickle_result_folder`` to obtain them."
         )  
         for graph in self.graph_data:
-            graph: MCGraphData
+            graph: MCutGraphData
             if graph.edge_index is None:
                 raise ValueError(message)
 
     def check_nodes_label_not_none(self, ref: bool):
         msg = "ref_nodes_label" if ref else "nodes_label"
         message = (
-            f"``{msg}`` cannot be None! You can use solvers based on ``MCSolver`` "
-            "like ``MCGurobiSolver`` or use methods including ``from_graph_data``, "
+            f"``{msg}`` cannot be None! You can use solvers based on ``MCutSolver`` "
+            "like ``MCutGurobiSolver`` or use methods including ``from_graph_data``, "
             "``from_adj_martix``, ``from_txt``, ``from_gpickle_result`` or "
             "``from_gpickle_result_folder`` to obtain them."
         )  
         if ref:
             for graph in self.graph_data:
-                graph: MCGraphData
+                graph: MCutGraphData
                 if graph.ref_nodes_label is None:
                     raise ValueError(message)
         else:
             for graph in self.graph_data:
-                graph: MCGraphData
+                graph: MCutGraphData
                 if graph.nodes_label is None:
                     raise ValueError(message)
 
     def set_ref_as_solution(self):
         for graph in self.graph_data:
-            graph: MCGraphData
+            graph: MCutGraphData
             graph.nodes_label = graph.ref_nodes_label
             graph.cut_edge_num = graph.ref_cut_edge_num
 
     def set_solution_as_ref(self):
         for graph in self.graph_data:
-            graph: MCGraphData
+            graph: MCutGraphData
             graph.ref_nodes_label = graph.nodes_label
             graph.ref_cut_edge_num = graph.cut_edge_num
     
@@ -75,13 +75,13 @@ class MCSolver(SolverBase):
     ):
         # cover or not
         if cover:
-            graph = MCGraphData()
+            graph = MCutGraphData()
         else:
             if len(self.graph_data) != 1:
                 raise ValueError(
                     "Read data from only one graph, but save more than one piece of data"
                 )
-            graph: MCGraphData = self.graph_data[0]
+            graph: MCutGraphData = self.graph_data[0]
         
         # read graph data
         if gpickle_file_path is not None:
@@ -128,7 +128,7 @@ class MCSolver(SolverBase):
                     continue
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
 
                 # read graph data
                 graph.from_gpickle(file_path=gpickle_file_path, self_loop=self_loop)
@@ -153,7 +153,7 @@ class MCSolver(SolverBase):
                     continue
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
 
                 # read graph data
                 graph.from_result(file_path=result_file_path, ref=ref)
@@ -185,7 +185,7 @@ class MCSolver(SolverBase):
                 )
                 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
 
                 # read graph data
                 graph.from_gpickle(file_path=gpickle_file_path, self_loop=self_loop)
@@ -234,7 +234,7 @@ class MCSolver(SolverBase):
                 nodes_label = np.array([int(nodel_label) for nodel_label in nodes_label])
 
                 # cover or not
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 
                 # load data
                 graph.from_data(edge_index=edge_index, nodes_label=nodes_label, ref=ref)
@@ -266,7 +266,7 @@ class MCSolver(SolverBase):
         # only data
         if data_flag and not result_flag:
             for idx in range(len(edge_index)):
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 graph.from_data(edge_index=edge_index[idx])
                 if cover:
                     self.graph_data.append(graph)
@@ -276,7 +276,7 @@ class MCSolver(SolverBase):
         # only data
         if not data_flag and result_flag:
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 graph.from_data(nodes_label=nodes_label[idx], ref=ref)
                 if cover:
                     self.graph_data.append(graph)
@@ -289,7 +289,7 @@ class MCSolver(SolverBase):
                 raise ValueError("The number of problems and solutions does not match!")
             
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 graph.from_data(
                     edge_index=edge_index[idx], nodes_label=nodes_label[idx], ref=ref
                 )
@@ -316,7 +316,7 @@ class MCSolver(SolverBase):
         # only data
         if not result_flag:
             for idx in range(len(adj_matrix)):
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 graph.from_adj_martix(adj_matrix[idx], self_loop=self_loop)
                 if cover:
                     self.graph_data.append(graph)
@@ -329,7 +329,7 @@ class MCSolver(SolverBase):
                 raise ValueError("The number of problems and solutions does not match!")
             
             for idx in range(len(nodes_label)):
-                graph = self.graph_data[idx] if not cover else MCGraphData()
+                graph = self.graph_data[idx] if not cover else MCutGraphData()
                 graph.from_data(nodes_label=nodes_label[idx], ref=ref)
                 graph.from_adj_martix(adj_matrix[idx], self_loop=self_loop)
                 if cover:
@@ -340,7 +340,7 @@ class MCSolver(SolverBase):
     def from_nx_graph(self, nx_graphs: List[nx.Graph]):
         self.graph_data = list()
         for idx in range(len(nx_graphs)):
-            graph = MCGraphData()
+            graph = MCutGraphData()
             graph.from_nx_graph(nx_graphs[idx])
             self.graph_data.append(graph)
 
@@ -380,7 +380,7 @@ class MCSolver(SolverBase):
                 save_path = os.path.join(gpickle_save_dir, name)
                 
                 # graph_data -> nx.Graph
-                graph: MCGraphData = self.graph_data[idx]
+                graph: MCutGraphData = self.graph_data[idx]
                 edge_index = graph.edge_index
                 if not graph.self_loop:
                     self_loop: np.ndarray = np.arange(graph.nodes_num)
@@ -423,7 +423,7 @@ class MCSolver(SolverBase):
                 save_path = os.path.join(result_save_dir, name)
                 
                 # write
-                graph: MCGraphData = self.graph_data[idx]
+                graph: MCutGraphData = self.graph_data[idx]
                 nodes_label = graph.nodes_label
                 with open(save_path, "w") as f:
                     for node_label in nodes_label:
@@ -476,4 +476,4 @@ class MCSolver(SolverBase):
         )
 
     def __str__(self) -> str:
-        return "MCSolver"
+        return "MCutSolver"

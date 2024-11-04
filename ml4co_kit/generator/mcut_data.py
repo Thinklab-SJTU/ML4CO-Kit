@@ -7,23 +7,23 @@ import numpy as np
 import networkx as nx
 from tqdm import tqdm
 from typing import Union
-from ml4co_kit.utils.graph.mc import MCGraphData
+from ml4co_kit.utils.graph.mcut import MCutGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.solver import MCSolver, MCGurobiSolver
+from ml4co_kit.solver import MCutSolver, MCutGurobiSolver
 
 
-class MCDataGenerator:
+class MCutDataGenerator:
     def __init__(
         self,
         num_threads: int = 1,
         nodes_num_min: int = 700,
         nodes_num_max: int = 800,
         data_type: str = "er",
-        solver: Union[SOLVER_TYPE, MCSolver] = SOLVER_TYPE.GUROBI,
+        solver: Union[SOLVER_TYPE, MCutSolver] = SOLVER_TYPE.GUROBI,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
-        save_path: pathlib.Path = "data/mc/er",
+        save_path: pathlib.Path = "data/mcut/er",
         filename: str = None,
         # args for generate
         graph_weighted: bool = False,
@@ -35,7 +35,7 @@ class MCDataGenerator:
         ws_ring_neighbors: int = 2,
     ):
         """
-        MCDataGenerator
+        MCutDataGenerator
         Args:
             nodes_num_min (int, optional):
                 The minimum number of nodes.
@@ -53,11 +53,11 @@ class MCDataGenerator:
             test_samples_num (int, optional):
                 The number of test samples.
             save_path (pathlib.Path, optional):
-                The save path of mc samples/datasets.
+                The save path of mcut samples/datasets.
             filename (str, optional):
-                The filename of mc samples.
+                The filename of mcut samples.
             graph_weighted (bool, optional):
-                If enabled, generate the weighted MC problem instead of MC.
+                If enabled, generate the weighted MCut problem instead of MCut.
             er_prob (float, optional):
                 The probability parameter for Erdos-Renyi graph generation.
             ba_conn_degree (int, optional):
@@ -142,15 +142,11 @@ class MCDataGenerator:
         for sample_type in self.sample_types:
             path = os.path.join(self.save_path, sample_type)
             setattr(self, f"{sample_type}_save_path", path)
-            if not os.path.exists(os.path.join(path, "instance")):
-                os.makedirs(os.path.join(path, "instance"))
-            if not os.path.exists(os.path.join(path, "solution")):
-                os.makedirs(os.path.join(path, "solution"))
 
     def get_filename(self):
         if self.filename is None:
             self.filename = (
-                f"mc_{self.data_type}_{self.nodes_num_min}_{self.nodes_num_max}"
+                f"mcut_{self.data_type}_{self.nodes_num_min}_{self.nodes_num_max}"
             )
         self.file_save_path = os.path.join(self.save_path, self.filename + ".txt")
         for sample_type in self.sample_types:
@@ -167,7 +163,7 @@ class MCDataGenerator:
         if isinstance(self.solver, SOLVER_TYPE):
             self.solver_type = self.solver
             supported_solver_dict = {
-                SOLVER_TYPE.GUROBI: MCGurobiSolver
+                SOLVER_TYPE.GUROBI: MCutGurobiSolver
             }
             supported_solver_type = supported_solver_dict.keys()
             if self.solver not in supported_solver_type:
@@ -178,7 +174,7 @@ class MCDataGenerator:
                 raise ValueError(message)
             self.solver = supported_solver_dict[self.solver]()
         else:
-            self.solver: MCSolver
+            self.solver: MCutSolver
             self.solver_type = self.solver.solver_type
         
         # check solver
@@ -203,7 +199,7 @@ class MCDataGenerator:
         start_time = time.time()
         for _ in tqdm(
             range(self.samples_num // self.num_threads),
-            desc=f"Solving MC Using {self.solver_type}",
+            desc=f"Solving MCut Using {self.solver_type}",
         ):
             # call generate_func to generate the points
             nx_graphs = [self.generate_func() for _ in range(self.num_threads)]
@@ -215,7 +211,7 @@ class MCDataGenerator:
             # write to txt
             with open(self.file_save_path, "a+") as f:
                 for graph in graph_data:
-                    graph: MCGraphData
+                    graph: MCutGraphData
                     edge_index = graph.edge_index.T
                     nodes_label = graph.nodes_label
                     f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index))
@@ -227,7 +223,7 @@ class MCDataGenerator:
         # info
         end_time = time.time() - start_time
         print(
-            f"Completed generation of {self.samples_num} samples of MC."
+            f"Completed generation of {self.samples_num} samples of MCut."
         )
         print(f"Total time: {end_time/60:.1f}m")
         print(f"Average time: {end_time/self.samples_num:.1f}s")

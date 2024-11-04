@@ -4,9 +4,9 @@ import networkx as nx
 from ml4co_kit.utils.graph.base import GraphData, np_sparse_to_dense
 
 
-class MCGraphData(GraphData):
+class MCutGraphData(GraphData):
     def __init__(self):
-        super(MCGraphData, self).__init__()
+        super(MCutGraphData, self).__init__()
         self.nodes_label: np.ndarray = None
         self.ref_nodes_label: np.ndarray = None
         self.cut_edge_num: np.ndarray = None
@@ -67,7 +67,7 @@ class MCGraphData(GraphData):
             if self.nodes_label is None:
                 raise ValueError(
                     "``cut_edge_num`` cannot be None! You can use solvers based on "
-                    "``MCSolver``like ``KaMIS`` to get the ``cut_edge_num``."
+                    "``MCutSolver``like ``KaMIS`` to get the ``cut_edge_num``."
                 )
             adj_matrix = np_sparse_to_dense(nodes_num=self.nodes_num, edge_index=self.edge_index)
             self.cut_edge_num = 0
@@ -88,7 +88,7 @@ class MCGraphData(GraphData):
                 if self.ref_nodes_label is None:
                     raise ValueError(
                         "``ref_cut_edge_num`` cannot be None! You can use solvers based on "
-                        "``MCSolver``like ``KaMIS`` to get the ``ref_cut_edge_num``."
+                        "``MCutSolver``like ``KaMIS`` to get the ``ref_cut_edge_num``."
                     )
                 adj_matrix = np_sparse_to_dense(nodes_num=self.nodes_num, edge_index=self.edge_index)
                 self.ref_cut_edge_num = 0

@@ -3,10 +3,8 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import shutil
-from ml4co_kit.solver import *
-from ml4co_kit.utils.mis_utils import cnf_folder_to_gpickle_folder
+from ml4co_kit import *
 
-GUROBI_LICENCE = "your gurobi licence"
 GUROBI_TEST = False
 
 
@@ -182,7 +180,7 @@ def test_mis_base_solver():
 
 
 def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
-    gurobi_solver = MISGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
+    gurobi_solver = MISGurobiSolver(time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mis/mis_example.txt",
         ref=True, cover=True
@@ -241,37 +239,38 @@ def test_mis():
 #             Test Func For MCl              #
 ##############################################
 
-def _test_mc_gurobi_solver(show_time: bool, num_threads: int):
+def _test_mcut_gurobi_solver(show_time: bool, num_threads: int):
     if not GUROBI_TEST:
         return
-    gurobi_solver = MCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
+    gurobi_solver = MCutGurobiSolver(time_limit=1.0)
     gurobi_solver.from_txt(
-        file_path="tests/data_for_tests/solver/mc/mc_example.txt",
+        file_path="tests/data_for_tests/solver/mcut/mcut_example.txt",
         ref=True, cover=True
     )
     gurobi_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = gurobi_solver.evaluate(calculate_gap=True)
-    print(f"MCGurobiSolver Gap: {gap_avg}")
+    print(f"MCutGurobiSolver Gap: {gap_avg}")
     if gap_avg >= 1e-2:
         message = (
-            f"The average gap ({gap_avg}) of MC solved by MCGurobiSolver "
+            f"The average gap ({gap_avg}) of MC solved by MCutGurobiSolver "
             "is larger than or equal to 1e-2%."
         )
         raise ValueError(message)
 
 
-def test_mc_gurobi_solver():
-    _test_mc_gurobi_solver(True, 1)
-    _test_mc_gurobi_solver(True, 2)
-    _test_mc_gurobi_solver(False, 1)
-    _test_mc_gurobi_solver(False, 2)
+def test_mcut_gurobi_solver():
+    _test_mcut_gurobi_solver(True, 1)
+    _test_mcut_gurobi_solver(True, 2)
+    _test_mcut_gurobi_solver(False, 1)
+    _test_mcut_gurobi_solver(False, 2)
 
 
-def test_mc():
+def test_mcut():
     """
-    Test MCSolver
+    Test MCutSolver
     """
-    test_mc_gurobi_solver()
+    test_mcut_gurobi_solver()
+
 
 ##############################################
 #             Test Func For MCl              #
@@ -280,7 +279,7 @@ def test_mc():
 def _test_mcl_gurobi_solver(show_time: bool, num_threads: int):
     if not GUROBI_TEST:
         return
-    gurobi_solver = MClGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
+    gurobi_solver = MClGurobiSolver(time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mcl/mcl_example.txt",
         ref=True, cover=True
@@ -335,7 +334,7 @@ def test_mvc_base_solver():
 def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
     if not GUROBI_TEST:
         return
-    gurobi_solver = MISGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
+    gurobi_solver = MISGurobiSolver(time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mis/mis_example.txt",
         ref=True, cover=True
@@ -397,7 +396,7 @@ def test_mis():
 def _test_mvc_gurobi_solver(show_time: bool, num_threads: int):
     if not GUROBI_TEST:
         return
-    gurobi_solver = MVCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=1.0)
+    gurobi_solver = MVCGurobiSolver(time_limit=1.0)
     gurobi_solver.from_txt(
         file_path="tests/data_for_tests/solver/mvc/mvc_example.txt",
         ref=True, cover=True
@@ -553,8 +552,8 @@ def test_tsp():
 
 if __name__ == "__main__":
     test_tsp()
-    test_mc()
     test_mcl()
+    test_mcut()
     test_mis()
     test_mvc()
     test_cvrp()

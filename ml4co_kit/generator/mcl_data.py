@@ -134,11 +134,7 @@ class MClDataGenerator:
         for sample_type in self.sample_types:
             path = os.path.join(self.save_path, sample_type)
             setattr(self, f"{sample_type}_save_path", path)
-            if not os.path.exists(os.path.join(path, "instance")):
-                os.makedirs(os.path.join(path, "instance"))
-            if not os.path.exists(os.path.join(path, "solution")):
-                os.makedirs(os.path.join(path, "solution"))
-
+            
     def get_filename(self):
         if self.filename is None:
             self.filename = (
@@ -199,7 +195,7 @@ class MClDataGenerator:
         ):
             # call generate_func to generate the points
             nx_graphs = [self.generate_func() for _ in range(self.num_threads)]
-            
+
             # solve
             self.solver.from_nx_graph(nx_graphs=nx_graphs)
             graph_data = self.solver.solve(num_threads=self.num_threads)

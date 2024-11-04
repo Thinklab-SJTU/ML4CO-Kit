@@ -33,8 +33,8 @@ from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPU
 #######################################################
 from .generator import ATSPDataGenerator
 from .generator import CVRPDataGenerator
-from .generator import MCDataGenerator
 from .generator import MClDataGenerator
+from .generator import MCutDataGenerator
 from .generator import MISDataGenerator
 from .generator import MVCDataGenerator
 from .generator import TSPDataGenerator
@@ -44,8 +44,8 @@ from .generator import TSPDataGenerator
 #######################################################
 from .solver import ATSPSolver, ATSPLKHSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
-from .solver import MCSolver, MCGurobiSolver
 from .solver import MClSolver, MClGurobiSolver
+from .solver import MCutSolver, MCutGurobiSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver
 from .solver import MVCSolver, MVCGurobiSolver
 from .solver import (
@@ -59,7 +59,7 @@ from .solver import (
 from .utils import download, compress_folder, extract_archive, _get_md5
 from .utils import iterative_execution_for_file, iterative_execution
 from .utils import np_dense_to_sparse, np_sparse_to_dense, GraphData, tsplib95
-from .utils import MISGraphData, MVCGraphData, MClGraphData, MCGraphData
+from .utils import MISGraphData, MVCGraphData, MClGraphData, MCutGraphData
 from .utils import sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
 
 #######################################################
@@ -68,9 +68,12 @@ from .utils import sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickl
 # expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")
 if found_matplotlib is not None:
-    from .draw.tsp import draw_tsp_problem, draw_tsp_solution
-    from .draw.mis import draw_mis_problem, draw_mis_solution
     from .draw.cvrp import draw_cvrp_problem, draw_cvrp_solution
+    from .draw.mcl import draw_mcl_problem, draw_mcl_solution
+    from .draw.mcut import draw_mcut_problem, draw_mcut_solution
+    from .draw.mis import draw_mis_problem, draw_mis_solution
+    from .draw.mvc import draw_mvc_problem, draw_mvc_solution
+    from .draw.tsp import draw_tsp_problem, draw_tsp_solution
 
 # expand - pytorch_lightning
 found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")

@@ -134,10 +134,6 @@ class MVCDataGenerator:
         for sample_type in self.sample_types:
             path = os.path.join(self.save_path, sample_type)
             setattr(self, f"{sample_type}_save_path", path)
-            if not os.path.exists(os.path.join(path, "instance")):
-                os.makedirs(os.path.join(path, "instance"))
-            if not os.path.exists(os.path.join(path, "solution")):
-                os.makedirs(os.path.join(path, "solution"))
 
     def get_filename(self):
         if self.filename is None:

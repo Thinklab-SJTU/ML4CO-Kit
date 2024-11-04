@@ -15,8 +15,8 @@ def to_numpy(x: Union[np.ndarray, list]):
 class TASK_TYPE(str, Enum):
     ATSP = "Asymmetric Traveling Salesman Problem (ATSP)"
     CVRP = "Capacitated Vehicle Routing Problem (CVRP)"
-    MC = "Maximum Cut (MC)"
     MCl = "Maximum Clique (MCL)"
+    MCut = "Maximum Cut (MCut)"
     MIS = "Maximum Independent Set (MIS)"
     MVC = "Minimum Vertex Cover (MVC)"
     TSP = "Traveling Salesman Problem (TSP)"
@@ -41,8 +41,8 @@ TASK_SUPPORT_SOLVER = {
         SOLVER_TYPE.GA_EAX_LARGE, SOLVER_TYPE.LKH
     ],
     TASK_TYPE.CVRP: [SOLVER_TYPE.HGS, SOLVER_TYPE.LKH, SOLVER_TYPE.PYVRP],
-    TASK_TYPE.MC: [SOLVER_TYPE.GUROBI],
     TASK_TYPE.MCl: [SOLVER_TYPE.GUROBI],
+    TASK_TYPE.MCut: [SOLVER_TYPE.GUROBI],
     TASK_TYPE.MIS: [SOLVER_TYPE.GUROBI, SOLVER_TYPE.KAMIS],
     TASK_TYPE.MVC: [SOLVER_TYPE.GUROBI],
 }

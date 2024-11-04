@@ -12,6 +12,7 @@ This repository focuses on the supporting code for method development instead of
 * Data generation of various distributions;
 * Problem and solution visualization;
 * Evaluators for different problems.
+* Common post-processing algorithms
 
 | Problem |                Data                |    solver     |      Supervision      | evaluator |      visualization      |
 | :-----: | :--------------------------------: | :-----------: | :-------------------: | :-------: | :---------------------: |
@@ -22,9 +23,6 @@ This repository focuses on the supporting code for method development instead of
 |   MIS   |       SATLIB, ER, BA, HK, WS       | KaMIS, Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
 |   MVC   |       SATLIB, ER, BA, HK, WS       | Gurobi |       Solution        |     ✔     | Problem Graph, Solution |
 |   TSP   | Uniform, Gaussian, Cluster, TSPLIB | LKH, Concorde, Concorde-Large, GA-EAX, GA-EAX-Large | Solution, Edge Regret |     ✔     | Problem Graph, Solution |
-###### ML4CO Organization:
-
-<img src="docs/assets/organization.jpg" alt="Organization" width="800"/>
 
 We are still enriching the library and we welcome any contributions/ideas/suggestions from the community. A comprehensive modular framework built upon this library that integrates core ML4CO technologies is coming soon.
 
@@ -155,100 +153,48 @@ AVG         1011.043859  1032.923407 -5.535573e-01
 
 ### Visualization
 
-#### TSP
-
-```python
-from ml4co_kit.solver import TSPConcordeSolver
-from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
-
-# use TSPConcordeSolver to solve the problem
-solver = TSPConcordeSolver(scale=1)
-solver.from_tsplib("examples/tsp/kroA150.tsp")
-solver.solve(norm="EUC_2D")
-
-# draw
-draw_tsp_problem(
-    save_path="docs/assets/kroA150_problem.png",
-    points=solver.ori_points,
-)
-draw_tsp_solution(
-    save_path="docs/assets/kroA150_solution.png",
-    points=solver.ori_points,
-    tours=solver.tours
-)
-```
-
-Visualization Results:
+#### CVRP
 
 <p>
-<img src="docs/assets/kroA150_problem.png" width="35%" alt="" />
-<img src="docs/assets/kroA150_solution.png" width="35%" alt="" />
+<img src="docs/assets/cvrp_problem.png" width="35%" alt="" />
+<img src="docs/assets/cvrp_solution.png" width="35%" alt="" />
+</p>
+
+#### MCl
+
+<p>
+<img src="docs/assets/mcl_problem.png" width="35%" alt="" />
+<img src="docs/assets/mcl_solution.png" width="35%" alt="" />
+</p>
+
+#### MCut
+
+<p>
+<img src="docs/assets/mcut_problem.png" width="35%" alt="" />
+<img src="docs/assets/mcut_solution.png" width="35%" alt="" />
 </p>
 
 #### MIS
-
-```python
-from ml4co_kit.solver import KaMISSolver
-from ml4co_kit import draw_mis_problem, draw_mis_solution
-
-# use KaMISSolver to solve the problem
-mis_solver = KaMISSolver()
-mis_solver.solve(src="examples/mis_example")
-
-# draw
-draw_mis_problem(
-    save_path="docs/assets/mis_problem.png", 
-    gpickle_path="examples/mis/instance/mis_example.gpickle"
-)
-draw_mis_solution(
-    save_path="docs/mis_solution.png",
-    gpickle_path="examples/mis/instance/mis_example.gpickle",
-    result_path="examples/mis/solution/mis_example_unweighted.result"
-)
-```
-
-Visualization Results:
 
 <p>
 <img src="docs/assets/mis_problem.png" width="35%" alt="" />
 <img src="docs/assets/mis_solution.png" width="35%" alt="" />
 </p>
 
-#### CVRP
-
-```python
-from ml4co_kit import CVRPPyVRPSolver
-from ml4co_kit import draw_cvrp_problem, draw_cvrp_solution
-
-# use KaMISSolver to solve the problem
-solver = CVRPPyVRPSolver(
-    depots_scale=1,
-    points_scale=1,
-    time_limit=1
-)
-solver.from_vrplib("examples/cvrp/A-n32-k5.vrp")
-solver.solve()
-
-# draw
-draw_cvrp_problem(
-    save_path="docs/assets/cvrp_problem.png",
-    depots=solver.depots[0],
-    points=solver.points[0]
-)
-draw_cvrp_solution(
-    save_path="docs/assets/cvrp_solution.png",
-    depots=solver.depots[0],
-    points=solver.points[0],
-    tour=solver.tours
-)
-```
-
-Visualization Results:
+#### MVC
 
 <p>
-<img src="docs/assets/cvrp_problem.png" width="35%" alt="" />
-<img src="docs/assets/cvrp_solution.png" width="35%" alt="" />
+<img src="docs/assets/mvc_problem.png" width="35%" alt="" />
+<img src="docs/assets/mvc_solution.png" width="35%" alt="" />
 </p>
+
+#### TSP
+
+<p>
+<img src="docs/assets/tsp_problem.png" width="35%" alt="" />
+<img src="docs/assets/tsp_solution.png" width="35%" alt="" />
+</p>
+
 
 ### Develop ML4CO Algorithms
 
