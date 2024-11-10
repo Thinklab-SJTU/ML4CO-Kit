@@ -10,6 +10,7 @@ def tsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
     # check the number of dimension
     dim_2 = False
     if heatmap.ndim == 2:
+        dim_2 = True
         heatmap = np.expand_dims(heatmap, axis=0)
     if heatmap.ndim != 3:
         raise ValueError("``heatmap`` must be a 2D or 3D array.")

@@ -70,7 +70,7 @@ class Trainer(Trainer):
         ckpt_save_path: Optional[str] = None,
         ckpt_monitor: str = "val/loss",
         save_top_k: int = -1,
-        mode: str = None,
+        mode: str = "min",
         ckpt_every_n_epochs: int = 1,
         ckpt_every_n_train_steps: Optional[int] = None,
         ckpt_filename: str = None,
