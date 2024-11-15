@@ -24,16 +24,17 @@ int main( int argc, char* argv[] )
   gEnv->fNumOfKids = d;
   gEnv->fFileNameTSP = argv[5];
   gEnv->fFileNameInitPop = NULL;
-  if( argc == 7 )
-    gEnv->fFileNameInitPop = argv[6];
+  sscanf( argv[6], "%d", &d );
+  gEnv->showInfo = d;
+  if( argc == 8 )
+    gEnv->fFileNameInitPop = argv[7];
 
   gEnv->Define();
   
   for( int n = 0; n < maxNumOfTrial; ++n )
   { 
     gEnv->DoIt();
-
-    gEnv->PrintOn( n, dstFile );       
+    if (gEnv->showInfo){gEnv->PrintOn( n, dstFile );}   
     gEnv->WriteBest( dstFile );  
     // gEnv->WritePop( n, dstFile );
   }

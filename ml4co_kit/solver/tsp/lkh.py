@@ -1,6 +1,5 @@
-import time
-import numpy as np
 import pathlib
+import numpy as np
 from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.utils import tsplib95

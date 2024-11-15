@@ -57,15 +57,14 @@ from .solver import (
 #                    Utils Function                   #
 #######################################################
 from .utils import download, compress_folder, extract_archive, _get_md5
-from .utils import iterative_execution_for_file, iterative_execution
+from .utils import iterative_execution_for_file, iterative_execution, Timer
 from .utils import np_dense_to_sparse, np_sparse_to_dense, GraphData, tsplib95
 from .utils import MISGraphData, MVCGraphData, MClGraphData, MCutGraphData
 from .utils import sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
 
 #######################################################
-#                  Extension Function                 #
+#           Extension Function (matplotlib)           #
 #######################################################
-# expand - matplotlib
 found_matplotlib = importlib.util.find_spec("matplotlib")
 if found_matplotlib is not None:
     from .draw.cvrp import draw_cvrp_problem, draw_cvrp_solution
@@ -75,7 +74,9 @@ if found_matplotlib is not None:
     from .draw.mvc import draw_mvc_problem, draw_mvc_solution
     from .draw.tsp import draw_tsp_problem, draw_tsp_solution
 
-# expand - pytorch_lightning
+#######################################################
+#        Extension Function (pytorch_lightning)       #
+#######################################################
 found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
 if found_pytorch_lightning is not None:
     from .learning.env import BaseEnv

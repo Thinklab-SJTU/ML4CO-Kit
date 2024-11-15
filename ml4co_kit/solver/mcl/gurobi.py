@@ -23,7 +23,7 @@ class MClGurobiSolver(MClSolver):
         graph_data: List[MClGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
-    ) -> np.ndarray:
+    ) -> List[MClGraphData]:
         # preparation
         if graph_data is not None:
             self.graph_data = graph_data

@@ -9,9 +9,10 @@ import numpy as np
 import networkx as nx
 from tqdm import tqdm
 from pathlib import Path
-from typing import Union
-from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from typing import Union, List
 from ml4co_kit.solver.mis.base import MISSolver
+from ml4co_kit.utils.graph.mis import MISGraphData
+from ml4co_kit.utils.type_utils import SOLVER_TYPE
 
 
 class KaMISSolver(MISSolver):
@@ -82,7 +83,7 @@ class KaMISSolver(MISSolver):
 
     def solve(
         self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path],
-    ):
+    ) -> List[MISGraphData]:
         message = (
             "Please check KaMIS compilation. " 
             "you can try ``self.recompile_kamis()``. "
@@ -101,6 +102,7 @@ class KaMISSolver(MISSolver):
         self.from_gpickle_result_folder(
             gpickle_folder_path=src, result_folder_path=out, ref=False, cover=True
         )
+        return self.graph_data
 
     def _solve(self, src: Union[str, pathlib.Path], out: Union[str, pathlib.Path]):
         src = Path(src)

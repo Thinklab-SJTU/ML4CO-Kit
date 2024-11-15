@@ -1,5 +1,4 @@
 import os
-import time
 import uuid
 import numpy as np
 from typing import Union
@@ -20,6 +19,7 @@ class TSPGAEAXLargeSolver(TSPSolver):
         max_trials: int = 1,
         population_num: int = 300,
         offspring_num: int = 30,
+        show_info: bool = False
     ):
         super(TSPGAEAXLargeSolver, self).__init__(
             solver_type=SOLVER_TYPE.GA_EAX_LARGE, scale=scale
@@ -27,7 +27,8 @@ class TSPGAEAXLargeSolver(TSPSolver):
         self.max_trials = max_trials
         self.population_num = population_num
         self.offspring_num = offspring_num
-    
+        self.show_info = show_info
+        
     def read_solution(self, file_path: str) -> np.ndarray:
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -62,8 +63,10 @@ class TSPGAEAXLargeSolver(TSPSolver):
         
         # solve
         tsp_ga_eax_large_solve(
-            max_trials=self.max_trials, sol_name=name, population_num=self.population_num,
-            offspring_num=self.offspring_num, tsp_name=tsp_abs_path
+            max_trials=self.max_trials, sol_name=name, 
+            population_num=self.population_num,
+            offspring_num=self.offspring_num, 
+            tsp_name=tsp_abs_path, show_info=self.show_info
         )
         
         # read data from .sol
@@ -116,7 +119,6 @@ class TSPGAEAXLargeSolver(TSPSolver):
                     tours.append(tour)
         
         # format
-        tours = np.array(tours)
         self.from_data(tours=tours, ref=False)
         
         # show time

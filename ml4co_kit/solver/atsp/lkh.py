@@ -1,5 +1,4 @@
 import os
-import time
 import uuid
 import pathlib
 import numpy as np
@@ -8,7 +7,7 @@ from multiprocessing import Pool
 from subprocess import check_call
 from ml4co_kit.solver.atsp.base import ATSPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.utils.time_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class ATSPLKHSolver(ATSPSolver):
@@ -100,7 +99,8 @@ class ATSPLKHSolver(ATSPSolver):
         # prepare
         self.from_data(dists=dists, normalize=normalize)
         self.tmp_solver = ATSPSolver(scale=self.scale)
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
 
         # solve
         tours = list()
@@ -126,14 +126,13 @@ class ATSPLKHSolver(ATSPSolver):
                     tours.append(tour)
         
         # format
-        tours = np.array(tours)
-        if tours.ndim == 2 and tours.shape[0] == 1:
-            tours = tours[0]
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
-        return tours
+        
+        # show time
+        timer.end()
+        timer.show_time()
+        
+        return self.tours
     
     def __str__(self) -> str:
         return "ATSPLKHSolver"

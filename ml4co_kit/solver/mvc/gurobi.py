@@ -22,7 +22,7 @@ class MVCGurobiSolver(MVCSolver):
         graph_data: List[MVCGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
-    ) -> np.ndarray:
+    ) -> List[MVCGraphData]:
         # preparation
         if graph_data is not None:
             self.graph_data = graph_data

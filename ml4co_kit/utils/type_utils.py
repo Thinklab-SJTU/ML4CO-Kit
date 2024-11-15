@@ -15,7 +15,7 @@ def to_numpy(x: Union[np.ndarray, list]):
 class TASK_TYPE(str, Enum):
     ATSP = "Asymmetric Traveling Salesman Problem (ATSP)"
     CVRP = "Capacitated Vehicle Routing Problem (CVRP)"
-    MCl = "Maximum Clique (MCL)"
+    MCl = "Maximum Clique (MCl)"
     MCut = "Maximum Cut (MCut)"
     MIS = "Maximum Independent Set (MIS)"
     MVC = "Minimum Vertex Cover (MVC)"
@@ -30,7 +30,14 @@ class SOLVER_TYPE(str, Enum):
     GUROBI = "Gurobi" # Support for MIS, MVC, MC, MCL
     HGS = "HGS" # Support CVRP
     KAMIS = "KaMIS" # Support MIS
-    LKH = "LKH" # Support for TSP, ATSP, CVRP 
+    LKH = "LKH" # Support for TSP, ATSP, CVRP
+    ML4ATSP = "ML4ATSP" # part of ML4CO
+    ML4CVRP = "ML4CVRP" # part of ML4CO
+    ML4MCl = "ML4MCl" # part of ML4CO
+    ML4MCut = "ML4MCut" # part of ML4CO
+    ML4MIS = "ML4MIS" # part of ML4CO
+    ML4MVC = "ML4MVC" # part of ML4CO
+    ML4TSP = "ML4TSP" # part of ML4CO
     PYVRP = "PyVRP" # Support CVRP
 
 

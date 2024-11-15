@@ -7,7 +7,7 @@ from pyvrp import Model
 from pyvrp.stop import MaxRuntime
 from ml4co_kit.solver.cvrp.base import CVRPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.utils.time_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 if sys.version_info.major == 3 and sys.version_info.minor == 8:
@@ -54,9 +54,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         cvrp_model.add_vehicle_type(capacity=capacity, num_available=max_num_available)
         clients = [
             cvrp_model.add_client(
-                self.round_func(nodes_coord[idx][0]), 
-                self.round_func(nodes_coord[idx][1]), 
-                self.round_func(demands[idx])
+                int(self.round_func(nodes_coord[idx][0])), 
+                int(self.round_func(nodes_coord[idx][1])), 
+                int(self.round_func(demands[idx]))
             ) for idx in range(0, len(nodes_coord))
         ]
         locations = [depot] + clients
@@ -91,9 +91,8 @@ class CVRPPyVRPSolver(CVRPSolver):
             capacities=capacities, norm=norm, normalize=normalize
         )
         self.round_func = self.get_round_func(round_func)
-
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
 
         # solve
         tours = list()
@@ -133,9 +132,11 @@ class CVRPPyVRPSolver(CVRPSolver):
 
         # format
         self.from_data(tours=tours)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
+        
+        # show time
+        timer.end()
+        timer.show_time()
+
         return self.tours
     
     def __str__(self) -> str:

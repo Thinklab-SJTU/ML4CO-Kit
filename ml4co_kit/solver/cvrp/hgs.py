@@ -1,12 +1,11 @@
 import os
 import uuid
-import time
 import numpy as np
 from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.solver.cvrp.base import CVRPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.utils.time_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 from ml4co_kit.solver.cvrp.c_hgs import cvrp_hgs_solver, HGS_TMP_PATH
 
 
@@ -87,9 +86,8 @@ class CVRPHGSSolver(CVRPSolver):
             depots=depots, points=points, demands=demands,
             capacities=capacities, norm=norm, normalize=normalize
         )
-        
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
 
         # solve
         tours = list()
@@ -127,9 +125,11 @@ class CVRPHGSSolver(CVRPSolver):
 
         # format
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
+        
+        # show time
+        timer.end()
+        timer.show_time()
+
         return self.tours
     
     def __str__(self) -> str:

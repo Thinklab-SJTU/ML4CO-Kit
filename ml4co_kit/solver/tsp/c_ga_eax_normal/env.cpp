@@ -71,8 +71,9 @@ void TEnvironment::DoIt()
   while( 1 )
   {
     this->SetAverageBest();
-    printf( "%d: %d %lf\n", fCurNumOfGen, fBestValue, fAverageValue );
-
+    if (showInfo){
+      printf( "%d: %d %lf\n", fCurNumOfGen, fBestValue, fAverageValue );
+    }
     if( this->TerminationCondition() ) break;
 
     this->SelectForMating();

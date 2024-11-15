@@ -80,6 +80,8 @@ public:
   int fMaxStagBest;                      /* If fStagBest = fMaxStagBest, proceed to the next stage */
   int fCurNumOfGen1;                     /* Number of generations at which Stage I is terminated */
 
+  int showInfo;
+  
   clock_t fTimeStart, fTimeInit, fTimeEnd;  /* Use them to measure the execution time */
 };
 

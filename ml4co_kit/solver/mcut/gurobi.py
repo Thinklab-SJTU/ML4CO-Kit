@@ -22,7 +22,7 @@ class MCutGurobiSolver(MCutSolver):
         graph_data: List[MCutGraphData] = None,
         num_threads: int = 1,
         show_time: bool = False
-    ) -> np.ndarray:
+    ) -> List[MCutGraphData]:
         # preparation
         if graph_data is not None:
             self.graph_data = graph_data

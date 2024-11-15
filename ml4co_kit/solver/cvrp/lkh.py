@@ -1,5 +1,4 @@
 import os
-import time
 import uuid
 import pathlib
 import numpy as np
@@ -9,7 +8,7 @@ from subprocess import check_call
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.cvrp.base import CVRPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.utils.time_utils import iterative_execution
+from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class CVRPLKHSolver(CVRPSolver):
@@ -145,9 +144,8 @@ class CVRPLKHSolver(CVRPSolver):
             capacities=capacities, norm=norm, normalize=normalize
         )
         self.tmp_solver = CVRPSolver()
-        
-        # start time
-        start_time = time.time()
+        timer = Timer(apply=show_time)
+        timer.start()
         
         # solve
         tours = list()
@@ -187,9 +185,11 @@ class CVRPLKHSolver(CVRPSolver):
 
         # format
         self.from_data(tours=tours, ref=False)
-        end_time = time.time()
-        if show_time:
-            print(f"Use Time: {end_time - start_time}")
+        
+        # show time
+        timer.end()
+        timer.show_time()
+        
         return self.tours    
 
     def __str__(self) -> str:
