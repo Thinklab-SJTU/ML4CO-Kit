@@ -551,10 +551,10 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_tsp()
+    test_atsp()
+    test_cvrp()
     test_mcl()
     test_mcut()
     test_mis()
     test_mvc()
-    test_cvrp()
-    test_atsp()
+    test_tsp()

@@ -23,6 +23,7 @@ def tsp_ga_eax_large_solve(
     max_trials: int, sol_name: str, population_num: int,
     offspring_num: int, tsp_name: str, show_info: bool = False
 ):
+    show_info = 1 if show_info else 0
     tsp_path = os.path.join("tmp", tsp_name)
     sol_path = os.path.join("tmp", sol_name)
     ori_dir = os.getcwd()

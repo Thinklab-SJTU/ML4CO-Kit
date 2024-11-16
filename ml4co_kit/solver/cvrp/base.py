@@ -264,7 +264,7 @@ class CVRPSolver(SolverBase):
             points_list.append([client.x, client.y])
             demands_list.append(client.demand if CP38 else client.delivery)
         points = np.array(points_list)
-        demands = np.array(demands_list)
+        demands = np.array(demands_list).reshape(-1)
         
         # capacity
         capacity = _vehicle_types.capacity
@@ -650,7 +650,7 @@ class CVRPSolver(SolverBase):
         # demands and capacities need be int
         demands = demands.astype(np.int32)
         capacities = capacities.astype(np.int32)
-        
+
         # .vrp files
         if vrp_save_dir is not None:
             # filename

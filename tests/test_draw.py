@@ -144,9 +144,9 @@ def test_draw_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_draw_cvrp()
-    # test_draw_mcl()
-    # test_draw_mcut()
-    # test_draw_mis()
+    test_draw_cvrp()
+    test_draw_mcl()
+    test_draw_mcut()
+    test_draw_mis()
     test_draw_mvc()
-    # test_draw_tsp()
+    test_draw_tsp()
