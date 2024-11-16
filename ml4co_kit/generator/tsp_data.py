@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore")
 class TSPDataGenerator:
     def __init__(
         self,
+        only_instance_for_us: bool = False,
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
@@ -96,13 +97,18 @@ class TSPDataGenerator:
         self.regret_save_path = regret_save_path
         self.regret_solver = regret_solver
         
-        # check the input variables
-        self.sample_types = ["train", "val", "test"]
-        self.check_num_threads()
+        # only instance for us
+        self.only_instance_for_us = only_instance_for_us
         self.check_data_type()
-        self.check_solver()
-        self.get_filename()
-        self.check_regret()
+        
+        # generate and solve
+        if only_instance_for_us == False:
+            # check the input variables
+            self.sample_types = ["train", "val", "test"]
+            self.check_num_threads()    
+            self.check_solver()
+            self.get_filename()
+            self.check_regret()
 
     def check_num_threads(self):
         self.samples_num = 0
@@ -238,6 +244,12 @@ class TSPDataGenerator:
             self.regret_solver = TSPLKHSolver(lkh_max_trials=10)
         if not os.path.exists(self.regret_save_path):
             os.makedirs(self.regret_save_path)
+
+    def generate_only_instance_for_us(self, samples: int) -> np.ndarray:
+        self.num_threads = samples
+        points = self.generate_func()
+        self.solver.from_data(points=points)
+        return self.solver.points
 
     def generate(self):
         start_time = time.time()

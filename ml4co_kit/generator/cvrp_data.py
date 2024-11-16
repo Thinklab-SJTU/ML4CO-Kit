@@ -5,8 +5,7 @@ import shutil
 import numpy as np
 import pathlib
 from tqdm import tqdm
-from typing import Union
-from multiprocessing import Pool
+from typing import Union, Sequence
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver import (
     CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
@@ -16,6 +15,7 @@ from ml4co_kit.solver import (
 class CVRPDataGenerator:
     def __init__(
         self,
+        only_instance_for_us: bool = False,
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
@@ -73,21 +73,29 @@ class CVRPDataGenerator:
         self.test_samples_num = test_samples_num
         self.save_path = save_path
         self.filename = filename
+        
         # special for demand and capacity
         self.min_demand = min_demand
         self.max_demand = max_demand
         self.min_capacity = min_capacity
         self.max_capacity = max_capacity
+        
         # special for gaussian
         self.gaussian_mean_x = gaussian_mean_x
         self.gaussian_mean_y = gaussian_mean_y
         self.gaussian_std = gaussian_std
-        # check the input variables
-        self.sample_types = ["train", "val", "test"]
-        self.check_num_threads()
+        
+        # only instance for us
+        self.only_instance_for_us = only_instance_for_us
         self.check_data_type()
-        self.check_solver()
-        self.get_filename()
+        
+        # generate and solve
+        if only_instance_for_us == False:
+            # check the input variables
+            self.sample_types = ["train", "val", "test"]
+            self.check_num_threads()    
+            self.check_solver()
+            self.get_filename()
 
     def check_num_threads(self):
         self.samples_num = 0
@@ -194,6 +202,22 @@ class CVRPDataGenerator:
             )
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
+
+    def generate_only_instance_for_us(self, samples: int) -> Sequence[np.ndarray]:
+        self.num_threads = samples
+        batch_depots_coord, batch_nodes_coord = self.generate_func()
+        batch_demands = self.generate_demands()
+        batch_capacities = self.generate_capacities()
+        self.solver.from_data(
+            depots=batch_depots_coord,
+            points=batch_nodes_coord,
+            demands=batch_demands,
+            capacities=batch_capacities
+        )
+        return (
+            self.solver.depots, self.solver.points, 
+            self.solver.demands, self.solver.capacities
+        )
 
     def generate(self):
         start_time = time.time()

@@ -6,7 +6,7 @@ import random
 import numpy as np
 import networkx as nx
 from tqdm import tqdm
-from typing import Union
+from typing import Union, List
 from ml4co_kit.utils.graph.mcl import MClGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver import MClSolver, MClGurobiSolver
@@ -15,6 +15,7 @@ from ml4co_kit.solver import MClSolver, MClGurobiSolver
 class MClDataGenerator:
     def __init__(
         self,
+        only_instance_for_us: bool = False,
         num_threads: int = 1,
         nodes_num_min: int = 700,
         nodes_num_max: int = 800,
@@ -92,13 +93,18 @@ class MClDataGenerator:
         self.ws_prob = ws_prob
         self.ws_ring_neighbors = ws_ring_neighbors
 
-        # check the input variables
-        self.sample_types = ["train", "val", "test"]
-        self.check_num_threads()
+        # only instance for us
+        self.only_instance_for_us = only_instance_for_us
         self.check_data_type()
-        self.check_solver()
-        self.check_save_path()
-        self.get_filename()
+        
+        # generate and solve
+        if only_instance_for_us == False:
+            # check the input variables
+            self.sample_types = ["train", "val", "test"]
+            self.check_num_threads()    
+            self.check_solver()
+            self.check_save_path()
+            self.get_filename()
 
     def check_num_threads(self):
         self.samples_num = 0
@@ -187,6 +193,11 @@ class MClDataGenerator:
     def random_weight(self, n, mu=1, sigma=0.1):
         return np.around(np.random.normal(mu, sigma, n)).astype(int).clip(min=0)
 
+    def generate_only_instance_for_us(self, samples: int) -> List[MClGraphData]:
+        nx_graphs = [self.generate_func() for _ in range(samples)]
+        self.solver.from_nx_graph(nx_graphs=nx_graphs)
+        return self.solver.graph_data
+    
     def generate(self):
         start_time = time.time()
         for _ in tqdm(

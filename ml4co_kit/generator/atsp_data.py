@@ -7,7 +7,6 @@ import numpy as np
 import pathlib
 from tqdm import tqdm
 from typing import Union
-from multiprocessing import Pool
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.solver import ATSPSolver, ATSPLKHSolver
 
@@ -18,6 +17,7 @@ warnings.filterwarnings("ignore")
 class ATSPDataGenerator:
     def __init__(
         self,
+        only_instance_for_us: bool = False,
         num_threads: int = 1,
         nodes_num: int = 55,
         data_type: str = "sat",
@@ -70,12 +70,17 @@ class ATSPDataGenerator:
         if self.data_type == "sat":
             self.nodes_num = 2 * sat_clauses_nums * sat_vars_nums + sat_clauses_nums
         
-        # check the input variables
-        self.sample_types = ["train", "val", "test"]
-        self.check_num_threads()
+        # only instance for us
+        self.only_instance_for_us = only_instance_for_us
         self.check_data_type()
-        self.check_solver()
-        self.get_filename()
+        
+        # generate and solve
+        if only_instance_for_us == False:
+            # check the input variables
+            self.sample_types = ["train", "val", "test"]
+            self.check_num_threads()    
+            self.check_solver()
+            self.get_filename()
 
     def check_num_threads(self):
         self.samples_num = 0
@@ -176,6 +181,12 @@ class ATSPDataGenerator:
             )
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
+
+    def generate_only_instance_for_us(self, samples: int) -> np.ndarray:
+        self.num_threads = samples
+        dists = self.generate_func()[0]
+        self.solver.from_data(dists=dists)
+        return self.solver.dists
 
     def generate(self):
         start_time = time.time()
