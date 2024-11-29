@@ -80,7 +80,7 @@ class MClGraphData(GraphData):
                         "``MClSolver``like ``KaMIS`` to get the ``ref_sel_nodes_num``."
                     )
                 self.ref_sel_nodes_num = np.sum(self.ref_nodes_label)
-            gap = - (self.sel_nodes_num - self.ref_sel_nodes_num) / self.ref_sel_nodes_num
+            gap = - (self.sel_nodes_num - self.ref_sel_nodes_num) / self.ref_sel_nodes_num * 100
             return (self.sel_nodes_num, self.ref_sel_nodes_num, gap)
         else:
             return self.sel_nodes_num

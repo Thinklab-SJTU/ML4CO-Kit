@@ -102,7 +102,7 @@ class MCutGraphData(GraphData):
                     for j in set_B:
                         if adj_matrix[i, j] == 1:
                             self.ref_cut_edge_num += 1
-            gap = - (self.cut_edge_num - self.ref_cut_edge_num) / self.ref_cut_edge_num
+            gap = - (self.cut_edge_num - self.ref_cut_edge_num) / self.ref_cut_edge_num * 100
             return (self.cut_edge_num, self.ref_cut_edge_num, gap)
         else:
             return self.cut_edge_num

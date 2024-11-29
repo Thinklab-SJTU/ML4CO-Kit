@@ -176,6 +176,9 @@ class GraphData(object):
         Args:
             loop_weight (int, float): The weight to assign to each self-loop edge.
         """
+        if np.array([0, 0]) in self.edge_index.T:
+            return
+        
         if self.nodes_num is None:
             raise ValueError("`nodes_num` must be defined to add self-loops.")
 
