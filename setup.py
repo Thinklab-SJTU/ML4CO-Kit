@@ -92,7 +92,7 @@ class BdistWheelCommand(_bdist_wheel):
 
 
 setup(
-    name=NAME,
+    name=PACKAGE_NAME,
     version=about["__version__"],
     description=DESCRIPTION,
     long_description=long_description,
