@@ -110,7 +110,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['assets']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -125,19 +125,19 @@ html_sidebars = {
 }
 
 # logo
-html_logo = 'docs/assets/ml4co-kit-logo.png'
-html_favicon = 'docs/assets/ml4co-kit-logo.png'
+html_logo = 'assets/ml4co-kit-logo.png'
+html_favicon = 'assets/ml4co-kit-logo2.png'
 
 html_theme_options = {
     'logo_only': True,
     'display_version': True,
+    'body_max_width': 'none',
 }
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ml4co_kit_doc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -194,4 +194,11 @@ sphinx_gallery_conf = {
      'gallery_dirs': 'auto_examples',
      'nested_sections': False,
      'remove_config_comments': True,
+}
+
+autosummary_generate = True
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
 }

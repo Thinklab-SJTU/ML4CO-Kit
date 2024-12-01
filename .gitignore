@@ -59,3 +59,9 @@ tests/data_for_tests/draw/cvrp/cvrp_draw_example_solution.png
 
 # special
 ml4co_kit/algorithm/tsp/decoder/cython_tsp_greedy/source/cython_tsp_greedy.c
+
+# docs
+docs/_build/**
+docs/api/_autosummary/**
+docs/auto_examples/**
+docs/sg_execution_times.rst
