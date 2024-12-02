@@ -4,8 +4,7 @@ ml4co_kit.learning
 
 .. currentmodule:: ml4co_kit.learning
 
-Classes
-------------------
+
 .. autosummary::
    :toctree: _autosummary
    :recursive:
