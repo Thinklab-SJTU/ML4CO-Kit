@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from deprecated.sphinx import deprecated
+from ml4co_kit.utils.tsplib95.deprecated.sphinx import deprecated
 
 from . import models
 
