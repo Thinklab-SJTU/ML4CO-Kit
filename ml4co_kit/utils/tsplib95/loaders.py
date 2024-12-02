@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from ml4co_kit.utils.tsplib95.deprecated.sphinx import deprecated
-
 from . import models
 
 
@@ -42,17 +39,6 @@ def parse(text, problem_class=None, special=None):
     return Problem.parse(text, special=special)
 
 
-###############################################################################
-#                                                                             #
-#                        DEPRECATED LOADERS BELOW                             #
-#                                                                             #
-###############################################################################
-
-
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.load` instead.'
-)
 def load_problem(filepath, special=None):
     """Load a problem at the given filepath.
 
@@ -64,10 +50,6 @@ def load_problem(filepath, special=None):
     return load(filepath, special=special)
 
 
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.load` instead.'
-)
 def load_solution(filepath):
     """Load a solution at the given filepath.
 
@@ -78,10 +60,6 @@ def load_solution(filepath):
     return load(filepath)
 
 
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.load` instead.'
-)
 def load_unknown(filepath):
     """Load any TSPLIB file.
 
@@ -94,10 +72,6 @@ def load_unknown(filepath):
     return load(filepath)
 
 
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.parse` instead.'
-)
 def load_problem_fromstring(text, special=None):
     """Load a problem from raw text.
 
@@ -109,10 +83,6 @@ def load_problem_fromstring(text, special=None):
     return parse(text, special=special)
 
 
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.parse` instead.'
-)
 def load_solution_fromstring(text):
     """Load a solution from raw text.
 
@@ -123,10 +93,6 @@ def load_solution_fromstring(text):
     return parse(text)
 
 
-@deprecated(
-    version='7.0.0',
-    reason='Will be removed in newer versions. Use `tsplib95.parse` instead.'
-)
 def load_unknown_fromstring(text):
     """Load any problem/solution from raw text.
 
