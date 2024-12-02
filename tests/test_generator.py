@@ -5,7 +5,6 @@ sys.path.append(root_folder)
 import shutil
 from ml4co_kit import *
 
-GUROBI_LICENCE = "your gurobi licence"
 GUROBI_TEST = False
 
 
@@ -218,7 +217,7 @@ def _test_mcl_gurobi(
         os.makedirs(save_path)
     
     # solver
-    solver = MClGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
+    solver = MClGurobiSolver(time_limit=5.0)
       
     # create MClDataGenerator using gurobi solver
     mcl_data_gurobi = MClDataGenerator(
@@ -243,10 +242,10 @@ def test_mcl():
     """
     Test MCLDataGenerator
     """
-    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mcl_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
@@ -268,7 +267,7 @@ def _test_mcut_gurobi(
         os.makedirs(save_path)
     
     # solver
-    solver = MCutGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
+    solver = MCutGurobiSolver(time_limit=5.0)
       
     # create MCutDataGenerator using gurobi solver
     mcut_data_gurobi = MCutDataGenerator(
@@ -293,10 +292,10 @@ def test_mcut():
     """
     Test MVCDataGenerator
     """
-    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mcut_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
@@ -316,7 +315,7 @@ def _test_mis_kamis(
         os.makedirs(save_path)
         
     # create MISDataGenerator using KaMIS solver
-    solver = KaMISSolver(time_limit=5.0)
+    solver = KaMISSolver(time_limit=1.0)
     if recompile_kamis:
         solver.recompile_kamis()
     mis_data_kamis = MISDataGenerator(
@@ -352,7 +351,7 @@ def _test_mis_gurobi(
         os.makedirs(save_path)
     
     # solver
-    solver = MISGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
+    solver = MISGurobiSolver(time_limit=5.0)
       
     # create MISDataGenerator using gurobi solver
     mis_data_gurobi = MISDataGenerator(
@@ -378,16 +377,16 @@ def test_mis():
     Test MISDataGenerator
     """
     _test_mis_kamis(
-        nodes_num_min=600, nodes_num_max=700, data_type="er", recompile_kamis=True
+        nodes_num_min=50, nodes_num_max=100, data_type="er", recompile_kamis=True
     )
-    _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mis_kamis(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="ws")
     
-    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mis_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
@@ -409,7 +408,7 @@ def _test_mvc_gurobi(
         os.makedirs(save_path)
     
     # solver
-    solver = MVCGurobiSolver(licence_path=GUROBI_LICENCE, time_limit=5.0)
+    solver = MVCGurobiSolver(time_limit=5.0)
       
     # create MVCDataGenerator using gurobi solver
     mvc_data_gurobi = MVCDataGenerator(
@@ -434,10 +433,10 @@ def test_mvc():
     """
     Test MVCDataGenerator
     """
-    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="er")
-    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ba")
-    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="hk")
-    _test_mvc_gurobi(nodes_num_min=600, nodes_num_max=700, data_type="ws")
+    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
    

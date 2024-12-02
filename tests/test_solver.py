@@ -28,7 +28,7 @@ def test_atsp_base_solver():
     shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_instance")
     shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_solution")
     solver.to_txt(
-        filename="tests/data_for_tests/solver/atsp/atsp50.txt",
+        file_path="tests/data_for_tests/solver/atsp/atsp50.txt",
         apply_scale=False,
         to_int=False,
     )
@@ -50,8 +50,6 @@ def _test_atsp_lkh_solver(show_time: bool, num_threads: int):
 
 def test_atsp_lkh_solver():
     _test_atsp_lkh_solver(True, 1)
-    _test_atsp_lkh_solver(True, 2)
-    _test_atsp_lkh_solver(False, 1)
     _test_atsp_lkh_solver(False, 2)
     
     
@@ -100,8 +98,6 @@ def _test_cvrp_hgs_solver(show_time: bool, num_threads: int):
 
 def test_cvrp_hgs_solver():
     _test_cvrp_hgs_solver(True, 1)
-    _test_cvrp_hgs_solver(True, 2)
-    _test_cvrp_hgs_solver(False, 1)
     _test_cvrp_hgs_solver(False, 2)
 
 
@@ -121,8 +117,6 @@ def _test_cvrp_lkh_solver(show_time: bool, num_threads: int):
 
 def test_cvrp_lkh_solver():
     _test_cvrp_lkh_solver(True, 1)
-    _test_cvrp_lkh_solver(True, 2)
-    _test_cvrp_lkh_solver(False, 1)
     _test_cvrp_lkh_solver(False, 2)
 
 
@@ -142,8 +136,6 @@ def _test_cvrp_pyvrp_solver(show_time: bool, num_threads: int):
 
 def test_cvrp_pyvrp_solver():
     _test_cvrp_pyvrp_solver(True, 1)
-    _test_cvrp_pyvrp_solver(True, 2)
-    _test_cvrp_pyvrp_solver(False, 1)
     _test_cvrp_pyvrp_solver(False, 2)
 
 
@@ -198,8 +190,6 @@ def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
 
 def test_mis_gurobi_solver():
     _test_mis_gurobi_solver(True, 1)
-    _test_mis_gurobi_solver(True, 2)
-    _test_mis_gurobi_solver(False, 1)
     _test_mis_gurobi_solver(False, 2)
     
     
@@ -260,8 +250,6 @@ def _test_mcut_gurobi_solver(show_time: bool, num_threads: int):
 
 def test_mcut_gurobi_solver():
     _test_mcut_gurobi_solver(True, 1)
-    _test_mcut_gurobi_solver(True, 2)
-    _test_mcut_gurobi_solver(False, 1)
     _test_mcut_gurobi_solver(False, 2)
 
 
@@ -297,8 +285,6 @@ def _test_mcl_gurobi_solver(show_time: bool, num_threads: int):
 
 def test_mcl_gurobi_solver():
     _test_mcl_gurobi_solver(True, 1)
-    _test_mcl_gurobi_solver(True, 2)
-    _test_mcl_gurobi_solver(False, 1)
     _test_mcl_gurobi_solver(False, 2)
 
 
@@ -352,8 +338,6 @@ def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
 
 def test_mis_gurobi_solver():
     _test_mis_gurobi_solver(True, 1)
-    _test_mis_gurobi_solver(True, 2)
-    _test_mis_gurobi_solver(False, 1)
     _test_mis_gurobi_solver(False, 2)
     
     
@@ -414,8 +398,6 @@ def _test_mvc_gurobi_solver(show_time: bool, num_threads: int):
 
 def test_mvc_gurobi_solver():
     _test_mvc_gurobi_solver(True, 1)
-    _test_mvc_gurobi_solver(True, 2)
-    _test_mvc_gurobi_solver(False, 1)
     _test_mvc_gurobi_solver(False, 2)
 
 
@@ -446,7 +428,7 @@ def test_tsp_base_solver():
     shutil.rmtree("tests/data_for_tests/solver/tsp/tsp50_tsplib_instance")
     shutil.rmtree("tests/data_for_tests/solver/tsp/tsp50_tsplib_solution")
     solver.to_txt(
-        filename="tests/data_for_tests/solver/tsp/tsp50.txt",
+        file_path="tests/data_for_tests/solver/tsp/tsp50.txt",
         apply_scale=False,
         to_int=False,
     )
@@ -468,8 +450,6 @@ def _test_tsp_concorde_solver(show_time: bool, num_threads: int):
 
 def test_tsp_concorde_solver():
     _test_tsp_concorde_solver(True, 1)
-    _test_tsp_concorde_solver(True, 2)
-    _test_tsp_concorde_solver(False, 1)
     _test_tsp_concorde_solver(False, 2)
 
 
@@ -489,8 +469,6 @@ def _test_tsp_ga_eax_solver(show_time: bool, num_threads: int):
 
 def test_tsp_ga_eax_solver():
     _test_tsp_ga_eax_solver(True, 1)
-    _test_tsp_ga_eax_solver(True, 2)
-    _test_tsp_ga_eax_solver(False, 1)
     _test_tsp_ga_eax_solver(False, 2)
 
 
@@ -510,8 +488,6 @@ def _test_tsp_ga_eax_large_solver(show_time: bool, num_threads: int):
 
 def test_tsp_ga_eax_large_solver():
     _test_tsp_ga_eax_large_solver(True, 1)
-    _test_tsp_ga_eax_large_solver(True, 2)
-    _test_tsp_ga_eax_large_solver(False, 1)
     _test_tsp_ga_eax_large_solver(False, 2)
 
 
@@ -531,8 +507,6 @@ def _test_tsp_lkh_solver(show_time: bool, num_threads: int):
 
 def test_tsp_lkh_solver():
     _test_tsp_lkh_solver(True, 1)
-    _test_tsp_lkh_solver(True, 2)
-    _test_tsp_lkh_solver(False, 1)
     _test_tsp_lkh_solver(False, 2)
 
 

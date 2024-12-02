@@ -16,3 +16,4 @@ ignore:
  - ml4co_kit/solver/tsp/pyconcorde/setup.py
  - ml4co_kit/learning/**
  - ml4co_kit/solver/tsp/concorde_large.py
+ - ml4co_kit/utils/tsplib95

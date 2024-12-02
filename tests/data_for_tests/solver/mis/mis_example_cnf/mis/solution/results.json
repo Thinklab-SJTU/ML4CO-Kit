@@ -406,8 +406,8 @@
             1205,
             1206
         ],
-        "solution_time": 2.69139,
-        "total_time": 10.091511537786573,
+        "solution_time": 3.95078,
+        "total_time": 10.109251855872571,
         "vertices": 403
     },
     "CBS_k3_n100_m418_b10_927": {
@@ -832,8 +832,8 @@
             1249,
             1253
         ],
-        "solution_time": 2.94431,
-        "total_time": 10.111215078271925,
+        "solution_time": 4.32438,
+        "total_time": 10.103654897771776,
         "vertices": 418
     },
     "CBS_k3_n100_m429_b50_1": {
@@ -1269,8 +1269,8 @@
             1282,
             1285
         ],
-        "solution_time": 2.66076,
-        "total_time": 10.174272296018898,
+        "solution_time": 3.94799,
+        "total_time": 10.140570020768791,
         "vertices": 429
     },
     "CBS_k3_n100_m449_b70_15": {
@@ -1726,8 +1726,8 @@
             1342,
             1346
         ],
-        "solution_time": 3.19248,
-        "total_time": 10.16194302868098,
+        "solution_time": 4.51694,
+        "total_time": 10.111564490944147,
         "vertices": 449
     }
 }
