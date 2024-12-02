@@ -161,4 +161,4 @@ Generator
 
 What's Next
 ------------
-Please see :doc:`../api/ml4co-kit` for the API documentation.
+Please see :doc:`../api/ml4co_kit` for the API documentation.

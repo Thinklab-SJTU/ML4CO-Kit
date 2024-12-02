@@ -18,7 +18,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 * ``utils``: general or commonly used functions and classes.
 
 
-⭐ **Official Documentation**: https://ML4CO-Kit.readthedocs.io
+⭐ **Official Documentation**: https://ml4co-kit.readthedocs.io/en/latest/
 
 ⭐ **Source Code**: https://github.com/Thinklab-SJTU/ML4CO-Kit
 
