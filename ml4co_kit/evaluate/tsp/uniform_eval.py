@@ -14,8 +14,9 @@ class TSPUniformEvaluator:
         self,
         solver: TSPSolver,
         file_path: str,
+        show_time: bool = False,
         **solver_args,
     ):
         solver.from_txt(file_path, ref=True)
-        solver.solve(**solver_args)
+        solver.solve(show_time=show_time, **solver_args)
         return solver.evaluate(calculate_gap=True)

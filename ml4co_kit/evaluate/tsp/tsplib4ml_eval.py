@@ -1,8 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-from ml4co_kit.data.tsp.tsplib4ml import TSPLIB4MLDataset
+from ml4co_kit.utils.time_utils import Timer
 from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.data.tsp.tsplib4ml import TSPLIB4MLDataset
 
 
 class TSPLIB4MLEvaluator:
@@ -16,8 +17,13 @@ class TSPLIB4MLEvaluator:
         normalize: bool = True,
         min_nodes_num: int = 51,
         max_nodes_num: int = 1002,
+        show_time: bool = False,
         **solver_args
     ):
+        # timer
+        timer = Timer(apply=show_time)
+        timer.start()
+        
         # record
         solved_costs = dict()
         ref_costs = dict()
@@ -50,6 +56,10 @@ class TSPLIB4MLEvaluator:
             ref_costs[problem] = ref_cost
             gaps[problem] = gap
 
+        # timer
+        timer.end()
+        timer.show_time()
+        
         # average
         np_solved_costs = np.array(list(solved_costs.values()))
         np_ref_costs = np.array(list(ref_costs.values()))

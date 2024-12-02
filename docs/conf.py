@@ -21,7 +21,6 @@ import os
 import sys
 import datetime
 sys.path.insert(0, os.path.abspath('..'))
-
 os.environ['SPHINX'] = '1'
 
 # -- General configuration ------------------------------------------------
@@ -50,7 +49,7 @@ autodoc_mock_imports = ['scipy', 'matplotlib', 'torch_geometric', 'pynvml']
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -196,7 +195,6 @@ sphinx_gallery_conf = {
      'remove_config_comments': True,
 }
 
-autosummary_generate = True
 autodoc_default_options = {
     'members': True,
     'undoc-members': True,

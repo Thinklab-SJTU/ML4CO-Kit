@@ -19,3 +19,5 @@ sphinx==5.2.3
 sphinx-design==0.3.0
 sphinx_rtd_theme==1.0.0
 sphinx-gallery==0.11.1
+pytorch_lightning
+matplotlib

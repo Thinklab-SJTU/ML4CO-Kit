@@ -1,8 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-from ml4co_kit.data.tsp.tsplib_original import TSPLIBOriDataset
+from ml4co_kit.utils.time_utils import Timer
 from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.data.tsp.tsplib_original import TSPLIBOriDataset
 
 
 class TSPLIBOriEvaluator:
@@ -15,8 +16,13 @@ class TSPLIBOriEvaluator:
         solver: TSPSolver,
         norm: str = "EUC_2D",
         normalize: bool = False,
+        show_time: bool = False,
         **solver_args
     ):
+        # timer
+        timer = Timer(apply=show_time)
+        timer.start()
+        
         # record
         solved_costs = dict()
         ref_costs = dict()
@@ -45,7 +51,11 @@ class TSPLIBOriEvaluator:
             solved_costs[problem] = solved_cost
             ref_costs[problem] = ref_cost
             gaps[problem] = gap
-
+        
+        # timer
+        timer.end()
+        timer.show_time()
+        
         # average
         np_solved_costs = np.array(list(solved_costs.values()))
         np_ref_costs = np.array(list(ref_costs.values()))

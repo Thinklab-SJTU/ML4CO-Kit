@@ -1,4 +1,4 @@
-from ml4co_kit.data.vrp.cvrp_uniform import CVRPUniformDataset
+from ml4co_kit.data.cvrp.cvrp_uniform import CVRPUniformDataset
 from ml4co_kit.solver.cvrp.base import CVRPSolver
 
 
@@ -14,8 +14,9 @@ class CVRPUniformEvaluator:
         self,
         solver: CVRPSolver,
         file_path: str,
+        show_time: bool = False,
         **solver_args,
     ):
-        solver.from_txt(file_path)
-        solver.solve(**solver_args)
+        solver.from_txt(file_path, ref=True)
+        solver.solve(show_time=show_time, **solver_args)
         return solver.evaluate(calculate_gap=True)

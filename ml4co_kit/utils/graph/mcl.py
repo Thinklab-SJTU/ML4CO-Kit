@@ -13,13 +13,13 @@ class MClGraphData(GraphData):
         self.ref_sel_nodes_num: np.ndarray = None
         self.self_loop = None
         
-    def check_edge_index(self):
+    def _check_edge_index(self):
         if self.edge_index is not None:
             shape = self.edge_index.shape
             if len(shape) != 2 or shape[0] != 2:
                 raise ValueError("The shape of ``edge_index`` must be like (2, E)")
 
-    def check_nodes_label(self, ref: bool):
+    def _check_nodes_label(self, ref: bool):
         nodes_label = self.ref_nodes_label if ref else self.nodes_label
         name = "ref_nodes_label" if ref else "nodes_label"
         if nodes_label is not None:
@@ -53,13 +53,13 @@ class MClGraphData(GraphData):
     ):
         if edge_index is not None:
             self.edge_index = edge_index
-            self.check_edge_index()
+            self._check_edge_index()
         if nodes_label is not None:
             if ref:
                 self.ref_nodes_label = nodes_label
             else:
                 self.nodes_label = nodes_label
-            self.check_nodes_label(ref=ref)
+            self._check_nodes_label(ref=ref)
         
     def evaluate(self, calculate_gap: bool = False):
         # solved solution

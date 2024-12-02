@@ -1,9 +1,11 @@
 r"""
-Basic solver for Traveling Salesman Problem (TSP)
+Basic solver for Traveling Salesman Problem (TSP). 
+The TSP problem requires finding the shortest tour that visits each 
+vertex of the graph exactly once and returns to the starting node. 
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
-# ml4co-kit is licensed under Mulan PSL v2.
+# ML4CO-Kit is licensed under Mulan PSL v2.
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 # http://license.coscl.org.cn/MulanPSL2
@@ -11,6 +13,7 @@ Basic solver for Traveling Salesman Problem (TSP)
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
+
 
 import os
 import sys
@@ -31,6 +34,23 @@ else:
 
 
 class TSPSolver(SolverBase):
+    r"""
+    This class provides a basic framework for solving TSP problems. It includes methods for 
+    loading and outputting data in various file formats, normalizing points, and evaluating 
+    solutions. Note that the actual solving method should be implemented in subclasses.
+    
+    :param nodes_num: :math:`N`, int, the number of nodes in TSP problem.
+    :param ori_points: :math:`(B\times N \times 2)`, np.ndarray, the original coordinates data read.
+    :param points: :math:`(B\times N \times 2)`, np.ndarray, the coordinates data called 
+        by the solver during solving. They may initially be the same as ``ori_points``,
+        but may later undergo standardization or scaling processing.
+    :param tours: :math:`(B\times (N+1))`, np.ndarray, the solutions to the problems. 
+    :param ref_tours: :math:`(B\times (N+1))`, np.ndarray, the reference solutions to the problems. 
+    :param scale: int, magnification scale of coordinates. If the input coordinates are too large,
+        you can scale them to 0-1 by setting ``normalize`` to True, and then use ``scale`` to adjust them.
+        Note that the magnification scale only applies to ``points`` when solved by the solver.
+    :param norm: string, coordinate type. It can be a 2D Euler distance or geographic data type.
+    """
     def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
         super(TSPSolver, self).__init__(
             task_type=TASK_TYPE.TSP, solver_type=solver_type
@@ -43,7 +63,13 @@ class TSPSolver(SolverBase):
         self.nodes_num: int = None
         self.norm: str = None
         
-    def check_points_dim(self):
+    def _check_points_dim(self):
+        r"""
+        Ensures that the ``points`` attribute is a 3D array. If ``points`` is a 2D array,
+        it adds an additional dimension to make it 3D. Raises a ``ValueError`` if ``points``
+        is neither 2D nor 3D. Also sets the ``nodes_num`` attribute to the number of nodes
+        (points) in the problem.
+        """
         if self.points is not None:
             if self.points.ndim == 2:
                 self.points = np.expand_dims(self.points, axis=0)
@@ -51,22 +77,38 @@ class TSPSolver(SolverBase):
                 raise ValueError("``points`` must be a 2D or 3D array.")
             self.nodes_num = self.points.shape[1]
 
-    def check_ori_points_dim(self):
-        self.check_points_dim()
+    def _check_ori_points_dim(self):
+        r"""
+        Ensures that the ``ori_points`` attribute is a 3D array. Calls ``_check_points_dim``
+        to validate the ``points`` attribute first. If ``ori_points`` is a 2D array, it adds
+        an additional dimension to make it 3D. Raises a ``ValueError`` if ``ori_points`` is
+        neither 2D nor 3D.
+        """
+        self._check_points_dim()
         if self.ori_points is not None:
             if self.ori_points.ndim == 2:
                 self.ori_points = np.expand_dims(self.ori_points, axis=0)
             if self.ori_points.ndim != 3:
                 raise ValueError("The ``ori_points`` must be 2D or 3D array.")
 
-    def check_tours_dim(self):
+    def _check_tours_dim(self):
+        r"""
+        Ensures that the ``tours`` attribute is a 2D array. If ``tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``tours``
+        has more than 2 dimensions.
+        """
         if self.tours is not None:
             if self.tours.ndim == 1:
                 self.tours = np.expand_dims(self.tours, axis=0)
             if self.tours.ndim != 2:
                 raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
-    def check_ref_tours_dim(self):
+    def _check_ref_tours_dim(self):
+        r"""
+        Ensures that the ``ref_tours`` attribute is a 2D array. If ``ref_tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``ref_tours``
+        has more than 2 dimensions.
+        """
         if self.ref_tours is not None:
             if self.ref_tours.ndim == 1:
                 self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
@@ -75,7 +117,11 @@ class TSPSolver(SolverBase):
                     "The dimensions of the ``ref_tours`` cannot be larger than 2."
                 )
 
-    def check_points_not_none(self):
+    def _check_points_not_none(self):
+        r"""
+        Checks if the ``points`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``points`` is ``None``. 
+        """
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
@@ -83,7 +129,13 @@ class TSPSolver(SolverBase):
             )
             raise ValueError(message)
 
-    def check_tours_not_none(self, ref: bool):
+    def _check_tours_not_none(self, ref: bool):
+        r"""
+        Checks if the ``tours` or ``ref_tours`` attribute is not ``None``.
+        - If ``ref`` is ``True``, it checks the ``ref_tours`` attribute.
+        - If ``ref`` is ``False``, it checks the ``tours`` attribute.
+        Raises a `ValueError` if the respective attribute is ``None``.
+        """
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``TSPSolver``"
@@ -97,7 +149,10 @@ class TSPSolver(SolverBase):
             if self.tours is None:    
                 raise ValueError(message)
 
-    def set_norm(self, norm: str):
+    def _set_norm(self, norm: str):
+        r"""
+        Sets the coordinate type.
+        """
         if norm is None:
             return
         if norm not in SUPPORT_NORM_TYPE:
@@ -111,7 +166,10 @@ class TSPSolver(SolverBase):
             raise ValueError(message)
         self.norm = norm
 
-    def normalize_points(self):
+    def _normalize_points(self):
+        r"""
+        Normalizes the ``points`` attribute to scale all coordinates between 0 and 1.
+        """
         for idx in range(self.points.shape[0]):
             cur_points = self.points[idx]
             max_value = np.max(cur_points)
@@ -119,7 +177,12 @@ class TSPSolver(SolverBase):
             cur_points = (cur_points - min_value) / (max_value - min_value)
             self.points[idx] = cur_points
 
-    def get_round_func(self, round_func: str):
+    def _get_round_func(self, round_func: str):
+        r"""
+        Retrieves a rounding function based on the input string or function.
+        - If `round_func` is a string, it checks against predefined functions (``ROUND_FUNCS``).
+        - If `round_func` is not callable, raises a ``TypeError``.
+        """
         if (key := str(round_func)) in ROUND_FUNCS:
             round_func = ROUND_FUNCS[key]
         if not callable(round_func):
@@ -129,21 +192,29 @@ class TSPSolver(SolverBase):
             )
         return round_func
 
-    def apply_scale_and_dtype(
+    def _apply_scale_and_dtype(
         self, points: np.ndarray, apply_scale: bool, to_int: bool, round_func: str
     ):
+        r"""
+        Applies scaling and/or dtype conversion to the given ``points``.
+        - Scales the points by ``self.scale`` if ``apply_scale`` is True.
+        - Converts points to integers using the specified rounding function if ``to_int`` is True.
+        """
         # apply scale
         if apply_scale:
             points = points * self.scale
 
         # dtype
         if to_int:
-            round_func = self.get_round_func(round_func)
+            round_func = self._get_round_func(round_func)
             points = round_func(points)
         
         return points
 
     def _read_data_from_tsp_file(self, tsp_file_path: str) -> np.ndarray:
+        r"""
+        Reads TSP node coordinates from a TSPLIB file.
+        """
         tsplib_data = tsplib95.load(tsp_file_path)
         points = np.array(list(tsplib_data.node_coords.values()))
         if points is None:
@@ -151,6 +222,9 @@ class TSPSolver(SolverBase):
         return points
 
     def _read_tour_from_tour_file(self, tour_file_path: str) -> np.ndarray:
+        r"""
+        Reads a TSP tour from a TSPLIB tour file.
+        """
         tsp_tour = tsplib95.load(tour_file_path)
         tsp_tour = tsp_tour.tours
         tsp_tour: list
@@ -167,6 +241,63 @@ class TSPSolver(SolverBase):
         norm: str = "EUC_2D",
         normalize: bool = False
     ):
+        """
+        Read data from single TSPLIB type file.
+        
+        :param tsp_file_path: string, path to the `.tsp` file containing TSP instance data.
+            If given, the solver will read node coordinates from the file.
+        :param tour_file_path: string, path to the `.tour` file containing TSP solution data.
+            If given, the solver will read tour from the file.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param norm: string, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        
+        .. note::
+            - If the given ``tsp_file_path`` does not end with ``.tsp``, the solver will raise ``ValueError``.
+            - If the given ``tour_file_path`` does not end with ``.tour`` or ``.opt_tour``, the solver will raise ``ValueError``.
+        
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from ``.tsp`` and ``.opt.tour`` files
+                >>> solver.from_tsplib(
+                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                >>> solver.points.shape
+                (1, 100, 2)
+                >>> solver.points[0][:4]
+                [[1357. 1905.]
+                [2650.  802.]
+                [1774.  107.]
+                [1307.  964.]]
+                >>> solver.tours.shape
+                (1, 101)
+
+                # If you want to normalize the input data (for easy machine learning method calls), 
+                # you can set ``normalize`` to True.
+                >>> solver.from_tsplib(
+                        tsp_file_path="examples/tsp/tsplib/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib/solution/kroC100.opt.tour",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                >>> solver.points[0][:4]
+                [[0.34350368 0.48283753]
+                [0.67226034 0.20239003]
+                [0.44952962 0.02568014]
+                [0.33079076 0.24357997]]
+        """
         # init
         points = None
         tour = None
@@ -200,6 +331,50 @@ class TSPSolver(SolverBase):
         normalize: bool = False,
         show_time: bool = False
     ):
+        """
+        Read data from the folder containing TSPLIB type data.
+
+        :param tsp_folder_path: string, path to the folder containing `.tsp` files.
+            If given, the solver will read node coordinates from the folder.
+        :param tour_folder_path: string, path to the folder containing `.tour` files.
+            If given, the solver will read tour from the folder.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from the tsplib folder
+                >>> solver.from_tsplib_folder(
+                        tsp_folder_path="examples/tsp/tsplib_2/problem",
+                        tour_folder_path="examples/tsp/tsplib_2/solution"
+                    )
+                >>> solver.points.shape
+                (3, 100, 2)
+                >>> solver.tours.shape
+                (3, 101)
+
+                # When the number of nodes is not consistent, ``return_ist`` can be 
+                # used to return data.
+                >>> points_list, tours_list = solver.from_tsplib_folder(
+                        tsp_folder_path="examples/tsp/tsplib_1/problem",
+                        tour_folder_path="examples/tsp/tsplib_1/solution",
+                        return_list=True
+                    )
+                >>> points_list[0].shape
+                (280, 2)
+                >>> points_list[1].shape
+                (100, 2)
+        """
         # init
         points = None
         tours = None
@@ -296,6 +471,32 @@ class TSPSolver(SolverBase):
         normalize: bool = False,
         show_time = False
     ):
+        """
+        Read data from `.txt` file.
+
+        :param file_path: string, path to the `.txt` file containing TSP instances data.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50.txt")
+                >>> solver.points.shape
+                (16, 50, 2)
+                >>> solver.tours.shape
+                (16, 51)
+        """
         # check the file format
         if not file_path.endswith(".txt"):
             raise ValueError("Invalid file format. Expected a ``.txt`` file.")
@@ -353,27 +554,53 @@ class TSPSolver(SolverBase):
         norm: str = "EUC_2D",
         normalize: bool = False,
     ):
+        """
+        Read data from list or np.ndarray.
+
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param tours: np.ndarray, the solutions of the problems. If given, the tours
+            originally stored in the solver will be replaced
+        :param ref: boolean, whether the solution is a reference solution.
+        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize node coordinates.
+
+        .. dropdown:: Example
+
+            :: 
+
+                >>> import numpy as np
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from np.ndarray
+                >>> solver.from_data(points=np.random.random(size=(10, 2)))
+                >>> solver.points.shape
+                (1, 10, 2)
+        """
         # set norm
-        self.set_norm(norm)
+        self._set_norm(norm)
     
         # points
         if points is not None:
             points = to_numpy(points)
             self.ori_points = points
             self.points = points.astype(np.float32)
-            self.check_ori_points_dim()
+            self._check_ori_points_dim()
             if normalize:
-                self.normalize_points()
+                self._normalize_points()
     
         # tours
         if tours is not None:
             tours = to_numpy(tours).astype(np.int32)
             if ref:
                 self.ref_tours = tours
-                self.check_ref_tours_dim()
+                self._check_ref_tours_dim()
             else:
                 self.tours = tours
-                self.check_tours_dim()
+                self._check_tours_dim()
 
     def to_tsplib_folder(
         self,
@@ -387,17 +614,55 @@ class TSPSolver(SolverBase):
         round_func: str = "round",
         show_time: bool = False
     ):
+        """
+        Output(store) data in ``txt`` format
+
+        :param tsp_save_path: string, path to save the `.tsp` files. If given, 
+            the coordinates will be saved as ``.tsp`` file for each instance.
+        :param tsp_filename: string, the basic file name of the `.tsp` files.
+        :param tour_save_path: string, path to save the `.opt.tour` files. If given,
+            the solution will be saved as ``.opt.tour`` file for each instance.
+        :param tour_filename: string, the basic file name of the `.opt.tour` files.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+        :param show_time: boolean, whether the data is being output with a visual progress display.
+
+        .. note::
+            ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50.txt")
+                    
+                # Output data in TSPLIB format
+                >>> solver.to_tsplib_folder(
+                        tsp_save_dir="tsp50/problem",
+                        tsp_filename="tsp50",
+                        tour_save_dir="tsp50/solution",
+                        tour_filename="tsp50"
+                    )
+        """
         # .tsp files
         if tsp_save_dir is not None:
             # preparation
             if tsp_filename.endswith(".tsp"):
                 tsp_filename = tsp_filename.replace(".tsp", "")
-            self.check_points_not_none()
+            self._check_points_not_none()
             points = self.ori_points if original else self.points
             samples = points.shape[0]
 
             # apply scale and dtype
-            points = self.apply_scale_and_dtype(
+            points = self._apply_scale_and_dtype(
                 points=points, apply_scale=apply_scale,
                 to_int=to_int, round_func=round_func
             )
@@ -436,7 +701,7 @@ class TSPSolver(SolverBase):
                 tour_filename = tour_filename.replace(".opt.tour", "")
             if tour_filename.endswith(".tour"):
                 tour_filename = tour_filename.replace(".tour", "")
-            self.check_tours_not_none(ref=False)
+            self._check_tours_not_none(ref=False)
             tours = self.tours
             samples = tours.shape[0]
             
@@ -464,15 +729,50 @@ class TSPSolver(SolverBase):
 
     def to_txt(
         self,
-        filename: str = "example.txt",
+        file_path: str = "example.txt",
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
         round_func: str = "round"
     ):
+        """
+        Output(store) data in ``txt`` format
+
+        :param file_path: string, path to save the `.txt` file.
+        :param tour_file_path: string, path to the `.tour` file containing TSP solution data.
+            if given, the solver will read tour from the file.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPSolver
+                
+                # create TSPSolver
+                >>> solver = TSPSolver()
+
+                # load data from ``.tsp`` and ``.opt.tour`` files
+                >>> solver.from_tsplib(
+                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=True
+                    )
+                    
+                # Output data in ``txt`` format
+                >>> solver.to_txt("kroC100.txt")
+        """
         # check
-        self.check_points_not_none()
-        self.check_tours_not_none(ref=False)
+        self._check_points_not_none()
+        self._check_tours_not_none(ref=False)
         
         # variables
         points = self.ori_points if original else self.points
@@ -497,13 +797,13 @@ class TSPSolver(SolverBase):
             tours = np.array(best_tour_list)
 
         # apply scale and dtype
-        points = self.apply_scale_and_dtype(
+        points = self._apply_scale_and_dtype(
             points=points, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )
 
         # write
-        with open(filename, "w") as f:
+        with open(file_path, "w") as f:
             for node_coordes, tour in zip(points, tours):
                 f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
                 f.write(str(" ") + str("output") + str(" "))
@@ -519,11 +819,44 @@ class TSPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round",
     ):
+        """
+        Evaluate the solution quality of the solver
+
+        :param calculate_gap: boolean, whether to calculate the gap with the reference solutions.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            - Please make sure the ``points`` and the ``tours`` are not None.
+            - If you set the ``calculate_gap`` as True, please make sure the ``ref_tours`` is not None.
+        
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import TSPLKHSolver
+                
+                # create TSPLKHSolver
+                >>> solver = TSPSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.txt`` file
+                >>> solver.from_txt(examples/tsp/txt/tsp50_concorde.txt)
+                
+                # solve
+                >>> solver.solve()
+                    
+                # Evaluate the quality of the solutions solved by LKH
+                # (average length, reference average length, gap, std)
+                >>> solver.evaluate(calculate_gap=True)
+                (5.820372200519043, 5.819294685188686, 0.018455848984237393, 0.05188854363067263)
+        """
         # check
-        self.check_points_not_none()
-        self.check_tours_not_none(ref=False)
+        self._check_points_not_none()
+        self._check_tours_not_none(ref=False)
         if calculate_gap:
-            self.check_tours_not_none(ref=True)
+            self._check_tours_not_none(ref=True)
             
         # variables
         points = self.ori_points if original else self.points
@@ -531,7 +864,7 @@ class TSPSolver(SolverBase):
         ref_tours = self.ref_tours
 
         # apply scale and dtype
-        points = self.apply_scale_and_dtype(
+        points = self._apply_scale_and_dtype(
             points=points, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )
@@ -596,6 +929,16 @@ class TSPSolver(SolverBase):
         show_time: bool = False,
         **kwargs,
     ) -> np.ndarray:
+        """
+        This method will be implemented in subclasses.
+        
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )

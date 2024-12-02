@@ -28,7 +28,7 @@ class ATSPSolver(SolverBase):
         self.ref_tours: np.ndarray = None
         self.nodes_num: int = None
 
-    def check_dists_dim(self):
+    def _check_dists_dim(self):
         if self.dists is not None:
             if self.dists.ndim == 2:
                 self.dists = np.expand_dims(self.dists, axis=0)
@@ -36,22 +36,22 @@ class ATSPSolver(SolverBase):
                 raise ValueError("``dists`` must be a 2D or 3D array.")
             self.nodes_num = self.dists.shape[-1]
 
-    def check_ori_dists_dim(self):
-        self.check_dists_dim()
+    def _check_ori_dists_dim(self):
+        self._check_dists_dim()
         if self.ori_dists is not None:
             if self.ori_dists.ndim == 2:
                 self.ori_dists = np.expand_dims(self.ori_dists, axis=0)
             if self.ori_dists.ndim != 3:
                 raise ValueError("The ``ori_dists`` must be 2D or 3D array.")
 
-    def check_tours_dim(self):
+    def _check_tours_dim(self):
         if self.tours is not None:
             if self.tours.ndim == 1:
                 self.tours = np.expand_dims(self.tours, axis=0)
             if self.tours.ndim != 2:
                 raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
-    def check_ref_tours_dim(self):
+    def _check_ref_tours_dim(self):
         if self.ref_tours is not None:
             if self.ref_tours.ndim == 1:
                 self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
@@ -60,7 +60,7 @@ class ATSPSolver(SolverBase):
                     "The dimensions of the ``ref_tours`` cannot be larger than 2."
                 )
 
-    def check_dists_not_none(self):
+    def _check_dists_not_none(self):
         if self.dists is None:
             message = (
                 "``dists`` cannot be None! You can load the dists using the methods"
@@ -68,7 +68,7 @@ class ATSPSolver(SolverBase):
             )
             raise ValueError(message)
 
-    def check_tours_not_none(self, ref: bool):
+    def _check_tours_not_none(self, ref: bool):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on "
@@ -100,7 +100,7 @@ class ATSPSolver(SolverBase):
             )
         return round_func
 
-    def apply_scale_and_dtype(
+    def _apply_scale_and_dtype(
         self, dists: np.ndarray, apply_scale: bool, to_int: bool, round_func: str
     ):
         # apply scale
@@ -143,8 +143,8 @@ class ATSPSolver(SolverBase):
         
         # read dists from .tsp file
         if atsp_file_path is not None:
-            if not atsp_file_path.endswith(".atsp"):
-                raise ValueError("Invalid file format. Expected a ``.atsp`` file.")
+            if not atsp_file_path.endswith(".atsp") and not atsp_file_path.endswith(".tsp"):
+                raise ValueError("Invalid file format. Expected a ``.atsp`` or ``.tsp`` file.")
             dists = self._read_data_from_atsp_file(atsp_file_path)
         
         # read tour from .tour file
@@ -184,7 +184,7 @@ class ATSPSolver(SolverBase):
             load_msg = f"Loading data from {atsp_folder_path}"
             for file_name in iterative_execution_for_file(files, load_msg, show_time):
                 atsp_file_path = os.path.join(atsp_folder_path, file_name)
-                if not atsp_file_path.endswith(".atsp"):
+                if not atsp_file_path.endswith(".atsp")  and not atsp_file_path.endswith(".tsp"):
                     continue
                 dists = self._read_data_from_atsp_file(atsp_file_path)
                 dists_list.append(dists)
@@ -212,7 +212,7 @@ class ATSPSolver(SolverBase):
             for file_name in iterative_execution_for_file(files, load_msg, show_time):
                 # dists
                 atsp_file_path = os.path.join(atsp_folder_path, file_name)
-                if not atsp_file_path.endswith(".atsp"):
+                if not atsp_file_path.endswith(".atsp") and not atsp_file_path.endswith(".tsp"):
                     continue
                 dists = self._read_data_from_atsp_file(atsp_file_path)
                 dists_list.append(dists)
@@ -321,7 +321,7 @@ class ATSPSolver(SolverBase):
             dists = to_numpy(dists)
             self.ori_dists = dists
             self.dists = dists.astype(np.float32)
-            self.check_ori_dists_dim()
+            self._check_ori_dists_dim()
             if normalize:
                 self.normalize_dists()
 
@@ -330,10 +330,10 @@ class ATSPSolver(SolverBase):
             tours = to_numpy(tours).astype(np.int32)
             if ref:
                 self.ref_tours = tours
-                self.check_ref_tours_dim()
+                self._check_ref_tours_dim()
             else:
                 self.tours = tours
-                self.check_tours_dim()
+                self._check_tours_dim()
     
     def to_tsplib_folder(
         self,
@@ -352,12 +352,12 @@ class ATSPSolver(SolverBase):
             # preparation
             if atsp_filename.endswith(".atsp"):
                 atsp_filename = atsp_filename.replace(".atsp", "")
-            self.check_dists_not_none()
+            self._check_dists_not_none()
             dists = self.ori_dists if original else self.dists
             samples = dists.shape[0]
 
             # apply scale and dtype
-            dists = self.apply_scale_and_dtype(
+            dists = self._apply_scale_and_dtype(
                 dists=dists, apply_scale=apply_scale,
                 to_int=to_int, round_func=round_func
             )
@@ -395,7 +395,7 @@ class ATSPSolver(SolverBase):
                 tour_filename = tour_filename.replace(".opt.tour", "")
             if tour_filename.endswith(".tour"):
                 tour_filename = tour_filename.replace(".tour", "")
-            self.check_tours_not_none(ref=False)
+            self._check_tours_not_none(ref=False)
             tours = self.tours
             samples = tours.shape[0]
             
@@ -423,15 +423,15 @@ class ATSPSolver(SolverBase):
 
     def to_txt(
         self,
-        filename: str = "example.txt",
+        file_path: str = "example.txt",
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
         round_func: str = "round"
     ):
         # check
-        self.check_dists_not_none()
-        self.check_tours_not_none(ref=False)
+        self._check_dists_not_none()
+        self._check_tours_not_none(ref=False)
         
         # variables
         dists = self.ori_dists if original else self.dists
@@ -456,14 +456,14 @@ class ATSPSolver(SolverBase):
             tours = np.array(best_tour_list)
 
         # apply scale and dtype
-        dists = self.apply_scale_and_dtype(
+        dists = self._apply_scale_and_dtype(
             dists=dists, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )
 
 
         # write
-        with open(filename, "w") as f:
+        with open(file_path, "w") as f:
             for dist, tour in zip(dists, tours):
                 dist: np.ndarray = dist.reshape(-1)
                 f.write(" ".join(str(x) + str(" ") for x in dist))
@@ -481,10 +481,10 @@ class ATSPSolver(SolverBase):
         round_func: str = "round",
     ):
         # check
-        self.check_dists_not_none()
-        self.check_tours_not_none(ref=False)
+        self._check_dists_not_none()
+        self._check_tours_not_none(ref=False)
         if calculate_gap:
-            self.check_tours_not_none(ref=True)
+            self._check_tours_not_none(ref=True)
             
         # variables
         dists = self.ori_dists if original else self.dists
@@ -492,7 +492,7 @@ class ATSPSolver(SolverBase):
         ref_tours = self.ref_tours
 
         # apply scale and dtype
-        dists = self.apply_scale_and_dtype(
+        dists = self._apply_scale_and_dtype(
             dists=dists, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )

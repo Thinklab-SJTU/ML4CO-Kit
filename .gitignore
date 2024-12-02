@@ -65,3 +65,4 @@ docs/_build/**
 docs/api/_autosummary/**
 docs/auto_examples/**
 docs/sg_execution_times.rst
+docs/auto_examples/**

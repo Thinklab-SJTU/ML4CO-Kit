@@ -13,4 +13,4 @@ Contents of Official Documentation
    self
    guide/introduction.rst
    guide/get_started.rst
-   api/ml4co-kit
+   api/ml4co_kit.rst

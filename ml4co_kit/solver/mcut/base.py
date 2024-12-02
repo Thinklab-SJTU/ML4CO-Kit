@@ -23,7 +23,7 @@ class MCutSolver(SolverBase):
         self.time_limit = time_limit
         self.graph_data: List[MCutGraphData] = list()
 
-    def check_edge_index_not_none(self):
+    def _check_edge_index_not_none(self):
         message = (
             f"``edge_index`` cannot be None! You can load ``edge_index`` using the "
             "methods including ``from_graph_data``, ``from_adj_martix``, ``from_txt``, "
@@ -34,7 +34,7 @@ class MCutSolver(SolverBase):
             if graph.edge_index is None:
                 raise ValueError(message)
 
-    def check_nodes_label_not_none(self, ref: bool):
+    def _check_nodes_label_not_none(self, ref: bool):
         msg = "ref_nodes_label" if ref else "nodes_label"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``MCutSolver`` "
@@ -430,13 +430,13 @@ class MCutSolver(SolverBase):
                         f.write(f"{node_label}\n")
                     f.close()
         
-    def to_txt(self, filename: str = "example.txt"):
+    def to_txt(self, file_path: str = "example.txt"):
         # check
-        self.check_edge_index_not_none()
-        self.check_nodes_label_not_none(ref=False)
+        self._check_edge_index_not_none()
+        self._check_nodes_label_not_none(ref=False)
         
         # write
-        with open(filename, "w") as f:
+        with open(file_path, "w") as f:
             for graph in self.graph_data:
                 edge_index = graph.edge_index.T
                 nodes_label = graph.nodes_label

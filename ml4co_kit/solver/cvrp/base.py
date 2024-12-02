@@ -49,22 +49,22 @@ class CVRPSolver(SolverBase):
         self.nodes_num: int = None
         self.norm: str = None
         
-    def check_depots_dim(self):
+    def _check_depots_dim(self):
         if self.depots is not None:
             if self.depots.ndim == 1:
                 self.depots = np.expand_dims(self.depots, axis=0)
             if self.depots.ndim != 2:
                 raise ValueError("The dimensions of ``depots`` cannot be larger than 2.")
         
-    def check_ori_depots_dim(self):
-        self.check_depots_dim()
+    def _check_ori_depots_dim(self):
+        self._check_depots_dim()
         if self.ori_depots is not None:
             if self.ori_depots.ndim == 1:
                 self.ori_depots = np.expand_dims(self.ori_depots, axis=0)
             if self.ori_depots.ndim != 2:
                 raise ValueError("The dimensions of ``ori_depots`` cannot be larger than 2.")
     
-    def check_points_dim(self):
+    def _check_points_dim(self):
         if self.points is not None:
             if self.points.ndim == 2:
                 self.points = np.expand_dims(self.points, axis=0)
@@ -72,34 +72,34 @@ class CVRPSolver(SolverBase):
                 raise ValueError("``points`` must be a 2D or 3D array.")
             self.nodes_num = self.points.shape[1]
 
-    def check_ori_points_dim(self):
-        self.check_points_dim()
+    def _check_ori_points_dim(self):
+        self._check_points_dim()
         if self.ori_points is not None:
             if self.ori_points.ndim == 2:
                 self.ori_points = np.expand_dims(self.ori_points, axis=0)
             if self.ori_points.ndim != 3:
                 raise ValueError("The ``ori_points`` must be 2D or 3D array.")
             
-    def check_demands_dim(self):
+    def _check_demands_dim(self):
         if self.demands is not None:
             if self.demands.ndim == 1:
                 self.demands = np.expand_dims(self.demands, axis=0)
             if self.demands.ndim != 2:
                 raise ValueError("The dimensions of ``demands`` cannot be larger than 2.")
     
-    def check_capacities_dim(self):
+    def _check_capacities_dim(self):
         if self.capacities is not None:
             if self.capacities.ndim != 1:
                 raise ValueError("The ``capacities`` must be 1D array.")
     
-    def check_tours_dim(self):
+    def _check_tours_dim(self):
         if self.tours is not None:
             if self.tours.ndim == 1:
                 self.tours = np.expand_dims(self.tours, axis=0)
             if self.tours.ndim != 2:
                 raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
-    def check_ref_tours_dim(self):
+    def _check_ref_tours_dim(self):
         if self.ref_tours is not None:
             if self.ref_tours.ndim == 1:
                 self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
@@ -108,7 +108,7 @@ class CVRPSolver(SolverBase):
                     "The dimensions of the ``ref_tours`` cannot be larger than 2."
                 )
 
-    def check_depots_not_none(self):
+    def _check_depots_not_none(self):
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the points using the methods"
@@ -116,7 +116,7 @@ class CVRPSolver(SolverBase):
             )
             raise ValueError(message)
          
-    def check_points_not_none(self):
+    def _check_points_not_none(self):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the points using the methods"
@@ -124,7 +124,7 @@ class CVRPSolver(SolverBase):
             )
             raise ValueError(message)
 
-    def check_demands_not_none(self):
+    def _check_demands_not_none(self):
         if self.demands is None:
             message = (
                 "``demands`` cannot be None! You can load the points using the methods"
@@ -132,7 +132,7 @@ class CVRPSolver(SolverBase):
             )
             raise ValueError(message)
     
-    def check_capacities_not_none(self):
+    def _check_capacities_not_none(self):
         if self.demands is None:
             message = (
                 "``capacities`` cannot be None! You can load the points using the methods"
@@ -140,7 +140,7 @@ class CVRPSolver(SolverBase):
             )
             raise ValueError(message)
     
-    def check_tours_not_none(self, ref: bool):
+    def _check_tours_not_none(self, ref: bool):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on "
@@ -189,7 +189,7 @@ class CVRPSolver(SolverBase):
             self.points[idx] = cur_points
             self.depots[idx] = cur_depots
     
-    def check_demands_meet(self):
+    def _check_demands_meet(self):
         tours_shape = self.tours.shape
         for idx in range(tours_shape[0]):
             cur_demand = self.demands[idx]
@@ -219,7 +219,7 @@ class CVRPSolver(SolverBase):
         elif self.norm == "GEO":
             return geographical(x1, x2)
 
-    def apply_scale_and_dtype(
+    def _apply_scale_and_dtype(
         self, 
         depots: np.ndarray,
         points: np.ndarray,
@@ -563,20 +563,20 @@ class CVRPSolver(SolverBase):
             depots = to_numpy(depots)
             self.ori_depots = depots
             self.depots = depots.astype(np.float32)
-            self.check_ori_depots_dim()
+            self._check_ori_depots_dim()
         
         # points
         if points is not None:
             points = to_numpy(points)
             self.ori_points = points
             self.points = points.astype(np.float32)
-            self.check_ori_points_dim()
+            self._check_ori_points_dim()
         
         # demands
         if demands is not None:
             demands = to_numpy(demands)
             self.demands = demands.astype(np.float32)
-            self.check_demands_dim()
+            self._check_demands_dim()
         
         # capacities
         if capacities is not None:
@@ -586,7 +586,7 @@ class CVRPSolver(SolverBase):
                 capacities = np.array(capacities)
             self.capacities = capacities.astype(np.float32)
             self.capacities = capacities
-            self.check_capacities_dim()
+            self._check_capacities_dim()
 
         # tours (ref or not)
         if tours is not None:
@@ -607,10 +607,10 @@ class CVRPSolver(SolverBase):
                     tours = np_tours.astype(np.int32)
             if ref:
                 self.ref_tours = tours
-                self.check_ref_tours_dim()
+                self._check_ref_tours_dim()
             else:
                 self.tours = tours
-                self.check_tours_dim()
+                self._check_tours_dim()
                 
         # normalize
         if normalize:
@@ -629,10 +629,10 @@ class CVRPSolver(SolverBase):
         show_time: bool = False
     ):
         # check
-        self.check_depots_not_none()
-        self.check_points_not_none()
-        self.check_demands_not_none()
-        self.check_capacities_not_none()
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_demands_not_none()
+        self._check_capacities_not_none()
 
         # variables
         depots = self.ori_depots if original else self.ori_depots
@@ -642,7 +642,7 @@ class CVRPSolver(SolverBase):
         samples = points.shape[0]
 
         # apply scale and dtype
-        depots, points, demands, capacities = self.apply_scale_and_dtype(
+        depots, points, demands, capacities = self._apply_scale_and_dtype(
             depots=depots, points=points, demands=demands, capacities=capacities, 
             apply_scale=apply_scale, to_int=to_int, round_func=round_func
         )
@@ -697,7 +697,7 @@ class CVRPSolver(SolverBase):
         # .sol files
         if sol_save_dir is not None:
             # check
-            self.check_tours_not_none(ref=False)
+            self._check_tours_not_none(ref=False)
             
             # variables
             tours = self.tours   
@@ -742,18 +742,18 @@ class CVRPSolver(SolverBase):
                 
     def to_txt(
         self,
-        filename: str = "example.txt",
+        file_path: str = "example.txt",
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
         round_func: str = "round"
     ):
         # check
-        self.check_depots_not_none()
-        self.check_points_not_none()
-        self.check_demands_not_none()
-        self.check_capacities_not_none()
-        self.check_tours_not_none(ref=False)
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_demands_not_none()
+        self._check_capacities_not_none()
+        self._check_tours_not_none(ref=False)
         
         # variables
         depots = self.ori_depots if original else self.depots
@@ -763,13 +763,13 @@ class CVRPSolver(SolverBase):
         tours = self.tours
         
         # apply scale and dtype
-        depots, points, demands, capacities = self.apply_scale_and_dtype(
+        depots, points, demands, capacities = self._apply_scale_and_dtype(
             depots=depots, points=points, demands=demands, capacities=capacities, 
             apply_scale=apply_scale, to_int=to_int, round_func=round_func
         )
         
         # write
-        with open(filename, "w") as f:
+        with open(file_path, "w") as f:
             # write to txt
             for idx in range(len(tours)):
                 tour = tours[idx]
@@ -797,19 +797,19 @@ class CVRPSolver(SolverBase):
     def evaluate(
         self,
         calculate_gap: bool = False,
-        check_demands: bool = True,
+        _check_demands: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
         round_func: str = "round",
     ):
         # check
-        self.check_points_not_none()
-        self.check_tours_not_none(ref=False)
-        if check_demands:
-            self.check_demands_meet()
+        self._check_points_not_none()
+        self._check_tours_not_none(ref=False)
+        if _check_demands:
+            self._check_demands_meet()
         if calculate_gap:
-            self.check_tours_not_none(ref=False)
+            self._check_tours_not_none(ref=False)
             
         # variables
         depots = self.ori_depots if original else self.depots
@@ -820,7 +820,7 @@ class CVRPSolver(SolverBase):
         ref_tours = self.ref_tours
 
         # apply scale and dtype
-        depots, points, demands, capacities = self.apply_scale_and_dtype(
+        depots, points, demands, capacities = self._apply_scale_and_dtype(
             depots=depots, points=points, demands=demands, capacities=capacities, 
             apply_scale=apply_scale, to_int=to_int, round_func=round_func
         )
