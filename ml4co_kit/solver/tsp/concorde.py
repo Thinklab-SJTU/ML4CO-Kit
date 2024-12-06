@@ -1,3 +1,18 @@
+r"""
+A TSP solver with concorde.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import uuid
 import numpy as np
@@ -10,6 +25,12 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPConcordeSolver(TSPSolver):
+    r"""
+    This class is a subclass of `TSPSolver` designed to solve the Traveling Salesman 
+    Problem (TSP) using the Concorde solver.
+
+    :param scale: int, the scale factor for coordinates in the Concorde solver. Defaults to `1e6`.
+    """
     def __init__(
         self,
         scale: int = 1e6,
@@ -25,6 +46,9 @@ class TSPConcordeSolver(TSPSolver):
         )
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
+        r"""
+        Solves a single TSP instance using the Concorde solver. 
+        """
         solver = TSPConSolver.from_data(
             xs=nodes_coord[:, 0] * self.scale,
             ys=nodes_coord[:, 1] * self.scale,
@@ -43,6 +67,17 @@ class TSPConcordeSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solves the TSP problem using the Concorde solver, with options for normalization,
+        threading, and timing.
+
+        :param points: np.ndarray or list, the coordinates of the nodes.
+        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
+        :param num_threads: int, the number of threads to use for solving, (default is '1') .
+        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
+        """
+
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
@@ -95,6 +130,11 @@ class TSPConcordeSolver(TSPSolver):
         return self.tours
 
     def clear_tmp_files(self, name):
+        r"""
+        Clears temporary files generated during the solving process.
+
+        :param name: string, the name associated with the instance.
+        """
         real_name = name[0:9]
         # tmp file
         sol_filename = f"{real_name}.sol"

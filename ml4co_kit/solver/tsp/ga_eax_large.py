@@ -1,3 +1,17 @@
+r"""
+A Genetic Algorithm-based solver for the larger Traveling Salesman Problem (TSP) using the EAX approach.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
 import os
 import uuid
 import numpy as np
@@ -13,6 +27,15 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPGAEAXLargeSolver(TSPSolver):
+    r"""
+    Solve larger TSP problems with GA-EAX approach.
+
+    :param scale: int, the scaling factor for the coordinates of the nodes, (dafault is '1e5').
+    :param max_trials: int, Tthe maximum number of trials for the genetic algorithm, (dafault is '1').
+    :param population_num: int, the number of individuals in the population, (dafault is '100').
+    :param offsping_num: int, the number of offspring produced in each generation (dafault is '30').
+    :param show_info" boolean, whether to display the information during the solving process, (default is 'False').
+    """
     def __init__(
         self,
         scale: int = 1e5,
@@ -30,6 +53,11 @@ class TSPGAEAXLargeSolver(TSPSolver):
         self.show_info = show_info
         
     def read_solution(self, file_path: str) -> np.ndarray:
+        r"""
+        Read solutions from a file.
+
+        :file_path: string, path to the file 
+        """
         with open(file_path, 'r') as file:
             lines = file.readlines()
         tour_list = list()
@@ -42,6 +70,10 @@ class TSPGAEAXLargeSolver(TSPSolver):
         return np.array(tour_list)
     
     def _solve(self, nodes_coord: np.ndarray) -> list:
+        r"""
+        solve a single TSP problem.
+        """
+
         # eval
         eval = TSPEvaluator(nodes_coord)
         
@@ -90,6 +122,16 @@ class TSPGAEAXLargeSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solve the larger TSP problem with the DA-EAX approach with options for normalization,
+        threading, and timing.
+
+        :param points: np.ndarray or list, the coordinates of the nodes.
+        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
+        :param num_threads: int, the number of threads to use for solving, (default is '1') .
+        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
+        """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
