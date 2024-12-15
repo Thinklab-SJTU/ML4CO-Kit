@@ -1,3 +1,22 @@
+r"""
+Basic solver for Asymmetric Traveling Salesman Problem (ATSP). 
+The ATSP problem requires finding the shortest tour that visits each 
+vertex of the graph exactly once and returns to the starting node.
+with the consideration that the travel costs between any two vertices
+are not necessarily symmetric .
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import sys
 import math
@@ -17,6 +36,22 @@ else:
 
 
 class ATSPSolver(SolverBase):
+    r"""
+    This class provides a basic framework for solving ATSP problems. It includes methods for 
+    loading and outputting data in various file formats, normalizing points, and evaluating 
+    solutions. Note that the actual solving method should be implemented in subclasses.
+    
+    :param nodes_num: :math:`N`, int, the number of nodes in ATSP problem.
+    :param ori_dists: :math:`(B\times N\times N), np.ndarray, the original dists data read.
+    :param dists: :math:`(B\times N\times N), np.ndarray, the dists data called by the solver 
+        during solving. They may initially be the same as ``ori_dists``,
+        but may later undergo standardization or scaling processing.
+    :param tours: :math:`(B\times (N+1))`, np.ndarray, the solutions to the problems. 
+    :param ref_tours: :math:`(B\times (N+1))`, np.ndarray, the reference solutions to the problems. 
+    :param scale: int, magnification scale of coordinates. If the input coordinates are too large,
+        you can scale them to 0-1 by setting ``normalize`` to True, and then use ``scale`` to adjust them.
+        Note that the magnification scale only applies to ``points`` when solved by the solver.
+    """
     def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
         super(ATSPSolver, self).__init__(
             task_type=TASK_TYPE.ATSP, solver_type=solver_type
@@ -29,6 +64,12 @@ class ATSPSolver(SolverBase):
         self.nodes_num: int = None
 
     def _check_dists_dim(self):
+        r"""
+        Ensures that the ``dists`` attribute is a 3D array. If ``dists`` is a 2D array,
+        it adds an additional dimension to make it 3D. Raises a ``ValueError`` if ``dists`` 
+        is neither 2D or 3D. Also sets the ``nudes_norm`` attribute to the number of nodes
+        (points) in the problem. 
+        """
         if self.dists is not None:
             if self.dists.ndim == 2:
                 self.dists = np.expand_dims(self.dists, axis=0)
@@ -37,6 +78,12 @@ class ATSPSolver(SolverBase):
             self.nodes_num = self.dists.shape[-1]
 
     def _check_ori_dists_dim(self):
+        r"""
+        Ensures that the ``ori_dists`` attribute is a 3D array. Calls ``_check_dists_dim``
+        to validate the ``dists`` attribute first. If ``ori_dists`` is a 2D array, it adds
+        an additional dimension to make it 3D. Raises a ``ValueError`` if ``ori_dists`` is
+        neither 2D nor 3D.
+        """
         self._check_dists_dim()
         if self.ori_dists is not None:
             if self.ori_dists.ndim == 2:
@@ -45,6 +92,11 @@ class ATSPSolver(SolverBase):
                 raise ValueError("The ``ori_dists`` must be 2D or 3D array.")
 
     def _check_tours_dim(self):
+        r"""
+        Ensures that the ``tours`` attribute is a 2D array. If ``tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``tours``
+        has more than 2 dimensions.
+        """
         if self.tours is not None:
             if self.tours.ndim == 1:
                 self.tours = np.expand_dims(self.tours, axis=0)
@@ -52,6 +104,11 @@ class ATSPSolver(SolverBase):
                 raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
     def _check_ref_tours_dim(self):
+        r"""
+        Ensures that the ``ref_tours`` attribute is a 2D array. If ``ref_tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``ref_tours``
+        has more than 2 dimensions.
+        """
         if self.ref_tours is not None:
             if self.ref_tours.ndim == 1:
                 self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
@@ -61,6 +118,10 @@ class ATSPSolver(SolverBase):
                 )
 
     def _check_dists_not_none(self):
+        r"""
+        Checks if the ``dists`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``dists`` is ``None``. 
+        """
         if self.dists is None:
             message = (
                 "``dists`` cannot be None! You can load the dists using the methods"
@@ -69,6 +130,12 @@ class ATSPSolver(SolverBase):
             raise ValueError(message)
 
     def _check_tours_not_none(self, ref: bool):
+        r"""
+        Checks if the ``tours` or ``ref_tours`` attribute is not ``None``.
+        - If ``ref`` is ``True``, it checks the ``ref_tours`` attribute.
+        - If ``ref`` is ``False``, it checks the ``tours`` attribute.
+        Raises a `ValueError` if the respective attribute is ``None``.
+        """
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on "
@@ -82,7 +149,10 @@ class ATSPSolver(SolverBase):
             if self.tours is None:    
                 raise ValueError(message)
 
-    def normalize_dists(self):
+    def _normalize_dists(self):
+        r"""
+        Normalizes the ``dists`` attribute to scale all dists between 0 and 1.
+        """
         for idx in range(self.dists.shape[0]):
             cur_dists = self.dists[idx]
             max_value = np.max(cur_dists)
@@ -90,7 +160,12 @@ class ATSPSolver(SolverBase):
             cur_dists = (cur_dists - min_value) / (max_value - min_value)
             self.dists[idx] = cur_dists
 
-    def get_round_func(self, round_func: str):
+    def _get_round_func(self, round_func: str):
+        r"""
+        Retrieves a rounding function based on the input string or function.
+        - If `round_func` is a string, it checks against predefined functions (``ROUND_FUNCS``).
+        - If `round_func` is not callable, raises a ``TypeError``.
+        """
         if (key := str(round_func)) in ROUND_FUNCS:
             round_func = ROUND_FUNCS[key]
         if not callable(round_func):
@@ -103,6 +178,11 @@ class ATSPSolver(SolverBase):
     def _apply_scale_and_dtype(
         self, dists: np.ndarray, apply_scale: bool, to_int: bool, round_func: str
     ):
+        r"""
+        Applies scaling and/or dtype conversion to the given ``dists``.
+        - Scales the dists by ``self.scale`` if ``apply_scale`` is True.
+        - Converts dists to integers using the specified rounding function if ``to_int`` is True.
+        """
         # apply scale
         if apply_scale:
             dists = dists * self.scale
@@ -115,6 +195,9 @@ class ATSPSolver(SolverBase):
         return dists
 
     def _read_data_from_atsp_file(self, atsp_file_path: str) -> np.ndarray:
+        r"""
+        Reads ATSP dists from a TSPLIB file.
+        """
         tsplib_data = tsplib95.load(atsp_file_path)
         dists = np.array(tsplib_data.edge_weights)
         if dists is None:
@@ -122,6 +205,9 @@ class ATSPSolver(SolverBase):
         return dists
 
     def _read_tour_from_tour_file(self, tour_file_path: str) -> np.ndarray:
+        r"""
+        Reads an ATSP tour from a TSPLIB tour file.
+        """
         tsp_tour = tsplib95.load(tour_file_path)
         tsp_tour = tsp_tour.tours
         tsp_tour: list
@@ -137,6 +223,26 @@ class ATSPSolver(SolverBase):
         ref: bool = False,
         normalize: bool = False
     ):
+        """
+        Read data from TSPLIB type file.
+
+        Read data from single TSPLIB type file.
+        
+        :param atsp_file_path: string, path to the `.tsp` file containing ATSP instance data.
+            If given, the solver will read dists adjacency matrix from the file.
+        :param tour_file_path: string, path to the `.tour` file containing ATSP solution data.
+            If given, the solver will read tour from the file.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param normalize: boolean, whether to normalize node coordinates.
+
+        .. note::
+            - If the given ``atsp_file_path`` does not end with ``.tsp``, the solver will raise ``ValueError``.
+            - If the given ``tour_file_path`` does not end with ``.tour`` or ``.opt_tour``, the solver will raise ``ValueError``.
+           
+        .. dropdown:: Example
+
+            ::   
+        """
         # init
         dists = None
         tour = None
@@ -170,6 +276,23 @@ class ATSPSolver(SolverBase):
         normalize: bool = False,
         show_time: bool = False
     ):
+        """
+        Read data from the folder containing TSPLIB type data.
+
+        :param atsp_folder_path: string, path to the folder containing `.tsp` files.
+            If given, the solver will read dists matrix from the folder.
+        :param tour_folder_path: string, path to the folder containing `.tour` files.
+            If given, the solver will read tour from the folder.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: string, the normalization type for dists matrix.
+        :param normalize: boolean, whether to normalize dists matrix.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        
+        .. dropdown:: Example
+
+            ::
+        """
         # init
         dists = None
         tours = None
@@ -265,6 +388,20 @@ class ATSPSolver(SolverBase):
         normalize: bool = False,
         show_time = False
     ):
+        """
+        Read data from `.txt` file.
+
+        :param file_path: string, path to the `.txt` file containing ATSP instances data.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: boolean, the normalization type for dists matrix.
+        :param normalize: boolean, whether to normalize dists matrix.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+
+        .. dropdown:: Example
+
+            :: 
+        """
         # check the file format
         if not file_path.endswith(".txt"):
             raise ValueError("Invalid file format. Expected a ``.txt`` file.")
@@ -316,6 +453,22 @@ class ATSPSolver(SolverBase):
         ref: bool = False,
         normalize: bool = False,
     ):
+        """
+        Read data from list or np.ndarray.
+
+        :param dists:list or np.ndarray, the dists matrix. If given, the matrix
+            originally stored in the solver will be replaced.
+        :param tours: np.ndarray, the solutions of the problems. If given, the tours
+            originally stored in the solver will be replaced
+        :param ref: boolean, whether the solution is a reference solution.
+        :param norm: string, the normalization type for dists matrix (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize the dists.
+
+        .. dropdown:: Example
+
+            ::
+
+        """
         # dists
         if dists is not None:
             dists = to_numpy(dists)
@@ -347,6 +500,28 @@ class ATSPSolver(SolverBase):
         round_func: str = "round",
         show_time: bool = False
     ):
+        """
+        Output(store) data in ``txt`` format
+
+        :param atsp_save_path: string, path to save the `.tsp` files. If given, 
+            the coordinates will be saved as ``.tsp`` file for each instance.
+        :param atsp_filename: string, the basic file name of the `.tsp` files.
+        :param tour_save_path: string, path to save the `.opt.tour` files. If given,
+            the solution will be saved as ``.opt.tour`` file for each instance.
+        :param tour_filename: string, the basic file name of the `.opt.tour` files.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+        :param show_time: boolean, whether the data is being output with a visual progress display.
+
+        .. note::
+            ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+        """
         # .atsp files
         if atsp_save_dir is not None:
             # preparation
@@ -429,6 +604,24 @@ class ATSPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round"
     ):
+        """
+        Output(store) data in ``txt`` format
+
+        :param file_path: string, path to save the `.txt` file.
+        :param tour_file_path: string, path to the `.tour` file containing ATSP solution data.
+            if given, the solver will read tour from the file.
+        :param original: boolean, whether to use ``original dists`` or ``dists``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+        """
         # check
         self._check_dists_not_none()
         self._check_tours_not_none(ref=False)
@@ -480,6 +673,23 @@ class ATSPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round",
     ):
+        """
+        Evaluate the solution quality of the solver
+
+        :param calculate_gap: boolean, whether to calculate the gap with the reference solutions.
+        :param original: boolean, whether to use ``original dists`` or ``dists``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            - Please make sure the ``dists`` and the ``tours`` are not None.
+            - If you set the ``calculate_gap`` as True, please make sure the ``ref_tours`` is not None.
+        
+        .. dropdown:: Example
+
+            :: 
+        """
         # check
         self._check_dists_not_none()
         self._check_tours_not_none(ref=False)
@@ -573,6 +783,15 @@ class ATSPSolver(SolverBase):
         show_time: bool = False,
         **kwargs,
     ) -> np.ndarray:
+        """
+        This method will be implemented in subclasses.
+        
+        :param dists: np.ndarray, the dist matrix. If given, the dists 
+            originally stored in the solver will be replaced.
+        :param normalize: boolean, whether to normalize the dists.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )

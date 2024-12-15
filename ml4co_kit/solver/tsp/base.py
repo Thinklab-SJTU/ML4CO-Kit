@@ -340,7 +340,7 @@ class TSPSolver(SolverBase):
             If given, the solver will read tour from the folder.
         :param ref: boolean, whether the solution is a reference solution.
         :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
-        :param norm: boolean, the normalization type for node coordinates.
+        :param norm: string, the normalization type for node coordinates.
         :param normalize: boolean, whether to normalize node coordinates.
         :param show_time: boolean, whether the data is being read with a visual progress display.
         
@@ -617,10 +617,10 @@ class TSPSolver(SolverBase):
         """
         Output(store) data in ``txt`` format
 
-        :param tsp_save_path: string, path to save the `.tsp` files. If given, 
+        :param tsp_save_dir: string, path to save the `.tsp` files. If given, 
             the coordinates will be saved as ``.tsp`` file for each instance.
         :param tsp_filename: string, the basic file name of the `.tsp` files.
-        :param tour_save_path: string, path to save the `.opt.tour` files. If given,
+        :param tour_save_dir: string, path to save the `.opt.tour` files. If given,
             the solution will be saved as ``.opt.tour`` file for each instance.
         :param tour_filename: string, the basic file name of the `.opt.tour` files.
         :param original: boolean, whether to use ``original points`` or ``points``.

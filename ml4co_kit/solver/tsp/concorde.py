@@ -35,12 +35,6 @@ class TSPConcordeSolver(TSPSolver):
         self,
         scale: int = 1e6,
     ):
-        """
-        TSPConcordeSolver
-        Args:
-            scale (int, optional):
-                The scale factor for coordinates in the Concorde solver.
-        """
         super(TSPConcordeSolver, self).__init__(
             solver_type=SOLVER_TYPE.CONCORDE, scale=scale
         )
@@ -76,6 +70,10 @@ class TSPConcordeSolver(TSPSolver):
         :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
         :param num_threads: int, the number of threads to use for solving, (default is '1') .
         :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
+
+        .. dropdown:: Example
+
+            ::
         """
 
         # preparation
@@ -134,6 +132,10 @@ class TSPConcordeSolver(TSPSolver):
         Clears temporary files generated during the solving process.
 
         :param name: string, the name associated with the instance.
+
+        .. dropdown:: Example
+
+            ::
         """
         real_name = name[0:9]
         # tmp file

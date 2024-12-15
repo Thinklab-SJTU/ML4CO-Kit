@@ -58,6 +58,10 @@ class TSPGAEAXSolver(TSPSolver):
         Read solutions from a file.
 
         :file_path: string, path to the file 
+
+        .. dropdown:: Example
+
+            ::
         """
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -132,6 +136,10 @@ class TSPGAEAXSolver(TSPSolver):
         :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
         :param num_threads: int, the number of threads to use for solving, (default is '1') .
         :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
+
+        .. dropdown:: Example
+
+            ::
         """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)

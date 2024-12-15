@@ -1,3 +1,21 @@
+r"""
+This module provides a class ATSPLKHSolver for solving the ATSP
+using the LKH (Lin-Kernighan Heuristic) algorithm.
+LKH is a heuristic algorithm that uses k-opt move strategies
+to find approximate optimal solutions to problems.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import uuid
 import pathlib
@@ -11,6 +29,14 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class ATSPLKHSolver(ATSPSolver):
+    r"""
+    The solver of TSP with the LKH algorithm.
+
+    :param lkh_max_trials (int, optional): The maximum number of trials for the LKH solver. Defaults to 500.
+    :param lkh_path (pathlib.Path, optional): The path to the LKH solver. Defaults to "LKH".
+    :param scale (int, optional): The scale factor for coordinates in the LKH solver. Defaults to 1e6.
+    :param lkh_runs (int, optional): The number of runs for the LKH solver. Defaults to 1.
+    """
     def __init__(
         self,
         scale: int = 1e6,
@@ -19,18 +45,6 @@ class ATSPLKHSolver(ATSPSolver):
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
     ):
-        """
-        TSPLKHSolver
-        Args:
-            lkh_max_trials (int, optional): The maximum number of trials for
-                the LKH solver. Defaults to 500.
-            lkh_path (pathlib.Path, optional): The path to the LKH solver.
-                Defaults to "LKH".
-            scale (int, optional): The scale factor for coordinates in the
-                LKH solver. Defaults to 1e6.
-            lkh_runs (int, optional): The number of runs for the LKH solver.
-                Defaults to 1.
-        """
         super(ATSPLKHSolver, self).__init__(solver_type=SOLVER_TYPE.LKH, scale=scale)
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
@@ -43,6 +57,13 @@ class ATSPLKHSolver(ATSPSolver):
         atsp_file_path: str,
         tour_path: str
     ):
+        r"""
+        writing max_trials, runs, and seeds to problem_file, and writing tour_path to tour_file.
+
+        :param save_path: string, the path to save the files.
+        :param atsp_file_path: string, the path to save the problem_file.
+        :param tour_path: string, the path to save the tour_file.
+        """
         with open(save_path, "w") as f:
             f.write(f"PROBLEM_FILE = {atsp_file_path}\n")
             f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
@@ -51,6 +72,9 @@ class ATSPLKHSolver(ATSPSolver):
             f.write(f"TOUR_FILE = {tour_path}\n")
     
     def _solve(self, dist: np.ndarray) -> np.ndarray:
+        r"""
+        solve a single ATSP instance using LKHSolver
+        """
         # Intermediate files
         tmp_name = uuid.uuid4().hex[:9]
         para_save_path = f"{tmp_name}.para"
@@ -96,6 +120,19 @@ class ATSPLKHSolver(ATSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+    # r"""
+    #     Solve ATSP using LKH algorithm with options for normalization,
+    #     threading, and timing.
+
+    #     :param dists: np.ndarry or list, the dists matrix to solve TSP for. Defaults to None.
+    #     :param normalize: boolean, whether to normalize the points. Defaults to "False".
+    #     :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+    #     :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+
+    #     .. dropdown:: Example
+
+    #         ::
+    #     """
         # prepare
         self.from_data(dists=dists, normalize=normalize)
         self.tmp_solver = ATSPSolver(scale=self.scale)

@@ -1,3 +1,20 @@
+r"""
+Basic solver for Capacitated Vehicle Routing Problem (CVRP). 
+The CVRP problems requires finding the most efficient routes for a fleet of vehicles
+with limited capacity to deliver goods to a set of customers while minimizing costs.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import sys
 import math
@@ -22,6 +39,31 @@ else:
 
 
 class CVRPSolver(SolverBase):
+    r"""
+    This class provides a basic framework for solving CVRP problems. It includes methods for 
+    loading and outputting data in various file formats, normalizing points, and evaluating 
+    solutions. Note that the actual solving method should be implemented in subclasses.
+
+    :param solver_type: string, the type of the solver or algorithm used in the class.
+    :param depots_scale: int, the scale of the depots.
+    :parm points_scale: int, the scale of the customer points.
+    :parm demands_scale: int, the scale of the demands of customer points.
+    :parm capacities_scale: int, the scale of the capacities of the car.
+    :parm ori_depots: np.ndarray, the original depots coordinates data read.
+    :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+        they may initially be same as ``ori_depots``, but may later undergo standardization
+        or scaling processing.
+    :parm ori_points: np.ndarray, the original customer points coordinates data read.
+    :parm points: np.ndarray, the customer points coordinates data called by the solver
+        during solving, they may initially be same as ``ori_depots``, but may later undergo
+        standardization or scaling processing.
+    :parm demands: np.ndarray, the demands of each customer points.
+    :parm capacities: np.ndarray, the capacities of the car.
+    :parm tours: np.ndarray, the solution to the problems.
+    :parm ref_tours: np.ndarray, the reference solutions to the problems.
+    :parm nodes_num: int, the number of points, i.e. the sum of depots points and customer points.  
+    :parm norm: str, coordinate type. It can be a 2D Euler distance or geographic data type.
+    """
     def __init__(
         self, 
         solver_type: str = None, 
@@ -50,6 +92,11 @@ class CVRPSolver(SolverBase):
         self.norm: str = None
         
     def _check_depots_dim(self):
+        r"""
+        Ensures that the ``depots`` attribute is a 2D array. If ``depots`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``depots``
+        is neither 1D nor 2D. 
+        """
         if self.depots is not None:
             if self.depots.ndim == 1:
                 self.depots = np.expand_dims(self.depots, axis=0)
@@ -57,6 +104,12 @@ class CVRPSolver(SolverBase):
                 raise ValueError("The dimensions of ``depots`` cannot be larger than 2.")
         
     def _check_ori_depots_dim(self):
+        r"""
+        Ensures that the ``ori_depots`` attribute is a 2D array. Calls ``_check_depots_dim``
+        to validate the ``depots`` attribute first. If ``ori_depots`` is a 1D array, it adds
+        an additional dimension to make it 2D. Raises a ``ValueError`` if ``ori_points`` is
+        neither 1D nor 2D.
+        """
         self._check_depots_dim()
         if self.ori_depots is not None:
             if self.ori_depots.ndim == 1:
@@ -65,6 +118,12 @@ class CVRPSolver(SolverBase):
                 raise ValueError("The dimensions of ``ori_depots`` cannot be larger than 2.")
     
     def _check_points_dim(self):
+        r"""
+        Ensures that the ``points`` attribute is a 3D array. If ``points`` is a 2D array,
+        it adds an additional dimension to make it 3D. Raises a ``ValueError`` if ``points``
+        is neither 2D nor 3D. Also sets the ``nodes_num`` attribute to the number of nodes
+        (points) in the problem.
+        """
         if self.points is not None:
             if self.points.ndim == 2:
                 self.points = np.expand_dims(self.points, axis=0)
@@ -73,6 +132,12 @@ class CVRPSolver(SolverBase):
             self.nodes_num = self.points.shape[1]
 
     def _check_ori_points_dim(self):
+        r"""
+        Ensures that the ``ori_points`` attribute is a 3D array. Calls ``_check_points_dim``
+        to validate the ``points`` attribute first. If ``ori_points`` is a 2D array, it adds
+        an additional dimension to make it 3D. Raises a ``ValueError`` if ``ori_points`` is
+        neither 2D nor 3D.
+        """
         self._check_points_dim()
         if self.ori_points is not None:
             if self.ori_points.ndim == 2:
@@ -81,6 +146,11 @@ class CVRPSolver(SolverBase):
                 raise ValueError("The ``ori_points`` must be 2D or 3D array.")
             
     def _check_demands_dim(self):
+        r"""
+        Ensures that the ``demands`` attribute is a 2D array. If ``demands`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``demands``
+        is neither 1D nor 2D.
+        """
         if self.demands is not None:
             if self.demands.ndim == 1:
                 self.demands = np.expand_dims(self.demands, axis=0)
@@ -88,11 +158,20 @@ class CVRPSolver(SolverBase):
                 raise ValueError("The dimensions of ``demands`` cannot be larger than 2.")
     
     def _check_capacities_dim(self):
+        r"""
+        Ensures that the ``capacities`` attribute is a 1D array. Raises a ``ValueError`` 
+        if ``capacities`` is not 1D.
+        """
         if self.capacities is not None:
             if self.capacities.ndim != 1:
                 raise ValueError("The ``capacities`` must be 1D array.")
     
     def _check_tours_dim(self):
+        r"""
+        Ensures that the ``tours`` attribute is a 2D array. If ``tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``tours``
+        has more than 2 dimensions.
+        """
         if self.tours is not None:
             if self.tours.ndim == 1:
                 self.tours = np.expand_dims(self.tours, axis=0)
@@ -100,6 +179,11 @@ class CVRPSolver(SolverBase):
                 raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
 
     def _check_ref_tours_dim(self):
+        r"""
+        Ensures that the ``ref_tours`` attribute is a 2D array. If ``ref_tours`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``ref_tours``
+        has more than 2 dimensions.
+        """
         if self.ref_tours is not None:
             if self.ref_tours.ndim == 1:
                 self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
@@ -109,6 +193,10 @@ class CVRPSolver(SolverBase):
                 )
 
     def _check_depots_not_none(self):
+        r"""
+        Checks if the ``depots`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``depots`` is ``None``. 
+        """
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the points using the methods"
@@ -117,6 +205,10 @@ class CVRPSolver(SolverBase):
             raise ValueError(message)
          
     def _check_points_not_none(self):
+        r"""
+        Checks if the ``points`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``points`` is ``None``. 
+        """
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the points using the methods"
@@ -125,6 +217,10 @@ class CVRPSolver(SolverBase):
             raise ValueError(message)
 
     def _check_demands_not_none(self):
+        r"""
+        Checks if the ``demands`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``demands`` is ``None``. 
+        """
         if self.demands is None:
             message = (
                 "``demands`` cannot be None! You can load the points using the methods"
@@ -133,6 +229,10 @@ class CVRPSolver(SolverBase):
             raise ValueError(message)
     
     def _check_capacities_not_none(self):
+        r"""
+        Checks if the ``capacities`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``capacities`` is ``None``. 
+        """
         if self.demands is None:
             message = (
                 "``capacities`` cannot be None! You can load the points using the methods"
@@ -141,6 +241,12 @@ class CVRPSolver(SolverBase):
             raise ValueError(message)
     
     def _check_tours_not_none(self, ref: bool):
+        r"""
+        Checks if the ``tours` or ``ref_tours`` attribute is not ``None``.
+        - If ``ref`` is ``True``, it checks the ``ref_tours`` attribute.
+        - If ``ref`` is ``False``, it checks the ``tours`` attribute.
+        Raises a `ValueError` if the respective attribute is ``None``.
+        """
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on "
@@ -155,6 +261,11 @@ class CVRPSolver(SolverBase):
                 raise ValueError(message)
     
     def get_round_func(self, round_func: str):
+        r"""
+        Retrieves a rounding function based on the input string or function.
+        - If `round_func` is a string, it checks against predefined functions (``ROUND_FUNCS``).
+        - If `round_func` is not callable, raises a ``TypeError``.
+        """
         if (key := str(round_func)) in ROUND_FUNCS:
             round_func = ROUND_FUNCS[key]
         if not callable(round_func):
@@ -164,7 +275,10 @@ class CVRPSolver(SolverBase):
             )
         return round_func
     
-    def set_norm(self, norm: str):
+    def _set_norm(self, norm: str):
+        r"""
+        Sets the coordinate type.
+        """
         if norm is None:
             return
         if norm not in SUPPORT_NORM_TYPE:
@@ -178,7 +292,10 @@ class CVRPSolver(SolverBase):
             raise ValueError(message)
         self.norm = norm
 
-    def normalize_points_depots(self):
+    def _normalize_points_depots(self):
+        r"""
+        Normalizes the ``points`` attribute and ``depots`` attribute to scale all coordinates between 0 and 1.
+        """
         for idx in range(self.points.shape[0]):
             cur_points = self.points[idx]
             cur_depots = self.depots[idx]
@@ -190,6 +307,10 @@ class CVRPSolver(SolverBase):
             self.depots[idx] = cur_depots
     
     def _check_demands_meet(self):
+        r"""
+        Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
+        there is a split tour don't meet the demands.
+        """
         tours_shape = self.tours.shape
         for idx in range(tours_shape[0]):
             cur_demand = self.demands[idx]
@@ -207,12 +328,24 @@ class CVRPSolver(SolverBase):
                     )
                     raise ValueError(message)
     
-    def modify_tour(self, tour: np.ndarray):
+    def _modify_tour(self, tour: np.ndarray):
+        r"""
+        Remove the fisrt "-1" and all elements following it. 
+
+        :param tour: np.ndarray, the tour need to modified. 
+        """
         if not np.isin(-1, tour):
             return tour
         return tour[: np.where(tour == -1)[0][0]]
 
-    def get_distance(self, x1: float, x2: float, norm: str = None):
+    def _get_distance(self, x1: float, x2: float, norm: str = None):
+        r"""
+        Calcutae the distance from x1 to x2 under the specified norm.
+
+        :param x1: float, the coordinate of a node.
+        :param x2: float, the coordinate of another node.
+        :param norm: the norm used to calcuate the distance.
+        """
         self.set_norm(norm)
         if self.norm == "EUC_2D":
             return math.sqrt((x1[0] - x2[0]) ** 2 + (x1[1] - x2[1]) ** 2)
@@ -229,6 +362,12 @@ class CVRPSolver(SolverBase):
         to_int: bool,
         round_func: str
     ):
+        r"""
+        Applies scaling and/or dtype conversion to the given ``depots`` and ``points``.
+        - If ``apply_scale`` is True, then scale ``points``, ``depots``, ``demands``, and ``capacities`` by ``self.points_scale``,
+            ``self.depots_scale``, ``self.demands_scale`` and ``self.capacities_scale`` respectively.
+        - Converts points, depots, demands and capacities. to integers using the specified rounding function if ``to_int`` is True.
+        """
         # apply scale
         if apply_scale:
             depots = depots * self.depots_scale
@@ -247,6 +386,10 @@ class CVRPSolver(SolverBase):
         return depots, points, demands, capacities
     
     def _read_data_from_vrp_file(self, vrp_file_path: str, round_func: str):
+        r"""
+        Reads CVRP data from a ".vrp" file.
+        Conclude depots, points, demands and capacity.
+        """
         # instance and model
         instance = read_vrp(where=vrp_file_path, round_func=round_func)
         vrp_model = Model.from_data(instance)
@@ -273,6 +416,9 @@ class CVRPSolver(SolverBase):
         return depots, points, demands, capacity
 
     def _read_tour_from_sol_file(self, sol_file_path: str = None):
+        r"""
+        Reads a CVRP tour from a  ".sol" file.
+        """
         # check the .sol type
         route_flag = None
         with open(sol_file_path, "r") as file:
@@ -330,6 +476,26 @@ class CVRPSolver(SolverBase):
         norm: str = "EUC_2D",
         normalize: bool = False
     ):
+        """
+        Read data from vrp type file and tour from solution type file.
+        
+        :param vrp_file_path: string, path to the `.vrp` file containing CVRP instance data.
+            If given, the solver will read data from the file.
+        :param sol_file_path: string, path to the `.sol` file containing CVRP solution data.
+            If given, the solver will read tour from the file.
+        :param round_func: string, the callable round function.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param norm: string, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        
+        .. note::
+            - If the given ``vrp_file_path`` does not end with ``.vrp``, the solver will raise ``ValueError``.
+            - If the given ``sol_file_path`` does not end with ``.sol``, the solver will raise ``ValueError``.
+        
+        .. dropdown:: Example
+
+            :: 
+        """
         # init
         depots = None
         points = None
@@ -366,6 +532,23 @@ class CVRPSolver(SolverBase):
         normalize: bool = False,
         show_time: bool = False
     ):
+        """
+        Read data from the folder containing VRP and solution type data.
+
+        :param vrp_folder_path: string, path to the folder containing `.vrp` files.
+            If given, the solver will read data from the folder.
+        :param sol_folder_path: string, path to the folder containing `.sol` files.
+            If given, the solver will read tour from the folder.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: string, the normalization type for data.
+        :param normalize: boolean, whether to normalize data.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        
+        .. dropdown:: Example
+
+            :: 
+        """
         # init
         depots = None
         points = None
