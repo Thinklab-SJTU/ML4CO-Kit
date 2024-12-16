@@ -286,11 +286,11 @@ class TSPSolver(SolverBase):
                 # If you want to normalize the input data (for easy machine learning method calls), 
                 # you can set ``normalize`` to True.
                 >>> solver.from_tsplib(
-                        tsp_file_path="examples/tsp/tsplib/problem/kroC100.tsp",
-                        tour_file_path="examples/tsp/tsplib/solution/kroC100.opt.tour",
+                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
                         ref=False,
                         norm="EUC_2D",
-                        normalize=False
+                        normalize=True
                     )
                 >>> solver.points[0][:4]
                 [[0.34350368 0.48283753]
@@ -363,7 +363,7 @@ class TSPSolver(SolverBase):
                 >>> solver.tours.shape
                 (3, 101)
 
-                # When the number of nodes is not consistent, ``return_ist`` can be 
+                # When the number of nodes is not consistent, ``return_list`` can be 
                 # used to return data.
                 >>> points_list, tours_list = solver.from_tsplib_folder(
                         tsp_folder_path="examples/tsp/tsplib_1/problem",
@@ -469,7 +469,7 @@ class TSPSolver(SolverBase):
         return_list: bool = False,
         norm: str = "EUC_2D",
         normalize: bool = False,
-        show_time = False
+        show_time: bool = False
     ):
         """
         Read data from `.txt` file.
@@ -491,7 +491,7 @@ class TSPSolver(SolverBase):
                 >>> solver = TSPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50.txt")
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
                 >>> solver.points.shape
                 (16, 50, 2)
                 >>> solver.tours.shape
@@ -615,7 +615,7 @@ class TSPSolver(SolverBase):
         show_time: bool = False
     ):
         """
-        Output(store) data in ``txt`` format
+        Output(store) data in ``tsp`` format
 
         :param tsp_save_dir: string, path to save the `.tsp` files. If given, 
             the coordinates will be saved as ``.tsp`` file for each instance.
@@ -642,7 +642,7 @@ class TSPSolver(SolverBase):
                 >>> solver = TSPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50.txt")
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
                     
                 # Output data in TSPLIB format
                 >>> solver.to_tsplib_folder(
@@ -839,18 +839,17 @@ class TSPSolver(SolverBase):
                 >>> from ml4co_kit import TSPLKHSolver
                 
                 # create TSPLKHSolver
-                >>> solver = TSPSolver(lkh_max_trials=1)
+                >>> solver = TSPLKHSolver(lkh_max_trials=1)
 
                 # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(examples/tsp/txt/tsp50_concorde.txt)
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
                 
                 # solve
                 >>> solver.solve()
                     
                 # Evaluate the quality of the solutions solved by LKH
-                # (average length, reference average length, gap, std)
-                >>> solver.evaluate(calculate_gap=True)
-                (5.820372200519043, 5.819294685188686, 0.018455848984237393, 0.05188854363067263)
+                >>> solver.evaluate(calculate_gap=False)
+                5.820372200519043
         """
         # check
         self._check_points_not_none()

@@ -98,6 +98,30 @@ class TSPLKHSolver(TSPSolver):
         .. dropdown:: Example
 
             ::
+            
+                >>> from ml4co_kit import TSPLKHSolver
+                
+                # create TSPLKHSolver
+                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.tsp`` file
+                >>> solver.from_tsplib(
+                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=True
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0, 52, 39, 11, 48, 17, 28, 45, 23, 31, 60, 25,  6, 81, 77,  8,
+                36, 15, 50, 62, 43, 65, 47, 83, 10, 51, 86, 95, 96, 80, 44, 32,
+                99, 73, 56, 35, 13,  9, 91, 18, 98, 92,  3, 59, 68,  2, 72, 58,
+                40, 88, 20, 22, 69, 75, 90, 93, 94, 49, 61, 82, 71, 85,  4, 42,
+                55, 70, 37, 38, 27, 87, 97, 57, 33, 89, 24, 16,  7, 21, 74,  5,
+                53,  1, 34, 67, 29, 76, 79, 64, 30, 46, 66, 54, 41, 19, 63, 78,
+                12, 14, 26, 84,  0]]
         """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
@@ -153,6 +177,14 @@ class TSPLKHSolver(TSPSolver):
         .. dropdown:: Example
 
             ::
+
+                >>> from ml4co_kit import TSPLKHSolver
+                
+                # create TSPLKHSolver
+                >>> solver = TSPLKHSolver()
+                
+                **Missing Data**
+                
         """
         problem = tsplib95.models.StandardProblem()
         problem.name = "TSP"

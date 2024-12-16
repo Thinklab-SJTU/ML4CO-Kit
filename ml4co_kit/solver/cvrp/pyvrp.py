@@ -1,3 +1,21 @@
+r"""
+This module provides a class CVRPPyVRPSolver for solving the CVRP
+using the PyVRP.
+PyVRP is a high-performance vehicle routing problem solver specifically 
+designed to address VRP and its variants in combinatorial mathematics.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import sys
 import time
 import numpy as np
@@ -17,6 +35,15 @@ else:
 
 
 class CVRPPyVRPSolver(CVRPSolver):
+    r"""
+    The solver of CVRP use PyVRP solver
+    
+    :param depots_scale: int, the scale of the depots. Defaults to 1e4.
+    :param points_scale: int, the scale of the customer points. Defaults to 1e4.
+    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
+    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
+    :param time_limit: float, the limit of running time. Defaults to 1.0.
+    """
     def __init__(
         self,
         depots_scale: int = 1e4,
@@ -41,6 +68,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         demands: np.ndarray,
         capacity: float
     ) -> list:
+        r"""
+        solve a single CVRP instance using PyVPR.
+        """
         # scale
         depot_coord = (depot_coord * self.depots_scale).astype(np.int64)
         nodes_coord = (nodes_coord * self.points_scale).astype(np.int64)
@@ -62,7 +92,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         locations = [depot] + clients
         for frm in locations:
             for to in locations:
-                distance = self.get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
+                distance = self._get_distance(x1=(frm.x, frm.y), x2=(to.x, to.y))
                 cvrp_model.add_edge(frm, to, distance=self.round_func(distance))
         res = cvrp_model.solve(stop=MaxRuntime(self.time_limit))
         
@@ -85,12 +115,55 @@ class CVRPPyVRPSolver(CVRPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solve CVRP using PyVRP with options for normalization,
+        threading, and timing
+
+        :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
+            they may initially be same as ``ori_depots``, but may later undergo standardization
+            or scaling processing.
+        :param points:  np.ndarray, the customer points coordinates data called by the solver
+            during solving, they may initially be same as ``ori_depots``, but may later undergo
+            standardization or scaling processing.
+        :param demands: np.ndarray, the demands of each customer points.
+        :param capacities: np.ndarray, the capacities of the car.
+        :param round_func: string, the category of the rounding function.
+        :param norm: string, the norm used to calcuate the distance.
+        :param normalize: boolean, whether to normalize the points. Defaults to "False".
+        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+        
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import CVRPPyVRPSolver
+                
+                # create CVRPPyVRPSolver
+                >>> solver = CVRPPyVRPSolver()
+
+                # load data and reference solutions from ``.vrp`` file
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0, 14, 28, 11,  4, 23,  2,  3,  6,  0, 12,  1, 16, 30,  0, 21,
+                31, 19, 17, 13,  7, 26,  0, 27, 24,  0, 18,  8,  9, 22, 15, 29,
+                10, 25,  5, 20,  0]]
+
+        """
         # preparation
         self.from_data(
             depots=depots, points=points, demands=demands,
             capacities=capacities, norm=norm, normalize=normalize
         )
-        self.round_func = self.get_round_func(round_func)
+        self.round_func = self._get_round_func(round_func)
         timer = Timer(apply=show_time)
         timer.start()
 

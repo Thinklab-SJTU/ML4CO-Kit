@@ -74,6 +74,17 @@ class TSPConcordeSolver(TSPSolver):
         .. dropdown:: Example
 
             ::
+            
+                >>> from ml4co_kit import TSPConcordeSolver
+                
+                # create TSPConcordeSolver
+                >>> solver = TSPConcordeSolver()
+                
+                # load data and reference solutions from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
+                
+                # show the solution of the TSP
+                >>> solver.solve()
         """
 
         # preparation
@@ -127,7 +138,7 @@ class TSPConcordeSolver(TSPSolver):
         # return
         return self.tours
 
-    def clear_tmp_files(self, name):
+    def _clear_tmp_files(self, name):
         r"""
         Clears temporary files generated during the solving process.
 
@@ -136,6 +147,15 @@ class TSPConcordeSolver(TSPSolver):
         .. dropdown:: Example
 
             ::
+            
+                # assume that you have some tmp files named 'tmp_file' need to clear.
+                >>> from ml4co_kit import TSPConcordeSolver
+                
+                # creat solver
+                >>> solver=TSPConcordeSolver()
+                
+                # clear the temporary file
+                >>> solver.clear_tmp_files("tmp_file")
         """
         real_name = name[0:9]
         # tmp file

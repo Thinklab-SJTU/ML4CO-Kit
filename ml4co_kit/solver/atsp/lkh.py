@@ -51,7 +51,7 @@ class ATSPLKHSolver(ATSPSolver):
         self.lkh_runs = lkh_runs
         self.lkh_seed = lkh_seed
         
-    def write_parameter_file(
+    def _write_parameter_file(
         self,
         save_path: str,
         atsp_file_path: str,
@@ -88,7 +88,7 @@ class ATSPLKHSolver(ATSPSolver):
             atsp_save_dir="./", 
             atsp_filename=atsp_save_path
         )
-        self.write_parameter_file(
+        self._write_parameter_file(
             save_path=para_save_path,
             atsp_file_path=atsp_save_path,
             tour_path=tour_save_path
@@ -120,19 +120,36 @@ class ATSPLKHSolver(ATSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
-    # r"""
-    #     Solve ATSP using LKH algorithm with options for normalization,
-    #     threading, and timing.
+        r"""
+        Solve ATSP using LKH algorithm with options for normalization,
+        threading, and timing.
 
-    #     :param dists: np.ndarry or list, the dists matrix to solve TSP for. Defaults to None.
-    #     :param normalize: boolean, whether to normalize the points. Defaults to "False".
-    #     :param num_threads: int, The number of threads to use for solving. Defaults to 1.
-    #     :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+        :param dists: np.ndarry or list, the dists matrix to solve TSP for. Defaults to None.
+        :param normalize: boolean, whether to normalize the points. Defaults to "False".
+        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
 
-    #     .. dropdown:: Example
+        .. dropdown:: Example
 
-    #         ::
-    #     """
+            ::
+            
+                >>> from ml4co_kit import ATSPLKHSolver
+                
+                # create ATSPLKHSolver
+                >>> solver = ATSPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.tsp`` file
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/ft53.atsp",
+                        ref=False,
+                        normalize=True
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0,  5,  9, 11,  3,  8,  4,  1,  2, 10,  7,  6,  0]]
+         """
+    
         # prepare
         self.from_data(dists=dists, normalize=normalize)
         self.tmp_solver = ATSPSolver(scale=self.scale)

@@ -1,9 +1,9 @@
 r"""
 Basic solver for Asymmetric Traveling Salesman Problem (ATSP). 
 The ATSP problem requires finding the shortest tour that visits each 
-vertex of the graph exactly once and returns to the starting node.
-with the consideration that the travel costs between any two vertices
-are not necessarily symmetric .
+vertex of the graph exactly once and returns to the starting node 
+with the consideration that the travel costs between any two vertices 
+are not necessarily symmetric. 
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -42,8 +42,8 @@ class ATSPSolver(SolverBase):
     solutions. Note that the actual solving method should be implemented in subclasses.
     
     :param nodes_num: :math:`N`, int, the number of nodes in ATSP problem.
-    :param ori_dists: :math:`(B\times N\times N), np.ndarray, the original dists data read.
-    :param dists: :math:`(B\times N\times N), np.ndarray, the dists data called by the solver 
+    :param ori_dists: :math:`(B\times N\times N)`, np.ndarray, the original dists data read.
+    :param dists: :math:`(B\times N\times N)`, np.ndarray, the dists data called by the solver 
         during solving. They may initially be the same as ``ori_dists``,
         but may later undergo standardization or scaling processing.
     :param tours: :math:`(B\times (N+1))`, np.ndarray, the solutions to the problems. 
@@ -224,11 +224,9 @@ class ATSPSolver(SolverBase):
         normalize: bool = False
     ):
         """
-        Read data from TSPLIB type file.
-
-        Read data from single TSPLIB type file.
+        Read data from single TSPLIB type file
         
-        :param atsp_file_path: string, path to the `.tsp` file containing ATSP instance data.
+        :param atsp_file_path: string, path to the `.tsp` or `.atsp` file containing ATSP instance data.
             If given, the solver will read dists adjacency matrix from the file.
         :param tour_file_path: string, path to the `.tour` file containing ATSP solution data.
             If given, the solver will read tour from the file.
@@ -236,12 +234,47 @@ class ATSPSolver(SolverBase):
         :param normalize: boolean, whether to normalize node coordinates.
 
         .. note::
-            - If the given ``atsp_file_path`` does not end with ``.tsp``, the solver will raise ``ValueError``.
+            - If the given ``atsp_file_path`` does not end with ``.tsp`` or ``.atsp``, the solver will raise ``ValueError``.
             - If the given ``tour_file_path`` does not end with ``.tour`` or ``.opt_tour``, the solver will raise ``ValueError``.
            
         .. dropdown:: Example
 
             ::   
+            
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+                # load data from ``.tsp`` or ``.atsp``  and ``.opt.tour`` files
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/gr24.tsp",
+                        tour_file_path="examples/atsp/tsplib_1/solution/gr24.opt.tour",
+                        ref=False,
+                        normalize=False
+                    )
+                >>> solver.dists.shape
+                (1, 25, 12)
+                >>> solver.dists[0][:4]
+                [[  0., 257.,   0., 187., 196.,   0.,  91., 228., 158.,   0., 150.,112.]
+                 [ 96., 120.,   0.,  80., 196.,  88.,  77.,  63.,   0., 130., 167., 59.],
+                 [101.,  56.,  25.,   0., 134., 154.,  63., 105.,  34.,  29.,  22.,  0.],
+                 [243., 209., 286., 159., 190., 216., 229., 225.,   0., 185.,  86.,124.]]
+                >>> solver.tours.shape
+                (1, 25)
+
+                # If you want to normalize the input data (for easy machine learning method calls), 
+                # you can set ``normalize`` to True.
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/gr24.tsp",
+                        tour_file_path="examples/atsp/tsplib_1/solution/gr24.opt.tour",
+                        ref=False,
+                        normalize=True
+                    )
+                >>> solver.dists[0][:1]
+                [[0.        , 0.6606684 , 0.        , 0.4807198 , 0.50385606,
+                0.        , 0.23393317, 0.5861183 , 0.40616965, 0.        ,
+                0.3856041 , 0.28791773]]
         """
         # init
         dists = None
@@ -277,9 +310,9 @@ class ATSPSolver(SolverBase):
         show_time: bool = False
     ):
         """
-        Read data from the folder containing TSPLIB type data.
+        Read data from the folder containing TSPLIB type data
 
-        :param atsp_folder_path: string, path to the folder containing `.tsp` files.
+        :param atsp_folder_path: string, path to the folder containing `.tsp` or `.atsp` files.
             If given, the solver will read dists matrix from the folder.
         :param tour_folder_path: string, path to the folder containing `.tour` files.
             If given, the solver will read tour from the folder.
@@ -292,6 +325,31 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             ::
+            
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+                # load data from the tsplib folder
+                >>> solver.from_tsplib_folder(
+                        atsp_folder_path="examples/atsp/tsplib_2/problem",
+                        tour_folder_path="examples/atsp/tsplib_2/solution"
+                    )
+                >>> solver.dists.shape
+                (1, 25, 12)
+                >>> 
+                (1, 25)
+
+                # When the number of nodes is not consistent, ``return_list`` can be 
+                # used to return data.
+                >>> dists_flag, tours_list = solver.from_tsplib_folder(
+                        atsp_folder_path="examples/atsp/tsplib_1/problem",
+                        tour_folder_path="examples/atsp/tsplib_1/solution",
+                        return_list=True
+                    )
+                >>> dists_flag[0].shape
+                (25, 12)
         """
         # init
         dists = None
@@ -377,7 +435,7 @@ class ATSPSolver(SolverBase):
         
         # use ``from_data``
         self.from_data(
-            dists=dists, tours=tours, ref=ref, norm=norm, normalize=normalize
+            dists=dists, tours=tours, ref=ref, normalize=normalize
         )
 
     def from_txt(
@@ -401,6 +459,20 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+            
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+                # load data from ``.txt`` file 
+                
+                
+                **Missing txt data**
+                
+                >>> solver.from_txt(file_path="")
+                >>> solver.dists.shape
+                >>> solver.tours.shape
         """
         # check the file format
         if not file_path.endswith(".txt"):
@@ -454,12 +526,12 @@ class ATSPSolver(SolverBase):
         normalize: bool = False,
     ):
         """
-        Read data from list or np.ndarray.
+        Read data from list or np.ndarray
 
-        :param dists:list or np.ndarray, the dists matrix. If given, the matrix
+        :param dists: list or np.ndarray, the dists matrix. If given, the matrix
             originally stored in the solver will be replaced.
         :param tours: np.ndarray, the solutions of the problems. If given, the tours
-            originally stored in the solver will be replaced
+            originally stored in the solver will be replaced.
         :param ref: boolean, whether the solution is a reference solution.
         :param norm: string, the normalization type for dists matrix (default is "EUC_2D").
         :param normalize: boolean, Whether to normalize the dists.
@@ -467,6 +539,17 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             ::
+            
+                >>> import numpy as np
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+                # load data from np.ndarray
+                >>> solver.from_data(dists=np.random.random(size=(10, 10)))
+                >>> solver.dists.shape
+                (1, 10, 10)
 
         """
         # dists
@@ -476,7 +559,7 @@ class ATSPSolver(SolverBase):
             self.dists = dists.astype(np.float32)
             self._check_ori_dists_dim()
             if normalize:
-                self.normalize_dists()
+                self._normalize_dists()
 
         # tours
         if tours is not None:
@@ -501,11 +584,11 @@ class ATSPSolver(SolverBase):
         show_time: bool = False
     ):
         """
-        Output(store) data in ``txt`` format
+        Output(store) data in ``tsp`` format
 
         :param atsp_save_path: string, path to save the `.tsp` files. If given, 
-            the coordinates will be saved as ``.tsp`` file for each instance.
-        :param atsp_filename: string, the basic file name of the `.tsp` files.
+            the coordinates will be saved as ``.atsp`` file for each instance.
+        :param atsp_filename: string, the basic file name of the `.atsp` files.
         :param tour_save_path: string, path to save the `.opt.tour` files. If given,
             the solution will be saved as ``.opt.tour`` file for each instance.
         :param tour_filename: string, the basic file name of the `.opt.tour` files.
@@ -521,6 +604,26 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+            
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+
+                **Missing txt data**
+
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="")
+                    
+                # Output data in TSPLIB format
+                >>> solver.to_tsplib_folder(
+                        tsp_save_dir="atsp50/problem",
+                        tsp_filename="atsp50",
+                        tour_save_dir="atsp50/solution",
+                        tour_filename="atsp50"
+                    )
         """
         # .atsp files
         if atsp_save_dir is not None:
@@ -621,6 +724,22 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+            
+                >>> from ml4co_kit import ATSPSolver
+                
+                # create ATSPSolver
+                >>> solver = ATSPSolver()
+
+                # load data from ``.tsp`` or ``.atsp`` and ``.opt.tour`` files
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/gr24.tsp",
+                        tour_file_path="examples/atsp/tsplib_1/solution/gr24.opt.tour",
+                        ref=False,
+                        normalize=True
+                    )
+                    
+                # Output data in ``txt`` format
+                >>> solver.to_txt("gr24.txt")
         """
         # check
         self._check_dists_not_none()
@@ -689,6 +808,27 @@ class ATSPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+            
+                >>> from ml4co_kit import ATSPLKHSolver
+                
+                # create ATSPLKHSolver
+                >>> solver = ATSPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.tsp`` file
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/gr24.tsp",
+                        tour_file_path="examples/atsp/tsplib_1/solution/gr24.opt.tour",
+                        ref=False,
+                        normalize=True
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                    
+                # Evaluate the quality of the solutions solved by LKH
+                >>> solver.evaluate(calculate_gap=False)
+                273.0
+                
         """
         # check
         self._check_dists_not_none()

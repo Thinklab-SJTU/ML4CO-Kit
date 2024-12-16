@@ -260,7 +260,7 @@ class CVRPSolver(SolverBase):
             if self.tours is None:    
                 raise ValueError(message)
     
-    def get_round_func(self, round_func: str):
+    def _get_round_func(self, round_func: str):
         r"""
         Retrieves a rounding function based on the input string or function.
         - If `round_func` is a string, it checks against predefined functions (``ROUND_FUNCS``).
@@ -346,7 +346,7 @@ class CVRPSolver(SolverBase):
         :param x2: float, the coordinate of another node.
         :param norm: the norm used to calcuate the distance.
         """
-        self.set_norm(norm)
+        self._set_norm(norm)
         if self.norm == "EUC_2D":
             return math.sqrt((x1[0] - x2[0]) ** 2 + (x1[1] - x2[1]) ** 2)
         elif self.norm == "GEO":
@@ -377,7 +377,7 @@ class CVRPSolver(SolverBase):
         
         # dtype
         if to_int:
-            round_func = self.get_round_func(round_func)
+            round_func = self._get_round_func(round_func)
             depots = round_func(depots)
             points = round_func(points)
             demands = round_func(demands)
@@ -385,7 +385,7 @@ class CVRPSolver(SolverBase):
         
         return depots, points, demands, capacities
     
-    def _read_data_from_vrp_file(self, vrp_file_path: str, round_func: str):
+    def _read_data_from_vrp_file(self, vrp_file_path: str, round_func: str= "none"):
         r"""
         Reads CVRP data from a ".vrp" file.
         Conclude depots, points, demands and capacity.
@@ -495,6 +495,22 @@ class CVRPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+            
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from ``.vrp`` and ``.sol`` files
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                >>> solver.points.shape
+                (1,31,2)
         """
         # init
         depots = None
@@ -533,7 +549,7 @@ class CVRPSolver(SolverBase):
         show_time: bool = False
     ):
         """
-        Read data from the folder containing VRP and solution type data.
+        Read data from the folder containing VRPLIB and solution type data.
 
         :param vrp_folder_path: string, path to the folder containing `.vrp` files.
             If given, the solver will read data from the folder.
@@ -548,6 +564,32 @@ class CVRPSolver(SolverBase):
         .. dropdown:: Example
 
             :: 
+
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from the vrplib folder
+                >>> solver.from_vrplib_folder(
+                        vrp_folder_path="examples/cvrp/vrplib_2/problem",
+                        sol_folder_path="examples/cvrp/vrplib_2/solution"
+                    )
+                >>> solver.points.shape
+                (1, 31, 2)
+                >>> solver.tours.shape
+                (1, 37)
+
+                # When the number of nodes is not consistent, ``return_list`` can be 
+                # used to return data.
+                >>> depots_list, points_list, demands_list, capacity_list, tours_list = solver.from_vrplib_folder(
+                        vrp_folder_path="examples/cvrp/vrplib_2/problem",
+                        sol_folder_path="examples/cvrp/vrplib_2/solution",
+                        return_list=True
+                    )
+                >>> len(tours_list[0])
+                37
+                
         """
         # init
         depots = None
@@ -601,10 +643,10 @@ class CVRPSolver(SolverBase):
             for file_name in iterative_execution_for_file(files, "Loading", show_time):
                 # data
                 vrp_file_path = os.path.join(vrp_folder_path, file_name)
-                if not sol_file_path.endswith(".vrp"):
+                if not vrp_file_path.endswith(".vrp"):
                     continue
                 depots, points, demands, capacity = \
-                    self._read_data_from_vrp_file(sol_file_path)
+                    self._read_data_from_vrp_file(vrp_file_path)
                 depots_list.append(depots)
                 points_list.append(points)
                 demands_list.append(demands)
@@ -663,6 +705,32 @@ class CVRPSolver(SolverBase):
         return_list: bool = False,
         show_time: bool = False
     ):
+        """
+        Read data from `.txt` file.
+
+        :param file_path: string, path to the `.txt` file containing CVPR instances data.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
+        :param norm: boolean, the normalization type for data.
+        :param normalize: boolean, whether to normalize data.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+
+        .. dropdown:: Example
+        
+            ::
+
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                >>> solver.tours.shape
+                (10000, 27)
+                >>> solver.points.shape
+                (10000, 20, 2)
+        """
         # check the file format
         if not file_path.endswith(".txt"):
             raise ValueError("Invalid file format. Expected a ``.txt`` file.")
@@ -738,8 +806,44 @@ class CVRPSolver(SolverBase):
         norm: str = "EUC_2D",
         normalize: bool = False
     ):
+        """
+        Read data from list or np.ndarray.
+
+        :param depots: np.ndarray, the coordinates of depots. If given, the depots 
+            originally stored in the solver will be replaced.
+        :param points: np.ndarray, the coordinates of customer. If given, the points 
+            originally stored in the solver will be replaced.
+        :param demands: np.ndarray, the demands of customers. If given, the demands 
+            originally stored in the solver will be replaced.
+        :param capacities: int, float or np.ndarray, the capacities of the car. If given, the capacities 
+            originally stored in the solver will be replaced.
+        :param tours: np.ndarray, the solutions of the problems. If given, the tours
+            originally stored in the solver will be replaced
+        :param ref: boolean, whether the solution is a reference solution.
+        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize node coordinates.
+
+        .. dropdown:: Example
+
+            :: 
+
+                >>> import numpy as np
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from np.ndarray
+                >>> solver.from_data(depots=np.random.random(size=(10, 2)),
+                    points=np.random.random(size=(10, 2)),
+                    demands=np.random.random(size=10),
+                    capacities=np.random.random(size=1)
+                    )
+                >>> solver.depots.shape
+                (10, 2)
+        """
         # norm
-        self.set_norm(norm)
+        self._set_norm(norm)
         
         # depots
         if depots is not None:
@@ -797,7 +901,7 @@ class CVRPSolver(SolverBase):
                 
         # normalize
         if normalize:
-            self.normalize_points_depots()
+            self._normalize_points_depots()
 
     def to_vrplib_folder(
         self,
@@ -811,6 +915,44 @@ class CVRPSolver(SolverBase):
         round_func: str = "round",
         show_time: bool = False
     ):
+        """
+        Output(store) data in ``vrp`` format
+
+        :param vrp_save_dir: string, path to save the `.vrp` files. If given, 
+            the coordinates will be saved as ``.vrp`` file for each instance.
+        :param vrp_filename: string, the basic file name of the `.vrp` files.
+        :param sol_save_dir: string, path to save the `.sol` files. If given,
+            the solution will be saved as ``.sol`` file for each instance.
+        :param sol_filename: string, the basic file name of the `.sol` files.
+        :param original: boolean, whether to use ``original points`` or ``points``, etc.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+        :param show_time: boolean, whether the data is being output with a visual progress display.
+
+        .. note::
+            ``depots``, ``demands``,``capacities``, ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                    
+                # Output data in VRPLIB format
+                >>> solver.to_vrplib_folder(
+                        vrp_save_dir="cvrp20_hgs_1s_6.13013/problem",
+                        vrp_filename="cvrp20_hgs_1s_6.13013",
+                        sol_save_dir="cvrp20_hgs_1s_6.13013/solution",
+                        sol_filename="cvrp20_hgs_1s_6.13013"
+                    )
+        """
         # check
         self._check_depots_not_none()
         self._check_points_not_none()
@@ -917,7 +1059,7 @@ class CVRPSolver(SolverBase):
                         f.write("\n")
                         
                     cost = evaluator.evaluate(
-                        route=self.modify_tour(tour), 
+                        route=self._modify_tour(tour), 
                         to_int=to_int, 
                         round_func=round_func
                     )
@@ -931,6 +1073,39 @@ class CVRPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round"
     ):
+        """
+        Output(store) data in ``txt`` format
+
+        :param file_path: string, path to save the `.txt` file.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            ``depots``, ``demands``,``capacities``, ``points`` and ``tours`` must not be None.
+         
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import CVRPSolver
+                
+                # create CVRPSolver
+                >>> solver = CVRPSolver()
+
+                # load data from ``.vrp`` and ``.sol`` files
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=True
+                    )
+                    
+                # Output data in ``txt`` format
+                >>> solver.to_txt("A-n32-k5.txt")
+        """
         # check
         self._check_depots_not_none()
         self._check_points_not_none()
@@ -986,6 +1161,39 @@ class CVRPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round",
     ):
+        """
+        Evaluate the solution quality of the solver
+
+        :param calculate_gap: boolean, whether to calculate the gap with the reference solutions.
+        :param _check_demands: boolean, whether to check if demands are met.
+        :param original: boolean, whether to use ``original points`` or ``points``, etc.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. note::
+            - Please make sure the ``points`` and the ``tours`` are not None.
+            - If you set the ``calculate_gap`` as True, please make sure the ``ref_tours`` is not None.
+        
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import CVRPLKHSolver
+                
+                # create CVRPLKHSolver
+                >>> solver = CVRPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_lkh_500_1runs_6.13560.txt")
+                
+                # solve
+                >>> solver.solve()
+                BUGS:No such file or directory: 'ab970a8e9.tour'    
+                    
+                # Evaluate the quality of the solutions solved by LKH
+                >>> solver.evaluate(calculate_gap=False)
+        """
         # check
         self._check_points_not_none()
         self._check_tours_not_none(ref=False)
@@ -1020,14 +1228,14 @@ class CVRPSolver(SolverBase):
             evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
             solved_tour = tours[idx]
             solved_cost = evaluator.evaluate(
-                route=self.modify_tour(solved_tour), 
+                route=self._modify_tour(solved_tour), 
                 to_int=to_int, 
                 round_func=round_func
             )
             tours_cost_list.append(solved_cost)
             if calculate_gap:
                 ref_cost = evaluator.evaluate(
-                    route=self.modify_tour(ref_tours[idx]), 
+                    route=self._modify_tour(ref_tours[idx]), 
                     to_int=to_int, 
                     round_func=round_func
                 )
@@ -1061,6 +1269,22 @@ class CVRPSolver(SolverBase):
         show_time: bool = False,
         **kwargs,
     ) -> np.ndarray:
+        """
+        This method will be implemented in subclasses.
+        
+        :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+            they may initially be same as ``ori_depots``, but may later undergo standardization
+            or scaling processing.
+        :parm points:  np.ndarray, the customer points coordinates data called by the solver
+            during solving, they may initially be same as ``ori_depots``, but may later undergo
+            standardization or scaling processing.
+        :parm demands: np.ndarray, the demands of each customer points.
+        :parm capacities: np.ndarray, the capacities of the car.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )

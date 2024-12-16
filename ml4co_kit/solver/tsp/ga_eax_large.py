@@ -12,6 +12,7 @@ A Genetic Algorithm-based solver for the larger Traveling Salesman Problem (TSP)
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+
 import os
 import uuid
 import numpy as np
@@ -34,7 +35,7 @@ class TSPGAEAXLargeSolver(TSPSolver):
     :param max_trials: int, Tthe maximum number of trials for the genetic algorithm, (dafault is '1').
     :param population_num: int, the number of individuals in the population, (dafault is '100').
     :param offsping_num: int, the number of offspring produced in each generation (dafault is '30').
-    :param show_info" boolean, whether to display the information during the solving process, (default is 'False').
+    :param show_info: boolean, whether to display the information during the solving process, (default is 'False').
     """
     def __init__(
         self,
@@ -52,15 +53,11 @@ class TSPGAEAXLargeSolver(TSPSolver):
         self.offspring_num = offspring_num
         self.show_info = show_info
         
-    def read_solution(self, file_path: str) -> np.ndarray:
+    def _read_solution(self, file_path: str) -> np.ndarray:
         r"""
         Read solutions from a file.
 
         :file_path: string, path to the file 
-
-        .. dropdown:: Example
-
-            ::
         """
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -139,6 +136,17 @@ class TSPGAEAXLargeSolver(TSPSolver):
         .. dropdown:: Example
 
             ::
+            
+                >>> from ml4co_kit import TSPGAEAXLargeSolver
+                
+                # create TSPGAEAXLargeSolver
+                >>> solver = TSPGAEAXLargeSolver()
+                
+                # load data and reference solutions from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
+                
+                # show the solution of the TSP
+                >>> solver.solve()
         """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
