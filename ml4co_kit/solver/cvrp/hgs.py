@@ -1,3 +1,22 @@
+r"""
+This module provides a class CVRPLKHSolver for solving the CVRP 
+using the HGS (Hybrid Genetic Search,) algorithm. 
+HGS is a metaheuristic algorithm that employs competitive survival 
+strategies inspired by the dynamics of predator-prey interactions to 
+find approximate optimal solutions to complex optimization problems. 
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import uuid
 import numpy as np
@@ -10,6 +29,16 @@ from ml4co_kit.solver.cvrp.c_hgs import cvrp_hgs_solver, HGS_TMP_PATH
 
 
 class CVRPHGSSolver(CVRPSolver):
+    r"""
+    The solver of CVRP with the HGS algorithm
+    
+    :param depots_scale: int, the scale of the depots. Defaults to 2e4.
+    :param points_scale: int, the scale of the customer points. Defaults to 2e4.
+    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
+    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
+    :param time_limit: float, the limit of running time. Defaults to 1.0.
+    :param show_info: boolean, whether to show detail information. Defaults to False.
+    """
     def __init__(
         self,
         depots_scale: int = 2e4,
@@ -36,6 +65,9 @@ class CVRPHGSSolver(CVRPSolver):
         demands: np.ndarray,
         capacity: float
     ) -> list:
+        r"""
+        solve a single CVRP instance using HGSSolver
+        """
         # scale
         depot_coord = (depot_coord * self.depots_scale).astype(np.int64)
         nodes_coord = (nodes_coord * self.points_scale).astype(np.int64)
@@ -81,6 +113,45 @@ class CVRPHGSSolver(CVRPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solve CVRP using HGS algorithm with options for normalization,
+        threading, and timing
+
+        :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
+            they may initially be same as ``ori_depots``, but may later undergo standardization
+            or scaling processing.
+        :param points:  np.ndarray, the customer points coordinates data called by the solver
+            during solving, they may initially be same as ``ori_depots``, but may later undergo
+            standardization or scaling processing.
+        :param demands: np.ndarray, the demands of each customer points.
+        :param capacities: np.ndarray, the capacities of the car.
+        :param norm: string, the norm used to calcuate the distance.
+        :param normalize: boolean, whether to normalize the points. Defaults to "False".
+        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+        
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import CVRPHGSSolver
+                
+                # create CVRPHGSSolver
+                >>> solver = CVRPHGSSolver()
+
+                # load data and reference solutions from ``.vrp`` file
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                    
+                # solve
+                >>> solver.solve()
+        """
+        
         # preparation
         self.from_data(
             depots=depots, points=points, demands=demands,
