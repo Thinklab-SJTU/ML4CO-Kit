@@ -1,3 +1,21 @@
+r"""
+This module provides a class CVRPLKHSolver for solving the CVRP
+using the LKH (Lin-Kernighan Heuristic) algorithm.
+LKH is a heuristic algorithm that uses k-opt move strategies
+to find approximate optimal solutions to problems.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import uuid
 import pathlib
@@ -12,6 +30,19 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class CVRPLKHSolver(CVRPSolver):
+    r"""
+    The solver of CVRP with the LKH algorithm. 
+    
+    :param depots_scale: int, the scale of the depots. Defaults to 1e4.
+    :param points_scale: int, the scale of the customer points. Defaults to 1e4.
+    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
+    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
+    :param lkh_max_trials: int, The maximum number of trials for the LKH solver. Defaults to 500.
+    :param lkh_path: string, The path to the LKH solver. Defaults to "LKH".
+    :param lkh_runs: int, The number of runs for the LKH solver. Defaults to 1.
+    :param lkh_seed: int, the random seed in lkh algorithm. Defaults to 1234.
+    :param lkh_special: boolean, a tag of special lkh. Defaults to True.
+    """
     def __init__(
         self,
         depots_scale: int = 1e4,
@@ -24,18 +55,6 @@ class CVRPLKHSolver(CVRPSolver):
         lkh_seed: int = 1234,
         lkh_special: bool = True
     ):
-        """
-        TSPLKHSolver
-        Args:
-            lkh_max_trials (int, optional): The maximum number of trials for
-                the LKH solver. Defaults to 500.
-            lkh_path (pathlib.Path, optional): The path to the LKH solver.
-                Defaults to "LKH".
-            scale (int, optional): The scale factor for coordinates in the
-                LKH solver. Defaults to 1e6.
-            lkh_runs (int, optional): The number of runs for the LKH solver.
-                Defaults to 1.
-        """
         super(CVRPLKHSolver, self).__init__(
             solver_type=SOLVER_TYPE.LKH, 
             depots_scale = depots_scale,
@@ -49,12 +68,19 @@ class CVRPLKHSolver(CVRPSolver):
         self.lkh_seed = lkh_seed
         self.lkh_special = lkh_special
 
-    def write_parameter_file(
+    def _write_parameter_file(
         self,
         save_path: str,
         vrp_file_path: str,
         tour_path: str
     ):
+        r"""
+        writing max_trials, runs, and seeds to problem_file, and writing tour_path to tour_file.
+        
+        :param save_path: string, the path to save the files.
+        :param atsp_file_path: string, the path to save the problem_file.
+        :param tour_path: string, the path to save the tour_file.
+        """
         with open(save_path, "w") as f:
             f.write(f"PROBLEM_FILE = {vrp_file_path}\n")
             f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
@@ -64,7 +90,10 @@ class CVRPLKHSolver(CVRPSolver):
             f.write(f"SEED = {self.lkh_seed}\n")
             f.write(f"TOUR_FILE = {tour_path}\n")
     
-    def read_lkh_solution(self, tour_path: str) -> list:
+    def _read_lkh_solution(self, tour_path: str) -> list:
+        r"""
+        read solutions in vrp format.
+        """
         tour = tsplib95.load(tour_path).tours[0]
         np_tour = np.array(tour) - 1
         over_index = np.where(np_tour > self.nodes_num)[0]
@@ -81,6 +110,9 @@ class CVRPLKHSolver(CVRPSolver):
         demands: np.ndarray,
         capacity: float
     ) -> list:
+        r"""
+        solve a single CVRP instance using LKHSolver
+        """
         # scale
         depot_coord = (depot_coord * self.depots_scale).astype(np.int64)
         nodes_coord = (nodes_coord * self.points_scale).astype(np.int64)
@@ -102,7 +134,7 @@ class CVRPLKHSolver(CVRPSolver):
         self.tmp_solver.to_vrplib_folder(
             vrp_save_dir="./", vrp_filename=vrp_save_path
         )
-        self.write_parameter_file(
+        self._write_parameter_file(
             save_path=para_save_path,
             vrp_file_path=vrp_save_path,
             tour_path=tour_save_path
@@ -113,7 +145,7 @@ class CVRPLKHSolver(CVRPSolver):
             check_call([self.lkh_path, para_save_path], stdout=f)
             
         # read solution
-        tour = self.read_lkh_solution(tour_save_path)
+        tour = self._read_lkh_solution(tour_save_path)
         
         # delete files
         files_path = [
@@ -138,6 +170,47 @@ class CVRPLKHSolver(CVRPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solve CVRP using LKH algorithm with options for normalization,
+        threading, and timing.
+
+        :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
+            they may initially be same as ``ori_depots``, but may later undergo standardization
+            or scaling processing.
+        :param points:  np.ndarray, the customer points coordinates data called by the solver
+            during solving, they may initially be same as ``ori_depots``, but may later undergo
+            standardization or scaling processing.
+        :param demands: np.ndarray, the demands of each customer points.
+        :param capacities: np.ndarray, the capacities of the car.
+        :param norm: string, the norm used to calcuate the distance.
+        :param normalize: boolean, whether to normalize the points. Defaults to "False".
+        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import CVRPLKHSolver
+                
+                # create CVRPLKHSolver
+                >>> solver = CVRPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.vrp`` file
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0,  6,  3,  2, 23, 14, 24,  0, 12,  1, 16, 30,  0,  7, 13, 17,
+                19, 31, 21, 26,  0, 28,  4, 11,  8, 18,  9, 22, 27,  0, 29, 15,
+                10, 25,  5, 20,  0]]
+         """
         # preparation
         self.from_data(
             depots=depots, points=points, demands=demands,

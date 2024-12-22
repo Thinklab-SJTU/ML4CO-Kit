@@ -1,3 +1,21 @@
+r"""
+This module provides a class TSPLKHSolver for solving the TSP
+using the LKH (Lin-Kernighan Heuristic) algorithm.
+LKH is a heuristic algorithm that uses k-opt move strategies
+to find approximate optimal solutions to problems.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import pathlib
 import numpy as np
 from typing import Union
@@ -10,6 +28,14 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPLKHSolver(TSPSolver):
+    r"""
+    The solver of TSP with the LKH algorithm.
+
+    :param lkh_max_trials (int, optional): The maximum number of trials for the LKH solver. Defaults to 500.
+    :param lkh_path (pathlib.Path, optional): The path to the LKH solver. Defaults to "LKH".
+    :param scale (int, optional): The scale factor for coordinates in the LKH solver. Defaults to 1e6.
+    :param lkh_runs (int, optional): The number of runs for the LKH solver. Defaults to 1.
+    """
     def __init__(
         self,
         scale: int = 1e6,
@@ -19,18 +45,6 @@ class TSPLKHSolver(TSPSolver):
         lkh_seed: int = 1234,
         lkh_special: bool = False
     ):
-        """
-        TSPLKHSolver
-        Args:
-            lkh_max_trials (int, optional): The maximum number of trials for
-                the LKH solver. Defaults to 500.
-            lkh_path (pathlib.Path, optional): The path to the LKH solver.
-                Defaults to "LKH".
-            scale (int, optional): The scale factor for coordinates in the
-                LKH solver. Defaults to 1e6.
-            lkh_runs (int, optional): The number of runs for the LKH solver.
-                Defaults to 1.
-        """
         super(TSPLKHSolver, self).__init__(
             solver_type=SOLVER_TYPE.LKH, scale=scale
         )
@@ -41,6 +55,9 @@ class TSPLKHSolver(TSPSolver):
         self.lkh_special = lkh_special
 
     def _solve(self, nodes_coord: np.ndarray) -> list:
+        r"""
+        solve a single TSP instance using LKHSolver
+        """
         problem = tsplib95.models.StandardProblem()
         problem.name = "TSP"
         problem.type = "TSP"
@@ -68,6 +85,44 @@ class TSPLKHSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solve TSP using LKH algorithm with options for normalization,
+        threading, and timing.
+
+        :param points: np.ndarry or list, the points to solve TSP for. Defaults to None.
+        :param norm: string, The norm to use for distance calculation. Defaults to "EUC_2D".
+        :param normalize: boolean, whether to normalize the points. Defaults to "False".
+        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
+        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import TSPLKHSolver
+                
+                # create TSPLKHSolver
+                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.tsp`` file
+                >>> solver.from_tsplib(
+                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
+                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=True
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0, 52, 39, 11, 48, 17, 28, 45, 23, 31, 60, 25,  6, 81, 77,  8,
+                36, 15, 50, 62, 43, 65, 47, 83, 10, 51, 86, 95, 96, 80, 44, 32,
+                99, 73, 56, 35, 13,  9, 91, 18, 98, 92,  3, 59, 68,  2, 72, 58,
+                40, 88, 20, 22, 69, 75, 90, 93, 94, 49, 61, 82, 71, 85,  4, 42,
+                55, 70, 37, 38, 27, 87, 97, 57, 33, 89, 24, 16,  7, 21, 74,  5,
+                53,  1, 34, 67, 29, 76, 79, 64, 30, 46, 66, 54, 41, 19, 63, 78,
+                12, 14, 26, 84,  0]]
+        """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
@@ -112,6 +167,25 @@ class TSPLKHSolver(TSPSolver):
     def regret_solve(
         self, points: np.ndarray, fixed_edges: tuple, norm: str = "EUC_2D"
     ):
+        r"""   
+        Sovle TSP with fixed edges using LKH algorithm.
+
+        :param points: np.ndarry or list, the points to solve TSP for. Defaults to None.
+        :param fixed_edges: tuple, The edges that must be included in the tour.
+        :param norm: string, The norm to use for distance calculation. Defaults to "EUC_2D".
+
+        .. dropdown:: Example
+
+            ::
+
+                >>> from ml4co_kit import TSPLKHSolver
+                
+                # create TSPLKHSolver
+                >>> solver = TSPLKHSolver()
+                
+                **Missing Data**
+                
+        """
         problem = tsplib95.models.StandardProblem()
         problem.name = "TSP"
         problem.type = "TSP"

@@ -1,3 +1,18 @@
+r"""
+A TSP solver with concorde.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import uuid
 import numpy as np
@@ -10,21 +25,24 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
 class TSPConcordeSolver(TSPSolver):
+    r"""
+    This class is a subclass of `TSPSolver` designed to solve the Traveling Salesman 
+    Problem (TSP) using the Concorde solver.
+
+    :param scale: int, the scale factor for coordinates in the Concorde solver. Defaults to `1e6`.
+    """
     def __init__(
         self,
         scale: int = 1e6,
     ):
-        """
-        TSPConcordeSolver
-        Args:
-            scale (int, optional):
-                The scale factor for coordinates in the Concorde solver.
-        """
         super(TSPConcordeSolver, self).__init__(
             solver_type=SOLVER_TYPE.CONCORDE, scale=scale
         )
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
+        r"""
+        Solves a single TSP instance using the Concorde solver. 
+        """
         solver = TSPConSolver.from_data(
             xs=nodes_coord[:, 0] * self.scale,
             ys=nodes_coord[:, 1] * self.scale,
@@ -43,6 +61,32 @@ class TSPConcordeSolver(TSPSolver):
         num_threads: int = 1,
         show_time: bool = False,
     ) -> np.ndarray:
+        r"""
+        Solves the TSP problem using the Concorde solver, with options for normalization,
+        threading, and timing.
+
+        :param points: np.ndarray or list, the coordinates of the nodes.
+        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
+        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
+        :param num_threads: int, the number of threads to use for solving, (default is '1') .
+        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import TSPConcordeSolver
+                
+                # create TSPConcordeSolver
+                >>> solver = TSPConcordeSolver()
+                
+                # load data and reference solutions from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
+                
+                # show the solution of the TSP
+                >>> solver.solve()
+        """
+
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
@@ -56,7 +100,7 @@ class TSPConcordeSolver(TSPSolver):
             for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 name = uuid.uuid4().hex
                 tours.append(self._solve(self.points[idx], name))
-                self.clear_tmp_files(name)
+                self._clear_tmp_files(name)
         else:
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             name_list = list()
@@ -79,7 +123,7 @@ class TSPConcordeSolver(TSPSolver):
                 for tour in cur_tours:
                     tours.append(tour)
                 for name in name_list:
-                    self.clear_tmp_files(name)
+                    self._clear_tmp_files(name)
 
         # format
         tours = np.array(tours)
@@ -94,7 +138,25 @@ class TSPConcordeSolver(TSPSolver):
         # return
         return self.tours
 
-    def clear_tmp_files(self, name):
+    def _clear_tmp_files(self, name):
+        r"""
+        Clears temporary files generated during the solving process.
+
+        :param name: string, the name associated with the instance.
+
+        .. dropdown:: Example
+
+            ::
+            
+                # assume that you have some tmp files named 'tmp_file' need to clear.
+                >>> from ml4co_kit import TSPConcordeSolver
+                
+                # creat solver
+                >>> solver=TSPConcordeSolver()
+                
+                # clear the temporary file
+                >>> solver._clear_tmp_files("tmp_file")
+        """
         real_name = name[0:9]
         # tmp file
         sol_filename = f"{real_name}.sol"
