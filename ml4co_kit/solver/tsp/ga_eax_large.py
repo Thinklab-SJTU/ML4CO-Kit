@@ -103,7 +103,7 @@ class TSPGAEAXLargeSolver(TSPSolver):
         )
         
         # read data from .sol
-        tours = self.read_solution(sol_abs_path_1)
+        tours = self._read_solution(sol_abs_path_1)
         costs = np.array([eval.evaluate(tour) for tour in tours])
         min_cost_idx = np.argmin(costs)
         best_tour = tours[min_cost_idx].tolist()

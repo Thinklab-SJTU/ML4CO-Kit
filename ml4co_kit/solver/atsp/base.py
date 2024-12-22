@@ -189,7 +189,7 @@ class ATSPSolver(SolverBase):
 
         # dtype
         if to_int:
-            round_func = self.get_round_func(round_func)
+            round_func = self._get_round_func(round_func)
             dists = round_func(dists)
         
         return dists

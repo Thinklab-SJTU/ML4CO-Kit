@@ -145,7 +145,7 @@ class CVRPLKHSolver(CVRPSolver):
             check_call([self.lkh_path, para_save_path], stdout=f)
             
         # read solution
-        tour = self.read_lkh_solution(tour_save_path)
+        tour = self._read_lkh_solution(tour_save_path)
         
         # delete files
         files_path = [

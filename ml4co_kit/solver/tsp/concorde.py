@@ -100,7 +100,7 @@ class TSPConcordeSolver(TSPSolver):
             for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 name = uuid.uuid4().hex
                 tours.append(self._solve(self.points[idx], name))
-                self.clear_tmp_files(name)
+                self._clear_tmp_files(name)
         else:
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             name_list = list()
@@ -123,7 +123,7 @@ class TSPConcordeSolver(TSPSolver):
                 for tour in cur_tours:
                     tours.append(tour)
                 for name in name_list:
-                    self.clear_tmp_files(name)
+                    self._clear_tmp_files(name)
 
         # format
         tours = np.array(tours)
@@ -155,7 +155,7 @@ class TSPConcordeSolver(TSPSolver):
                 >>> solver=TSPConcordeSolver()
                 
                 # clear the temporary file
-                >>> solver.clear_tmp_files("tmp_file")
+                >>> solver._clear_tmp_files("tmp_file")
         """
         real_name = name[0:9]
         # tmp file
