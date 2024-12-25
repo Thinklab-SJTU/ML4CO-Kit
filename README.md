@@ -213,24 +213,24 @@ Below, we use TSP, MIS, and CVRP as representative examples for illustration.
 #### TSP
 
 ```python
-from ml4co_kit.solver import TSPConcordeSolver
-from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
+>>> from ml4co_kit.solver import TSPConcordeSolver
+>>> from ml4co_kit.draw.tsp import draw_tsp_solution, draw_tsp_problem
 
 # use TSPConcordeSolver to solve the problem
-solver = TSPConcordeSolver(scale=1)
-solver.from_tsplib("examples/tsp/kroA150.tsp")
-solver.solve(norm="EUC_2D")
+>>> solver = TSPConcordeSolver(scale=1)
+>>> solver.from_tsplib(tsp_file_path="examples/tsp/tsplib/kroA150.tsp")
+>>> solver.solve(norm="EUC_2D")
 
-# draw
-draw_tsp_problem(
-    save_path="docs/assets/kroA150_problem.png",
-    points=solver.ori_points,
-)
-draw_tsp_solution(
-    save_path="docs/assets/kroA150_solution.png",
-    points=solver.ori_points,
-    tours=solver.tours
-)
+# draw images of problem and solution
+>>> draw_tsp_problem(
+        save_path="docs/assets/tsp_problem.png",
+        points=solver.ori_points,
+    )
+>>> draw_tsp_solution(
+        save_path="docs/assets/tsp_solution.png",
+        points=solver.ori_points,
+        tours=solver.tours
+    )
 ```
 
 Visualization Results:
@@ -244,23 +244,27 @@ Visualization Results:
 #### MIS
 
 ```python
-from ml4co_kit.solver import KaMISSolver
-from ml4co_kit import draw_mis_problem, draw_mis_solution
+>>> from ml4co_kit.solver import KaMISSolver
+>>> from ml4co_kit import draw_mis_problem, draw_mis_solution
 
 # use KaMISSolver to solve the problem
-mis_solver = KaMISSolver()
-mis_solver.solve(src="examples/mis_example")
+>>> mis_solver = KaMISSolver(time_limit=10)
+>>> mis_solver.solve(
+        src="examples/mis copy/instance",
+        out="examples/mis copy/solution"
+    )
 
-# draw
-draw_mis_problem(
-    save_path="docs/assets/mis_problem.png", 
-    gpickle_path="examples/mis/instance/mis_example.gpickle"
-)
-draw_mis_solution(
-    save_path="docs/mis_solution.png",
-    gpickle_path="examples/mis/instance/mis_example.gpickle",
-    result_path="examples/mis/solution/mis_example_unweighted.result"
-)
+# draw images of problem and solution
+>>> draw_mis_problem(
+        save_path="docs/assets/mis_problem.png", 
+        graph_data=mis_solver.graph_data[0],
+        self_loop=False
+    )
+>>> draw_mis_solution(
+        save_path="docs/mis_solution.png",
+        graph_data=mis_solver.graph_data[0],
+        self_loop=False
+    )
 ```
 
 Visualization Results:
@@ -273,30 +277,30 @@ Visualization Results:
 #### CVRP
 
 ```python
-from ml4co_kit import CVRPPyVRPSolver
-from ml4co_kit import draw_cvrp_problem, draw_cvrp_solution
+>>> from ml4co_kit import CVRPHGSSolver
+>>> from ml4co_kit import draw_cvrp_problem, draw_cvrp_solution
 
-# use KaMISSolver to solve the problem
-solver = CVRPPyVRPSolver(
+# use CVRPHGSSolver to solve the problem
+>>> solver = CVRPHGSSolver(
     depots_scale=1,
     points_scale=1,
-    time_limit=1
+    time_limit=1.0
 )
-solver.from_vrplib("examples/cvrp/A-n32-k5.vrp")
-solver.solve()
+>>> solver.from_vrplib("examples/cvrp/vrplib_1/problem/A-n32-k5.vrp")
+>>> solver.solve()
 
-# draw
-draw_cvrp_problem(
-    save_path="docs/assets/cvrp_problem.png",
-    depots=solver.depots[0],
-    points=solver.points[0]
-)
-draw_cvrp_solution(
-    save_path="docs/assets/cvrp_solution.png",
-    depots=solver.depots[0],
-    points=solver.points[0],
-    tour=solver.tours
-)
+# draw images of problem and solution
+>>> draw_cvrp_problem(
+        save_path="docs/assets/cvrp_problem.png",
+        depots=solver.depots[0],
+        points=solver.points[0]
+    )
+>>> draw_cvrp_solution(
+        save_path="docs/assets/cvrp_solution.png",
+        depots=solver.depots[0],
+        points=solver.points[0],
+        tour=solver.tours
+    )
 ```
 
 Visualization Results:
