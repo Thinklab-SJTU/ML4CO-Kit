@@ -1,5 +1,6 @@
 r"""
 Basic solver for Traveling Salesman Problem (TSP). 
+
 The TSP problem requires finding the shortest tour that visits each 
 vertex of the graph exactly once and returns to the starting node. 
 """

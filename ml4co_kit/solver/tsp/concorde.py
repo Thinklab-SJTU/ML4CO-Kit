@@ -1,5 +1,10 @@
 r"""
-A TSP solver with concorde.
+The Python version of the Concorde solver, used for solving TSPs.
+
+Concorde Solver is one of the most well-known and widely used optimization solvers 
+for TSP, which is designed to solve both exact and approximate versions.
+
+We follow https://github.com/jvkersch/pyconcorde for the implementation of Concorde.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -26,8 +31,7 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class TSPConcordeSolver(TSPSolver):
     r"""
-    This class is a subclass of `TSPSolver` designed to solve the Traveling Salesman 
-    Problem (TSP) using the Concorde solver.
+    Solve TSPs using Concorde solver.
 
     :param scale: int, the scale factor for coordinates in the Concorde solver. Defaults to `1e6`.
     """
@@ -84,7 +88,7 @@ class TSPConcordeSolver(TSPSolver):
                 >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
                 
                 # show the solution of the TSP
-                >>> solver.solve()
+                >>> solver.solve(num_threads=2, show_time=True)
         """
 
         # preparation
@@ -141,21 +145,6 @@ class TSPConcordeSolver(TSPSolver):
     def _clear_tmp_files(self, name):
         r"""
         Clears temporary files generated during the solving process.
-
-        :param name: string, the name associated with the instance.
-
-        .. dropdown:: Example
-
-            ::
-            
-                # assume that you have some tmp files named 'tmp_file' need to clear.
-                >>> from ml4co_kit import TSPConcordeSolver
-                
-                # creat solver
-                >>> solver=TSPConcordeSolver()
-                
-                # clear the temporary file
-                >>> solver._clear_tmp_files("tmp_file")
         """
         real_name = name[0:9]
         # tmp file

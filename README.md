@@ -102,45 +102,6 @@ matplotlib
 pytorch_lightning
 ```
 
-## Installation
-
-You can install the stable release on PyPI:
-
-```bash
-$ pip install ml4co_kit
-```
-
-or get the latest version by running:
-
-```bash
-$ pip install -U https://github.com/Thinklab-SJTU/ML4CO-Kit/archive/master.zip # with --user for user install (no root)
-```
-
-The following packages are required and shall be automatically installed by ``pip``:
-
-```
-Python>=3.8
-numpy>=1.24.4
-networkx>=2.8.8
-tqdm>=4.66.1
-pulp>=2.8.0, 
-pandas>=2.0.0,
-scipy>=1.10.1
-aiohttp>=3.9.3
-requests>=2.31.0
-async_timeout>=4.0.3
-pyvrp>=0.6.3
-cython>=3.0.8
-gurobipy>=11.0.3
-```
-
-To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:
-
-```
-matplotlib
-pytorch_lightning
-```
-
 ## Usage Examples
 
 ### Solve with Traditional Solver Baselines
@@ -154,14 +115,14 @@ We provide base classes with a user-friendly approach for implementing tradition
 >>> tsp_lkh_solver = TSPLKHSolver(lkh_max_trials=500)
 
 # input instances and reference solutions by a .txt file
->>> tsp_lkh_solver.from_txt("path/to/read/tsp500_concorde.txt")
+>>> tsp_lkh_solver.from_txt("path/to/read/tsp500_concorde.txt", ref=True)
 
 # lkh solving
->>> tsp_lkh_solver.solve()
+>>> tsp_lkh_solver.solve(num_threads=10, show_time=True)
 
 # evaluate
 >>> tsp_lkh_solver.evaluate(calculate_gap=True)
-(16.583557978549532, 0.21424058722308548, 0.09031979488795724)
+(16.546304871926175, 16.545805334644392, 0.0030213676759083515, 0.009747905769875538)
 
 # save solving results
 >>> tsp_lkh_solver.to_txt("path/to/write/tsp500_lkh.txt")
@@ -177,7 +138,7 @@ tsp_data_lkh = TSPDataGenerator(
     num_threads=8,
     nodes_num=50,
     data_type="uniform",
-    solver="lkh",
+    solver="LKH",
     train_samples_num=16,
     val_samples_num=16,
     test_samples_num=16,
@@ -225,6 +186,24 @@ gr96         512.309380   512.309380  0.000000e+00
 gr202        549.998070   549.998070 -8.268163e-14
 gr666       3843.137961  3952.535702 -2.767786e+00
 AVG         1011.043859  1032.923407 -5.535573e-01
+```
+
+### Algorithm
+
+```python
+>>> from ml4co-kit import TSPSolver, tsp_insertion_decoder
+
+# create solver and load data
+>>> solver = TSPSolver()
+>>> solver.from_txt("your/txt/data/path", ref=True)
+
+# use insertion algorithm to solve the problems
+>>> tours = tsp_insertion_decoder(points=solver.points)
+>>> solver.from_data(tours=tours, ref=False)
+
+# evaluate (average length, ground truth, gap, std)
+>>> solver.evaluate(calculate_gap=True)
+(6.299320133465173, 5.790133693543183, 8.816004478345556, 3.605743337834312)
 ```
 
 ### Visualization
@@ -327,6 +306,6 @@ Visualization Results:
 <img src="docs/assets/cvrp_solution.png" width="35%" alt="" />
 </p>
 
-### Develop ML4CO Algorithms
+### Develop ML4CO Methods
 
-Please refer to `ml4co_kit/learning` for the base classes that facilitate a quick establishment of a ML4CO project. You can easily build a project by inheriting the base classes and additionally implement task-specific and methodology-specific functions according to [ML4CO Organization](#ML4CO Organization:). We provide an minimalistic exmple of build a simple ML4TSP project in `docs/project_example`.
+Please refer to `ml4co_kit/learning` for the base classes that facilitate a quick establishment of a ML4CO project. You can easily build a project by inheriting the base classes and additionally implement task-specific and methodology-specific functions according to [ML4CO Organization](#ML4CO Organization:).

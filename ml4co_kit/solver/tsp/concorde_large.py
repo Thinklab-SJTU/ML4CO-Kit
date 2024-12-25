@@ -1,5 +1,10 @@
 r"""
-A TSP solver with condorde for large-scale problems.
+The Python version of the Concorde solver, used for solving large-scale TSPs.
+
+Concorde Solver is one of the most well-known and widely used optimization solvers 
+for TSP, which is designed to solve both exact and approximate versions.
+
+We follow https://github.com/jvkersch/pyconcorde for the implementation of Concorde.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -27,8 +32,7 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class TSPConcordeLargeSolver(TSPConcordeSolver):
     r"""
-    This class is a subclass of `TSPconcordeSolver` designed to solve the larger scale Traveling Salesman 
-    Problem using the Concorde solver.
+    Solve large-scale TSPs using modified Concorde solver.
 
     :param scale: int, the scale factor for coordinates in the Concorde solver. Defaults to `1e6`.
     :param time_limit: float, the time limit in seconds for solving the TSP instance. Defaults to `3600` seconds.

@@ -1,5 +1,13 @@
 r"""
-A Genetic Algorithm-based solver for the Traveling Salesman Problem (TSP) using the EAX approach.
+The Python version of the GA-EAX Solver, used for solving TSPs.
+
+The GA-EAX (Genetic Algorithm with EAX) is a hybrid algorithm that combines 
+Genetic Algorithms (GA) with the EAX (Edge Assembly Crossover) operator. 
+This hybrid approach is designed to solve the TSP more efficiently by incorporating 
+the strengths of both genetic algorithms and EAX. EAX is an advanced crossover operator 
+used in evolutionary algorithms for solving TSP and other combinatorial problems.
+
+We follow https://github.com/nagata-yuichi/GA-EAX/tree/main for the implementation of GA-EAX Solver. 
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -29,7 +37,7 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class TSPGAEAXSolver(TSPSolver):
     r"""
-    Solve TSP problems with GA-EAX approach.
+    Solve TSPs using GA-EAX solver.
 
     :param scale: int, the scaling factor for the coordinates of the nodes, (dafault is '1e5').
     :param max_trials: int, Tthe maximum number of trials for the genetic algorithm, (dafault is '1').

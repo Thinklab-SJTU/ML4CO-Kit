@@ -1,5 +1,6 @@
 r"""
 Basic solver for Capacitated Vehicle Routing Problem (CVRP). 
+
 The CVRP problems requires finding the most efficient routes for a fleet of vehicles
 with limited capacity to deliver goods to a set of customers while minimizing costs.
 """
@@ -46,23 +47,23 @@ class CVRPSolver(SolverBase):
 
     :param solver_type: string, the type of the solver or algorithm used in the class.
     :param depots_scale: int, the scale of the depots.
-    :parm points_scale: int, the scale of the customer points.
-    :parm demands_scale: int, the scale of the demands of customer points.
-    :parm capacities_scale: int, the scale of the capacities of the car.
-    :parm ori_depots: np.ndarray, the original depots coordinates data read.
-    :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+    :param points_scale: int, the scale of the customer points.
+    :param demands_scale: int, the scale of the demands of customer points.
+    :param capacities_scale: int, the scale of the capacities of the car.
+    :param ori_depots: np.ndarray, the original depots coordinates data read.
+    :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
         they may initially be same as ``ori_depots``, but may later undergo standardization
         or scaling processing.
-    :parm ori_points: np.ndarray, the original customer points coordinates data read.
-    :parm points: np.ndarray, the customer points coordinates data called by the solver
+    :param ori_points: np.ndarray, the original customer points coordinates data read.
+    :param points: np.ndarray, the customer points coordinates data called by the solver
         during solving, they may initially be same as ``ori_depots``, but may later undergo
         standardization or scaling processing.
-    :parm demands: np.ndarray, the demands of each customer points.
-    :parm capacities: np.ndarray, the capacities of the car.
-    :parm tours: np.ndarray, the solution to the problems.
-    :parm ref_tours: np.ndarray, the reference solutions to the problems.
-    :parm nodes_num: int, the number of points, i.e. the sum of depots points and customer points.  
-    :parm norm: str, coordinate type. It can be a 2D Euler distance or geographic data type.
+    :param demands: np.ndarray, the demands of each customer points.
+    :param capacities: np.ndarray, the capacities of the car.
+    :param tours: np.ndarray, the solution to the problems.
+    :param ref_tours: np.ndarray, the reference solutions to the problems.
+    :param nodes_num: int, the number of points, i.e. the sum of depots points and customer points.  
+    :param norm: str, coordinate type. It can be a 2D Euler distance or geographic data type.
     """
     def __init__(
         self, 
@@ -1272,14 +1273,14 @@ class CVRPSolver(SolverBase):
         """
         This method will be implemented in subclasses.
         
-        :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+        :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
             they may initially be same as ``ori_depots``, but may later undergo standardization
             or scaling processing.
-        :parm points:  np.ndarray, the customer points coordinates data called by the solver
+        :param points:  np.ndarray, the customer points coordinates data called by the solver
             during solving, they may initially be same as ``ori_depots``, but may later undergo
             standardization or scaling processing.
-        :parm demands: np.ndarray, the demands of each customer points.
-        :parm capacities: np.ndarray, the capacities of the car.
+        :param demands: np.ndarray, the demands of each customer points.
+        :param capacities: np.ndarray, the capacities of the car.
         :param norm: boolean, the normalization type for node coordinates.
         :param normalize: boolean, whether to normalize node coordinates.
         :param num_threads: int, number of threads(could also be processes) used in parallel.

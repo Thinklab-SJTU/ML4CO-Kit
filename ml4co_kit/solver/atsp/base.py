@@ -1,5 +1,6 @@
 r"""
 Basic solver for Asymmetric Traveling Salesman Problem (ATSP). 
+
 The ATSP problem requires finding the shortest tour that visits each 
 vertex of the graph exactly once and returns to the starting node 
 with the consideration that the travel costs between any two vertices 
