@@ -250,8 +250,8 @@ Visualization Results:
 # use KaMISSolver to solve the problem
 >>> mis_solver = KaMISSolver(time_limit=10)
 >>> mis_solver.solve(
-        src="examples/mis copy/instance",
-        out="examples/mis copy/solution"
+        src="examples/mis/instance",
+        out="examples/mis/solution"
     )
 
 # draw images of problem and solution
