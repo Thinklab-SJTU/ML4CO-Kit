@@ -496,7 +496,7 @@ def _test_tsp_concorde_generator(
         save_path=save_path,
     )
     if recompile_concorde:
-        tsp_data_concorde.recompile_concorde()
+        tsp_data_concorde._recompile_concorde()
         
     # generate data
     tsp_data_concorde.generate()

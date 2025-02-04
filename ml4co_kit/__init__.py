@@ -31,6 +31,7 @@ from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPU
 #######################################################
 #                    Data Generator                   #
 #######################################################
+from .generator import GeneratorBase, NodeGeneratorBase, EdgeGeneratorBase
 from .generator import ATSPDataGenerator
 from .generator import CVRPDataGenerator
 from .generator import MClDataGenerator

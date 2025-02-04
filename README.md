@@ -59,7 +59,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 
 ML4CO Organization:
 
-<img src="docs/assets/organization.jpg" alt="Organization" width="800"/>
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/organization.jpg" alt="Organization" width="800"/>
 
 **We are still enriching the library and we welcome any contributions/ideas/suggestions from the community. A comprehensive modular framework built upon this library that integrates core ML4CO technologies is coming soon.**
 
@@ -236,8 +236,8 @@ Below, we use TSP, MIS, and CVRP as representative examples for illustration.
 Visualization Results:
 
 <p>
-<img src="docs/assets/tsp_problem.png" width="35%" alt="" />
-<img src="docs/assets/tsp_solution.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/tsp_problem.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/tsp_solution.png" width="35%" alt="" />
 </p>
 
 
@@ -270,8 +270,8 @@ Visualization Results:
 Visualization Results:
 
 <p>
-<img src="docs/assets/mis_problem.png" width="35%" alt="" />
-<img src="docs/assets/mis_solution.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/mis_problem.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/mis_solution.png" width="35%" alt="" />
 </p>
 
 #### CVRP
@@ -306,8 +306,8 @@ Visualization Results:
 Visualization Results:
 
 <p>
-<img src="docs/assets/cvrp_problem.png" width="35%" alt="" />
-<img src="docs/assets/cvrp_solution.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/cvrp_problem.png" width="35%" alt="" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/cvrp_solution.png" width="35%" alt="" />
 </p>
 
 ### Develop ML4CO Methods
