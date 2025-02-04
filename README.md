@@ -313,3 +313,14 @@ Visualization Results:
 ### Develop ML4CO Methods
 
 Please refer to `ml4co_kit/learning` for the base classes that facilitate a quick establishment of a ML4CO project. You can easily build a project by inheriting the base classes and additionally implement task-specific and methodology-specific functions according to [ML4CO Organization](#ML4CO Organization:).
+
+## Citation
+If you find our code helpful in your research, please cite
+```
+@inproceedings{li2025streamlining,
+    title={Streamlining the Design Space of ML4TSP Suggests Principles for Learning and Search}, 
+    author={Yang Li and Jiale Ma and Wenzheng Pan and Runzhong Wang and Haoyu Geng and Nianzu Yang and Junchi Yan},
+    year={2025},
+    booktitle={International Conference on Learning Representations}
+}
+```
