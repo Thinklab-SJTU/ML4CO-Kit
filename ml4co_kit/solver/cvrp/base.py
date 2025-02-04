@@ -726,11 +726,11 @@ class CVRPSolver(SolverBase):
                 >>> solver = CVRPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt")
                 >>> solver.tours.shape
-                (10000, 27)
+                (16, 26)
                 >>> solver.points.shape
-                (10000, 20, 2)
+                (16, 20, 2)
         """
         # check the file format
         if not file_path.endswith(".txt"):
@@ -944,14 +944,14 @@ class CVRPSolver(SolverBase):
                 >>> solver = CVRPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt")
                     
                 # Output data in VRPLIB format
                 >>> solver.to_vrplib_folder(
-                        vrp_save_dir="cvrp20_hgs_1s_6.13013/problem",
-                        vrp_filename="cvrp20_hgs_1s_6.13013",
-                        sol_save_dir="cvrp20_hgs_1s_6.13013/solution",
-                        sol_filename="cvrp20_hgs_1s_6.13013"
+                        vrp_save_dir="cvrp20/problem",
+                        vrp_filename="cvrp20",
+                        sol_save_dir="cvrp20/solution",
+                        sol_filename="cvrp20"
                     )
         """
         # check
