@@ -1,10 +1,8 @@
 r"""
-Basic solver for Asymmetric Traveling Salesman Problem (ATSP). 
+LKH Solver for solving ATSPs
 
-The ATSP problem requires finding the shortest tour that visits each 
-vertex of the graph exactly once and returns to the starting node 
-with the consideration that the travel costs between any two vertices 
-are not necessarily symmetric. 
+LKH is a heuristic algorithm that uses k-opt move strategies
+to find approximate optimal solutions to problems.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -22,6 +20,7 @@ import os
 import sys
 import math
 import numpy as np
+import networkx as nx
 from typing import Union
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
@@ -200,8 +199,9 @@ class ATSPSolver(SolverBase):
         Reads ATSP dists from a TSPLIB file.
         """
         tsplib_data = tsplib95.load(atsp_file_path)
-        dists = np.array(tsplib_data.edge_weights)
-        if dists is None:
+        try:
+            dists = nx.to_numpy_array(tsplib_data.get_graph())
+        except:
             raise RuntimeError("Error in loading {}".format(atsp_file_path))
         return dists
 
@@ -247,7 +247,7 @@ class ATSPSolver(SolverBase):
                 # create ATSPSolver
                 >>> solver = ATSPSolver()
 
-                # load data from ``.tsp`` or ``.atsp``  and ``.opt.tour`` files
+                # load data from ``.tsp`` or ``.atsp``, '.tour' or ``.opt.tour`` files
                 >>> solver.from_tsplib(
                         atsp_file_path="examples/atsp/tsplib_1/problem/gr24.tsp",
                         tour_file_path="examples/atsp/tsplib_1/solution/gr24.opt.tour",
@@ -256,14 +256,12 @@ class ATSPSolver(SolverBase):
                     )
                 >>> solver.dists.shape
                 (1, 25, 12)
-                >>> solver.dists[0][:4]
-                [[  0., 257.,   0., 187., 196.,   0.,  91., 228., 158.,   0., 150.,112.]
-                 [ 96., 120.,   0.,  80., 196.,  88.,  77.,  63.,   0., 130., 167., 59.],
-                 [101.,  56.,  25.,   0., 134., 154.,  63., 105.,  34.,  29.,  22.,  0.],
-                 [243., 209., 286., 159., 190., 216., 229., 225.,   0., 185.,  86.,124.]]
                 >>> solver.tours.shape
                 (1, 25)
-
+                >>> solver.dists[0][0]
+                [  0. 257. 187.  91. 150.  80. 130. 134. 243. 185. 214.  70. 272. 219.
+                293.  54. 211. 290. 268. 261. 175. 250. 192. 121.]
+                
                 # If you want to normalize the input data (for easy machine learning method calls), 
                 # you can set ``normalize`` to True.
                 >>> solver.from_tsplib(
@@ -272,10 +270,11 @@ class ATSPSolver(SolverBase):
                         ref=False,
                         normalize=True
                     )
-                >>> solver.dists[0][:1]
-                [[0.        , 0.6606684 , 0.        , 0.4807198 , 0.50385606,
-                0.        , 0.23393317, 0.5861183 , 0.40616965, 0.        ,
-                0.3856041 , 0.28791773]]
+                >>> solver.dists[0][0]
+                [0.         0.6606684  0.4807198  0.23393317 0.3856041  0.20565553
+                0.33419022 0.344473   0.6246787  0.4755784  0.5501285  0.17994858
+                0.69922876 0.562982   0.75321335 0.13881747 0.54241645 0.7455013
+                0.688946   0.6709511  0.44987145 0.6426735  0.49357328 0.311054  ]
         """
         # init
         dists = None
@@ -342,8 +341,7 @@ class ATSPSolver(SolverBase):
                 >>> 
                 (1, 25)
 
-                # When the number of nodes is not consistent, ``return_list`` can be 
-                # used to return data.
+                # When the number of nodes is not consistent, ``return_list`` can be used to return data.
                 >>> dists_flag, tours_list = solver.from_tsplib_folder(
                         atsp_folder_path="examples/atsp/tsplib_1/problem",
                         tour_folder_path="examples/atsp/tsplib_1/solution",
@@ -467,13 +465,11 @@ class ATSPSolver(SolverBase):
                 >>> solver = ATSPSolver()
 
                 # load data from ``.txt`` file 
-                
-                
-                **Missing txt data**
-                
-                >>> solver.from_txt(file_path="")
+                >>> solver.from_txt(file_path="examples/atsp/txt/atsp50.txt")
                 >>> solver.dists.shape
+                (16, 50, 50)
                 >>> solver.tours.shape
+                (16, 51)              
         """
         # check the file format
         if not file_path.endswith(".txt"):
@@ -585,7 +581,7 @@ class ATSPSolver(SolverBase):
         show_time: bool = False
     ):
         """
-        Output(store) data in ``tsp`` format
+        Output(store) data in ``atsp`` format
 
         :param atsp_save_path: string, path to save the `.tsp` files. If given, 
             the coordinates will be saved as ``.atsp`` file for each instance.
@@ -611,12 +607,8 @@ class ATSPSolver(SolverBase):
                 # create ATSPSolver
                 >>> solver = ATSPSolver()
 
-
-                **Missing txt data**
-
-
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="")
+                >>> solver.from_txt(file_path="examples/atsp/txt/atsp50.txt")
                     
                 # Output data in TSPLIB format
                 >>> solver.to_tsplib_folder(
@@ -829,7 +821,6 @@ class ATSPSolver(SolverBase):
                 # Evaluate the quality of the solutions solved by LKH
                 >>> solver.evaluate(calculate_gap=False)
                 273.0
-                
         """
         # check
         self._check_dists_not_none()
@@ -932,7 +923,29 @@ class ATSPSolver(SolverBase):
         :param normalize: boolean, whether to normalize the dists.
         :param num_threads: int, number of threads(could also be processes) used in parallel.
         :param show_time: boolean, whether the data is being read with a visual progress display.
-        """
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import ATSPLKHSolver
+                
+                # create ATSPLKHSolver
+                >>> solver = ATSPLKHSolver(lkh_max_trials=1)
+
+                # load data and reference solutions from ``.atsp`` file
+                >>> solver.from_tsplib(
+                        atsp_file_path="examples/atsp/tsplib_1/problem/ft53.tsp",
+                        ref=False,
+                        normalize=True
+                    )
+                    
+                # solve
+                >>> solver.solve()
+                [[ 0  4  2 17 16 15 37 39 38 36 35 40 21 20 24 23 22 19 18  1  8  9  7  6
+                5 51 49 52 50 48 29 28 25 27 26  3 13 11 10 12 14 41 47 42 46 43 45 44
+                34 32 33 31 30  0]]
+         """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )

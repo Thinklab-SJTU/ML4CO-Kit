@@ -1183,17 +1183,17 @@ class CVRPSolver(SolverBase):
                 >>> from ml4co_kit import CVRPLKHSolver
                 
                 # create CVRPLKHSolver
-                >>> solver = CVRPLKHSolver(lkh_max_trials=1)
+                >>> solver = CVRPLKHSolver(lkh_max_trials=500)
 
                 # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_lkh_500_1runs_6.13560.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt", ref=True)
                 
                 # solve
-                >>> solver.solve()
-                BUGS:No such file or directory: 'ab970a8e9.tour'    
+                >>> solver.solve() 
                     
                 # Evaluate the quality of the solutions solved by LKH
-                >>> solver.evaluate(calculate_gap=False)
+                >>> solver.evaluate(calculate_gap=True)
+                (6.067232688193412, 6.067232688193412, 4.642374551110924e-15, 1.0232964381806707e-14)
         """
         # check
         self._check_points_not_none()
@@ -1285,6 +1285,27 @@ class CVRPSolver(SolverBase):
         :param normalize: boolean, whether to normalize node coordinates.
         :param num_threads: int, number of threads(could also be processes) used in parallel.
         :param show_time: boolean, whether the data is being read with a visual progress display.
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import CVRPHGSSolver
+                
+                # create CVRPHGSSolver
+                >>> solver = CVRPHGSSolver()
+
+                # load data and reference solutions from ``.vrp`` file
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                    
+                # solve
+                >>> solver.solve()
         """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."

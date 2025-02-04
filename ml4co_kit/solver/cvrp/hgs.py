@@ -1,9 +1,11 @@
 r"""
-This module provides a class CVRPLKHSolver for solving the CVRP 
-using the HGS (Hybrid Genetic Search,) algorithm. 
+HGS solver for solving CVRPs. 
+
 HGS is a metaheuristic algorithm that employs competitive survival 
 strategies inspired by the dynamics of predator-prey interactions to 
 find approximate optimal solutions to complex optimization problems. 
+
+We follow https://github.com/vidalt/HGS-CVRP/tree/main/Program for the implementation of HGS.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -30,14 +32,14 @@ from ml4co_kit.solver.cvrp.c_hgs import cvrp_hgs_solver, HGS_TMP_PATH
 
 class CVRPHGSSolver(CVRPSolver):
     r"""
-    The solver of CVRP with the HGS algorithm
+    Solve CVRPs using HGS solver.
     
-    :param depots_scale: int, the scale of the depots. Defaults to 2e4.
-    :param points_scale: int, the scale of the customer points. Defaults to 2e4.
-    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
-    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
-    :param time_limit: float, the limit of running time. Defaults to 1.0.
-    :param show_info: boolean, whether to show detail information. Defaults to False.
+    :param depots_scale: int, the scale of the depots.
+    :param points_scale: int, the scale of the customer points.
+    :param demands_scale: int, the scale of the demands of customer points.
+    :param capacities_scale: int, the scale of the capacities of the car.
+    :param time_limit: float, the limit of running time.
+    :param show_info: boolean, whether to show detail information.
     """
     def __init__(
         self,
@@ -129,29 +131,7 @@ class CVRPHGSSolver(CVRPSolver):
         :param normalize: boolean, whether to normalize the points. Defaults to "False".
         :param num_threads: int, The number of threads to use for solving. Defaults to 1.
         :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
-        
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import CVRPHGSSolver
-                
-                # create CVRPHGSSolver
-                >>> solver = CVRPHGSSolver()
-
-                # load data and reference solutions from ``.vrp`` file
-                >>> solver.from_vrplib(
-                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
-                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
-                        ref=False,
-                        norm="EUC_2D",
-                        normalize=False
-                    )
-                    
-                # solve
-                >>> solver.solve()
         """
-        
         # preparation
         self.from_data(
             depots=depots, points=points, demands=demands,

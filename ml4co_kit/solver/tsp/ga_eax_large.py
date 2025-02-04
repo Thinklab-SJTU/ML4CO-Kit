@@ -39,11 +39,11 @@ class TSPGAEAXLargeSolver(TSPSolver):
     r"""
     Solve large-scale TSPs with GA-EAX solver.
 
-    :param scale: int, the scaling factor for the coordinates of the nodes, (dafault is '1e5').
-    :param max_trials: int, Tthe maximum number of trials for the genetic algorithm, (dafault is '1').
-    :param population_num: int, the number of individuals in the population, (dafault is '100').
-    :param offsping_num: int, the number of offspring produced in each generation (dafault is '30').
-    :param show_info: boolean, whether to display the information during the solving process, (default is 'False').
+    :param scale: int, the scaling factor for the coordinates of the nodes.
+    :param max_trials: int, Tthe maximum number of trials for the genetic algorithm.
+    :param population_num: int, the number of individuals in the population.
+    :param offsping_num: int, the number of offspring produced in each generation.
+    :param show_info: boolean, whether to display the information during the solving process.
     """
     def __init__(
         self,
@@ -82,7 +82,6 @@ class TSPGAEAXLargeSolver(TSPSolver):
         r"""
         solve a single TSP problem.
         """
-
         # eval
         eval = TSPEvaluator(nodes_coord)
         
@@ -132,29 +131,12 @@ class TSPGAEAXLargeSolver(TSPSolver):
         show_time: bool = False,
     ) -> np.ndarray:
         r"""
-        Solve the larger TSP problem with the DA-EAX approach with options for normalization,
-        threading, and timing.
-
-        :param points: np.ndarray or list, the coordinates of the nodes.
-        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
-        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
-        :param num_threads: int, the number of threads to use for solving, (default is '1') .
-        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
-
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import TSPGAEAXLargeSolver
-                
-                # create TSPGAEAXLargeSolver
-                >>> solver = TSPGAEAXLargeSolver()
-                
-                # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
-                
-                # show the solution of the TSP
-                >>> solver.solve()
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
         """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)

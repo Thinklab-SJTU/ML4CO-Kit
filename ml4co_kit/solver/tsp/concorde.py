@@ -1,5 +1,5 @@
 r"""
-The Python version of the Concorde solver, used for solving TSPs.
+Concorde solver for solving TSPs. 
 
 Concorde Solver is one of the most well-known and widely used optimization solvers 
 for TSP, which is designed to solve both exact and approximate versions.
@@ -45,7 +45,7 @@ class TSPConcordeSolver(TSPSolver):
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
         r"""
-        Solves a single TSP instance using the Concorde solver. 
+        Solve a single TSP instance. 
         """
         solver = TSPConSolver.from_data(
             xs=nodes_coord[:, 0] * self.scale,
@@ -66,31 +66,13 @@ class TSPConcordeSolver(TSPSolver):
         show_time: bool = False,
     ) -> np.ndarray:
         r"""
-        Solves the TSP problem using the Concorde solver, with options for normalization,
-        threading, and timing.
-
-        :param points: np.ndarray or list, the coordinates of the nodes.
-        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
-        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
-        :param num_threads: int, the number of threads to use for solving, (default is '1') .
-        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
-
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import TSPConcordeSolver
-                
-                # create TSPConcordeSolver
-                >>> solver = TSPConcordeSolver()
-                
-                # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
-                
-                # show the solution of the TSP
-                >>> solver.solve(num_threads=2, show_time=True)
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
         """
-
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)

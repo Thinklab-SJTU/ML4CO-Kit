@@ -44,8 +44,7 @@ class CVRPUniformDataset(object):
             50: 1s,
             100: 20s
     CVRP1K, CVRP2K, CVRP5K:
-        HGS: Not using genetic algorithm, only conducting preliminary local search
-            
+        HGS: Not using genetic algorithm, only conducting preliminary local search      
     """
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/CVRPUniformDataset/resolve/main/cvrp_uniform_20240826.tar.gz?download=true"
