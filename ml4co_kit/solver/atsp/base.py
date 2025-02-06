@@ -1,8 +1,10 @@
 r"""
-LKH Solver for solving ATSPs
+Basic solver for Asymmetric Traveling Salesman Problem (ATSP). 
 
-LKH is a heuristic algorithm that uses k-opt move strategies
-to find approximate optimal solutions to problems.
+ATSP is a variant of the classic TSP where the distance from 
+one city to another may not be the same in both directions. 
+It aims to find the shortest possible route that visits each city
+once and returns to the starting point in a directed graph.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -202,7 +204,10 @@ class ATSPSolver(SolverBase):
         try:
             dists = nx.to_numpy_array(tsplib_data.get_graph())
         except:
-            raise RuntimeError("Error in loading {}".format(atsp_file_path))
+            try:
+                dists = np.array(tsplib_data.edge_weights)
+            except:
+                raise RuntimeError("Error in loading {}".format(atsp_file_path))
         return dists
 
     def _read_tour_from_tour_file(self, tour_file_path: str) -> np.ndarray:

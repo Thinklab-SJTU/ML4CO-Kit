@@ -45,19 +45,19 @@ class GeneratorBase(object):
         # check the data type
         self.generate_func_dict = generate_func_dict
         self._check_data_type()
-        
-        # generate and solve data required for supervised learning
+
+        # check the solver 
+        self.supported_solver_dict = supported_solver_dict
+        self.check_solver_dict = check_solver_dict
+        self._check_solver()
+ 
+        # other checks
         if not only_instance_for_us:
             # 1. check the multi-threads
             self.sample_types = ["train", "val", "test"]
             self._check_num_threads()   
             
-            # 2. check the solver 
-            self.supported_solver_dict = supported_solver_dict
-            self.check_solver_dict = check_solver_dict
-            self._check_solver()
-            
-            # 3. check the save path
+            # 2. check the save path
             self._get_filename()
 
     def _check_data_type(self):
@@ -275,7 +275,8 @@ class NodeGeneratorBase(GeneratorBase):
         self.ws_ring_neighbors = ws_ring_neighbors
         
         # check weighted
-        self._check_weighted()
+        if not only_instance_for_us:
+            self._check_weighted()
 
     def _random_weight(self, n, mu=1, sigma=0.1):
         weights: np.ndarray = np.around(np.random.normal(mu, sigma, n))

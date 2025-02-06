@@ -4,7 +4,7 @@ import pickle
 import pathlib
 import networkx as nx
 from tqdm import tqdm
-from typing import Union
+from typing import Union, List
 from ml4co_kit.utils.graph.mis import MISGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import NodeGeneratorBase
@@ -86,7 +86,12 @@ class MISDataGenerator(NodeGeneratorBase):
                 os.makedirs(os.path.join(path, "instance"))
             if not os.path.exists(os.path.join(path, "solution")):
                 os.makedirs(os.path.join(path, "solution"))
-    
+
+    def generate_only_instance_for_us(self, samples: int) -> List[MISGraphData]:
+        nx_graphs = [self.generate_func() for _ in range(samples)]
+        self.solver.from_nx_graph(nx_graphs=nx_graphs)
+        return self.solver.graph_data
+  
     def generate(self):
         if self.solver_type == SOLVER_TYPE.KAMIS:
             # check
