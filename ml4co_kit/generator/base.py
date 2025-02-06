@@ -21,7 +21,7 @@ class GeneratorBase(object):
         only_instance_for_us: bool,
         num_threads: int,
         data_type: str,
-        solver: Union[SOLVER_TYPE, SolverBase],
+        solver: Union[SOLVER_TYPE, SolverBase, str],
         train_samples_num: int,
         val_samples_num: int,
         test_samples_num: int,
@@ -80,7 +80,7 @@ class GeneratorBase(object):
 
     def _check_solver(self):
         # get solver
-        if isinstance(self.solver, SOLVER_TYPE):
+        if isinstance(self.solver, (SOLVER_TYPE, str)):
             self.solver_type = self.solver
             supported_solver_type = self.supported_solver_dict.keys()
             if self.solver_type not in supported_solver_type:
