@@ -8,12 +8,8 @@ import io
 import os
 import re
 from setuptools import find_packages, setup
-from wheel.bdist_wheel import (
-    bdist_wheel as _bdist_wheel,
-    get_platform,
-    get_abi_tag,
-    tags,
-)
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+from wheel._bdist_wheel import get_platform, get_abi_tag, tags
 
 
 def get_property(prop, project):
