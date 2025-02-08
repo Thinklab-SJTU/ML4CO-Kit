@@ -24,7 +24,7 @@ class TSPDataGenerator(EdgeGeneratorBase):
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[SOLVER_TYPE, TSPSolver] = SOLVER_TYPE.LKH,
+        solver: Union[SOLVER_TYPE, TSPSolver, str] = SOLVER_TYPE.LKH,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,

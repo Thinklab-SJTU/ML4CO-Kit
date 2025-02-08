@@ -199,10 +199,58 @@ def test_cvrp():
 
 
 ##############################################
+#             Test Func For LP               #
+##############################################
+
+def _test_lp_gurobi(num_threads: int, data_type: str):
+    """
+    Test LPDataGenerator using LPGurobiSolver
+    """
+    if not GUROBI_TEST:
+        return
+    
+    # save path
+    save_path = f"tmp/lp_{data_type}_gurobi"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # solver
+    solver = LPGurobiSolver(time_limit=1.0)
+ 
+    # create LPDataGenerator using Gurobi solver
+    lp_data_pyvrp = LPDataGenerator(
+        num_threads=num_threads,
+        vars_num=20,
+        constr_num=16,
+        sparse_ratio=0.0,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path
+    )
+    
+    # generate data
+    lp_data_pyvrp.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+
+
+def test_lp():
+    """
+    Test LPDataGenerator
+    """
+    _test_lp_gurobi(num_threads=1, data_type="uniform")
+    _test_lp_gurobi(num_threads=4, data_type="uniform")
+
+
+##############################################
 #             Test Func For MCl              #
 ##############################################
 
-def _test_mcl_gurobi(
+def _test_mcl_gurobi_generator(
     nodes_num_min: int, nodes_num_max: int, data_type: str
 ):
     """
@@ -242,17 +290,17 @@ def test_mcl():
     """
     Test MCLDataGenerator
     """
-    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mcl_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
 #            Test Func For MCut              #
 ##############################################
 
-def _test_mcut_gurobi(
+def _test_mcut_gurobi_generator(
     nodes_num_min: int, nodes_num_max: int, data_type: str
 ):
     """
@@ -292,17 +340,17 @@ def test_mcut():
     """
     Test MVCDataGenerator
     """
-    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mcut_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
 #             Test Func For MIS              #
 ##############################################
 
-def _test_mis_kamis(
+def _test_mis_kamis_generator(
     nodes_num_min: int, nodes_num_max: int, data_type: str,
     recompile_kamis: bool = False
 ):
@@ -336,7 +384,7 @@ def _test_mis_kamis(
     shutil.rmtree(save_path)
 
 
-def _test_mis_gurobi(
+def _test_mis_gurobi_generator(
     nodes_num_min: int, nodes_num_max: int, data_type: str
 ):
     """
@@ -376,24 +424,24 @@ def test_mis():
     """
     Test MISDataGenerator
     """
-    _test_mis_kamis(
+    _test_mis_kamis_generator(
         nodes_num_min=50, nodes_num_max=100, data_type="er", recompile_kamis=True
     )
-    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mis_kamis(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
     
-    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mis_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
 
 ##############################################
 #             Test Func For MVC              #
 ##############################################
 
-def _test_mvc_gurobi(
+def _test_mvc_gurobi_generator(
     nodes_num_min: int, nodes_num_max: int, data_type: str
 ):
     """
@@ -433,11 +481,10 @@ def test_mvc():
     """
     Test MVCDataGenerator
     """
-    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mvc_gurobi(nodes_num_min=50, nodes_num_max=100, data_type="ws")
-
+    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
+    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
+    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
 
    
 ##############################################
@@ -604,6 +651,7 @@ def test_tsp():
 if __name__ == "__main__":
     test_atsp()
     test_cvrp()
+    test_lp()
     test_mcl()
     test_mcut()
     test_mis()

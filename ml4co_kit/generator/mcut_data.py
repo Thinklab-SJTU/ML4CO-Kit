@@ -12,7 +12,7 @@ class MCutDataGenerator(NodeGeneratorBase):
         only_instance_for_us: bool = False,
         num_threads: int = 1,
         data_type: str = "er",
-        solver: Union[SOLVER_TYPE, MCutSolver] = SOLVER_TYPE.GUROBI,
+        solver: Union[SOLVER_TYPE, MCutSolver, str] = SOLVER_TYPE.GUROBI,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,

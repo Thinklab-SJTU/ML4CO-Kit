@@ -45,7 +45,7 @@ class CVRPSolver(SolverBase):
     loading and outputting data in various file formats, normalizing points, and evaluating 
     solutions. Note that the actual solving method should be implemented in subclasses.
 
-    :param solver_type: string, the type of the solver or algorithm used in the class.
+    :param nodes_num: :math:`N`, int, the number of nodes in CVRP problem (besides depot nodes).
     :param depots_scale: int, the scale of the depots.
     :param points_scale: int, the scale of the customer points.
     :param demands_scale: int, the scale of the demands of customer points.
@@ -67,7 +67,7 @@ class CVRPSolver(SolverBase):
     """
     def __init__(
         self, 
-        solver_type: str = None, 
+        solver_type: SOLVER_TYPE = None, 
         depots_scale: int = 1e4,
         points_scale: int = 1e4,
         demands_scale: int = 1e3,
@@ -590,7 +590,6 @@ class CVRPSolver(SolverBase):
                     )
                 >>> len(tours_list[0])
                 37
-                
         """
         # init
         depots = None

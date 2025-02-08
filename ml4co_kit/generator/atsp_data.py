@@ -2,7 +2,7 @@ import copy
 import shutil
 import pathlib
 import numpy as np
-from typing import Union
+from typing import Union, Tuple
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import EdgeGeneratorBase
 from ml4co_kit.solver import ATSPSolver, ATSPLKHSolver
@@ -15,7 +15,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
         num_threads: int = 1,
         nodes_num: int = 50,
         data_type: str = "uniform",
-        solver: Union[SOLVER_TYPE, ATSPSolver] = SOLVER_TYPE.LKH,
+        solver: Union[SOLVER_TYPE, ATSPSolver, str] = SOLVER_TYPE.LKH,
         train_samples_num: int = 128000,
         val_samples_num: int = 1280,
         test_samples_num: int = 1280,
@@ -70,7 +70,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
     #         Generate Funcs         #
     ##################################
     
-    def _generate_sat(self) -> Union[np.ndarray, np.ndarray]:
+    def _generate_sat(self) -> Tuple[np.ndarray, np.ndarray]:
         dists, ref_tours = [], []
         num_nodes = self.nodes_num
         num_variables = self.sat_vars_nums
@@ -156,7 +156,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
         # Return the distance matrices and reference tours as numpy arrays
         return np.array(dists), np.array(ref_tours)
 
-    def _generate_hcp(self) -> Union[np.ndarray, np.ndarray]:
+    def _generate_hcp(self) -> Tuple[np.ndarray, np.ndarray]:
         # prepare
         dists, ref_tours = [], []
         noise_level = np.random.rand() * 0.2 + 0.1
@@ -189,7 +189,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
         
         return np.array(dists), np.array(ref_tours)
 
-    def _generate_uniform(self) -> Union[np.ndarray, np.ndarray]:
+    def _generate_uniform(self) -> Tuple[np.ndarray, np.ndarray]:
         scaler = 1e6
         dists = list()
         for _ in range(self.num_threads):

@@ -36,6 +36,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 | :-----: | :-------: | :---------------: | :----------------: |
 |  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH`` |
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
+|  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
 |  MCl    | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
 |  MIS    | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS`` |
