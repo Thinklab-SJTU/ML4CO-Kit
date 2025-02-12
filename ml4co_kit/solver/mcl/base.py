@@ -478,7 +478,7 @@ class MClSolver(SolverBase):
         with open(file_path, "w") as f:
             for graph in self.graph_data:
                 edge_index = graph.edge_index.T
-                nodes_label = graph.nodes_label
+                nodes_label = graph.nodes_label.astype(np.int32)
                 f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index))
                 f.write(str(" ") + str("label") + str(" "))
                 f.write(str(" ").join(str(node_label) for node_label in nodes_label))
