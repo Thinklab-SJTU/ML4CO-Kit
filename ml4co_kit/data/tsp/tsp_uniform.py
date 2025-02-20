@@ -1,3 +1,18 @@
+r"""
+The class provided to download dataset of TSP from hugging face.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 from ml4co_kit.utils import download, extract_archive
 
@@ -35,9 +50,23 @@ TSP_UNIFORM_10000 = [
 
 class TSPUniformDataset(object):
     """
+    The class is used to download the uniform dataset from hugging face.
+
     Concorde: Exact
     Concorde: time_limit: 600s
     LKH: 500 trials, 1 runs
+    
+    ..dropdown:: Example
+    
+        ::
+
+            >>> from ml4co_kit import TSPUniformDataset
+            
+            #create downloader and load data from huggingface.co
+            >>> downloader=TSPUniformDataset()
+            
+            #With the instantiation of the class,the data will be stored in the specified path if the download process is successful.
+            
     """
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform_20240825.tar.gz?download=true"
@@ -52,6 +81,9 @@ class TSPUniformDataset(object):
 
     @property
     def supported(self):
+        r"""
+        the list of supported filename.
+        """
         supported_files = {
             50: TSP_UNIFORM_50,
             100: TSP_UNIFORM_100,

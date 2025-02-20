@@ -1,6 +1,16 @@
+r"""
+Draw the problem and the solution to CVRP, and save to the specficed path.  
 """
-draw_cvrp
-"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
 
 
 import numpy as np
@@ -15,6 +25,32 @@ def draw_cvrp_problem(
     figsize: tuple = (8, 8),
     node_size: int = 50
 ):
+    r"""
+    the method to draw the problem of cvrp.
+    
+    :param save_path: string, the path to save figure as png format.
+    :param depots: list or np.ndarry, the depots coordinates data.
+    :param points: list or np.ndarry, the customer points coordinates data.
+    :param figsize: tuple, the size of the image, defaults to (8,8).
+    :param node_size: int, the size of the coordinates, defaults to 50.
+    
+    .. note::
+        the dimension of ``depots`` must be 1, and the dimension of ``points`` must be 2.
+        
+    ..dropdown:: Example
+    
+        ::
+            >>> from ml4co_kit import CVRPSolver,draw_cvrp_problem
+                
+            # create CVRPSolver
+            >>> solver = CVRPSolver()
+
+            # load data from ``.txt`` file
+            >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+
+            >>> draw_cvrp_problem("./data/img",solver.depots,solver.points)
+            # the image will be stored in the specified path if the process is successful.
+    """
     # check
     if "." not in save_path:
         save_path += ".png"
@@ -52,6 +88,33 @@ def draw_cvrp_solution(
     figsize: tuple = (8, 8),
     node_size: int = 50
 ):
+    r"""
+    the method to draw the solution to cvrp.
+    
+    :param save_path: string, the path to save figure as png format.
+    :param depots: list or np.ndarry, the depots coordinates data.
+    :param points: list or np.ndarry, the customer points coordinates data.
+    :param tour: list or np.ndarry, the solution tour of the problem.
+    :param figsize: tuple, the size of the image, defaults to (8,8).
+    :param node_size: int, the size of the coordinates, defaults to 50.
+    
+    .. note::
+        the dimension of ``depots`` must be 1, the dimension of ``points`` must be 2, and the dimension of ``tour`` must be 1.
+        
+    ..dropdown:: Example
+    
+        ::
+            >>> from ml4co_kit import CVRPSolver,draw_cvrp_solution
+                
+            # create CVRPSolver
+            >>> solver = CVRPSolver()
+
+            # load data from ``.txt`` file
+            >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+
+            >>> draw_cvrp_solution("./data/img",solver.depots,solver.points,solver.tour)
+            # the image will be stored in the specified path if the process is successful.
+    """
     # check
     if "." not in save_path:
         save_path += ".png"
