@@ -27,7 +27,7 @@ class MClGraphData(GraphData):
                 raise ValueError(f"The dimensions of ``{name}`` must be 1.")
         
             if self.nodes_num is not None:
-                if len(self.nodes_label) != self.nodes_num:
+                if len(nodes_label) != self.nodes_num:
                     message = (
                         f"The number of nodes in the {name} does not match that of "
                         "the problem. Please check the solution."

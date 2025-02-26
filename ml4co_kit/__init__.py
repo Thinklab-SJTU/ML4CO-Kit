@@ -78,13 +78,19 @@ if found_matplotlib is not None:
     from .draw import draw_tsp_problem, draw_tsp_solution
 
 #######################################################
+#              Extension Function (torch)             #
+#######################################################
+found_torch = importlib.util.find_spec("torch")
+if found_torch is not None:
+    from .learning import to_numpy, to_tensor, check_dim
+    from .learning import points_to_distmat, sparse_points
+
+#######################################################
 #        Extension Function (pytorch_lightning)       #
 #######################################################
 found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
 if found_pytorch_lightning is not None:
     from .learning import BaseEnv, BaseModel, Checkpoint, Logger, Trainer
-    from .learning import to_numpy, to_tensor, check_dim
-    from .learning import points_to_distmat, sparse_points
 
 
 __version__ = "0.2.6"
