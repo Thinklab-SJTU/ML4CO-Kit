@@ -20,6 +20,7 @@ class TASK_TYPE(str, Enum):
     MIS = "Maximum Independent Set (MIS)"
     MVC = "Minimum Vertex Cover (MVC)"
     TSP = "Traveling Salesman Problem (TSP)"
+    LP = "Linear Program (LP)"
 
 
 class SOLVER_TYPE(str, Enum):
@@ -33,6 +34,7 @@ class SOLVER_TYPE(str, Enum):
     LKH = "LKH" # Support for TSP, ATSP, CVRP
     ML4ATSP = "ML4ATSP" # part of ML4CO
     ML4CVRP = "ML4CVRP" # part of ML4CO
+    ML4LP = "ML4LP" # ML4LP
     ML4MCl = "ML4MCl" # part of ML4CO
     ML4MCut = "ML4MCut" # part of ML4CO
     ML4MIS = "ML4MIS" # part of ML4CO

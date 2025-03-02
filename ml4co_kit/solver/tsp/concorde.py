@@ -1,5 +1,10 @@
 r"""
-A TSP solver with concorde.
+Concorde solver for solving TSPs. 
+
+Concorde Solver is one of the most well-known and widely used optimization solvers 
+for TSP, which is designed to solve both exact and approximate versions.
+
+We follow https://github.com/jvkersch/pyconcorde for the implementation of Concorde.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -26,8 +31,7 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class TSPConcordeSolver(TSPSolver):
     r"""
-    This class is a subclass of `TSPSolver` designed to solve the Traveling Salesman 
-    Problem (TSP) using the Concorde solver.
+    Solve TSPs using Concorde solver.
 
     :param scale: int, the scale factor for coordinates in the Concorde solver. Defaults to `1e6`.
     """
@@ -41,7 +45,7 @@ class TSPConcordeSolver(TSPSolver):
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:
         r"""
-        Solves a single TSP instance using the Concorde solver. 
+        Solve a single TSP instance. 
         """
         solver = TSPConSolver.from_data(
             xs=nodes_coord[:, 0] * self.scale,
@@ -62,31 +66,13 @@ class TSPConcordeSolver(TSPSolver):
         show_time: bool = False,
     ) -> np.ndarray:
         r"""
-        Solves the TSP problem using the Concorde solver, with options for normalization,
-        threading, and timing.
-
-        :param points: np.ndarray or list, the coordinates of the nodes.
-        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
-        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
-        :param num_threads: int, the number of threads to use for solving, (default is '1') .
-        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
-
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import TSPConcordeSolver
-                
-                # create TSPConcordeSolver
-                >>> solver = TSPConcordeSolver()
-                
-                # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
-                
-                # show the solution of the TSP
-                >>> solver.solve()
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
         """
-
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
@@ -141,21 +127,6 @@ class TSPConcordeSolver(TSPSolver):
     def _clear_tmp_files(self, name):
         r"""
         Clears temporary files generated during the solving process.
-
-        :param name: string, the name associated with the instance.
-
-        .. dropdown:: Example
-
-            ::
-            
-                # assume that you have some tmp files named 'tmp_file' need to clear.
-                >>> from ml4co_kit import TSPConcordeSolver
-                
-                # creat solver
-                >>> solver=TSPConcordeSolver()
-                
-                # clear the temporary file
-                >>> solver._clear_tmp_files("tmp_file")
         """
         real_name = name[0:9]
         # tmp file

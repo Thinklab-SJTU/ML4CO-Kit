@@ -73,7 +73,6 @@ class CVRPUniformDataset(object):
             >>> downloader=CVRPUniformDataset()
             
             #With the instantiation of the class,the data will be stored in the specified path if the download process is successful.
-   
     """
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/CVRPUniformDataset/resolve/main/cvrp_uniform_20240826.tar.gz?download=true"

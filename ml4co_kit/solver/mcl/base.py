@@ -1,3 +1,21 @@
+r"""
+Basic solver for Maximum Clique (MCl). 
+
+MCl is to find the largest complete subgraph in an undirected graph, 
+where every pair of vertices in the subgraph is connected by an edge.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import pickle
 import numpy as np
@@ -460,7 +478,7 @@ class MClSolver(SolverBase):
         with open(file_path, "w") as f:
             for graph in self.graph_data:
                 edge_index = graph.edge_index.T
-                nodes_label = graph.nodes_label
+                nodes_label = graph.nodes_label.astype(np.int32)
                 f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index))
                 f.write(str(" ") + str("label") + str(" "))
                 f.write(str(" ").join(str(node_label) for node_label in nodes_label))

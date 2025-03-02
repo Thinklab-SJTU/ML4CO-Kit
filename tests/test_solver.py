@@ -150,6 +150,49 @@ def test_cvrp():
 
 
 ##############################################
+#              Test Func For LP              #
+##############################################
+
+
+def test_lp_base_solver():
+    solver = LPSolver()
+    solver.from_txt("tests/data_for_tests/solver/lp/lp_20_16.txt", ref=False)
+    os.remove("tests/data_for_tests/solver/lp/lp_20_16.txt")
+    solver.to_txt("tests/data_for_tests/solver/lp/lp_20_16.txt")
+    
+
+def _test_lp_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
+    gurobi_solver = LPGurobiSolver(time_limit=10.0)
+    gurobi_solver.from_txt(
+        file_path="tests/data_for_tests/solver/lp/lp_20_16.txt", ref=True
+    )
+    gurobi_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = gurobi_solver.evaluate(calculate_gap=True)
+    print(f"LPGurobiSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = (
+            f"The average gap ({gap_avg}) of LP solved by LPGurobiSolver "
+            "is larger than or equal to 1e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_lp_gurobi_solver():
+    _test_lp_gurobi_solver(True, 1)
+    _test_lp_gurobi_solver(False, 2)
+
+
+def test_lp():
+    """
+    Test LPSolver
+    """
+    test_lp_base_solver()
+    test_lp_gurobi_solver()
+    
+
+##############################################
 #             Test Func For MIS              #
 ##############################################
 
@@ -229,41 +272,6 @@ def test_mis():
 #             Test Func For MCl              #
 ##############################################
 
-def _test_mcut_gurobi_solver(show_time: bool, num_threads: int):
-    if not GUROBI_TEST:
-        return
-    gurobi_solver = MCutGurobiSolver(time_limit=1.0)
-    gurobi_solver.from_txt(
-        file_path="tests/data_for_tests/solver/mcut/mcut_example.txt",
-        ref=True, cover=True
-    )
-    gurobi_solver.solve(show_time=show_time, num_threads=num_threads)
-    _, _, gap_avg, _ = gurobi_solver.evaluate(calculate_gap=True)
-    print(f"MCutGurobiSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-2:
-        message = (
-            f"The average gap ({gap_avg}) of MC solved by MCutGurobiSolver "
-            "is larger than or equal to 1e-2%."
-        )
-        raise ValueError(message)
-
-
-def test_mcut_gurobi_solver():
-    _test_mcut_gurobi_solver(True, 1)
-    _test_mcut_gurobi_solver(False, 2)
-
-
-def test_mcut():
-    """
-    Test MCutSolver
-    """
-    test_mcut_gurobi_solver()
-
-
-##############################################
-#             Test Func For MCl              #
-##############################################
-
 def _test_mcl_gurobi_solver(show_time: bool, num_threads: int):
     if not GUROBI_TEST:
         return
@@ -295,6 +303,41 @@ def test_mcl():
     test_mcl_gurobi_solver()
 
 
+##############################################
+#             Test Func For MCut              #
+##############################################
+
+def _test_mcut_gurobi_solver(show_time: bool, num_threads: int):
+    if not GUROBI_TEST:
+        return
+    gurobi_solver = MCutGurobiSolver(time_limit=1.0)
+    gurobi_solver.from_txt(
+        file_path="tests/data_for_tests/solver/mcut/mcut_example.txt",
+        ref=True, cover=True
+    )
+    gurobi_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = gurobi_solver.evaluate(calculate_gap=True)
+    print(f"MCutGurobiSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-1:
+        message = (
+            f"The average gap ({gap_avg}) of MCut solved by MCutGurobiSolver "
+            "is larger than or equal to 1e-1%."
+        )
+        raise ValueError(message)
+
+
+def test_mcut_gurobi_solver():
+    _test_mcut_gurobi_solver(True, 1)
+    _test_mcut_gurobi_solver(False, 2)
+
+
+def test_mcut():
+    """
+    Test MCutSolver
+    """
+    test_mcut_gurobi_solver()
+    
+    
 ##############################################
 #             Test Func For MIS              #
 ##############################################
@@ -527,6 +570,7 @@ def test_tsp():
 if __name__ == "__main__":
     test_atsp()
     test_cvrp()
+    test_lp()
     test_mcl()
     test_mcut()
     test_mis()

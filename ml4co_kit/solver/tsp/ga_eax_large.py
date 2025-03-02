@@ -1,5 +1,13 @@
 r"""
-A Genetic Algorithm-based solver for the larger Traveling Salesman Problem (TSP) using the EAX approach.
+The Python version of the GA-EAX Solver, used for solving large-scale TSPs.
+
+The GA-EAX (Genetic Algorithm with EAX) is a hybrid algorithm that combines 
+Genetic Algorithms (GA) with the EAX (Edge Assembly Crossover) operator. 
+This hybrid approach is designed to solve the TSP more efficiently by incorporating 
+the strengths of both genetic algorithms and EAX. EAX is an advanced crossover operator 
+used in evolutionary algorithms for solving TSP and other combinatorial problems.
+
+We follow https://github.com/nagata-yuichi/GA-EAX/tree/main for the implementation of GA-EAX Solver. 
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -29,13 +37,13 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class TSPGAEAXLargeSolver(TSPSolver):
     r"""
-    Solve larger TSP problems with GA-EAX approach.
+    Solve large-scale TSPs with GA-EAX solver.
 
-    :param scale: int, the scaling factor for the coordinates of the nodes, (dafault is '1e5').
-    :param max_trials: int, Tthe maximum number of trials for the genetic algorithm, (dafault is '1').
-    :param population_num: int, the number of individuals in the population, (dafault is '100').
-    :param offsping_num: int, the number of offspring produced in each generation (dafault is '30').
-    :param show_info: boolean, whether to display the information during the solving process, (default is 'False').
+    :param scale: int, the scaling factor for the coordinates of the nodes.
+    :param max_trials: int, Tthe maximum number of trials for the genetic algorithm.
+    :param population_num: int, the number of individuals in the population.
+    :param offsping_num: int, the number of offspring produced in each generation.
+    :param show_info: boolean, whether to display the information during the solving process.
     """
     def __init__(
         self,
@@ -74,7 +82,6 @@ class TSPGAEAXLargeSolver(TSPSolver):
         r"""
         solve a single TSP problem.
         """
-
         # eval
         eval = TSPEvaluator(nodes_coord)
         
@@ -124,29 +131,12 @@ class TSPGAEAXLargeSolver(TSPSolver):
         show_time: bool = False,
     ) -> np.ndarray:
         r"""
-        Solve the larger TSP problem with the DA-EAX approach with options for normalization,
-        threading, and timing.
-
-        :param points: np.ndarray or list, the coordinates of the nodes.
-        :param norm: string, the normalization type for node coordinates (default is "EUC_2D").
-        :param normalize: boolean, Whether to normalize node coordinates, (default is 'False').
-        :param num_threads: int, the number of threads to use for solving, (default is '1') .
-        :param show_time: boolean, whether to display the time taken for solving, (default is 'False').
-
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import TSPGAEAXLargeSolver
-                
-                # create TSPGAEAXLargeSolver
-                >>> solver = TSPGAEAXLargeSolver()
-                
-                # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
-                
-                # show the solution of the TSP
-                >>> solver.solve()
+        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+            originally stored in the solver will be replaced.
+        :param norm: boolean, the normalization type for node coordinates.
+        :param normalize: boolean, whether to normalize node coordinates.
+        :param num_threads: int, number of threads(could also be processes) used in parallel.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
         """
         # preparation
         self.from_data(points=points, norm=norm, normalize=normalize)

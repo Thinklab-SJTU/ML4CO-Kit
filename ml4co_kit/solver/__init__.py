@@ -13,6 +13,12 @@ from .cvrp.lkh import CVRPLKHSolver
 from .cvrp.pyvrp import CVRPPyVRPSolver
 
 #######################################
+#              LP Solver             #  
+#######################################
+from .lp.base import LPSolver
+from .lp.gurobi import LPGurobiSolver
+
+#######################################
 #              MCl Solver             #  
 #######################################
 from .mcl.base import MClSolver

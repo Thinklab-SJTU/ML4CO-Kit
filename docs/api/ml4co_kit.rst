@@ -9,7 +9,6 @@ API and Module
    ml4co_kit.algorithm
    ml4co_kit.data
    ml4co_kit.draw
-   ml4co_kit.evaluate
    ml4co_kit.generator
    ml4co_kit.learning
    ml4co_kit.solver

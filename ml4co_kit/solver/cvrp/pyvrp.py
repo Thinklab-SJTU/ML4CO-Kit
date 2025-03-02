@@ -1,8 +1,10 @@
 r"""
-This module provides a class CVRPPyVRPSolver for solving the CVRP
-using the PyVRP.
+PyVRP Solver for solving CVRPs.
+
 PyVRP is a high-performance vehicle routing problem solver specifically 
 designed to address VRP and its variants in combinatorial mathematics.
+
+We follow https://github.com/PyVRP/PyVRP for the implementation of PyVRP.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -36,13 +38,13 @@ else:
 
 class CVRPPyVRPSolver(CVRPSolver):
     r"""
-    The solver of CVRP use PyVRP solver
+    Solve CVRPs using PyVRP solver.
     
-    :param depots_scale: int, the scale of the depots. Defaults to 1e4.
-    :param points_scale: int, the scale of the customer points. Defaults to 1e4.
-    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
-    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
-    :param time_limit: float, the limit of running time. Defaults to 1.0.
+    :param depots_scale: int, the scale of the depots.
+    :param points_scale: int, the scale of the customer points.
+    :param demands_scale: int, the scale of the demands of customer points.
+    :param capacities_scale: int, the scale of the capacities of the car.
+    :param time_limit: float, the limit of running time.
     """
     def __init__(
         self,
@@ -69,7 +71,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         capacity: float
     ) -> list:
         r"""
-        solve a single CVRP instance using PyVPR.
+        Solve a single CVRP instance.
         """
         # scale
         depot_coord = (depot_coord * self.depots_scale).astype(np.int64)
@@ -116,9 +118,6 @@ class CVRPPyVRPSolver(CVRPSolver):
         show_time: bool = False,
     ) -> np.ndarray:
         r"""
-        Solve CVRP using PyVRP with options for normalization,
-        threading, and timing
-
         :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
             they may initially be same as ``ori_depots``, but may later undergo standardization
             or scaling processing.
@@ -129,34 +128,9 @@ class CVRPPyVRPSolver(CVRPSolver):
         :param capacities: np.ndarray, the capacities of the car.
         :param round_func: string, the category of the rounding function.
         :param norm: string, the norm used to calcuate the distance.
-        :param normalize: boolean, whether to normalize the points. Defaults to "False".
-        :param num_threads: int, The number of threads to use for solving. Defaults to 1.
-        :param show_time: boolean, whether to show the time taken to solve. Defaults to "False".
-        
-        .. dropdown:: Example
-
-            ::
-            
-                >>> from ml4co_kit import CVRPPyVRPSolver
-                
-                # create CVRPPyVRPSolver
-                >>> solver = CVRPPyVRPSolver()
-
-                # load data and reference solutions from ``.vrp`` file
-                >>> solver.from_vrplib(
-                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
-                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
-                        ref=False,
-                        norm="EUC_2D",
-                        normalize=False
-                    )
-                    
-                # solve
-                >>> solver.solve()
-                [[ 0, 14, 28, 11,  4, 23,  2,  3,  6,  0, 12,  1, 16, 30,  0, 21,
-                31, 19, 17, 13,  7, 26,  0, 27, 24,  0, 18,  8,  9, 22, 15, 29,
-                10, 25,  5, 20,  0]]
-
+        :param normalize: boolean, whether to normalize the points.
+        :param num_threads: int, The number of threads to use for solving.
+        :param show_time: boolean, whether to show the time taken to solve.
         """
         # preparation
         self.from_data(

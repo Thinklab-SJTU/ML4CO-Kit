@@ -1,6 +1,6 @@
 r"""
-This module provides a class CVRPLKHSolver for solving the CVRP
-using the LKH (Lin-Kernighan Heuristic) algorithm.
+LKH Solver for solving CVRPs.
+
 LKH is a heuristic algorithm that uses k-opt move strategies
 to find approximate optimal solutions to problems.
 """
@@ -31,17 +31,17 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class CVRPLKHSolver(CVRPSolver):
     r"""
-    The solver of CVRP with the LKH algorithm. 
+    Solve CVRPs using LKH solver.
     
-    :param depots_scale: int, the scale of the depots. Defaults to 1e4.
-    :param points_scale: int, the scale of the customer points. Defaults to 1e4.
-    :param demands_scale: int, the scale of the demands of customer points. Defaults to 1e3.
-    :param capacities_scale: int, the scale of the capacities of the car. Defaults to 1e3.
-    :param lkh_max_trials: int, The maximum number of trials for the LKH solver. Defaults to 500.
-    :param lkh_path: string, The path to the LKH solver. Defaults to "LKH".
-    :param lkh_runs: int, The number of runs for the LKH solver. Defaults to 1.
-    :param lkh_seed: int, the random seed in lkh algorithm. Defaults to 1234.
-    :param lkh_special: boolean, a tag of special lkh. Defaults to True.
+    :param depots_scale: int, the scale of the depots.
+    :param points_scale: int, the scale of the customer points.
+    :param demands_scale: int, the scale of the demands of customer points.
+    :param capacities_scale: int, the scale of the capacities of the car.
+    :param lkh_max_trials: int, The maximum number of trials for the LKH solver.
+    :param lkh_path: string, The path to the LKH solver.
+    :param lkh_runs: int, The number of runs for the LKH solver.
+    :param lkh_seed, int, the random number seed for the LKH solver.
+    :param lkh_special, boolean, whether to solve in a special way.
     """
     def __init__(
         self,

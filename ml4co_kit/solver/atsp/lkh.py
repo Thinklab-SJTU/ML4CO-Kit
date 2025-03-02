@@ -30,12 +30,14 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 class ATSPLKHSolver(ATSPSolver):
     r"""
-    The solver of TSP with the LKH algorithm.
+    Solve ATSPs using LKH solver.
 
-    :param lkh_max_trials (int, optional): The maximum number of trials for the LKH solver. Defaults to 500.
-    :param lkh_path (pathlib.Path, optional): The path to the LKH solver. Defaults to "LKH".
-    :param scale (int, optional): The scale factor for coordinates in the LKH solver. Defaults to 1e6.
-    :param lkh_runs (int, optional): The number of runs for the LKH solver. Defaults to 1.
+    :param lkh_max_trials, int, the maximum number of trials for the LKH solver.
+    :param lkh_path, pathlib.Path, the path of the LKH solver.
+    :param scale, int, the scale factor for coordinates.
+    :param lkh_runs, int, the number of runs for the LKH solver.
+    :param lkh_seed, int, the random number seed for the LKH solver.
+    :param lkh_special, boolean, whether to solve in a special way.
     """
     def __init__(
         self,
@@ -44,12 +46,14 @@ class ATSPLKHSolver(ATSPSolver):
         lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
+        lkh_special: bool = False
     ):
         super(ATSPLKHSolver, self).__init__(solver_type=SOLVER_TYPE.LKH, scale=scale)
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
         self.lkh_seed = lkh_seed
+        self.lkh_special = lkh_special
         
     def _write_parameter_file(
         self,
@@ -58,22 +62,19 @@ class ATSPLKHSolver(ATSPSolver):
         tour_path: str
     ):
         r"""
-        writing max_trials, runs, and seeds to problem_file, and writing tour_path to tour_file.
-
-        :param save_path: string, the path to save the files.
-        :param atsp_file_path: string, the path to save the problem_file.
-        :param tour_path: string, the path to save the tour_file.
-        """
+        Writing LKH solving parameters."""
         with open(save_path, "w") as f:
             f.write(f"PROBLEM_FILE = {atsp_file_path}\n")
             f.write(f"MAX_TRIALS = {self.lkh_max_trials}\n")
             f.write(f"RUNS = {self.lkh_runs}\n")
             f.write(f"SEED = {self.lkh_seed}\n")
             f.write(f"TOUR_FILE = {tour_path}\n")
+            if self.lkh_special:
+                f.write("SPECIAL\n")
     
     def _solve(self, dist: np.ndarray) -> np.ndarray:
         r"""
-        solve a single ATSP instance using LKHSolver
+        Solve a single ATSP instance.
         """
         # Intermediate files
         tmp_name = uuid.uuid4().hex[:9]

@@ -1,5 +1,6 @@
 r"""
 Basic solver for Capacitated Vehicle Routing Problem (CVRP). 
+
 The CVRP problems requires finding the most efficient routes for a fleet of vehicles
 with limited capacity to deliver goods to a set of customers while minimizing costs.
 """
@@ -44,29 +45,29 @@ class CVRPSolver(SolverBase):
     loading and outputting data in various file formats, normalizing points, and evaluating 
     solutions. Note that the actual solving method should be implemented in subclasses.
 
-    :param solver_type: string, the type of the solver or algorithm used in the class.
+    :param nodes_num: :math:`N`, int, the number of nodes in CVRP problem (besides depot nodes).
     :param depots_scale: int, the scale of the depots.
-    :parm points_scale: int, the scale of the customer points.
-    :parm demands_scale: int, the scale of the demands of customer points.
-    :parm capacities_scale: int, the scale of the capacities of the car.
-    :parm ori_depots: np.ndarray, the original depots coordinates data read.
-    :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+    :param points_scale: int, the scale of the customer points.
+    :param demands_scale: int, the scale of the demands of customer points.
+    :param capacities_scale: int, the scale of the capacities of the car.
+    :param ori_depots: np.ndarray, the original depots coordinates data read.
+    :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
         they may initially be same as ``ori_depots``, but may later undergo standardization
         or scaling processing.
-    :parm ori_points: np.ndarray, the original customer points coordinates data read.
-    :parm points: np.ndarray, the customer points coordinates data called by the solver
+    :param ori_points: np.ndarray, the original customer points coordinates data read.
+    :param points: np.ndarray, the customer points coordinates data called by the solver
         during solving, they may initially be same as ``ori_depots``, but may later undergo
         standardization or scaling processing.
-    :parm demands: np.ndarray, the demands of each customer points.
-    :parm capacities: np.ndarray, the capacities of the car.
-    :parm tours: np.ndarray, the solution to the problems.
-    :parm ref_tours: np.ndarray, the reference solutions to the problems.
-    :parm nodes_num: int, the number of points, i.e. the sum of depots points and customer points.  
-    :parm norm: str, coordinate type. It can be a 2D Euler distance or geographic data type.
+    :param demands: np.ndarray, the demands of each customer points.
+    :param capacities: np.ndarray, the capacities of the car.
+    :param tours: np.ndarray, the solution to the problems.
+    :param ref_tours: np.ndarray, the reference solutions to the problems.
+    :param nodes_num: int, the number of points, i.e. the sum of depots points and customer points.  
+    :param norm: str, coordinate type. It can be a 2D Euler distance or geographic data type.
     """
     def __init__(
         self, 
-        solver_type: str = None, 
+        solver_type: SOLVER_TYPE = None, 
         depots_scale: int = 1e4,
         points_scale: int = 1e4,
         demands_scale: int = 1e3,
@@ -589,7 +590,6 @@ class CVRPSolver(SolverBase):
                     )
                 >>> len(tours_list[0])
                 37
-                
         """
         # init
         depots = None
@@ -725,11 +725,11 @@ class CVRPSolver(SolverBase):
                 >>> solver = CVRPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt")
                 >>> solver.tours.shape
-                (10000, 27)
+                (16, 26)
                 >>> solver.points.shape
-                (10000, 20, 2)
+                (16, 20, 2)
         """
         # check the file format
         if not file_path.endswith(".txt"):
@@ -943,14 +943,14 @@ class CVRPSolver(SolverBase):
                 >>> solver = CVRPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_hgs_1s_6.13013.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt")
                     
                 # Output data in VRPLIB format
                 >>> solver.to_vrplib_folder(
-                        vrp_save_dir="cvrp20_hgs_1s_6.13013/problem",
-                        vrp_filename="cvrp20_hgs_1s_6.13013",
-                        sol_save_dir="cvrp20_hgs_1s_6.13013/solution",
-                        sol_filename="cvrp20_hgs_1s_6.13013"
+                        vrp_save_dir="cvrp20/problem",
+                        vrp_filename="cvrp20",
+                        sol_save_dir="cvrp20/solution",
+                        sol_filename="cvrp20"
                     )
         """
         # check
@@ -1182,17 +1182,17 @@ class CVRPSolver(SolverBase):
                 >>> from ml4co_kit import CVRPLKHSolver
                 
                 # create CVRPLKHSolver
-                >>> solver = CVRPLKHSolver(lkh_max_trials=1)
+                >>> solver = CVRPLKHSolver(lkh_max_trials=500)
 
                 # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20_lkh_500_1runs_6.13560.txt")
+                >>> solver.from_txt(file_path="examples/cvrp/txt/cvrp20.txt", ref=True)
                 
                 # solve
-                >>> solver.solve()
-                BUGS:No such file or directory: 'ab970a8e9.tour'    
+                >>> solver.solve() 
                     
                 # Evaluate the quality of the solutions solved by LKH
-                >>> solver.evaluate(calculate_gap=False)
+                >>> solver.evaluate(calculate_gap=True)
+                (6.067232688193412, 6.067232688193412, 4.642374551110924e-15, 1.0232964381806707e-14)
         """
         # check
         self._check_points_not_none()
@@ -1272,18 +1272,39 @@ class CVRPSolver(SolverBase):
         """
         This method will be implemented in subclasses.
         
-        :parm depots: np.ndarray, the depots coordinates data called by the solver during solving,
+        :param depots: np.ndarray, the depots coordinates data called by the solver during solving,
             they may initially be same as ``ori_depots``, but may later undergo standardization
             or scaling processing.
-        :parm points:  np.ndarray, the customer points coordinates data called by the solver
+        :param points:  np.ndarray, the customer points coordinates data called by the solver
             during solving, they may initially be same as ``ori_depots``, but may later undergo
             standardization or scaling processing.
-        :parm demands: np.ndarray, the demands of each customer points.
-        :parm capacities: np.ndarray, the capacities of the car.
+        :param demands: np.ndarray, the demands of each customer points.
+        :param capacities: np.ndarray, the capacities of the car.
         :param norm: boolean, the normalization type for node coordinates.
         :param normalize: boolean, whether to normalize node coordinates.
         :param num_threads: int, number of threads(could also be processes) used in parallel.
         :param show_time: boolean, whether the data is being read with a visual progress display.
+
+        .. dropdown:: Example
+
+            ::
+            
+                >>> from ml4co_kit import CVRPHGSSolver
+                
+                # create CVRPHGSSolver
+                >>> solver = CVRPHGSSolver()
+
+                # load data and reference solutions from ``.vrp`` file
+                >>> solver.from_vrplib(
+                        vrp_file_path="examples/cvrp/vrplib_1/problem/A-n32-k5.vrp",
+                        sol_file_path="examples/cvrp/vrplib_1/solution/A-n32-k5.sol",
+                        ref=False,
+                        norm="EUC_2D",
+                        normalize=False
+                    )
+                    
+                # solve
+                >>> solver.solve()
         """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
