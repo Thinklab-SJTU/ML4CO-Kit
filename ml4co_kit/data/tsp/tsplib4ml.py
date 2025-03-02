@@ -1,3 +1,18 @@
+r"""
+Download tsplib dataset for machine learning from hugging face.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 from ml4co_kit.utils import download, extract_archive
 
@@ -97,6 +112,21 @@ UNRESOLVED_PROBLEMS = [
 ###################################################
 
 class TSPLIB4MLDataset(object):
+    r"""
+    The class is used to download the tsplib dataset for machine learning from hugging face.
+    
+    ..dropdown:: Example
+    
+        ::
+
+            >>> from ml4co_kit import TSPLIB4MLDataset
+            
+            #create downloader and load data from huggingface.co
+            >>> downloader=TSPLIB4MLDataset()
+            
+            #With the instantiation of the class,the data will be stored in the specified path if the download process is successful.
+   
+    """
     def __init__(self):
         self.url = "https://huggingface.co/datasets/ML4CO/TSPLIB4MLDataset/resolve/main/tsplib4ml.tar.gz?download=true"
         self.md5 = "0696b793c3d53e15b3d95db0a20dcb18"
