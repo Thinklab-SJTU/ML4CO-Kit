@@ -1,7 +1,16 @@
 """
-draw_tsp
+Draw the problem and the solution to TSP, and save to the specficed path.  
 """
 
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
 
 
 import numpy as np
@@ -11,7 +20,9 @@ from typing import Union
 
 
 def edges_to_node_pairs(edge_target: np.ndarray):
-    """Helper function to convert edge matrix into pairs of adjacent nodes."""
+    r"""
+    Helper function to convert edge matrix into pairs of adjacent nodes.
+    """
     pairs = []
     for r in range(len(edge_target)):
         for c in range(len(edge_target)):
@@ -29,6 +40,35 @@ def draw_tsp_problem(
     edge_color: str = "darkblue",
     node_size: int = 50,
 ):
+    r"""
+    the method to draw the problem of tsp.
+    
+    :param save_path: string, the path to save figure as png format.
+    :param points: list or np.ndarry, the points coordinates data.
+    :param edge_values: no.ndarry, the weights of edges.
+    :param figsize: tuple, the size of the image, defaults to (5,5).
+    :param node_color: string, the color of the node, defaults to darkblue.
+    :param edge_color: string, the color of the edge, defaults to darkblue.
+    :param node_size: int, the size of the coordinates, defaults to 50.
+    
+    ..dropdown:: Example
+    
+        ::
+
+            >>> from ml4co_kit import TSPSolver, draw_tsp_problem
+            # create TSPSolver
+            >>> solver = TSPSolver()
+            
+            # load data from the tsplib folder
+            >>> solver.from_tsplib_folder(
+                    tsp_folder_path="examples/tsp/tsplib_2/problem",
+                    tour_folder_path="examples/tsp/tsplib_2/solution"
+                )
+            
+            >>> draw_tsp_problem("./data/img",solver.point)
+            # the image will be stored in the specified path if the process is successful.
+   
+    """
     # check
     if "." not in save_path:
         save_path += ".png"
@@ -77,6 +117,35 @@ def draw_tsp_solution(
     edge_color: str = "darkblue",
     node_size: int = 50,
 ):
+    r"""
+    the method to draw the solution to tsp.
+    
+    :param save_path: string, the path to save figure as png format.
+    :param points: list or np.ndarry, the points coordinates data.
+    :param tour: list or np.ndarry, the solution tour of the problem.
+    :param edge_values: no.ndarry, the weights of edges.
+    :param figsize: tuple, the size of the image, defaults to (5,5).
+    :param node_color: string, the color of the node, defaults to darkblue.
+    :param edge_color: string, the color of the edge, defaults to darkblue.
+    :param node_size: int, the size of the coordinates, defaults to 50.
+    
+    ..dropdown:: Example
+    
+        ::
+
+            >>> from ml4co_kit import TSPSolver, draw_tsp_solution
+            # create TSPSolver
+            >>> solver = TSPSolver()
+            
+            # load data from the tsplib folder
+            >>> solver.from_tsplib_folder(
+                    tsp_folder_path="examples/tsp/tsplib_2/problem",
+                    tour_folder_path="examples/tsp/tsplib_2/solution"
+                )
+            
+            >>> draw_tsp_problem("./data/img",solver.point,solver.tours)
+            # the image will be stored in the specified path if the process is successful.
+    """
     # check
     if "." not in save_path:
         save_path += ".png"
