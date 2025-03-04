@@ -176,7 +176,7 @@ class GraphData(object):
         Args:
             loop_weight (int, float): The weight to assign to each self-loop edge.
         """
-        if np.array([0, 0]) in self.edge_index.T:
+        if np.any(np.all(self.edge_index.T == np.array([0,0]), axis=1)):
             return
         
         if self.nodes_num is None:
@@ -191,11 +191,13 @@ class GraphData(object):
             if self.edge_index is not None 
             else loop_edges
         )
+        
         if self.edge_attr is not None:
             loop_attrs = np.full((self.nodes_num,), loop_weight)
             self.edge_attr = np.hstack((self.edge_attr, loop_attrs))
         else:
-            self.edge_attr = np.full((self.nodes_num,), loop_weight)
+            edges_num = self.edge_index.shape[1]
+            self.edge_attr = np.full((edges_num,), loop_weight)
         
     def check_edge_attr(self):
         if self.edge_attr is None:
