@@ -94,11 +94,11 @@ class CVRPDataGenerator(EdgeGeneratorBase):
         
     def _generate_capacities(self) -> np.ndarray:
         if self.min_capacity == self.max_capacity:
-            return np.ones(shape=(self.num_threads, 1)) * self.min_capacity
+            return np.ones(shape=(self.num_threads,)) * self.min_capacity
         return np.random.randint(
             low=self.min_capacity,
             high=self.max_capacity,
-            size=(self.num_threads, 1)
+            size=(self.num_threads,)
         )
     
     def _generate_uniform(self) -> np.ndarray:
