@@ -49,11 +49,11 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 | :-----: | :-----------: | :-------: | :----------: | :-----------: |
 |  ATSP   | 📆 | 2 | 📆 | 📆 |
 |  CVRP   | ✔  | 📆 | ``vrplib``, ``uniform`` | 📆 |
-|  MCl    | ✔  | 📆 | 📆  | 📆 |
-|  MCut   | ✔  | 📆 | 📆 | 📆 |
-|  MIS    | ✔  | 📆 | 📆 | 📆 |
-|  MVC    | ✔  | 📆 | 📆 | 📆 |
-|  TSP    | ✔  | 4 | ``satlib``, ``uniform`` | ``uniform`` |
+|  MCl    | ✔  | 6 | 📆  | 📆 |
+|  MCut   | ✔  | 3 | 📆 | 📆 |
+|  MIS    | ✔  | 6 | 📆 | 📆 |
+|  MVC    | ✔  | 4 | 📆 | 📆 |
+|  TSP    | ✔  | 5 | ``satlib``, ``uniform`` | ``uniform`` |
 
 1~9: Number of supports; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
 
@@ -93,6 +93,7 @@ async_timeout>=4.0.3
 pyvrp>=0.6.3
 cython>=3.0.8
 gurobipy>=11.0.3
+scikit-learn>=1.3.0
 ```
 
 To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:
