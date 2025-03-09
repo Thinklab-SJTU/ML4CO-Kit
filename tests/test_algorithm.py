@@ -130,7 +130,7 @@ def test_mcut_rlsa_decoder():
     sols = list()
     for graph in tqdm(solver.graph_data):
         sols.append(
-            mcut_rlsa_decoder(graph=graph.to_matrix(), edge_index=graph.edge_index, rlsa_device="cuda")
+            mcut_rlsa_decoder(graph=graph.to_matrix(), edge_index=graph.edge_index)
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)

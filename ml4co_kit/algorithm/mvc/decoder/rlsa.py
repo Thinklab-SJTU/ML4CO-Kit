@@ -8,7 +8,7 @@ from ml4co_kit.learning.utils import to_numpy, to_tensor
 def mvc_rlsa_decoder(
     graph: np.ndarray,
     rlsa_tau: float = 0.01, 
-    rlsa_d: int = 5, 
+    rlsa_d: int = 2, 
     rlsa_k: int = 200, 
     rlsa_t: int = 500, 
     rlsa_alpha: float = 0.2,
