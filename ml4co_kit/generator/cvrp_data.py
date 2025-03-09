@@ -183,7 +183,7 @@ class CVRPDataGenerator(EdgeGeneratorBase):
                 depot = batch_depots_coord[idx]
                 points = batch_nodes_coord[idx]
                 demands = batch_demands[idx]
-                capicity = batch_capacities[idx][0]
+                capicity = batch_capacities[idx]
                 f.write("depots " + str(" ").join(str(depot_coord) for depot_coord in depot))
                 f.write(" points" + str(" "))
                 f.write(

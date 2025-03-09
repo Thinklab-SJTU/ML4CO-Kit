@@ -49,6 +49,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 | :-----: | :-----------: | :-------: | :----------: | :-----------: |
 |  ATSP   | 📆 | 2 | 📆 | 📆 |
 |  CVRP   | ✔  | 📆 | ``vrplib``, ``uniform`` | 📆 |
+|  LP   | 📆  | 📆 | 📆 | 📆 |
 |  MCl    | ✔  | 6 | 📆  | 📆 |
 |  MCut   | ✔  | 3 | 📆 | 📆 |
 |  MIS    | ✔  | 6 | 📆 | 📆 |
