@@ -15,7 +15,7 @@ def tsp_insertion_decoder(points: np.ndarray) -> np.ndarray:
     if points.ndim != 3:
         raise ValueError("``points`` must be a 2D or 3D array.")
     
-    # tsp_greedy_decoder
+    # tsp_insertion_decoder
     for idx in range(points.shape[0]):
         # random index
         index = np.arange(1, nodes_num)

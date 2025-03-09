@@ -9,9 +9,11 @@ from .utils.type_utils import TASK_TYPE, SOLVER_TYPE, TASK_SUPPORT_SOLVER
 #                      Algorithm                      #
 #######################################################
 from .algorithm import atsp_greedy_decoder, atsp_2opt_local_search
-from .algorithm import (
-    tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, tsp_mcts_local_search
-)
+from .algorithm import mcl_greedy_decoder, mcl_beam_decoder, mcl_gp_degree_decoder, mcl_lc_degree_decoder
+from .algorithm import mcut_lc_degree_decoder
+from .algorithm import mis_greedy_decoder, mis_beam_decoder, mis_gp_degree_decoder, mis_lc_degree_decoder
+from .algorithm import mvc_greedy_decoder, mvc_degree_decoder
+from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, tsp_mcts_local_search
 
 #######################################################
 #                     Free Dataset                    #
@@ -84,7 +86,12 @@ found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
     from .learning import to_numpy, to_tensor, check_dim
     from .learning import points_to_distmat, sparse_points
-
+    from .algorithm import mcl_rlsa_decoder, mcl_rlsa_local_search
+    from .algorithm import mcut_rlsa_decoder, mcut_rlsa_local_search
+    from .algorithm import mis_rlsa_decoder, mis_rlsa_local_search
+    from .algorithm import mvc_rlsa_decoder, mvc_rlsa_local_search
+    from .algorithm import tsp_2opt_local_search
+    
 #######################################################
 #        Extension Function (pytorch_lightning)       #
 #######################################################

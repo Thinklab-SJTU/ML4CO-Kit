@@ -16,7 +16,7 @@ def atsp_greedy_decoder(heatmap: np.ndarray) -> np.ndarray:
     if heatmap.ndim != 3:
         raise ValueError("``heatmap`` must be a 2D or 3D array.")
     
-    # tsp_greedy_decoder
+    # atsp_greedy_decoder
     for idx in range(heatmap.shape[0]):
         _heatmap = heatmap[idx]
         tour = (ctypes.c_int * nodes_num)(*(list(range(nodes_num))))

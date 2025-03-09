@@ -13,3 +13,4 @@ matplotlib>=3.7.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
 gurobipy>=11.0.3
+torch>=2.0.0
