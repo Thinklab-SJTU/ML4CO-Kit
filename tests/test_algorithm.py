@@ -256,16 +256,26 @@ def test_mvc_greedy_decoder():
     print(f"Gap of MVC using Greedy Decoder: {gap_avg}%")
 
 
-def test_mvc_degree_decoder():
+def test_mvc_gp_degree_decoder():
     solver = MVCSolver()
     solver.from_txt("tests/data_for_tests/algorithm/mvc/mvc_rb_small.txt", ref=True)
-    solver.graph_data[0].nodes_label = mvc_degree_decoder(
+    solver.graph_data[0].nodes_label = mvc_gp_degree_decoder(
         graph=solver.graph_data[0].to_matrix()
     )
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
-    print(f"Gap of MVC using Degree Decoder: {gap_avg}%")
+    print(f"Gap of MVC using GP-Degree Decoder: {gap_avg}%")
 
 
+def test_mvc_lc_degree_decoder():
+    solver = MVCSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/mvc/mvc_rb_small.txt", ref=True)
+    solver.graph_data[0].nodes_label = mvc_lc_degree_decoder(
+        graph=solver.graph_data[0].to_matrix()
+    )
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of MVC using LS-Degree Decoder: {gap_avg}%")
+    
+    
 def test_mvc_rlsa_decoder():
     solver = MVCSolver()
     solver.from_txt("tests/data_for_tests/algorithm/mvc/mvc_rb_small_4.txt", ref=True)
@@ -285,18 +295,19 @@ def test_mvc_rlsa_local_search():
     sols = list()
     for graph in solver.graph_data:
         adj_matrix = graph.to_matrix()
-        lc_sol = mvc_degree_decoder(graph=adj_matrix)
+        lc_sol = mvc_gp_degree_decoder(graph=adj_matrix)
         sols.append(
             mvc_rlsa_local_search(init_sol=lc_sol, graph=adj_matrix)
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
-    print(f"Gap of MVC using Degree Deocder with RLSA LocalSearch: {gap_avg}%")
+    print(f"Gap of MVC using GP-Degree Deocder with RLSA LocalSearch: {gap_avg}%")
 
 
 def test_mvc():
     test_mvc_greedy_decoder()
-    test_mvc_degree_decoder()
+    test_mvc_gp_degree_decoder()
+    test_mvc_lc_degree_decoder()
     test_mvc_rlsa_decoder()
     test_mvc_rlsa_local_search()
     

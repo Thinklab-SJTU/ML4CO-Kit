@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def mvc_degree_decoder(graph: np.ndarray) -> np.ndarray:
+def mvc_gp_degree_decoder(graph: np.ndarray) -> np.ndarray:
     # preparation
     np.fill_diagonal(graph, 0)
     degrees: np.ndarray = graph.sum(1)

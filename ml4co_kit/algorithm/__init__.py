@@ -31,7 +31,8 @@ from .mis.decoder.lc_degree import mis_lc_degree_decoder
 #             MIS Algorithm           #  
 #######################################
 from .mvc.decoder.greedy import mvc_greedy_decoder
-from .mvc.decoder.degree import mvc_degree_decoder
+from .mvc.decoder.gp_degree import mvc_gp_degree_decoder
+from .mvc.decoder.lc_degree import mvc_lc_degree_decoder
 
 #######################################
 #             TSP Algorithm           #  

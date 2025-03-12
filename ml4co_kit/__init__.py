@@ -12,7 +12,7 @@ from .algorithm import atsp_greedy_decoder, atsp_2opt_local_search
 from .algorithm import mcl_greedy_decoder, mcl_beam_decoder, mcl_gp_degree_decoder, mcl_lc_degree_decoder
 from .algorithm import mcut_lc_degree_decoder
 from .algorithm import mis_greedy_decoder, mis_beam_decoder, mis_gp_degree_decoder, mis_lc_degree_decoder
-from .algorithm import mvc_greedy_decoder, mvc_degree_decoder
+from .algorithm import mvc_greedy_decoder, mvc_gp_degree_decoder, mvc_lc_degree_decoder
 from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, tsp_mcts_local_search
 
 #######################################################
