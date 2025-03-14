@@ -72,6 +72,8 @@ You can install the stable release on PyPI:
 $ pip install ml4co-kit
 ```
 
+<img src="docs/assets/pip.png" alt="pip" style="zoom:40%;" />
+
 or get the latest version by running:
 
 ```bash
