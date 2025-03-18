@@ -124,11 +124,10 @@ def test_mcut_lc_degree_decoder():
 
 
 def test_mcut_rlsa_decoder():
-    from tqdm import tqdm
     solver = MCutSolver()
     solver.from_txt("tests/data_for_tests/algorithm/mcut/mcut_ba_small_4.txt", ref=True)
     sols = list()
-    for graph in tqdm(solver.graph_data):
+    for graph in solver.graph_data:
         sols.append(
             mcut_rlsa_decoder(graph=graph.to_matrix(), edge_index=graph.edge_index)
         )
@@ -273,7 +272,7 @@ def test_mvc_lc_degree_decoder():
         graph=solver.graph_data[0].to_matrix()
     )
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
-    print(f"Gap of MVC using LS-Degree Decoder: {gap_avg}%")
+    print(f"Gap of MVC using LC-Degree Decoder: {gap_avg}%")
     
     
 def test_mvc_rlsa_decoder():

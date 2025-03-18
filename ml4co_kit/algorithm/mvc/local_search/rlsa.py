@@ -10,8 +10,8 @@ def mvc_rlsa_local_search(
     graph: np.ndarray,
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
-    rlsa_k: int = 200, 
-    rlsa_t: int = 500, 
+    rlsa_k: int = 1000, 
+    rlsa_t: int = 1000, 
     rlsa_alpha: float = 0.3,
     rlsa_beta: float = 1.02,
     rlsa_device: str = "cpu", 
@@ -28,8 +28,7 @@ def mvc_rlsa_local_search(
     
     # initial solutions
     x = init_sol.repeat(rlsa_k, 1).to(rlsa_device).float()
-    x[1:] = (1-rlsa_alpha) * x[1:] + rlsa_alpha * torch.rand_like(x[1:])
-    x = torch.clip(x, 0, 1)
+    x[1:] = rlsa_alpha * torch.randint_like(x[1:], high=2)
     x = torch.distributions.Bernoulli(x).sample().float()
     
     # initial energy and gradient

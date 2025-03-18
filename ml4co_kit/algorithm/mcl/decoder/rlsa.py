@@ -9,9 +9,9 @@ def mcl_rlsa_decoder(
     graph: np.ndarray,
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
-    rlsa_k: int = 200, 
-    rlsa_t: int = 500, 
-    rlsa_alpha: float = 0.2,
+    rlsa_k: int = 1000, 
+    rlsa_t: int = 1000, 
+    rlsa_alpha: float = 0.3,
     rlsa_beta: float = 1.02,
     rlsa_device: str = "cpu", 
     seed: int = 1234
@@ -26,8 +26,8 @@ def mcl_rlsa_decoder(
     graph = to_tensor(graph).to(rlsa_device).float()
     
     # initial solutions
-    x = rlsa_alpha * torch.randn(size=(rlsa_k, nodes_num))
-    x = torch.clip(x, 0, 1).to(rlsa_device).float()
+    x = torch.randint(low=0, high=2, size=(rlsa_k, nodes_num))
+    x = (rlsa_alpha * x).to(rlsa_device).float()
     x = torch.distributions.Bernoulli(x).sample().float()
     
     # initial energy and gradient

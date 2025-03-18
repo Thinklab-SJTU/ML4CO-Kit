@@ -10,8 +10,8 @@ def mcut_rlsa_decoder(
     edge_index: np.ndarray,
     rlsa_tau: float = 1.5, 
     rlsa_d: int = 20, 
-    rlsa_k: int = 200, 
-    rlsa_t: int = 500, 
+    rlsa_k: int = 1000, 
+    rlsa_t: int = 1000, 
     rlsa_device: str = "cpu", 
     seed: int = 1234
 ) -> np.ndarray:

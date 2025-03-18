@@ -11,9 +11,8 @@ def mcut_rlsa_local_search(
     edge_index: np.ndarray,
     rlsa_tau: float = 1.5, 
     rlsa_d: int = 20, 
-    rlsa_k: int = 200, 
-    rlsa_t: int = 500, 
-    rlsa_alpha: float = 0.3,
+    rlsa_k: int = 1000, 
+    rlsa_t: int = 1000, 
     rlsa_device: str = "cpu", 
     seed: int = 1234
 ) -> np.ndarray:
@@ -29,8 +28,7 @@ def mcut_rlsa_local_search(
     
     # initial solutions
     x = init_sol.repeat(rlsa_k, 1).to(rlsa_device).float()
-    x[1:] = (1-rlsa_alpha) * x[1:] + rlsa_alpha * torch.rand_like(x[1:])
-    x = x.to(rlsa_device).float()
+    x[1:] = torch.randint_like(x[1:], high=2).float()
     x = torch.distributions.Bernoulli(x).sample().float()
     
     # initial energy and gradient
