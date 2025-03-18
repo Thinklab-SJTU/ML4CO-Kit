@@ -53,7 +53,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 |  MCl    | ✔  | 6 | 📆  | 📆 |
 |  MCut   | ✔  | 3 | 📆 | 📆 |
 |  MIS    | ✔  | 6 | 📆 | 📆 |
-|  MVC    | ✔  | 4 | 📆 | 📆 |
+|  MVC    | ✔  | 5 | 📆 | 📆 |
 |  TSP    | ✔  | 5 | ``satlib``, ``uniform`` | ``uniform`` |
 
 1~9: Number of supports; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
@@ -72,7 +72,7 @@ You can install the stable release on PyPI:
 $ pip install ml4co-kit
 ```
 
-<img src="docs/assets/pip.png" alt="pip" style="zoom:20%;" />
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/pip.png" alt="pip" width="300"/>
 
 or get the latest version by running:
 
