@@ -8,6 +8,7 @@ from ml4co_kit.learning.utils import to_numpy, to_tensor
 def mcl_rlsa_local_search(
     init_sol: np.ndarray,
     graph: np.ndarray,
+    rlsa_init_type: str = "uniform",
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
     rlsa_k: int = 1000, 
@@ -28,8 +29,15 @@ def mcl_rlsa_local_search(
     
     # initial solutions
     x = init_sol.repeat(rlsa_k, 1).to(rlsa_device).float()
-    x[1:] = (1-rlsa_alpha) * x[1:] + rlsa_alpha * torch.rand_like(x[1:])
-    x = torch.clip(x, 0, 1)
+    if rlsa_init_type == "gaussian":
+        x[1:] = rlsa_alpha * torch.randn_like(x[1:])
+        x = torch.clip(x, 0, 1).float()
+    elif rlsa_init_type == "uniform":
+        x[1:] = rlsa_alpha * torch.randint_like(x[1:], high=2)
+    else:
+        raise NotImplementedError(
+            "Only ``gaussian`` and ``uniform`` distributions are supported!"
+        )
     x = torch.distributions.Bernoulli(x).sample().float()
     
     # initial energy and gradient

@@ -7,6 +7,7 @@ from ml4co_kit.learning.utils import to_numpy, to_tensor
 
 def mis_rlsa_decoder(
     graph: np.ndarray,
+    rlsa_init_type: str = "uniform",
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
     rlsa_k: int = 1000, 
@@ -26,8 +27,16 @@ def mis_rlsa_decoder(
     graph = to_tensor(graph).to(rlsa_device).float()
     
     # initial solutions
-    x = torch.randint(low=0, high=2, size=(rlsa_k, nodes_num))
-    x = (rlsa_alpha * x).to(rlsa_device).float()
+    if rlsa_init_type == "gaussian":
+        x = rlsa_alpha * torch.randn(size=(rlsa_k, nodes_num))
+        x = torch.clip(x, 0, 1).to(rlsa_device).float()
+    elif rlsa_init_type == "uniform":
+        x = torch.randint(low=0, high=2, size=(rlsa_k, nodes_num))
+        x = (rlsa_alpha * x).to(rlsa_device).float()
+    else:
+        raise NotImplementedError(
+            "Only ``gaussian`` and ``uniform`` distributions are supported!"
+        )
     x = torch.distributions.Bernoulli(x).sample().float()
     
     # initial energy and gradient
