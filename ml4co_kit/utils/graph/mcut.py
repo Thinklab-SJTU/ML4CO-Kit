@@ -59,7 +59,11 @@ class MCutGraphData(GraphData):
                 self.nodes_label = nodes_label
             self._check_nodes_label(ref=ref)
         
-    def evaluate(self, calculate_gap: bool = False):
+    def evaluate(self, calculate_gap: bool = False, check_constraint: bool = False):
+        # check constraint
+        if check_constraint:
+            self.check_constraint()
+            
         # solved solution
         if self.cut_edge_num is None:
             if self.nodes_label is None:
@@ -104,3 +108,6 @@ class MCutGraphData(GraphData):
             return (self.cut_edge_num, self.ref_cut_edge_num, gap)
         else:
             return self.cut_edge_num
+        
+    def check_constraint(self, ref: bool):
+        return

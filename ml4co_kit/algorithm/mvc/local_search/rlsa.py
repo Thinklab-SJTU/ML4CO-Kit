@@ -32,8 +32,10 @@ def mvc_rlsa_local_search(
     if rlsa_init_type == "gaussian":
         x[1:] = rlsa_alpha * torch.randn_like(x[1:])
         x = torch.clip(x, 0, 1).float()
+        x[1:] = torch.ones_like(x[1:]) - x[1:]
     elif rlsa_init_type == "uniform":
         x[1:] = rlsa_alpha * torch.randint_like(x[1:], high=2)
+        x[1:] = torch.ones_like(x[1:]) - x[1:]
     else:
         raise NotImplementedError(
             "Only ``gaussian`` and ``uniform`` distributions are supported!"

@@ -30,9 +30,11 @@ def mvc_rlsa_decoder(
     if rlsa_init_type == "gaussian":
         x = rlsa_alpha * torch.randn(size=(rlsa_k, nodes_num))
         x = torch.clip(x, 0, 1).to(rlsa_device).float()
+        x[1:] = torch.ones_like(x[1:]) - x[1:]
     elif rlsa_init_type == "uniform":
         x = torch.randint(low=0, high=2, size=(rlsa_k, nodes_num))
         x = (rlsa_alpha * x).to(rlsa_device).float()
+        x[1:] = torch.ones_like(x[1:]) - x[1:]
     else:
         raise NotImplementedError(
             "Only ``gaussian`` and ``uniform`` distributions are supported!"

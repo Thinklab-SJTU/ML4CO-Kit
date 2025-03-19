@@ -203,6 +203,11 @@ class GraphData(object):
         if self.edge_attr is None:
             edge_nums = self.edge_index.shape[1]
             self.edge_attr = np.ones(shape=(edge_nums,))
+            
+    def check_constraint(self, ref: bool):
+        raise NotImplementedError(
+            "The ``check_constraint`` function is required to implemented in subclasses."
+        )
         
         
 def np_sparse_to_dense(

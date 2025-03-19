@@ -8,8 +8,8 @@ from ml4co_kit.learning.utils import to_numpy, to_tensor
 def mcut_rlsa_decoder(
     graph: np.ndarray,
     edge_index: np.ndarray,
-    rlsa_tau: float = 1.5, 
-    rlsa_d: int = 20, 
+    rlsa_tau: float = 0.01, 
+    rlsa_d: int = 2, 
     rlsa_k: int = 1000, 
     rlsa_t: int = 1000, 
     rlsa_device: str = "cpu", 
