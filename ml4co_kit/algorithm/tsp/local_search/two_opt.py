@@ -15,20 +15,11 @@ def tsp_2opt_local_search(
     
     # local search
     with torch.inference_mode():
-        # check
-        if init_tours.ndim != (points.ndim - 1):
-            raise ValueError(
-                "The dimensions of ``init_tours`` and ``points`` must be 1 difference."
-            )
-        dim_2 = False
-        if init_tours.ndim == 2:
-            dim_2 = True
-            init_tours = np.expand_dims(init_tours, axis=0)
-            points = np.expand_dims(points, axis=0)
-        check_dim(points, 3)
+        # preparation
+        init_tours = np.expand_dims(init_tours, axis=0)
         tours: Tensor = to_tensor(init_tours).to(device)
         points: Tensor = to_tensor(points).to(device)
-        
+
         # start 2opt
         min_change = -1.0
         batch_size = 1
@@ -76,6 +67,4 @@ def tsp_2opt_local_search(
                 break
     
     # return
-    if dim_2:
-        tours = tours[0]
-    return to_numpy(tours)
+    return to_numpy(tours[0])
