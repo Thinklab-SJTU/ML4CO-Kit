@@ -16,9 +16,9 @@ def tsp_2opt_local_search(
     # local search
     with torch.inference_mode():
         # check
-        if init_tours.ndim != points.ndim:
+        if init_tours.ndim != (points.ndim - 1):
             raise ValueError(
-                "The dimensions of ``init_tours`` and ``points`` must be consistent."
+                "The dimensions of ``init_tours`` and ``points`` must be 1 difference."
             )
         dim_2 = False
         if init_tours.ndim == 2:
