@@ -1155,7 +1155,7 @@ class CVRPSolver(SolverBase):
     def evaluate(
         self,
         calculate_gap: bool = False,
-        _check_demands: bool = True,
+        check_demands: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
@@ -1197,7 +1197,7 @@ class CVRPSolver(SolverBase):
         # check
         self._check_points_not_none()
         self._check_tours_not_none(ref=False)
-        if _check_demands:
+        if check_demands:
             self._check_demands_meet()
         if calculate_gap:
             self._check_tours_not_none(ref=False)

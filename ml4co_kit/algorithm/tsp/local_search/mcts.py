@@ -13,7 +13,7 @@ def tsp_mcts_local_search(
     continue_flag: int = 2,
     max_iterations_2opt: int = 5000
 ) -> np.ndarray:
-    # prepare for decoding
+    # prepare for local search
     nodes_num = heatmap.shape[-1]
     init_tours = init_tours.astype(np.int16)
     heatmap = heatmap.astype(np.float32)

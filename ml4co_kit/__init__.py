@@ -9,6 +9,7 @@ from .utils.type_utils import TASK_TYPE, SOLVER_TYPE, TASK_SUPPORT_SOLVER
 #                      Algorithm                      #
 #######################################################
 from .algorithm import atsp_greedy_decoder, atsp_2opt_local_search
+from .algorithm import cvrp_classic_local_search
 from .algorithm import mcl_greedy_decoder, mcl_beam_decoder, mcl_gp_degree_decoder, mcl_lc_degree_decoder
 from .algorithm import mcut_lc_degree_decoder
 from .algorithm import mis_greedy_decoder, mis_beam_decoder, mis_gp_degree_decoder, mis_lc_degree_decoder

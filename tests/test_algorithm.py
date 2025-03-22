@@ -27,6 +27,31 @@ def test_atsp():
     
 
 ##############################################
+#             Test Func For CVRP             #
+##############################################
+
+def test_cvrp_local_search():
+    solver = CVRPSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/cvrp/cvrp200_symnco.txt", ref=True)
+    init_tours = solver.ref_tours
+    depots = solver.depots
+    points = solver.points
+    demands = solver.demands / np.expand_dims(solver.capacities, axis=1)
+    ls_tours = list()
+    for init_tour, depot, _points, _demands in zip(init_tours, depots, points, demands):
+        ls_tours.append(
+            cvrp_classic_local_search(init_tour, depot, _points, _demands)
+        )
+    solver.from_data(tours=ls_tours)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of CVRP using Local Search (Compare to not use): {gap_avg}%")
+
+
+def test_cvrp():
+    test_cvrp_local_search()
+    
+
+##############################################
 #             Test Func For MCl              #
 ##############################################
 
@@ -390,9 +415,10 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_atsp()
-    test_mcl()
-    test_mcut()
-    test_mis()
-    test_mvc()
-    test_tsp()
+    # test_atsp()
+    test_cvrp()
+    # test_mcl()
+    # test_mcut()
+    # test_mis()
+    # test_mvc()
+    # test_tsp()

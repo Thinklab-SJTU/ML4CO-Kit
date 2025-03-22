@@ -7,6 +7,11 @@ from .atsp.decoder.greedy import atsp_greedy_decoder
 from .atsp.local_search.two_opt import atsp_2opt_local_search
 
 #######################################
+#            CVRP Algorithm           #  
+#######################################
+from .cvrp.local_search.classic import cvrp_classic_local_search
+
+#######################################
 #             MCl Algorithm           #  
 #######################################
 from .mcl.decoder.greedy import mcl_greedy_decoder
