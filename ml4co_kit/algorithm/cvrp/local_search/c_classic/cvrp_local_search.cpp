@@ -32,19 +32,24 @@ extern "C" {
 
 		// Return
 		int *ls_tours = new int[tour_length + 2];
-		ls_tours[0] = 0;
-		int ls_idx = 1;
-		for (size_t i = 0; i < indiv.chromR.size(); ++i){
-			if (!indiv.chromR[i].empty()) {
-				for (int node : indiv.chromR[i]) {
-					ls_tours[ls_idx] = node;
+		if (indiv.isFeasible) {
+			ls_tours[0] = 0;
+			int ls_idx = 1;
+			for (size_t i = 0; i < indiv.chromR.size(); ++i){
+				if (!indiv.chromR[i].empty()) {
+					for (int node : indiv.chromR[i]) {
+						ls_tours[ls_idx] = node;
+						ls_idx ++;
+					}
+					ls_tours[ls_idx] = 0;
 					ls_idx ++;
 				}
-				ls_tours[ls_idx] = 0;
-				ls_idx ++;
 			}
+			ls_tours[ls_idx] = -1;
 		}
-		ls_tours[ls_idx] = -1;
+		else {
+			ls_tours[0] = -1;
+		}
 		return ls_tours;
 	}
 }
