@@ -101,5 +101,5 @@ if found_pytorch_lightning is not None:
     from .learning import BaseEnv, BaseModel, Checkpoint, Logger, Trainer
 
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __author__ = "SJTU-ReThinkLab"

@@ -37,11 +37,11 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 |  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH`` |
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
-|  MCl    | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
-|  MCut   | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
-|  MIS    | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS`` |
-|  MVC    | ``er``, ``ba``, ``hk``, ``ws`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
-|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GAX`` |
+|  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS`` |
+|  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX`` |
 
 #### Extension
 
