@@ -28,6 +28,9 @@ class MCutDataGenerator(NodeGeneratorBase):
         hk_conn_degree: int = 10,
         ws_prob: float = 0.5,
         ws_ring_neighbors: int = 2,
+        rb_n_scale: tuple = (20, 25),
+        rb_k_scale: tuple = (5, 12),
+        rb_p_scale: tuple = (0.3, 1.0)
     ):
         # filename
         if filename is None:
@@ -61,6 +64,9 @@ class MCutDataGenerator(NodeGeneratorBase):
             hk_conn_degree=hk_conn_degree,
             ws_prob=ws_prob,
             ws_ring_neighbors=ws_ring_neighbors,
+            rb_n_scale=rb_n_scale,
+            rb_k_scale=rb_k_scale,
+            rb_p_scale=rb_p_scale,
             supported_solver_dict=supported_solver_dict,
             check_solver_dict=check_solver_dict
         )

@@ -294,6 +294,7 @@ def test_mcl():
     _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
     _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
     _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mcl_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
 
 
 ##############################################
@@ -344,6 +345,7 @@ def test_mcut():
     _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
     _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
     _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mcut_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
 
 
 ##############################################
@@ -435,6 +437,7 @@ def test_mis():
     _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
     _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
     _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mis_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
 
 
 ##############################################
@@ -485,6 +488,7 @@ def test_mvc():
     _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
     _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
     _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mvc_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
 
    
 ##############################################

@@ -4,13 +4,14 @@ import time
 import random
 import shutil
 import pathlib
+import itertools
 import numpy as np
 import networkx as nx
 from tqdm import tqdm
 from typing import Union, Any
 from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-
+from ml4co_kit.utils.graph.rb_utils import CSPInstance, independent_set_language
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -231,6 +232,9 @@ class NodeGeneratorBase(GeneratorBase):
         hk_conn_degree: int,
         ws_prob: float,
         ws_ring_neighbors: int,
+        rb_n_scale: tuple,
+        rb_k_scale: tuple,
+        rb_p_scale: tuple,
         # need to pre-define
         supported_solver_dict: dict,
         check_solver_dict: dict
@@ -245,6 +249,7 @@ class NodeGeneratorBase(GeneratorBase):
             "hk": self._generate_holme_kim,
             "watts_strogatz": self._generate_watts_strogatz,
             "ws": self._generate_watts_strogatz,
+            "rb": self._generate_rb_graph
         }
         
         # super args
@@ -273,7 +278,22 @@ class NodeGeneratorBase(GeneratorBase):
         self.hk_conn_degree = hk_conn_degree
         self.ws_prob = ws_prob
         self.ws_ring_neighbors = ws_ring_neighbors
+        self.rb_n_scale = rb_n_scale
+        self.rb_k_scale = rb_k_scale
+        self.rb_p_scale = rb_p_scale
         
+        # check rb
+        if data_type == "rb":
+            self.rb_n_min, self.rb_n_max = self.rb_n_scale
+            self.rb_k_min, self.rb_k_max = self.rb_k_scale
+            self.rb_p_min, self.rb_p_max = self.rb_p_scale
+            if self.rb_n_min * self.rb_k_min > self.nodes_num_max or \
+                self.rb_n_max * self.rb_k_max < self.nodes_num_min:
+                    raise ValueError(
+                        "Cannot generate an RB graph within the specified number of nodes. "
+                        "Please check if the input parameters are correct."
+                    )
+                
         # check weighted
         if not only_instance_for_us:
             self._check_weighted()
@@ -317,6 +337,45 @@ class NodeGeneratorBase(GeneratorBase):
         num_nodes = random.randint(self.nodes_num_min, self.nodes_num_max)
         nx_graph = nx.watts_strogatz_graph(num_nodes, self.ws_ring_neighbors, self.ws_prob)
         return self._if_need_weighted(nx_graph)
+    
+    def _generate_rb_graph(self) -> nx.Graph:
+        # random params (n, k, a)
+        while True:
+            rb_n = np.random.randint(self.rb_n_min, self.rb_n_max)
+            rb_k = np.random.randint(self.rb_k_min, self.rb_k_max)
+            rb_v = rb_n * rb_k
+            if self.nodes_num_min <= rb_v and self.nodes_num_max >= rb_v:
+                break
+        rb_a = np.log(rb_k) / np.log(rb_n)
+        
+        # random params (p, r, s, iterations)
+        rb_p = np.random.uniform(self.rb_p_min, self.rb_p_max)
+        rb_r = - rb_a / np.log(1 - rb_p)
+        rb_s = int(rb_p * (rb_n ** (2 * rb_a)))
+        iterations = int(rb_r * rb_n * np.log(rb_n) - 1)
+        
+        # real generate
+        parts = np.reshape(np.int64(range(rb_v)), (rb_n, rb_k))
+        nand_clauses = []
+        for i in parts:
+            nand_clauses += itertools.combinations(i, 2)
+        edges = set()
+        for _ in range(iterations):
+            i, j = np.random.choice(rb_n, 2, replace=False)
+            all = set(itertools.product(parts[i, :], parts[j, :]))
+            all -= edges
+            edges |= set(random.sample(tuple(all), k=min(rb_s, len(all))))
+        nand_clauses += list(edges)
+        clauses = {'NAND': nand_clauses}
+        instance = CSPInstance(
+            language=independent_set_language, n_variables=rb_v, clauses=clauses
+        )
+        
+        # networkx graph
+        nx_graph = nx.Graph()
+        nx_graph.add_edges_from(instance.clauses['NAND'])
+        
+        return nx_graph
     
     def _check_weighted(self):
         # check weighted
