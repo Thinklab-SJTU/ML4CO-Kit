@@ -64,6 +64,7 @@ class KaMISSolver(MISSolver):
         source_instance_file: Union[str, pathlib.Path],
         cache_directory: Union[str, pathlib.Path],
     ):
+        # check file path
         source_instance_file = Path(source_instance_file)
         cache_directory = Path(cache_directory)
         cache_directory.mkdir(parents=True, exist_ok=True)
@@ -77,7 +78,11 @@ class KaMISSolver(MISSolver):
             if source_mtime <= last_updated:
                 return
 
-        g = pickle.load(source_instance_file)
+        # load gpickle data
+        with open(source_instance_file, mode="rb") as f:
+            g = pickle.load(f)
+        
+        # prepare graph (core)   
         graph = KaMISSolver.__prepare_graph(g, weighted=self.weighted)
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
