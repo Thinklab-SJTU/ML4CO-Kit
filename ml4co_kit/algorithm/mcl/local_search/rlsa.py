@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from torch import Tensor
-from typing import Tuple
+from typing import Tuple, Union
 from ml4co_kit.learning.utils import to_numpy, to_tensor
 
 
@@ -9,6 +9,7 @@ def mcl_rlsa_local_search(
     init_sol: np.ndarray,
     graph: np.ndarray,
     rlsa_init_type: str = "uniform",
+    rlsa_kth_dim: Union[str, int] = 0,
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
     rlsa_k: int = 1000, 
@@ -47,13 +48,16 @@ def mcl_rlsa_local_search(
     
     # SA
     for epoch in range(rlsa_t):
+        # kth_dim
+        kth_dim = epoch % 2 if rlsa_kth_dim == "both" else rlsa_kth_dim
+        
         # temperature
         tau = rlsa_tau * (1 - epoch / rlsa_k)
 
         # sampling
         delta = grad * (2 * x - 1) / 2
         k = torch.randint(2, rlsa_d + 1, size=(1,)).item()
-        term2 = -torch.kthvalue(-delta, k, dim=1, keepdim=True).values
+        term2 = -torch.kthvalue(-delta, k, dim=kth_dim, keepdim=True).values
         flip_prob = torch.sigmoid((delta - term2) / tau)
         rr = torch.rand_like(x.data.float())
         x = torch.where(rr < flip_prob, 1 - x, x)

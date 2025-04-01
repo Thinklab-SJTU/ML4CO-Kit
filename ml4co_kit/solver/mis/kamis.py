@@ -1,6 +1,7 @@
 import re
 import time
 import json
+import pickle
 import shutil
 import os.path
 import pathlib
@@ -76,7 +77,7 @@ class KaMISSolver(MISSolver):
             if source_mtime <= last_updated:
                 return
 
-        g = nx.read_gpickle(source_instance_file)
+        g = pickle.load(source_instance_file)
         graph = KaMISSolver.__prepare_graph(g, weighted=self.weighted)
         with open(dest_path, "w") as res_file:
             res_file.write(graph)
