@@ -464,7 +464,7 @@ class MCutSolver(SolverBase):
                 f.write("\n")
             f.close()
     
-    def evaluate(self, calculate_gap: bool = False, check_constraint: bool = False):
+    def evaluate(self, calculate_gap: bool = False, check_constraint: bool = True):
         if calculate_gap:
             snn_list = list()
             rsnn_list = list()
