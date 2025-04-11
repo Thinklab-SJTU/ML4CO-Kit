@@ -62,7 +62,9 @@ class MISGraphData(GraphData):
     def evaluate(self, calculate_gap: bool = False, check_constraint: bool = False):
         # check constraint
         if check_constraint:
-            self.check_constraint()
+            self.check_constraint(ref=False)
+            if calculate_gap:
+                self.check_constraint(ref=True)
             
         # solved solution
         if self.sel_nodes_num is None:
