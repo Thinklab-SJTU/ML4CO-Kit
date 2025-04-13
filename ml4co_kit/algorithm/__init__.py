@@ -9,6 +9,7 @@ from .atsp.local_search.two_opt import atsp_2opt_local_search
 #######################################
 #            CVRP Algorithm           #  
 #######################################
+from .cvrp.decoder.greedy import cvrp_greedy_decoder
 from .cvrp.local_search.classic import cvrp_classic_local_search
 
 #######################################
