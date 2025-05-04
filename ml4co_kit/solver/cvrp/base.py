@@ -300,8 +300,8 @@ class CVRPSolver(SolverBase):
         for idx in range(self.points.shape[0]):
             cur_points = self.points[idx]
             cur_depots = self.depots[idx]
-            max_value = np.max(cur_points)
-            min_value = np.min(cur_points)
+            max_value = max(np.max(cur_points), np.max(cur_depots))
+            min_value = min(np.min(cur_points), np.min(cur_depots))
             cur_points = (cur_points - min_value) / (max_value - min_value)
             cur_depots = (cur_depots - min_value) / (max_value - min_value)
             self.points[idx] = cur_points
