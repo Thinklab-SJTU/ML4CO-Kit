@@ -93,7 +93,9 @@ class MVCGraphData(GraphData):
         self._check_nodes_label(ref=ref)
         sol = self.ref_nodes_label if ref else self.nodes_label
         if sol is not None:
-            src_dst = sol[self.edge_index[0]] + sol[self.edge_index[1]]
+            mask = self.edge_index[0] != self.edge_index[1]
+            edge_index = self.edge_index[:, mask]
+            src_dst = sol[edge_index[0]] + sol[edge_index[1]]
             if src_dst.min() == 0:
                 raise ValueError(
                     "The solution does not conform to constraint!"

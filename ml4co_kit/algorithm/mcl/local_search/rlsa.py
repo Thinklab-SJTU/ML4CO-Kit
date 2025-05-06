@@ -9,7 +9,7 @@ def mcl_rlsa_local_search(
     init_sol: np.ndarray,
     graph: np.ndarray,
     rlsa_init_type: str = "uniform",
-    rlsa_kth_dim: Union[str, int] = 0,
+    rlsa_kth_dim: Union[str, int] = "both",
     rlsa_tau: float = 0.01, 
     rlsa_d: int = 2, 
     rlsa_k: int = 1000, 

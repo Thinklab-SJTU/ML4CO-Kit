@@ -10,7 +10,7 @@ def mis_rlsa_decoder(
     rlsa_init_type: str = "uniform",
     rlsa_kth_dim: Union[str, int] = 0,
     rlsa_tau: float = 0.01, 
-    rlsa_d: int = 2, 
+    rlsa_d: int = 5, 
     rlsa_k: int = 1000, 
     rlsa_t: int = 1000, 
     rlsa_alpha: float = 0.3,
