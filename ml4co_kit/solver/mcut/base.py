@@ -405,7 +405,7 @@ class MCutSolver(SolverBase):
                     self_loop = self_loop.reshape(-1, 1).repeat(2, axis=1)
                     edge_index = np.concatenate([self_loop, edge_index.T], axis=0)
                     nx_graph: nx.Graph = nx.from_edgelist(edge_index)
-                    nx_graph = nx_graph.remove_edges_from(nx.selfloop_edges(nx_graph))
+                    nx_graph.remove_edges_from(nx.selfloop_edges(nx_graph))
                 else:
                     nx_graph = nx.from_edgelist(edge_index.T)
 
