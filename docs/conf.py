@@ -21,6 +21,11 @@ import os
 import sys
 import datetime
 sys.path.insert(0, os.path.abspath('..'))
+try:
+    from ml4co_kit import draw
+    print("Successfully imported ml4co_kit.draw")
+except ImportError as e:
+    print("Failed to import ml4co_kit.draw:", e)
 os.environ['SPHINX'] = '1'
 
 # -- General configuration ------------------------------------------------
