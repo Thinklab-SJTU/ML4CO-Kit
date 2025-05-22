@@ -7,7 +7,7 @@ This hybrid approach is designed to solve the TSP more efficiently by incorporat
 the strengths of both genetic algorithms and EAX. EAX is an advanced crossover operator 
 used in evolutionary algorithms for solving TSP and other combinatorial problems.
 
-We follow https://github.com/nagata-yuichi/GA-EAX/tree/main for the implementation of GA-EAX Solver. 
+We follow https://github.com/nagata-yuichi/GA-EAX for the implementation of GA-EAX Solver. 
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

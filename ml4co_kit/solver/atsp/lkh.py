@@ -1,6 +1,6 @@
 r"""
-This module provides a class ATSPLKHSolver for solving the ATSP
-using the LKH (Lin-Kernighan Heuristic) algorithm.
+LKH Solver for solving ATSPs.
+
 LKH is a heuristic algorithm that uses k-opt move strategies
 to find approximate optimal solutions to problems.
 """
