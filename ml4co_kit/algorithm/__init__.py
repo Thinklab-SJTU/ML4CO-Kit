@@ -32,6 +32,8 @@ from .mis.decoder.greedy import mis_greedy_decoder
 from .mis.decoder.beam import mis_beam_decoder
 from .mis.decoder.gp_degree import mis_gp_degree_decoder
 from .mis.decoder.lc_degree import mis_lc_degree_decoder
+from .mis.local_search.arw import mis_arw_local_search
+from .mis.local_search.arw_1iter import mis_arw_local_search_1iter
 
 #######################################
 #             MIS Algorithm           #  
