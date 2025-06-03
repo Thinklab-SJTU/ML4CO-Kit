@@ -19,6 +19,13 @@ class GraphData(object):
         self.edge_attr: np.ndarray = None
         self.adj_matrix: np.ndarray = None
         self.nodes_num: np.ndarray = None
+        self.xadj: np.ndarray = None
+        self.adjncy: np.ndarray = None
+    
+    def auto_cal_nodes_num(self):
+        edge_index_0_max = max(self.edge_index[0])
+        edge_index_1_max = max(self.edge_index[1])
+        self.nodes_num = max(edge_index_0_max, edge_index_1_max)
         
     def from_adj_martix(
         self, 
@@ -49,6 +56,8 @@ class GraphData(object):
         self.edge_attr = edge_attr
         if x is not None:
             self.nodes_num = len(x)
+        else:
+            self.auto_cal_nodes_num()
     
     def from_gpickle(
         self, file_path: str, self_loop: bool = True
@@ -104,11 +113,14 @@ class GraphData(object):
         if edge_index is not None:
             self.edge_index = edge_index
         if nodes_label is not None:
+            self.nodes_num = len(nodes_label)
             if ref:
                 self.ref_nodes_label = nodes_label
             else:
                 self.nodes_label = nodes_label
-    
+        else:
+            self.auto_cal_nodes_num()
+            
     def to_matrix(self):
         if self.adj_matrix is None:
             self.adj_matrix = np_sparse_to_dense(
@@ -141,6 +153,42 @@ class GraphData(object):
         
         return nx_graph
     
+    def to_csr(self):
+        # Initialize an empty adjacency list for each node
+        adj_list = [[] for _ in range(self.nodes_num)]
+
+        # Iterate over all edges and populate the adjacency list
+        # Skip self-loops (edges from a node to itself)
+        for i in range(self.edge_index.shape[1]):
+            u = self.edge_index[0, i]
+            v = self.edge_index[1, i]
+            if u != v:
+                adj_list[u].append(v)
+                adj_list[v].append(u)  # Since this is an undirected graph
+
+        # Remove duplicates and sort each adjacency list for consistency
+        for i in range(self.nodes_num):
+            adj_list[i] = sorted(np.unique(adj_list[i]).tolist())
+
+        # Build the xadj array:
+        # xadj[i] stores the starting index of node i's neighbors in the adjncy array
+        xadj = np.zeros(self.nodes_num + 1, dtype=int)
+        current_pos = 0
+        for i in range(self.nodes_num):
+            xadj[i] = current_pos
+            current_pos += len(adj_list[i])
+        xadj[self.nodes_num] = current_pos  # Set the end position for the last node
+
+        # Build the adjncy array:
+        # This array contains all neighbor indices, concatenated in order
+        adjncy = np.concatenate(adj_list) if self.nodes_num > 0 else np.array([], dtype=int)
+
+        # record
+        self.xadj = xadj
+        self.adjncy = adjncy
+        
+        return xadj, adjncy
+
     def to_complement(self):
         """
         Converts the current graph to its complement by reversing the edge relationships

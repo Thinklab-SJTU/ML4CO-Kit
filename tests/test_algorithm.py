@@ -103,13 +103,13 @@ def test_mcl_rlsa_decoder():
     sols = list()
     for graph in solver.graph_data:
         sols.append(
-            mcl_rlsa_decoder(graph=graph.to_matrix())
+            mcl_rlsa_decoder(graph=graph.to_matrix(), rlsa_k=200, rlsa_t=200)
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
     print(f"Gap of MCl using RLSA Decoder: {gap_avg}%")
     
-
+    
 def test_mcl_rlsa_local_search():
     solver = MClSolver()
     solver.from_txt("tests/data_for_tests/algorithm/mcl/mcl_rb_small_4.txt", ref=True)
@@ -118,7 +118,9 @@ def test_mcl_rlsa_local_search():
         adj_matrix = graph.to_matrix()
         lc_sol = mcl_gp_degree_decoder(graph=adj_matrix)
         sols.append(
-            mcl_rlsa_local_search(init_sol=lc_sol, graph=adj_matrix)
+            mcl_rlsa_local_search(
+                init_sol=lc_sol, graph=adj_matrix, rlsa_k=200, rlsa_t=200
+            )
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
@@ -154,7 +156,10 @@ def test_mcut_rlsa_decoder():
     sols = list()
     for graph in solver.graph_data:
         sols.append(
-            mcut_rlsa_decoder(graph=graph.to_matrix(), edge_index=graph.edge_index)
+            mcut_rlsa_decoder(
+                graph=graph.to_matrix(), edge_index=graph.edge_index, 
+                rlsa_k=200, rlsa_t=200
+            )
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
@@ -169,7 +174,8 @@ def test_mcut_rlsa_local_search():
         adj_matrix = graph.to_matrix()
         lc_sol = mcut_lc_degree_decoder(graph=adj_matrix)
         sols.append(mcut_rlsa_local_search(
-            init_sol=lc_sol, graph=adj_matrix, edge_index=graph.edge_index
+            init_sol=lc_sol, graph=adj_matrix, edge_index=graph.edge_index, 
+            rlsa_k=200, rlsa_t=200
         ))
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
@@ -234,35 +240,105 @@ def test_mis_rlsa_decoder():
     sols = list()
     for graph in solver.graph_data:
         sols.append(
-            mis_rlsa_decoder(graph=graph.to_matrix())
+            mis_rlsa_decoder(graph=graph.to_matrix(), rlsa_k=200, rlsa_t=200)
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
     print(f"Gap of MIS using RLSA Decoder: {gap_avg}%")
     
-
+    
+def test_mis_evo_decoder():
+    solver = MISSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/mis/mis_rb_small_4.txt", ref=True)
+    sols = list()
+    for graph in solver.graph_data:
+        xadj, adjncy = graph.to_csr()
+        sols.append(
+            mis_evo_decoder(xadj=xadj, adjncy=adjncy, time_limit=1.0)
+        )
+    solver.from_graph_data(nodes_label=sols, cover=False)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of MIS using Evo Decoder: {gap_avg}%")
+    
+    
 def test_mis_rlsa_local_search():
     solver = MISSolver()
     solver.from_txt("tests/data_for_tests/algorithm/mis/mis_rb_small_4.txt", ref=True)
     sols = list()
     for graph in solver.graph_data:
         adj_matrix = graph.to_matrix()
-        lc_sol = mis_gp_degree_decoder(graph=adj_matrix)
+        gp_sol = mis_gp_degree_decoder(graph=adj_matrix)
         sols.append(
-            mis_rlsa_local_search(init_sol=lc_sol, graph=adj_matrix)
+            mis_rlsa_local_search(
+                init_sol=gp_sol, graph=adj_matrix, rlsa_k=200, rlsa_t=200
+            )
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
     print(f"Gap of MIS using GP-Degree Deocder with RLSA LocalSearch: {gap_avg}%")
 
 
+def test_mis_2improve_search():
+    solver = MISSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/mis/mis_rb_small_4.txt", ref=True)
+    sols = list()
+    for graph in solver.graph_data:
+        adj_matrix = graph.to_matrix()
+        xadj, adjncy = graph.to_csr()
+        gp_sol = mis_gp_degree_decoder(graph=adj_matrix)
+        sols.append(
+            mis_2improve_local_search(initial_sol=gp_sol, xadj=xadj, adjncy=adjncy)
+        )
+    solver.from_graph_data(nodes_label=sols, cover=False)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of MIS using GP-Degree Deocder with 2-Improve LocalSearch: {gap_avg}%")
+
+
+def test_mis_3improve_search():
+    solver = MISSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/mis/mis_rb_small_4.txt", ref=True)
+    sols = list()
+    for graph in solver.graph_data:
+        adj_matrix = graph.to_matrix()
+        xadj, adjncy = graph.to_csr()
+        gp_sol = mis_gp_degree_decoder(graph=adj_matrix)
+        sols.append(
+            mis_3improve_local_search(initial_sol=gp_sol, xadj=xadj, adjncy=adjncy)
+        )
+    solver.from_graph_data(nodes_label=sols, cover=False)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of MIS using GP-Degree Deocder with 3-Improve LocalSearch: {gap_avg}%")
+    
+
+def test_mis_ils_search():
+    solver = MISSolver()
+    solver.from_txt("tests/data_for_tests/algorithm/mis/mis_rb_small_4.txt", ref=True)
+    sols = list()
+    for graph in solver.graph_data:
+        adj_matrix = graph.to_matrix()
+        xadj, adjncy = graph.to_csr()
+        gp_sol = mis_lc_degree_decoder(graph=adj_matrix)
+        sols.append(
+            mis_ils_local_search(
+                initial_sol=gp_sol, xadj=xadj, adjncy=adjncy, use_three_ls=True
+            )
+        )
+    solver.from_graph_data(nodes_label=sols, cover=False)
+    _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
+    print(f"Gap of MIS using GP-Degree Deocder with ILS-Improve LocalSearch: {gap_avg}%")
+    
+      
 def test_mis():
     test_mis_greedy_decoder()
     test_mis_beam_decoder()
     test_mis_gp_degree_decoder()
     test_mis_lc_degree_decoder()
     test_mis_rlsa_decoder()
+    test_mis_evo_decoder()
     test_mis_rlsa_local_search()
+    test_mis_2improve_search()
+    test_mis_3improve_search()
+    test_mis_ils_search()
 
 
 ##############################################
@@ -306,7 +382,7 @@ def test_mvc_rlsa_decoder():
     sols = list()
     for graph in solver.graph_data:
         sols.append(
-            mvc_rlsa_decoder(graph=graph.to_matrix())
+            mvc_rlsa_decoder(graph=graph.to_matrix(), rlsa_k=200, rlsa_t=200)
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)
@@ -321,7 +397,9 @@ def test_mvc_rlsa_local_search():
         adj_matrix = graph.to_matrix()
         lc_sol = mvc_gp_degree_decoder(graph=adj_matrix)
         sols.append(
-            mvc_rlsa_local_search(init_sol=lc_sol, graph=adj_matrix)
+            mvc_rlsa_local_search(
+                init_sol=lc_sol, graph=adj_matrix, rlsa_k=200, rlsa_t=200
+            )
         )
     solver.from_graph_data(nodes_label=sols, cover=False)
     _, _, gap_avg, _ = solver.evaluate(calculate_gap=True)

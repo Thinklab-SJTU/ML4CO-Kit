@@ -31,7 +31,7 @@ ils::~ils() {
     reset();
 }
 
-void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iteration_limit) {
+void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iteration_limit, int use_three_ls) {
     reset();
     // Init operation log
     operation_log::instance()->init(G.number_of_nodes());
@@ -49,7 +49,7 @@ void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iterati
     t.restart();
 
     local.preprocess_graph(G);
-    local.direct_improvement(G);
+    local.direct_improvement(G, false, 0, use_three_ls);
 
     // Add the solution to the "population"
     pop.init(config, G);
@@ -149,8 +149,8 @@ void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iterati
 
         // See if the new solution can be further improved
         local.make_maximal(G);
-        if (v >= 0) local.direct_improvement(G, true, v);
-        else local.direct_improvement(G);
+        if (v >= 0) local.direct_improvement(G, true, v, use_three_ls);
+        else local.direct_improvement(G, false, 0, use_three_ls);
 
         // individuum_mis temp;
         // NodeID *temp_sol = new NodeID[G.number_of_nodes()];
@@ -208,7 +208,7 @@ void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iterati
                         }
                         force(config, G, x, NULL);
                         // Try to improve the solution
-                        local.direct_improvement(G, true, x);
+                        local.direct_improvement(G, true, x, use_three_ls);
                         // Improvement found?
                         if (perm->get_solution_size() > best_solution.solution_size) {
                             forall_nodes(G, node) {
@@ -233,7 +233,7 @@ void ils::perform_ils(MISConfig & config, graph_access & G, unsigned int iterati
 
         // Candidates should be empty anyway
         if (cand && !cand->is_empty()) {
-            printf("Candidates should be empty\n");
+            // printf("Candidates should be empty\n");
             cand->reset();
         }
 

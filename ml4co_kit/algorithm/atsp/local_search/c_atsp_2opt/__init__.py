@@ -1,7 +1,7 @@
-import ctypes
-import platform
 import os
+import ctypes
 import pathlib
+import platform
 
 os_name = platform.system().lower()
 if os_name == "windows":
