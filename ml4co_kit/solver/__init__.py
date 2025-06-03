@@ -3,6 +3,7 @@
 #######################################
 from .atsp.base import ATSPSolver
 from .atsp.lkh import ATSPLKHSolver
+from .atsp.or_tools import ATSPORSolver
 
 #######################################
 #             CVRP Solver             #  
@@ -23,6 +24,7 @@ from .lp.gurobi import LPGurobiSolver
 #######################################
 from .mcl.base import MClSolver
 from .mcl.gurobi import MClGurobiSolver
+from .mcl.or_tools import MClORSolver
 
 #######################################
 #             MCut Solver             #  
@@ -36,6 +38,7 @@ from .mcut.gurobi import MCutGurobiSolver
 from .mis.base import MISSolver
 from .mis.gurobi import MISGurobiSolver
 from .mis.kamis import KaMISSolver
+from .mis.or_tools import MISORSolver
 
 #######################################
 #              MVC Solver             #  
@@ -52,3 +55,4 @@ from .tsp.concorde_large import TSPConcordeLargeSolver
 from .tsp.ga_eax_normal import TSPGAEAXSolver
 from .tsp.ga_eax_large import TSPGAEAXLargeSolver
 from .tsp.lkh import TSPLKHSolver
+from .tsp.or_tools import TSPORSolver

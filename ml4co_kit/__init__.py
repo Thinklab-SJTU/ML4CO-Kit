@@ -50,15 +50,15 @@ from .generator import TSPDataGenerator
 #######################################################
 #                        Solver                       #
 #######################################################
-from .solver import ATSPSolver, ATSPLKHSolver
+from .solver import ATSPSolver, ATSPLKHSolver, ATSPORSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from .solver import LPSolver, LPGurobiSolver
-from .solver import MClSolver, MClGurobiSolver
+from .solver import MClSolver, MClGurobiSolver, MClORSolver
 from .solver import MCutSolver, MCutGurobiSolver
-from .solver import MISSolver, KaMISSolver, MISGurobiSolver
+from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
 from .solver import MVCSolver, MVCGurobiSolver
 from .solver import (
-    TSPSolver, TSPLKHSolver, TSPConcordeSolver, 
+    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
 )
 

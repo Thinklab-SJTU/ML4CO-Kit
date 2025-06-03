@@ -47,29 +47,31 @@ We are systematically building a foundational framework for ML4CO with a collect
 
 | Problem | Generator | Basic Solver (IO) | Traditional Solver |
 | :-----: | :-------: | :---------------: | :----------------: |
-|  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH`` |
+|  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH``, ``OR-Tools`` |
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
-|  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
-|  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS`` |
+|  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS``, ``OR-Tools`` |
 |  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
-|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX`` |
+|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools`` |
 
 #### Extension
 
 | Problem | Visualization | Algorithm | Test Dataset | Train Dataset |
 | :-----: | :-----------: | :-------: | :----------: | :-----------: |
-|  ATSP   | 📆 | 2 | 📆 | 📆 |
-|  CVRP   | ✔  | 1 | ``vrplib``, ``uniform`` | 📆 |
+|  ATSP   | 📆 | 2 | 4 | 4 |
+|  CVRP   | ✔  | 2 | 5 | 4 |
 |  LP   | 📆  | 📆 | 📆 | 📆 |
-|  MCl    | ✔  | 6 | 📆  | 📆 |
-|  MCut   | ✔  | 3 | 📆 | 📆 |
-|  MIS    | ✔  | 6 | 📆 | 📆 |
-|  MVC    | ✔  | 5 | 📆 | 📆 |
-|  TSP    | ✔  | 5 | ``satlib``, ``uniform`` | ``uniform`` |
+|  MCl    | ✔  | 6 | 5 | 2 |
+|  MCut   | ✔  | 3 | 3 | 2 |
+|  MIS    | ✔  | 10 | 6 | 4 |
+|  MVC    | ✔  | 5 | 5 | 2 |
+|  TSP    | ✔  | 5 | 7 | 6 |
 
-1~9: Number of supports; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).
+**1~99: Number of supports; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
+
+**Dataset Link: [https://huggingface.co/datasets/ML4CO/ML4CO-Bench-101-SL](https://huggingface.co/datasets/ML4CO/ML4CO-Bench-101-SL)**
 
 ML4CO Organization:
 

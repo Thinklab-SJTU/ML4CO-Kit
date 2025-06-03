@@ -31,9 +31,9 @@ class TSPLKHSolver(TSPSolver):
     r"""
     Solve TSPs using LKH solver.
 
+    :param scale, int, the scale factor for coordinates.
     :param lkh_max_trials, int, the maximum number of trials for the LKH solver.
     :param lkh_path, pathlib.Path, the path of the LKH solver.
-    :param scale, int, the scale factor for coordinates.
     :param lkh_runs, int, the number of runs for the LKH solver.
     :param lkh_seed, int, the random number seed for the LKH solver.
     :param lkh_special, boolean, whether to solve in a special way.

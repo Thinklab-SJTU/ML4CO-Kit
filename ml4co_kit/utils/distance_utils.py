@@ -1,4 +1,6 @@
 import math
+import numpy as np
+from scipy.spatial.distance import cdist
 
 
 def parse_degrees(coord):
@@ -46,3 +48,18 @@ def geographical(start, end, radius=6378.388):
     distance = radius * math.acos(0.5 * ((1 + q1) * q2 - (1 - q1) * q3)) + 1
 
     return distance
+
+
+def get_distance_matrix(points: np.ndarray, norm: str) -> np.ndarray:
+    if norm == "EUC_2D":
+        return np.array(cdist(points, points))
+    elif norm == "GEO":
+        distance_matrix = list()
+        for x in points:
+            _distance_matrix = list()
+            for y in points:
+                _distance_matrix.append(geographical(x, y))
+            distance_matrix.append(_distance_matrix)
+        return np.array(distance_matrix)
+    else:
+        raise NotImplementedError()

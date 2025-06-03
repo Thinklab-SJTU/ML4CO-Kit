@@ -52,13 +52,33 @@ def test_atsp_lkh_solver():
     _test_atsp_lkh_solver(True, 1)
     _test_atsp_lkh_solver(False, 2)
     
+
+def _test_atsp_or_solver(show_time: bool, num_threads: int):
+    atsp_or_solver = ATSPORSolver(time_limit=1)
+    atsp_or_solver.from_txt("tests/data_for_tests/solver/atsp/atsp50.txt", ref=True)
+    atsp_or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = atsp_or_solver.evaluate(calculate_gap=True)
+    print(f"ATSPORSolver Gap: {gap_avg}")
+    if gap_avg >= 30:
+        message = (
+            f"The average gap ({gap_avg}) of ATSP50 solved by ATSPORSolver "
+            "is larger than or equal to 30%."
+        )
+        raise ValueError(message)
+
+
+def test_atsp_or_solver():
+    _test_atsp_or_solver(True, 1)
+    _test_atsp_or_solver(False, 2)
     
+       
 def test_atsp():
     """
     Test ATSPSolver
     """
     test_atsp_base_solver()
     test_atsp_lkh_solver()
+    test_atsp_or_solver()
 
 
 ##############################################
@@ -296,11 +316,34 @@ def test_mcl_gurobi_solver():
     _test_mcl_gurobi_solver(False, 2)
 
 
+def _test_mcl_or_solver(show_time: bool, num_threads: int):
+    or_solver = MClORSolver(time_limit=5.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/mcl/mcl_example.txt",
+        ref=True, cover=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"MClORSolver Gap: {gap_avg}")
+    if gap_avg >= 1:
+        message = (
+            f"The average gap ({gap_avg}) of MCl solved by MClORSolver "
+            "is larger than or equal to 1%."
+        )
+        raise ValueError(message)
+
+
+def test_mcl_or_solver():
+    _test_mcl_or_solver(True, 1)
+    _test_mcl_or_solver(False, 2)
+    
+    
 def test_mcl():
     """
     Test MClSolver
     """
     test_mcl_gurobi_solver()
+    test_mcl_or_solver()
 
 
 ##############################################
@@ -407,6 +450,28 @@ def test_mis_kamis_solver():
         raise ValueError(message)
 
 
+def _test_mis_or_solver(show_time: bool, num_threads: int):
+    or_solver = MISORSolver(time_limit=5.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/mis/mis_example.txt",
+        ref=True, cover=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"MISORSolver Gap: {gap_avg}")
+    if gap_avg >= 1:
+        message = (
+            f"The average gap ({gap_avg}) of MIS solved by MISORSolver "
+            "is larger than or equal to 1%."
+        )
+        raise ValueError(message)
+
+
+def test_mis_or_solver():
+    _test_mis_or_solver(True, 1)
+    _test_mis_or_solver(False, 2)
+
+
 def test_mis():
     """
     Test MISSolver
@@ -414,6 +479,7 @@ def test_mis():
     test_mis_base_solver()
     test_mis_gurobi_solver()
     test_mis_kamis_solver()
+    test_mis_or_solver()
 
 
 ##############################################
@@ -553,6 +619,25 @@ def test_tsp_lkh_solver():
     _test_tsp_lkh_solver(False, 2)
 
 
+def _test_tsp_or_solver(show_time: bool, num_threads: int):
+    tsp_or_solver = TSPORSolver()
+    tsp_or_solver.from_txt("tests/data_for_tests/solver/tsp/tsp50.txt", ref=True)
+    tsp_or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = tsp_or_solver.evaluate(calculate_gap=True)
+    print(f"TSPORSolver Gap: {gap_avg}")
+    if gap_avg >= 5:
+        message = (
+            f"The average gap ({gap_avg}) of TSP50 solved by TSPORSolver "
+            "is larger than or equal to 5%."
+        )
+        raise ValueError(message)
+    
+    
+def test_tsp_or_solver():
+    _test_tsp_or_solver(True, 1)
+    _test_tsp_or_solver(False, 2)
+    
+    
 def test_tsp():
     """
     Test TSPSolver
@@ -562,6 +647,8 @@ def test_tsp():
     test_tsp_ga_eax_solver()
     test_tsp_ga_eax_large_solver()
     test_tsp_lkh_solver()
+    test_tsp_or_solver()
+
 
 ##############################################
 #                    MAIN                    #
