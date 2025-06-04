@@ -51,9 +51,9 @@ We are systematically building a foundational framework for ML4CO with a collect
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
 |  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
-|  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS``, ``OR-Tools`` |
-|  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi`` |
+|  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools`` |
 
 #### Extension
@@ -62,7 +62,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 | :-----: | :-----------: | :-------: | :----------: | :-----------: |
 |  ATSP   | 📆 | 2 | 4 | 4 |
 |  CVRP   | ✔  | 2 | 5 | 4 |
-|  LP   | 📆  | 📆 | 📆 | 📆 |
+|  LP   | 📆 | 📆 | 📆 | 📆 |
 |  MCl    | ✔  | 6 | 5 | 2 |
 |  MCut   | ✔  | 3 | 3 | 2 |
 |  MIS    | ✔  | 10 | 6 | 4 |

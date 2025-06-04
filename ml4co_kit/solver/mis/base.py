@@ -41,6 +41,12 @@ class MISSolver(SolverBase):
         self.time_limit = time_limit
         self.graph_data: List[MISGraphData] = list()
 
+        # weighted
+        if self.weighted == True:
+            raise NotImplementedError(
+                "The current version does not currently support weighted graphs"
+            )
+            
     def _check_edge_index_not_none(self):
         message = (
             f"``edge_index`` cannot be None! You can load ``edge_index`` using the "

@@ -31,6 +31,7 @@ from .mcl.or_tools import MClORSolver
 #######################################
 from .mcut.base import MCutSolver
 from .mcut.gurobi import MCutGurobiSolver
+from .mcut.or_tools import MCutORSolver
 
 #######################################
 #              MIS Solver             #  
@@ -45,6 +46,7 @@ from .mis.or_tools import MISORSolver
 #######################################
 from .mvc.base import MVCSolver
 from .mvc.gurobi import MVCGurobiSolver
+from .mvc.or_tools import MVCORSolver
 
 #######################################
 #             TSP Solver             #  

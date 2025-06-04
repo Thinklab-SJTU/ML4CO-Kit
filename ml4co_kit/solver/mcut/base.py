@@ -40,6 +40,12 @@ class MCutSolver(SolverBase):
         self.weighted = weighted
         self.time_limit = time_limit
         self.graph_data: List[MCutGraphData] = list()
+        
+        # weighted
+        if self.weighted == True:
+            raise NotImplementedError(
+                "The current version does not currently support weighted graphs"
+            )
 
     def _check_edge_index_not_none(self):
         message = (

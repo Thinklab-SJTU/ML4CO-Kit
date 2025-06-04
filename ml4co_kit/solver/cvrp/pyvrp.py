@@ -146,9 +146,7 @@ class CVRPPyVRPSolver(CVRPSolver):
         p_shape = self.points.shape
         num_points = p_shape[0]
         if num_threads == 1:   
-            for idx in iterative_execution(
-                range, num_points, "Solving CVRP Using PyVRP", show_time
-            ):
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 tours.append(self._solve(
                     depot_coord=self.depots[idx],
                     nodes_coord=self.points[idx],
@@ -162,7 +160,7 @@ class CVRPPyVRPSolver(CVRPSolver):
             batch_capacities = self.capacities.reshape(num_tqdm, num_threads)
             batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
-                range, num_points // num_threads, "Solving CVRP Using PyVRP", show_time
+                range, num_points // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.starmap(

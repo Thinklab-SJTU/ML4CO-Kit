@@ -374,11 +374,34 @@ def test_mcut_gurobi_solver():
     _test_mcut_gurobi_solver(False, 2)
 
 
+def _test_mcut_or_solver(show_time: bool, num_threads: int):
+    or_solver = MCutORSolver(time_limit=1.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/mcut/mcut_example.txt",
+        ref=True, cover=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"MCutORSolver Gap: {gap_avg}")
+    if gap_avg >= 30:
+        message = (
+            f"The average gap ({gap_avg}) of MCut solved by MCutORSolver "
+            "is larger than or equal to 30%."
+        )
+        raise ValueError(message)
+
+
+def test_mcut_or_solver():
+    _test_mcut_or_solver(True, 1)
+    _test_mcut_or_solver(False, 2)
+    
+    
 def test_mcut():
     """
     Test MCutSolver
     """
     test_mcut_gurobi_solver()
+    test_mcut_or_solver()
     
     
 ##############################################
@@ -510,11 +533,34 @@ def test_mvc_gurobi_solver():
     _test_mvc_gurobi_solver(False, 2)
 
 
+def _test_mvc_or_solver(show_time: bool, num_threads: int):
+    or_solver = MVCORSolver(time_limit=1.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/mvc/mvc_example.txt",
+        ref=True, cover=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"MVCORSolver Gap: {gap_avg}")
+    if gap_avg >= 1:
+        message = (
+            f"The average gap ({gap_avg}) of MVC solved by MVCORSolver "
+            "is larger than or equal to 1%."
+        )
+        raise ValueError(message)
+
+
+def test_mvc_or_solver():
+    _test_mvc_or_solver(True, 1)
+    _test_mvc_or_solver(False, 2)
+    
+
 def test_mvc():
     """
     Test MVCSolver
     """
     test_mvc_gurobi_solver()
+    test_mvc_or_solver()
 
 
 ##############################################

@@ -54,9 +54,9 @@ from .solver import ATSPSolver, ATSPLKHSolver, ATSPORSolver
 from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
 from .solver import LPSolver, LPGurobiSolver
 from .solver import MClSolver, MClGurobiSolver, MClORSolver
-from .solver import MCutSolver, MCutGurobiSolver
+from .solver import MCutSolver, MCutGurobiSolver, MCutORSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
-from .solver import MVCSolver, MVCGurobiSolver
+from .solver import MVCSolver, MVCGurobiSolver, MVCORSolver
 from .solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
