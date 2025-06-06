@@ -1,5 +1,6 @@
 from .atsp_data import ATSPDataGenerator
 from .cvrp_data import CVRPDataGenerator
+from .kp_data import KPDataGenerator
 from .lp_data import LPDataGenerator
 from .mcl_data import MClDataGenerator
 from .mcut_data import MCutDataGenerator

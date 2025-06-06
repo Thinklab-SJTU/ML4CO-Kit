@@ -106,7 +106,7 @@ class KPORSolver(KPSolver):
 
         # obtain solution
         items_num = len(values)
-        sol = np.zeros(shape=(items_num,))
+        sol = np.zeros(shape=(items_num,), dtype=np.int32)
         sel_items_idx = [i for i in range(items_num) if or_solver.best_solution_contains(i)]
         sol[sel_items_idx] = 1
 
