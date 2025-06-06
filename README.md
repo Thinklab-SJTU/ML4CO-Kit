@@ -49,6 +49,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 | :-----: | :-------: | :---------------: | :----------------: |
 |  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH``, ``OR-Tools`` |
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
+|  KP    | ``uniform`` | ``txt`` | ``OR-Tools`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
 |  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
@@ -62,6 +63,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 | :-----: | :-----------: | :-------: | :----------: | :-----------: |
 |  ATSP   | 📆 | 2 | 4 | 4 |
 |  CVRP   | ✔  | 2 | 5 | 4 |
+|  KP   | 📆 | 📆 | 📆 | 📆 |
 |  LP   | 📆 | 📆 | 📆 | 📆 |
 |  MCl    | ✔  | 6 | 5 | 2 |
 |  MCut   | ✔  | 3 | 3 | 2 |
@@ -210,7 +212,7 @@ AVG         1011.043859  1032.923407 -5.535573e-01
 ### Algorithm
 
 ```python
->>> from ml4co-kit import TSPSolver, tsp_insertion_decoder
+>>> from ml4co_kit import TSPSolver, tsp_insertion_decoder
 
 # create solver and load data
 >>> solver = TSPSolver()

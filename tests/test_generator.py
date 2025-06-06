@@ -247,6 +247,49 @@ def test_lp():
 
 
 ##############################################
+#             Test Func For KP               #
+##############################################
+
+def _test_kp_ortools(num_threads: int, data_type: str):
+    """
+    Test LPDataGenerator using LPGurobiSolver
+    """
+    
+    # save path
+    save_path = f"tmp/lp_{data_type}_ortools"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # solver
+    solver = KPORSolver(time_limit=1.0)
+ 
+    # create LPDataGenerator using OR-Tools solver
+    kp_data_ortools = KPDataGenerator(
+        num_threads=num_threads,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path
+    )
+    
+    # generate data
+    kp_data_ortools.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+
+
+def test_kp():
+    """
+    Test KPDataGenerator
+    """
+    _test_kp_ortools(num_threads=1, data_type="uniform")
+    _test_kp_ortools(num_threads=4, data_type="uniform")
+
+
+##############################################
 #             Test Func For MCl              #
 ##############################################
 
@@ -655,6 +698,7 @@ def test_tsp():
 if __name__ == "__main__":
     test_atsp()
     test_cvrp()
+    test_kp()
     test_lp()
     test_mcl()
     test_mcut()

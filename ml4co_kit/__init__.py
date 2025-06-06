@@ -40,6 +40,7 @@ from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPU
 from .generator import GeneratorBase, NodeGeneratorBase, EdgeGeneratorBase
 from .generator import ATSPDataGenerator
 from .generator import CVRPDataGenerator
+from .generator import KPDataGenerator
 from .generator import LPDataGenerator
 from .generator import MClDataGenerator
 from .generator import MCutDataGenerator
@@ -57,6 +58,7 @@ from .solver import MClSolver, MClGurobiSolver, MClORSolver
 from .solver import MCutSolver, MCutGurobiSolver, MCutORSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
 from .solver import MVCSolver, MVCGurobiSolver, MVCORSolver
+from .solver import KPSolver, KPORSolver
 from .solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver

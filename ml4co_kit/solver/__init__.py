@@ -58,3 +58,9 @@ from .tsp.ga_eax_normal import TSPGAEAXSolver
 from .tsp.ga_eax_large import TSPGAEAXLargeSolver
 from .tsp.lkh import TSPLKHSolver
 from .tsp.or_tools import TSPORSolver
+
+#######################################
+#              KP Solver              #
+#######################################
+from .kp.base import KPSolver
+from .kp.or_tools import KPORSolver

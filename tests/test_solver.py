@@ -210,6 +210,47 @@ def test_lp():
     """
     test_lp_base_solver()
     test_lp_gurobi_solver()
+
+
+##############################################
+#              Test Func For KP              #
+##############################################
+
+
+def test_kp_base_solver():
+    solver = KPSolver()
+    solver.from_txt("tests/data_for_tests/solver/kp/kp100_example.txt", ref=False)
+    os.remove("tests/data_for_tests/solver/kp/kp100_example.txt")
+    solver.to_txt("tests/data_for_tests/solver/kp/kp100_example.txt")
+    
+
+def _test_kp_or_solver(show_time: bool, num_threads: int):
+    or_solver = KPORSolver(time_limit=10.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/kp/kp100_example.txt", ref=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"KPORSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = (
+            f"The average gap ({gap_avg}) of KP solved by KPORSolver "
+            "is larger than or equal to 1e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_kp_or_solver():
+    _test_kp_or_solver(True, 1)
+    _test_kp_or_solver(False, 2)
+
+
+def test_kp():
+    """
+    Test KPSolver
+    """
+    test_kp_base_solver()
+    test_kp_or_solver()
     
 
 ##############################################
@@ -703,6 +744,7 @@ def test_tsp():
 if __name__ == "__main__":
     test_atsp()
     test_cvrp()
+    test_kp()
     test_lp()
     test_mcl()
     test_mcut()
