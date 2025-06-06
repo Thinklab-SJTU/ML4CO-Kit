@@ -40,6 +40,7 @@ from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPU
 from .generator import GeneratorBase, NodeGeneratorBase, EdgeGeneratorBase
 from .generator import ATSPDataGenerator
 from .generator import CVRPDataGenerator
+from .generator import KPDataGenerator
 from .generator import LPDataGenerator
 from .generator import MClDataGenerator
 from .generator import MCutDataGenerator
