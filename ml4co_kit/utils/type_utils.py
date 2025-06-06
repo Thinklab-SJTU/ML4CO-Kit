@@ -21,6 +21,7 @@ class TASK_TYPE(str, Enum):
     MVC = "Minimum Vertex Cover (MVC)"
     TSP = "Traveling Salesman Problem (TSP)"
     LP = "Linear Program (LP)"
+    KP = "Knapsack Problme (KP)"
 
 
 class SOLVER_TYPE(str, Enum):
