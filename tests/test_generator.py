@@ -3,7 +3,6 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import shutil
-sys.path.insert(0, "../")
 from ml4co_kit import *
 
 GUROBI_TEST = False
