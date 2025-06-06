@@ -49,6 +49,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 | :-----: | :-------: | :---------------: | :----------------: |
 |  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH``, ``OR-Tools`` |
 |  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
+|  KP    | ``uniform`` | ``txt`` | ``OR-Tools`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
 |  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
