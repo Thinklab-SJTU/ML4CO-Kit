@@ -55,7 +55,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS``, ``OR-Tools`` |
 |  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
-|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools`` |
+|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools``, ``NeuroLKH`` |
 
 #### Extension
 
