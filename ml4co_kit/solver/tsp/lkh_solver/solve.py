@@ -1,9 +1,8 @@
 import os
 import shutil
-import subprocess
-import tempfile
 import warnings
-
+import tempfile
+import subprocess
 from .problems import LKHProblem
 
 

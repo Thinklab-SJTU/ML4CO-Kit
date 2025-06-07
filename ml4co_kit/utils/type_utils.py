@@ -41,7 +41,8 @@ class SOLVER_TYPE(str, Enum):
     ML4MIS = "ML4MIS" # part of ML4CO
     ML4MVC = "ML4MVC" # part of ML4CO
     ML4TSP = "ML4TSP" # part of ML4CO
-    ORTOOLS = "OR-Tools" # Support TSP, ATSP, MIS, MCl
+    NEUROLKH = "NeuroLKH" # Support for TSP
+    ORTOOLS = "OR-Tools" # Support TSP, ATSP, MIS, MCl, KP
     PYVRP = "PyVRP" # Support CVRP
 
 

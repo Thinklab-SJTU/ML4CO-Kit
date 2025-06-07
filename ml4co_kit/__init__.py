@@ -97,6 +97,7 @@ if found_torch is not None:
     from .algorithm import mis_rlsa_decoder, mis_rlsa_local_search
     from .algorithm import mvc_rlsa_decoder, mvc_rlsa_local_search
     from .algorithm import tsp_2opt_local_search
+    from .solver import TSPNeuroLKHSolver
     
 #######################################################
 #        Extension Function (pytorch_lightning)       #

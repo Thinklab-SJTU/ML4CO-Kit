@@ -6,6 +6,7 @@ import shutil
 from ml4co_kit import *
 
 GUROBI_TEST = False
+CUDA_TEST = False
 
 
 ##############################################
@@ -706,6 +707,49 @@ def test_tsp_lkh_solver():
     _test_tsp_lkh_solver(False, 2)
 
 
+def _test_tsp_neurolkh_solver(show_time: bool, num_threads: int, batch_size: int):
+    # use nn
+    if CUDA_TEST:
+        tsp_lkh_solver = TSPNeuroLKHSolver(
+            lkh_max_trials=100,
+            use_nn=True, 
+            sparse_factor=20,
+            neurolkh_device="cuda" 
+        )
+        tsp_lkh_solver.from_txt("tests/data_for_tests/solver/tsp/tsp50.txt", ref=True)
+        tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads, batch_size=batch_size)
+        _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
+        print(f"TSPNeuroLKHSolver(with nn) Gap: {gap_avg}")
+        if gap_avg >= 1e-2:
+            message = (
+                f"The average gap ({gap_avg}) of TSP50 solved by TSPNeuroLKHSolver "
+                "is larger than or equal to 1e-2%."
+            )
+            raise ValueError(message)
+    
+    # not use nn
+    tsp_lkh_solver = TSPNeuroLKHSolver(
+        lkh_max_trials=100, 
+        use_nn=False, 
+        sparse_factor=20, 
+    )
+    tsp_lkh_solver.from_txt("tests/data_for_tests/solver/tsp/tsp50.txt", ref=True)
+    tsp_lkh_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = tsp_lkh_solver.evaluate(calculate_gap=True)
+    print(f"TSPNeuroLKHSolver(without nn) Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = (
+            f"The average gap ({gap_avg}) of TSP50 solved by TSPNeuroLKHSolver "
+            "is larger than or equal to 1e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_tsp_neurolkh_solver():
+    _test_tsp_neurolkh_solver(True, 1, 4)
+    _test_tsp_neurolkh_solver(False, 2, 4)
+
+
 def _test_tsp_or_solver(show_time: bool, num_threads: int):
     tsp_or_solver = TSPORSolver()
     tsp_or_solver.from_txt("tests/data_for_tests/solver/tsp/tsp50.txt", ref=True)
@@ -729,12 +773,13 @@ def test_tsp():
     """
     Test TSPSolver
     """
-    test_tsp_base_solver()
-    test_tsp_concorde_solver()
-    test_tsp_ga_eax_solver()
-    test_tsp_ga_eax_large_solver()
-    test_tsp_lkh_solver()
-    test_tsp_or_solver()
+    # test_tsp_base_solver()
+    # test_tsp_concorde_solver()
+    # test_tsp_ga_eax_solver()
+    # test_tsp_ga_eax_large_solver()
+    # test_tsp_lkh_solver()
+    test_tsp_neurolkh_solver()
+    # test_tsp_or_solver()
 
 
 ##############################################
@@ -742,12 +787,12 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_atsp()
-    test_cvrp()
-    test_kp()
-    test_lp()
-    test_mcl()
-    test_mcut()
-    test_mis()
-    test_mvc()
+    # test_atsp()
+    # test_cvrp()
+    # test_kp()
+    # test_lp()
+    # test_mcl()
+    # test_mcut()
+    # test_mis()
+    # test_mvc()
     test_tsp()

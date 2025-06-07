@@ -1,3 +1,5 @@
+import importlib.util
+
 #######################################
 #             ATSP Solver             #  
 #######################################
@@ -12,6 +14,12 @@ from .cvrp.base import CVRPSolver
 from .cvrp.hgs import CVRPHGSSolver
 from .cvrp.lkh import CVRPLKHSolver
 from .cvrp.pyvrp import CVRPPyVRPSolver
+
+#######################################
+#              KP Solver              #
+#######################################
+from .kp.base import KPSolver
+from .kp.or_tools import KPORSolver
 
 #######################################
 #              LP Solver             #  
@@ -60,7 +68,8 @@ from .tsp.lkh import TSPLKHSolver
 from .tsp.or_tools import TSPORSolver
 
 #######################################
-#              KP Solver              #
+#     Extension Function (torch)      #
 #######################################
-from .kp.base import KPSolver
-from .kp.or_tools import KPORSolver
+found_torch = importlib.util.find_spec("torch")
+if found_torch is not None:
+    from .tsp.neurolkh import TSPNeuroLKHSolver

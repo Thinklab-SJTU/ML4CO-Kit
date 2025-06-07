@@ -14,6 +14,7 @@ The utilities used to download and compress files.
 
 
 import os
+import uuid
 import time
 import shutil
 import requests
@@ -26,6 +27,7 @@ import async_timeout
 import urllib.request
 from tqdm import tqdm
 from typing import Union
+from huggingface_hub import HfApi
 
 
 ###############################################
@@ -51,9 +53,13 @@ def download(filename: str, url: Union[str, list], md5: str = None, retries: int
             >>> from ml4co_kit import download
             
             #create downloader and load data from huggingface.co
-            >>> download("tsp_uniform_20240825.tar.gz",""https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform_20240825.tar.gz?download=true,"44371d7c99b35d77fe18220122c564c1")
+            >>> download(
+                "tsp_uniform_20240825.tar.gz",
+                "https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform_20240825.tar.gz?download=true,
+                "44371d7c99b35d77fe18220122c564c1"
+            )
             
-            #The data will be stored in the specified path if the download is successful.
+            # The data will be stored in the specified path if the download is successful.
     """
     if type(url) == str:
         return _download(filename, url, md5, retries)
@@ -135,6 +141,39 @@ def _get_md5(filename: str):
         return md5_returned
 
 
+def pull_file_from_huggingface(
+    repo_id: str, repo_type: str, filename: str, save_path: str, hf_token: str = None
+):
+    # cache and local
+    name = uuid.uuid4().hex
+    root_dir = f"tmp/{name}"
+    local_dir = f"tmp/{name}/local"
+    cache_dir = f"tmp/{name}/cache"
+    download_path = os.path.join(local_dir, filename)
+    
+    # download
+    hf_api = HfApi(token=hf_token)
+    hf_api.hf_hub_download(
+        repo_id=repo_id,
+        repo_type=repo_type,
+        filename=filename,
+        cache_dir=cache_dir,
+        local_dir=local_dir,
+        local_dir_use_symlinks=False
+    )
+    
+    # check save path
+    save_path_dir = os.path.dirname(save_path)
+    if not os.path.exists(save_path_dir):
+        os.makedirs(save_path_dir)
+
+    # move file
+    shutil.move(download_path, save_path)
+    
+    # delete root dir
+    shutil.rmtree(root_dir)
+
+
 ###############################################
 #                  Compress                   #
 ###############################################
@@ -159,11 +198,11 @@ def compress_folder(
         
         ::
         
-            #we also use tsp_uniform for illustration
-            #if you haven't download it, please download it as mentioned above.
+            # We also use tsp_uniform for illustration
+            # if you haven't download it, please download it as mentioned above.
             >>>from ml4co_kit import compress_folder
             
-            #compress the folder
+            # Compress the folder
             >>>compress_folder("dataset/tsp_uniform_20240825","dataset/tsp_uniform_20240825.tar.gz")
     """
     if compress_path.endswith(".zip"):
@@ -192,11 +231,11 @@ def extract_archive(archive_path: str, extract_path: str):
         
         ::
         
-            #we also use tsp_uniform for illustration
-            #if you haven't download it, please download it as mentioned above.
+            # We also use tsp_uniform for illustration
+            # if you haven't download it, please download it as mentioned above.
             >>> from ml4co_kit import extract_archive
             
-            #Extracts the archive
+            # Extracts the archive
             >>> extract_archive("dataset/tsp_uniform_20240825.tar.gz","dataset/tsp_uniform_20240825")
     """
     if archive_path.endswith(".zip"):
