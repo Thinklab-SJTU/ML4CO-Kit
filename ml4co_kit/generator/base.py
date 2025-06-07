@@ -10,6 +10,7 @@ import networkx as nx
 from tqdm import tqdm
 from typing import Union, Any
 from ml4co_kit.solver.base import SolverBase
+from ml4co_kit.utils.file_utils import download
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.utils.graph.rb_utils import CSPInstance, independent_set_language
 
@@ -192,9 +193,8 @@ class EdgeGeneratorBase(GeneratorBase):
         
     def download_lkh(self):
         # download
-        import wget
         lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
-        wget.download(url=lkh_url, out="LKH-3.0.7.tgz")
+        download("LKH-3.0.7.tgz", url=lkh_url)
         # tar .tgz file
         os.system("tar xvfz LKH-3.0.7.tgz")
         # build LKH

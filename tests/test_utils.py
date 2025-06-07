@@ -42,8 +42,10 @@ def test_file_utils():
         repo_id="ML4CO/ML4CO-Kit", 
         repo_type="model", 
         filename="neurolkh/neurolkh_original.pt", 
-        save_path="tmp"
+        save_path="tmp/neurolkh_original.pt"
     )
+    shutil.rmtree("tmp")
+
 
 if __name__ == "__main__":
     test_file_utils()
