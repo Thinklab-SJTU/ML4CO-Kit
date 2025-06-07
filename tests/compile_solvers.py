@@ -1,6 +1,8 @@
 import os
 import sys
 import shutil
+root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_folder)
 from ml4co_kit import download
 
 
