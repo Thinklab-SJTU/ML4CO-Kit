@@ -8,7 +8,7 @@ from typing import Union, List
 from ml4co_kit.utils.graph.mis import MISGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import NodeGeneratorBase
-from ml4co_kit.solver import MISSolver, MISGurobiSolver, KaMISSolver
+from ml4co_kit.solver import MISSolver, MISGurobiSolver, KaMISSolver, MISORSolver
 
 
 class MISDataGenerator(NodeGeneratorBase):
@@ -44,11 +44,13 @@ class MISDataGenerator(NodeGeneratorBase):
         # re-define
         supported_solver_dict = {
             SOLVER_TYPE.GUROBI: MISGurobiSolver,
-            SOLVER_TYPE.KAMIS: KaMISSolver
+            SOLVER_TYPE.KAMIS: KaMISSolver,
+            SOLVER_TYPE.ORTOOLS: MISORSolver
         }
         check_solver_dict = {
             SOLVER_TYPE.GUROBI: self._check_free,
-            SOLVER_TYPE.KAMIS: self._check_free
+            SOLVER_TYPE.KAMIS: self._check_free,
+            SOLVER_TYPE.ORTOOLS: self._check_free
         }
 
         # super args

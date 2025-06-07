@@ -15,6 +15,7 @@ CUDA_TEST = False
 
 def test_atsp_base_solver():
     solver = ATSPSolver()
+    solver_2 = ATSPSolver()
     solver.from_txt("tests/data_for_tests/solver/atsp/atsp50.txt")
     os.remove("tests/data_for_tests/solver/atsp/atsp50.txt")
     solver.to_tsplib_folder(
@@ -26,14 +27,26 @@ def test_atsp_base_solver():
         to_int=True,
         show_time=True
     )
-    shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_instance")
-    shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_solution")
     solver.to_txt(
         file_path="tests/data_for_tests/solver/atsp/atsp50.txt",
         apply_scale=False,
         to_int=False,
     )
-    
+
+    # test ``from_tsplib_folder``
+    solver_2.from_tsplib_folder(
+        atsp_folder_path="tests/data_for_tests/solver/atsp/atsp50_tsplib_instance",
+    )
+    solver_2.from_tsplib_folder(
+        tour_folder_path="tests/data_for_tests/solver/atsp/atsp50_tsplib_solution",
+    )
+    solver_2.from_tsplib_folder(
+        atsp_folder_path="tests/data_for_tests/solver/atsp/atsp50_tsplib_instance",
+        tour_folder_path="tests/data_for_tests/solver/atsp/atsp50_tsplib_solution",
+    )
+    shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_instance")
+    shutil.rmtree("tests/data_for_tests/solver/atsp/atsp50_tsplib_solution")
+
     
 def _test_atsp_lkh_solver(show_time: bool, num_threads: int):
     atsp_lkh_solver = ATSPLKHSolver(lkh_max_trials=500)
@@ -78,8 +91,8 @@ def test_atsp():
     Test ATSPSolver
     """
     test_atsp_base_solver()
-    test_atsp_lkh_solver()
-    test_atsp_or_solver()
+    # test_atsp_lkh_solver()
+    # test_atsp_or_solver()
 
 
 ##############################################
@@ -272,9 +285,14 @@ def test_mis_base_solver():
         ref=False, cover=False
     )
     gap_avg = solver.evaluate(calculate_gap=True)[2]
+    costs = solver.evaluate(calculate_gap=False)
+    print(f"avrage costs of mis examples: {costs}")
     if gap_avg > 1e-14:
         raise ValueError("There is a problem between txt input and read in")
-
+    solver.to_gpickle_result_folder(
+        gpickle_save_dir="tmp/instance", gpickle_filename="mis_example",
+        result_save_dir="tmp/solution", result_filename="mis_example"
+    )
 
 def _test_mis_gurobi_solver(show_time: bool, num_threads: int):
     gurobi_solver = MISGurobiSolver(time_limit=1.0)
@@ -773,13 +791,13 @@ def test_tsp():
     """
     Test TSPSolver
     """
-    # test_tsp_base_solver()
-    # test_tsp_concorde_solver()
-    # test_tsp_ga_eax_solver()
-    # test_tsp_ga_eax_large_solver()
-    # test_tsp_lkh_solver()
+    test_tsp_base_solver()
+    test_tsp_concorde_solver()
+    test_tsp_ga_eax_solver()
+    test_tsp_ga_eax_large_solver()
+    test_tsp_lkh_solver()
     test_tsp_neurolkh_solver()
-    # test_tsp_or_solver()
+    test_tsp_or_solver()
 
 
 ##############################################
@@ -787,7 +805,7 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_atsp()
+    test_atsp()
     # test_cvrp()
     # test_kp()
     # test_lp()
@@ -795,4 +813,4 @@ if __name__ == "__main__":
     # test_mcut()
     # test_mis()
     # test_mvc()
-    test_tsp()
+    # test_tsp()

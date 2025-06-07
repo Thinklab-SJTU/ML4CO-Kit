@@ -3,7 +3,7 @@ from typing import Union, List
 from ml4co_kit.utils.graph.mcl import MClGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import NodeGeneratorBase
-from ml4co_kit.solver import MClSolver, MClGurobiSolver
+from ml4co_kit.solver import MClSolver, MClGurobiSolver, MClORSolver
 
 
 class MClDataGenerator(NodeGeneratorBase):
@@ -38,10 +38,12 @@ class MClDataGenerator(NodeGeneratorBase):
         
         # re-define
         supported_solver_dict = {
-            SOLVER_TYPE.GUROBI: MClGurobiSolver
+            SOLVER_TYPE.GUROBI: MClGurobiSolver,
+            SOLVER_TYPE.ORTOOLS: MClORSolver
         }
         check_solver_dict = {
-            SOLVER_TYPE.GUROBI: self._check_free
+            SOLVER_TYPE.GUROBI: self._check_free,
+            SOLVER_TYPE.ORTOOLS: self._check_free
         }
         
         # super args

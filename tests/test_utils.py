@@ -3,7 +3,9 @@ import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(root_folder)
 import shutil
-from ml4co_kit.utils.file_utils import compress_folder, extract_archive
+from ml4co_kit.utils.file_utils import (
+    compress_folder, extract_archive, pull_file_from_huggingface
+)
 
 
 def test_file_utils():
@@ -35,6 +37,13 @@ def test_file_utils():
     )
     os.remove("tests/data_for_tests/utils/extract_compress.zip")
 
+    # pull file from huggingface
+    pull_file_from_huggingface(
+        repo_id="ML4CO/ML4CO-Kit", 
+        repo_type="model", 
+        filename="neurolkh/neurolkh_original.pt", 
+        save_path="tmp"
+    )
 
 if __name__ == "__main__":
     test_file_utils()

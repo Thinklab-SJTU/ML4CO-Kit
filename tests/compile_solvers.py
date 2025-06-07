@@ -1,12 +1,12 @@
 import os
 import sys
-import wget
 import shutil
+from ml4co_kit import download
 
 
 # LKH
 lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
-wget.download(url=lkh_url, out="LKH-3.0.7.tgz")
+download("LKH-3.0.7.tgz", url=lkh_url)
 os.system("tar xvfz LKH-3.0.7.tgz")
 ori_dir = os.getcwd()
 os.chdir("LKH-3.0.7")

@@ -310,7 +310,6 @@ class ATSPSolver(SolverBase):
         tour_folder_path: str = None,
         ref: bool = False,
         return_list: bool = False,
-        norm: str = "EUC_2D",
         normalize: bool = False,
         show_time: bool = False
     ):
@@ -323,7 +322,6 @@ class ATSPSolver(SolverBase):
             If given, the solver will read tour from the folder.
         :param ref: boolean, whether the solution is a reference solution.
         :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
-        :param norm: string, the normalization type for dists matrix.
         :param normalize: boolean, whether to normalize dists matrix.
         :param show_time: boolean, whether the data is being read with a visual progress display.
         
@@ -401,13 +399,16 @@ class ATSPSolver(SolverBase):
                     continue
                 dists = self._read_data_from_atsp_file(atsp_file_path)
                 dists_list.append(dists)
+                
                 # tour
-                tour_file_path = os.path.join(
-                    tour_folder_path, file_name.replace(".tsp", ".opt.tour")
-                )
+                if file_name.endswith(".atsp"):
+                    tour_name = file_name.replace(".atsp", ".opt.tour")
+                else:
+                    tour_name = file_name.replace(".atsp", ".opt.tour")
+                tour_file_path = os.path.join(tour_folder_path, tour_name)
                 tour = self._read_tour_from_tour_file(tour_file_path)
                 tours_list.append(tour)
-                
+
         # return list
         if return_list:
             if dists_flag:

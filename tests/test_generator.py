@@ -202,7 +202,7 @@ def test_cvrp():
 #             Test Func For LP               #
 ##############################################
 
-def _test_lp_gurobi(num_threads: int, data_type: str):
+def _test_lp_gurobi_generator(num_threads: int, data_type: str):
     """
     Test LPDataGenerator using LPGurobiSolver
     """
@@ -242,15 +242,15 @@ def test_lp():
     """
     Test LPDataGenerator
     """
-    _test_lp_gurobi(num_threads=1, data_type="uniform")
-    _test_lp_gurobi(num_threads=4, data_type="uniform")
+    _test_lp_gurobi_generator(num_threads=1, data_type="uniform")
+    _test_lp_gurobi_generator(num_threads=4, data_type="uniform")
 
 
 ##############################################
 #             Test Func For KP               #
 ##############################################
 
-def _test_kp_ortools(num_threads: int, data_type: str):
+def _test_kp_ortools_generator(num_threads: int, data_type: str):
     """
     Test LPDataGenerator using LPGurobiSolver
     """
@@ -285,8 +285,8 @@ def test_kp():
     """
     Test KPDataGenerator
     """
-    _test_kp_ortools(num_threads=1, data_type="uniform")
-    _test_kp_ortools(num_threads=4, data_type="uniform")
+    _test_kp_ortools_generator(num_threads=1, data_type="uniform")
+    _test_kp_ortools_generator(num_threads=4, data_type="uniform")
 
 
 ##############################################
@@ -294,7 +294,7 @@ def test_kp():
 ##############################################
 
 def _test_mcl_gurobi_generator(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
 ):
     """
     Test MClDataGenerator using MClGurobiSolver
@@ -308,10 +308,11 @@ def _test_mcl_gurobi_generator(
         os.makedirs(save_path)
     
     # solver
-    solver = MClGurobiSolver(time_limit=5.0)
+    solver = MClGurobiSolver(time_limit=1.0)
       
     # create MClDataGenerator using gurobi solver
     mcl_data_gurobi = MClDataGenerator(
+        num_threads=num_threads,
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -329,15 +330,50 @@ def _test_mcl_gurobi_generator(
     shutil.rmtree(save_path)
 
 
+def _test_mcl_ortools_generator(
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
+):
+    """
+    Test MClDataGenerator using MClORSolver
+    """
+    # save path
+    save_path = f"tmp/mcl_{data_type}_ortools"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    # solver
+    solver = MClORSolver(time_limit=1.0)
+      
+    # create MClDataGenerator using ortools solver
+    mcl_data_ortools = MClDataGenerator(
+        num_threads=num_threads,
+        nodes_num_min=nodes_num_min,
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+    )
+    
+    # generate and solve data
+    mcl_data_ortools.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+    
 def test_mcl():
     """
     Test MCLDataGenerator
     """
-    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
-    _test_mcl_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
+    _test_mcl_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=2)
+    _test_mcl_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=1)
+    _test_mcl_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba", num_threads=1)
+    _test_mcl_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk", num_threads=1)
+    _test_mcl_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws", num_threads=1)
+    _test_mcl_ortools_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb", num_threads=1)
 
 
 ##############################################
@@ -345,10 +381,10 @@ def test_mcl():
 ##############################################
 
 def _test_mcut_gurobi_generator(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
 ):
     """
-    Test MCDataGenerator using MCGurobiSolver
+    Test MCDataGenerator using MCutGurobiSolver
     """
     if not GUROBI_TEST:
         return
@@ -359,10 +395,11 @@ def _test_mcut_gurobi_generator(
         os.makedirs(save_path)
     
     # solver
-    solver = MCutGurobiSolver(time_limit=5.0)
+    solver = MCutGurobiSolver(time_limit=1.0)
       
     # create MCutDataGenerator using gurobi solver
     mcut_data_gurobi = MCutDataGenerator(
+        num_threads=num_threads,
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -380,16 +417,51 @@ def _test_mcut_gurobi_generator(
     shutil.rmtree(save_path)
 
 
+def _test_mcut_ortools_generator(
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
+):
+    """
+    Test MCDataGenerator using MCutORSolver
+    """
+    # save path
+    save_path = f"tmp/mcut_{data_type}_ortools"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    # solver
+    solver = MCutORSolver(time_limit=1.0)
+      
+    # create MCutDataGenerator using ortools solver
+    mcut_data_ortools = MCutDataGenerator(
+        num_threads=num_threads,
+        nodes_num_min=nodes_num_min,
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+    )
+    
+    # generate and solve data
+    mcut_data_ortools.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+    
 def test_mcut():
     """
-    Test MVCDataGenerator
+    Test MCutDataGenerator
     """
-    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
-    _test_mcut_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
-
+    _test_mcut_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=2)
+    _test_mcut_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=1)
+    _test_mcut_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba", num_threads=1)
+    _test_mcut_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk", num_threads=1)
+    _test_mcut_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws", num_threads=1)
+    _test_mcut_ortools_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb", num_threads=1)
+    
 
 ##############################################
 #             Test Func For MIS              #
@@ -430,7 +502,7 @@ def _test_mis_kamis_generator(
 
 
 def _test_mis_gurobi_generator(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
 ):
     """
     Test MISDataGenerator using MISGurobiSolver
@@ -444,10 +516,11 @@ def _test_mis_gurobi_generator(
         os.makedirs(save_path)
     
     # solver
-    solver = MISGurobiSolver(time_limit=5.0)
+    solver = MISGurobiSolver(time_limit=1.0)
       
     # create MISDataGenerator using gurobi solver
     mis_data_gurobi = MISDataGenerator(
+        num_threads=num_threads,
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -465,6 +538,40 @@ def _test_mis_gurobi_generator(
     shutil.rmtree(save_path)
 
 
+def _test_mis_ortools_generator(
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
+):
+    """
+    Test MISDataGenerator using MISORSolver
+    """
+    # save path
+    save_path = f"tmp/mis_{data_type}_ortools"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    # solver
+    solver = MISORSolver(time_limit=1.0)
+      
+    # create MISDataGenerator using ortools solver
+    mis_data_ortools = MISDataGenerator(
+        num_threads=num_threads,
+        nodes_num_min=nodes_num_min,
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+    )
+    
+    # generate and solve data
+    mis_data_ortools.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+
 def test_mis():
     """
     Test MISDataGenerator
@@ -475,12 +582,12 @@ def test_mis():
     _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
     _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
     _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
+    _test_mis_kamis_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
+    _test_mis_kamis_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
     
-    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
-    _test_mis_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
+    _test_mis_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=2)
+    _test_mis_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=1)
+    _test_mis_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=2)
 
 
 ##############################################
@@ -488,7 +595,7 @@ def test_mis():
 ##############################################
 
 def _test_mvc_gurobi_generator(
-    nodes_num_min: int, nodes_num_max: int, data_type: str
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
 ):
     """
     Test MVCDataGenerator using MVCGurobiSolver
@@ -502,10 +609,11 @@ def _test_mvc_gurobi_generator(
         os.makedirs(save_path)
     
     # solver
-    solver = MVCGurobiSolver(time_limit=5.0)
+    solver = MVCGurobiSolver(time_limit=1.0)
       
     # create MVCDataGenerator using gurobi solver
     mvc_data_gurobi = MVCDataGenerator(
+        num_threads=num_threads,
         nodes_num_min=nodes_num_min,
         nodes_num_max=nodes_num_max,
         data_type=data_type,
@@ -523,15 +631,50 @@ def _test_mvc_gurobi_generator(
     shutil.rmtree(save_path)
 
 
+def _test_mvc_ortools_generator(
+    nodes_num_min: int, nodes_num_max: int, data_type: str, num_threads: int
+):
+    """
+    Test MVCDataGenerator using MVCORSolver
+    """
+    # save path
+    save_path = f"tmp/mvc_{data_type}_ortools"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    # solver
+    solver = MVCORSolver(time_limit=1.0)
+      
+    # create MVCDataGenerator using ortools solver
+    mvc_data_ortools = MVCDataGenerator(
+        num_threads=num_threads,
+        nodes_num_min=nodes_num_min,
+        nodes_num_max=nodes_num_max,
+        data_type=data_type,
+        solver=solver,
+        train_samples_num=2,
+        val_samples_num=2,
+        test_samples_num=2,
+        save_path=save_path,
+    )
+    
+    # generate and solve data
+    mvc_data_ortools.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+    
 def test_mvc():
     """
     Test MVCDataGenerator
     """
-    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er")
-    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba")
-    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk")
-    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws")
-    _test_mvc_gurobi_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb")
+    _test_mvc_gurobi_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=2)
+    _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="er", num_threads=1)
+    _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ba", num_threads=1)
+    _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk", num_threads=1)
+    _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws", num_threads=1)
+    _test_mvc_ortools_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb", num_threads=1)
 
    
 ##############################################

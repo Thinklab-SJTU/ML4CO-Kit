@@ -3,7 +3,7 @@ from typing import Union, List
 from ml4co_kit.utils.graph.mvc import MVCGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import NodeGeneratorBase
-from ml4co_kit.solver import MVCSolver, MVCGurobiSolver
+from ml4co_kit.solver import MVCSolver, MVCGurobiSolver, MVCORSolver
 
 
 class MVCDataGenerator(NodeGeneratorBase):
@@ -38,10 +38,12 @@ class MVCDataGenerator(NodeGeneratorBase):
         
         # re-define
         supported_solver_dict = {
-            SOLVER_TYPE.GUROBI: MVCGurobiSolver
+            SOLVER_TYPE.GUROBI: MVCGurobiSolver,
+            SOLVER_TYPE.ORTOOLS: MVCORSolver
         }
         check_solver_dict = {
-            SOLVER_TYPE.GUROBI: self._check_free
+            SOLVER_TYPE.GUROBI: self._check_free,
+            SOLVER_TYPE.ORTOOLS: self._check_free
         }
         
         # super args

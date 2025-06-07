@@ -17,3 +17,8 @@ ignore:
  - ml4co_kit/learning/**
  - ml4co_kit/solver/tsp/concorde_large.py
  - ml4co_kit/utils/tsplib95
+ - ml4co_kit/solver/mvc/gurobi.py
+ - ml4co_kit/solver/mis/gurobi.py
+ - ml4co_kit/solver/mcut/gurobi.py
+ - ml4co_kit/solver/mcl/gurobi.py
+ - ml4co_kit/utils/round.py

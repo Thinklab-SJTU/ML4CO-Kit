@@ -3,7 +3,7 @@ from typing import Union, List
 from ml4co_kit.utils.graph.mcut import MCutGraphData
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.generator.base import NodeGeneratorBase
-from ml4co_kit.solver import MCutSolver, MCutGurobiSolver
+from ml4co_kit.solver import MCutSolver, MCutGurobiSolver, MCutORSolver
 
 
 class MCutDataGenerator(NodeGeneratorBase):
@@ -38,10 +38,12 @@ class MCutDataGenerator(NodeGeneratorBase):
         
         # re-define
         supported_solver_dict = {
-            SOLVER_TYPE.GUROBI: MCutGurobiSolver
+            SOLVER_TYPE.GUROBI: MCutGurobiSolver,
+            SOLVER_TYPE.ORTOOLS: MCutORSolver
         }
         check_solver_dict = {
-            SOLVER_TYPE.GUROBI: self._check_free
+            SOLVER_TYPE.GUROBI: self._check_free,
+            SOLVER_TYPE.ORTOOLS: self._check_free
         }
 
         # super args

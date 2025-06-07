@@ -10,7 +10,7 @@ from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.generator.base import EdgeGeneratorBase
 from ml4co_kit.solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
-    TSPGAEAXSolver, TSPGAEAXLargeSolver
+    TSPGAEAXSolver, TSPGAEAXLargeSolver, TSPORSolver
 )
 import warnings
 
@@ -72,14 +72,17 @@ class TSPDataGenerator(EdgeGeneratorBase):
             SOLVER_TYPE.LKH: TSPLKHSolver, 
             SOLVER_TYPE.CONCORDE_LARGE: TSPConcordeLargeSolver,
             SOLVER_TYPE.GA_EAX: TSPGAEAXSolver, 
-            SOLVER_TYPE.GA_EAX_LARGE: TSPGAEAXLargeSolver 
+            SOLVER_TYPE.GA_EAX_LARGE: TSPGAEAXLargeSolver,
+            SOLVER_TYPE.ORTOOLS: TSPORSolver
         }
         check_solver_dict = {
             SOLVER_TYPE.CONCORDE: self._check_concorde,
             SOLVER_TYPE.CONCORDE_LARGE: self._check_concorde,
             SOLVER_TYPE.GA_EAX: self._check_free,
             SOLVER_TYPE.GA_EAX_LARGE: self._check_free,
-            SOLVER_TYPE.LKH: self._check_lkh
+            SOLVER_TYPE.LKH: self._check_lkh,
+            SOLVER_TYPE.NEUROLKH: self._check_free,
+            SOLVER_TYPE.ORTOOLS: self._check_free
         }
         
         # super args
