@@ -25,6 +25,7 @@ from .kp.or_tools import KPORSolver
 #              OP Solver              #
 #######################################
 from .op.base import OPSolver
+from .op.gurobi import OPGurobiSolver
 
 #######################################
 #              LP Solver             #  

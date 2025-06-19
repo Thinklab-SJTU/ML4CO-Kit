@@ -18,10 +18,12 @@ mixed-integer programming (MIP), quadratic programming (QP), and more.
 
 
 import os
+import math
 import uuid
+import itertools
 import numpy as np
 import gurobipy as gp
-from typing import Union
+from typing import Union, Tuple, List, Optional
 from multiprocessing import Pool
 from ml4co_kit.solver.op.base import OPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
@@ -31,85 +33,222 @@ from ml4co_kit.utils.time_utils import iterative_execution, Timer
 class OPGurobiSolver(OPSolver):
     def __init__(self, time_limit: float = 60.0):
         super(OPGurobiSolver, self).__init__(
-            solver_type=SOLVER_TYPE.OP, time_limit=time_limit
+            solver_type=SOLVER_TYPE.GUROBI, time_limit=time_limit
         )
+        self.threads = None
+        self.gap = None
         
-    def _solve(self, w: np.ndarray, c: np.ndarray, b: np.ndarray) -> np.ndarray:
-        # create gurobi model
-        tmp_name = uuid.uuid4().hex[:9]
-        model = gp.Model(f"{tmp_name}")
-        model.setParam("OutputFlag", 0)
-        model.setParam("TimeLimit", self.time_limit)
-        model.setParam("Threads", 1)
+    def _solve_single_instance(
+        self, 
+        depot: np.ndarray, 
+        loc: np.ndarray, 
+        prize: np.ndarray, 
+        max_length: float
+    ) -> Tuple[float, List[int]]:
+        """
+        Solve a single OP instance using Gurobi
         
-        # variables
-        vars_num = len(c)
-        model.addVars(vars_num, 1, lb=-gp.GRB.INFINITY, ub=gp.GRB.INFINITY, vtype=gp.GRB.CONTINUOUS)
-        model.update()
-        x = gp.MVar.fromlist(model.getVars())
+        :param depot: Depot coordinates (2,)
+        :param loc: Node coordinates (n, 2)
+        :param prize: Node prizes (n,)
+        :param max_length: Maximum tour length
+        :return: (objective value, tour)
+        """
+        points = [depot] + loc
+        n = len(points)
 
-        # constr.
-        model.addConstr(w @ x == b)
+        # Callback - use lazy constraints to eliminate sub-tours
+        def subtourelim(model, where):
+            if where == gp.GRB.Callback.MIPSOL:
+                # Make a list of edges selected in the solution
+                vals = model.cbGetSolution(model._vars)
+                selected = gp.tuplelist(
+                    (i, j) for i, j in model._vars.keys() if vals[i, j] > 0.5
+                )
+                # Find the shortest cycle in the selected edge list
+                tour = subtour(selected)
+                if tour is not None:
+                    # Add subtour elimination constraint
+                    model.cbLazy(
+                        gp.quicksum(model._vars[i, j] for i, j in itertools.combinations(tour, 2))
+                        <= gp.quicksum(model._dvars[i] for i in tour) * (len(tour) - 1) / float(len(tour))
+                    )
 
-        # object
-        model.setObjective(c.T @ x, gp.GRB.MINIMIZE)
+        # Given a tuplelist of edges, find the shortest subtour
+        def subtour(edges, exclude_depot=True):
+            unvisited = list(range(n))
+            cycle = None
+            while unvisited:
+                thiscycle = []
+                neighbors = unvisited
+                while neighbors:
+                    current = neighbors[0]
+                    thiscycle.append(current)
+                    unvisited.remove(current)
+                    neighbors = [j for i, j in edges.select(current, '*') if j in unvisited]
+                # Keep this cycle if it's shorter and doesn't exclude depot
+                if (
+                    (cycle is None or len(cycle) > len(thiscycle))
+                        and len(thiscycle) > 1 and not (0 in thiscycle and exclude_depot)
+                ):
+                    cycle = thiscycle
+            return cycle
 
-        # Solve
-        model.write(f"{tmp_name}.lp")
-        model.optimize()
-        os.remove(f"{tmp_name}.lp")
+        # Calculate Euclidean distances between each pair of points
+        dist = {(i,j) :
+            math.sqrt(sum((points[i][k] - points[j][k])**2 for k in range(2)))
+            for i in range(n) for j in range(i)}
+
+        # Create Gurobi model
+        model = gp.Model()
+        model.Params.outputFlag = 0
+
+        # Create variables
+        # vars = model.addVars(dist.keys(), vtype=gp.GRB.BINARY, name='e')
+        # for i,j in vars.keys():
+        #     vars[j,i] = vars[i,j] # edge in opposite direction
+        vars = {}
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    vars[(i, j)] = model.addVar(vtype=gp.GRB.BINARY, name='e')
         
-        return np.array(x.x)
+        # Depot variables can have value 2 (since it's start and end)
+        for i, j in vars.keys():
+            if i == 0 or j == 0:
+                vars[i, j].vtype = gp.GRB.INTEGER
+                vars[i, j].ub = 2
+
+        # Node selection variables (delta_i = 1 if node i is visited)
+        prize_dict = {
+            i + 1: -p  # We need to maximize so negate
+            for i, p in enumerate(prize)
+        }
+        delta = model.addVars(range(1, n), obj=prize_dict, vtype=gp.GRB.BINARY, name='delta')
+
+        # Degree constraints
+        model.addConstrs(vars.sum(i,'*') == (2 if i == 0 else 2 * delta[i]) for i in range(n))
+        # model.addConstrs(
+        #     gp.quicksum(vars[i, j] for j in range(n) if j != i) == (2 if i == 0 else 2 * delta[i])
+        #     for i in range(n)
+        # )
+        # for i in range(n):
+        #     expr = gp.quicksum(vars[(i, j)] for j in range(n) if j != i)
+        #     if i == 0:
+        #         model.addConstr(expr == 2)
+        #     else:
+        #         model.addConstr(expr == 2 * delta[i])
+
+        # Tour length constraint
+        model.addConstr(gp.quicksum(var * dist[i, j] for (i, j), var in vars.items() if j < i) <= max_length)
+        # model.addConstr(
+        #     gp.quicksum(vars[i, j] * dist.get((i, j), 0.0) for i, j in vars.keys()) <= max_length
+        # )
+        # length_expr = gp.LinExpr()
+        # for (i, j), d in dist.items():
+        #     length_expr.addTerms(d, vars[(i, j)])
+        #     length_expr.addTerms(d, vars[(j, i)])
+        # model.addConstr(length_expr <= max_length)
+
+        # Set model references for callback
+        model._vars = vars
+        model._dvars = delta
         
+        # Set parameters
+        model.Params.lazyConstraints = 1
+        model.Params.threads = 1
+        if self.time_limit:
+            model.Params.timeLimit = self.time_limit
+        if self.gap:
+            model.Params.mipGap = self.gap * 0.01  # Percentage
+
+        # Optimize model
+        model.optimize(subtourelim)
+
+        # Extract solution
+        print(model.status)
+        if model.status in [gp.GRB.OPTIMAL, gp.GRB.TIME_LIMIT, gp.GRB.SOLUTION_LIMIT]:
+            try:
+                vals = model.getAttr('x', vars)
+                selected = gp.tuplelist((i, j) for i, j in vals.keys() if vals[i, j] > 0.5)
+                tour = subtour(selected, exclude_depot=False)
+                if tour is not None and tour[0] == 0:
+                    return -model.objVal, tour
+            except gp.GurobiError:
+                print(f"Warning: Failed to retrieve solution for instance")
+            
+        return 0.0, [0]
+
     def solve(
-        self,
-        w: Union[list, np.ndarray] = None,
-        c: Union[list, np.ndarray] = None,
-        b: Union[list, np.ndarray] = None,
-        num_threads: int = 1,
-        show_time: bool = False
+        self, 
+        depot: Union[list, np.ndarray] = None,
+        loc: Union[list, np.ndarray] = None,
+        prize: Union[list, np.ndarray] = None,
+        max_length: Union[list, np.ndarray] = None,
+        num_threads: int = 1, 
+        show_time: bool = False, 
+        gap: Optional[float] = None
     ) -> np.ndarray:
-        # preparation
-        self.from_data(w=w, c=c, b=b)
+        """
+        Solve OP instances using Gurobi
+        
+        :param depot: List of depot coordinates (n_instances, 2)
+        :param loc: List of node coordinates (n_instances, n_nodes, 2)
+        :param prize: List of node prizes (n_instances, n_nodes)
+        :param max_length: List of maximum tour lengths (n_instances,)
+        :param num_threads: Number of parallel threads to use
+        :param show_time: Whether to show solving time
+        :param gap: Optimality gap for the solver (default is 0.0, meaning no gap)
+        :return: Tours for all instances
+        """
+        # Load data
+        self.from_data(depots=depot, points=loc, prizes=prize, max_lengths=max_length)
+        self.gap = gap
+        
+        n_instances = len(self.depots)
+        tours = []
+        obj_values = []
+        
+        # Solve each instance
         timer = Timer(apply=show_time)
         timer.start()
 
-        # solve
-        sols = list()
-        w_shape = self.w.shape
-        c_shape = self.c.shape
-        b_shape = self.b.shape
-        num_instance = w_shape[0]
-        if num_threads == 1:
-            for idx in iterative_execution(range, num_instance, self.solve_msg, show_time):
-                sols.append(self._solve(self.w[idx], self.c[idx], self.b[idx]))
-        else:
-            batch_w = self.w.reshape(-1, num_threads, w_shape[-2], w_shape[-1])
-            batch_b = self.b.reshape(-1, num_threads, b_shape[-1])
-            batch_c = self.c.reshape(-1, num_threads, c_shape[-1])
-            for idx in iterative_execution(
-                range, num_instance // num_threads, self.solve_msg, show_time
-            ):
-                with Pool(num_threads) as p1:
-                    cur_sols = p1.starmap(
-                        self._solve,
-                        [  (batch_w[idx][inner_idx], 
-                            batch_c[idx][inner_idx], 
-                            batch_b[idx][inner_idx]) 
-                            for inner_idx in range(num_threads)
-                        ],
+        if num_threads > 1:
+            # Parallel processing
+            with Pool(num_threads) as pool:
+                results = []
+                for i in range(n_instances):
+                    args = (
+                        self.depots[i],
+                        self.points[i],
+                        self.prizes[i],
+                        self.max_lengths[i]
                     )
-                for sol in cur_sols:
-                    sols.append(sol)
-
-        # format
-        self.from_data(x=sols, ref=False)
+                    results.append(pool.apply_async(self._solve_single_instance, args))
+                
+                for res in results:
+                    obj, tour = res.get()
+                    obj_values.append(obj)
+                    tours.append(tour)
+        else:
+            # Sequential processing
+            for i in range(n_instances):
+                obj, tour = self._solve_single_instance(
+                    self.depots[i],
+                    self.points[i],
+                    self.prizes[i],
+                    self.max_lengths[i]
+                )
+                obj_values.append(obj)
+                tours.append(tour)
         
-        # show time
+        # Store results
+        self.from_data(tours=tours, ref=False)
+        
         timer.end()
         timer.show_time()
+        
+        return obj_values, tours
 
-        return self.x  
-    
     def __str__(self) -> str:
         return "OPGurobiSolver"

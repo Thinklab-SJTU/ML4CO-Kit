@@ -71,8 +71,8 @@ class OPSolver(SolverBase):
         self.ori_points: np.ndarray = None
         self.prizes: np.ndarray = None
         self.max_lengths: np.ndarray = None
-        self.tours: np.ndarray = None
-        self.ref_tours: np.ndarray = None
+        self.tours: list = None
+        self.ref_tours: list = None
         self.norm: str = None
         
     def _check_depots_dim(self):
@@ -350,9 +350,10 @@ class OPSolver(SolverBase):
                 points = split_line_2[0]
                 split_line_3 = split_line_2[1].split(" max_length ")
                 prizes = split_line_3[0]
-                split_line_4 = split_line_3[1].split(" tours ")
-                max_length = split_line_4[0]
-                tours = split_line_4[1]
+                # split_line_4 = split_line_3[1].split(" tours ")
+                # max_length = split_line_4[0]
+                # tours = split_line_4[1]
+                max_length = split_line_3[1]
 
                 # strings to array
                 depot = depot.split(" ")
@@ -369,17 +370,17 @@ class OPSolver(SolverBase):
                     float(prizes[i]) for i in range(len(prizes))
                 ])
                 max_length = float(max_length)
-                tours = tours.split(" ")
-                tours = np.array(
-                    [int(tours[i]) for i in range(len(tours))]
-                )
+                # tours = tours.split(" ")
+                # tours = np.array(
+                #     [int(tours[i]) for i in range(len(tours))]
+                # )
                 
                 # add to the list
                 depots_list.append(depot)
                 points_list.append(points)
                 prizes_list.append(prizes)
                 max_lengths_list.append(max_length)
-                tours_list.append(tours)
+                # tours_list.append(tours)
 
         # check if return list
         if return_list:
@@ -389,11 +390,14 @@ class OPSolver(SolverBase):
         points = np.array(points_list)
         prizes = np.array(prizes_list)
         max_lengths = np.array(max_lengths_list)
-        tours = np.array(tours_list)
+        # tours = np.array(tours_list)
         
         # use ``from_data``
+        # self.from_data(
+        #     depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
+        # )
         self.from_data(
-            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
+            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, ref=ref
         )
 
     def from_data(
@@ -476,13 +480,12 @@ class OPSolver(SolverBase):
             
         # tours
         if tours is not None:
-            tours = to_numpy(tours).astype(np.int32)
             if ref:
                 self.ref_tours = tours
-                self._check_ref_tours_dim()
+                # self._check_ref_tours_dim()
             else:
                 self.tours = tours
-                self._check_tours_dim()
+                # self._check_tours_dim()
                 
     def to_txt(
         self,
@@ -558,6 +561,8 @@ class OPSolver(SolverBase):
                 f.write(f"tours ")
                 for node_idx in tours[idx]:
                     f.write(f"{node_idx} ")
+                
+                f.write("\n")
 
     ### TODO
     def evaluate(
