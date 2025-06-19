@@ -22,6 +22,7 @@ class TASK_TYPE(str, Enum):
     TSP = "Traveling Salesman Problem (TSP)"
     LP = "Linear Program (LP)"
     KP = "Knapsack Problme (KP)"
+    OP = "Orienteering Problem (OP)"
 
 
 class SOLVER_TYPE(str, Enum):

@@ -22,6 +22,11 @@ from .kp.base import KPSolver
 from .kp.or_tools import KPORSolver
 
 #######################################
+#              OP Solver              #
+#######################################
+from .op.base import OPSolver
+
+#######################################
 #              LP Solver             #  
 #######################################
 from .lp.base import LPSolver
