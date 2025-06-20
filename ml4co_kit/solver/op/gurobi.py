@@ -29,6 +29,7 @@ from ml4co_kit.solver.op.base import OPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
+MAX_LENGTH_TOL = 1e-5  # Tolerance for maximum length check
 
 class OPGurobiSolver(OPSolver):
     def __init__(self, time_limit: float = 60.0):
@@ -101,17 +102,12 @@ class OPGurobiSolver(OPSolver):
 
         # Create Gurobi model
         model = gp.Model()
-        model.Params.outputFlag = 0
+        model.Params.outputFlag = False
 
         # Create variables
-        # vars = model.addVars(dist.keys(), vtype=gp.GRB.BINARY, name='e')
-        # for i,j in vars.keys():
-        #     vars[j,i] = vars[i,j] # edge in opposite direction
-        vars = {}
-        for i in range(n):
-            for j in range(n):
-                if i != j:
-                    vars[(i, j)] = model.addVar(vtype=gp.GRB.BINARY, name='e')
+        vars = model.addVars(dist.keys(), vtype=gp.GRB.BINARY, name='e')
+        for i,j in list(vars.keys()):
+            vars[j,i] = vars[i,j] # edge in opposite direction
         
         # Depot variables can have value 2 (since it's start and end)
         for i, j in vars.keys():
@@ -128,27 +124,9 @@ class OPGurobiSolver(OPSolver):
 
         # Degree constraints
         model.addConstrs(vars.sum(i,'*') == (2 if i == 0 else 2 * delta[i]) for i in range(n))
-        # model.addConstrs(
-        #     gp.quicksum(vars[i, j] for j in range(n) if j != i) == (2 if i == 0 else 2 * delta[i])
-        #     for i in range(n)
-        # )
-        # for i in range(n):
-        #     expr = gp.quicksum(vars[(i, j)] for j in range(n) if j != i)
-        #     if i == 0:
-        #         model.addConstr(expr == 2)
-        #     else:
-        #         model.addConstr(expr == 2 * delta[i])
 
         # Tour length constraint
         model.addConstr(gp.quicksum(var * dist[i, j] for (i, j), var in vars.items() if j < i) <= max_length)
-        # model.addConstr(
-        #     gp.quicksum(vars[i, j] * dist.get((i, j), 0.0) for i, j in vars.keys()) <= max_length
-        # )
-        # length_expr = gp.LinExpr()
-        # for (i, j), d in dist.items():
-        #     length_expr.addTerms(d, vars[(i, j)])
-        #     length_expr.addTerms(d, vars[(j, i)])
-        # model.addConstr(length_expr <= max_length)
 
         # Set model references for callback
         model._vars = vars
@@ -173,7 +151,7 @@ class OPGurobiSolver(OPSolver):
                 selected = gp.tuplelist((i, j) for i, j in vals.keys() if vals[i, j] > 0.5)
                 tour = subtour(selected, exclude_depot=False)
                 if tour is not None and tour[0] == 0:
-                    return -model.objVal, tour
+                    return model.objVal, tour
             except gp.GurobiError:
                 print(f"Warning: Failed to retrieve solution for instance")
             
@@ -207,7 +185,7 @@ class OPGurobiSolver(OPSolver):
         
         n_instances = len(self.depots)
         tours = []
-        obj_values = []
+        total_costs = []
         
         # Solve each instance
         timer = Timer(apply=show_time)
@@ -226,20 +204,31 @@ class OPGurobiSolver(OPSolver):
                     )
                     results.append(pool.apply_async(self._solve_single_instance, args))
                 
-                for res in results:
-                    obj, tour = res.get()
-                    obj_values.append(obj)
+                for i in range(n_instances):
+                    cost, tour = results[i].get()
+                    assert tour[0] == 0, "Tour must start from depot"
+                    tour = tour[1:]  # Remove depot from tour
+                    assert self.calc_op_length(self.depots[i], self.points[i], tour) <= self.max_lengths[i] + MAX_LENGTH_TOL, "Tour exceeds max_length!"
+                    total_cost = -self.calc_op_total(self.prizes[i], tour)
+                    assert abs(total_cost - cost) <= 1e-4, "Cost is incorrect"
+                    total_costs.append(total_cost)
                     tours.append(tour)
         else:
             # Sequential processing
             for i in range(n_instances):
-                obj, tour = self._solve_single_instance(
+                cost, tour = self._solve_single_instance(
                     self.depots[i],
                     self.points[i],
                     self.prizes[i],
                     self.max_lengths[i]
                 )
-                obj_values.append(obj)
+                assert tour[0] == 0, "Tour must start from depot"
+                tour = tour[1:]  # Remove depot from tour
+                print(self.calc_op_length(self.depots[i], self.points[i], tour))
+                assert self.calc_op_length(self.depots[i], self.points[i], tour) <= self.max_lengths[i] + MAX_LENGTH_TOL, "Tour exceeds max_length!"
+                total_cost = -self.calc_op_total(self.prizes[i], tour)
+                assert abs(total_cost - cost) <= 1e-4, "Cost is incorrect"
+                total_costs.append(total_cost)
                 tours.append(tour)
         
         # Store results
@@ -248,7 +237,7 @@ class OPGurobiSolver(OPSolver):
         timer.end()
         timer.show_time()
         
-        return obj_values, tours
+        return total_costs, tours
 
     def __str__(self) -> str:
         return "OPGurobiSolver"

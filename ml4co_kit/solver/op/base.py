@@ -20,6 +20,7 @@ while ensuring the total travel cost does not exceed the budget.
 
 import sys
 import numpy as np
+import pickle
 from typing import Union
 from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
@@ -291,6 +292,21 @@ class OPSolver(SolverBase):
         
         return points
     
+    def calc_op_length(self, depot, loc, tour):
+        r"""
+        Calculate the length of the tour in the Orienteering Problem.
+        """
+        assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
+        loc_with_depot = np.vstack((np.array(depot)[None, :], np.array(loc)))
+        sorted_locs = loc_with_depot[np.concatenate(([0], tour, [0]))]
+        return np.linalg.norm(sorted_locs[1:] - sorted_locs[:-1], axis=-1).sum()
+    
+    def calc_op_total(self, prize, tour):
+        # Subtract 1 since vals index start with 0 while tour indexing starts with 1 as depot is 0
+        assert (np.array(tour) > 0).all(), "Depot cannot be in tour"
+        assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
+        return np.array(prize)[np.array(tour) - 1].sum()
+    
     def from_txt(
         self,
         file_path: str,
@@ -399,6 +415,54 @@ class OPSolver(SolverBase):
         self.from_data(
             depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, ref=ref
         )
+        
+    def from_pkl(
+        self,
+        file_path: str,
+        ref: bool = False,
+        return_list: bool = False,
+        show_time: bool = False
+    ):
+        r"""
+        Read data from `.pkl` file.
+        
+        :param file_path: string, path to the `.pkl` file containing OP instances data.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        """
+         # check the file format
+        if not file_path.endswith(".pkl"):
+            raise ValueError("Invalid file format. Expected a ``.pkl`` file.")
+        
+        # read the data from .pkl
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+            
+        # check the data format
+        if isinstance(data, list) and len(data) > 0:
+            if isinstance(data[0], tuple) and len(data[0]) == 4:
+                depots, locs, prizes, max_lengths = zip(*data)
+                self.from_data(
+                    depots=np.array(depots), 
+                    points=np.array(locs),
+                    prizes=np.array(prizes),
+                    max_lengths=np.array(max_lengths),
+                    ref=ref,
+                )
+            else:
+                raise ValueError("Invalid data format in PKL file")
+        else:
+            raise ValueError("PKL file should contain a list of tuples")
+        
+        # check if return_list
+        if return_list:
+            return (
+                self.depots.tolist(),
+                self.points.tolist(),
+                self.prizes.tolist(),
+                self.max_lengths.tolist(),
+            )
 
     def from_data(
         self,
@@ -558,9 +622,10 @@ class OPSolver(SolverBase):
                 f.write(f"max_length {max_lengths[idx]} ")
                 
                 # write tours
-                f.write(f"tours ")
-                for node_idx in tours[idx]:
-                    f.write(f"{node_idx} ")
+                if tours is not None:
+                    f.write(f"tours ")
+                    for node_idx in tours[idx]:
+                        f.write(f"{node_idx} ")
                 
                 f.write("\n")
 
