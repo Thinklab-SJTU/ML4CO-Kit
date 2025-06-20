@@ -18,6 +18,7 @@ while ensuring the total travel cost does not exceed the budget.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+import os
 import sys
 import numpy as np
 import pickle
@@ -144,11 +145,15 @@ class OPSolver(SolverBase):
         element in ``tours`` is not a 1D array.
         """
         if self.tours is not None:
+            print(self.tours)
             if isinstance(self.tours[0], int):
                 # if tours is a list of integers, convert it to a list of arrays
                 self.tours = [np.array(self.tours)]
-            if not all(isinstance(tour, np.ndarray) and tour.ndim == 1 for tour in self.tours):
-                raise ValueError("The ``tours`` must be a list of 1D darrays.")
+            try:
+                self.tours = [np.array(tour) for tour in self.tours]
+                assert all(tour.ndim == 1 for tour in self.tours)
+            except (AssertionError, ValueError):
+                raise ValueError("The ``tours`` must be a list of 1D arrays.")
 
     def _check_ref_tours_dim(self):
         r"""
@@ -160,8 +165,11 @@ class OPSolver(SolverBase):
             if isinstance(self.ref_tours[0], int):
                 # if ref_tours is a list of integers, convert it to a list of arrays
                 self.ref_tours = [np.array(self.ref_tours)]
-            if not all(isinstance(tour, np.ndarray) and tour.ndim == 1 for tour in self.ref_tours):
-                raise ValueError("The ``ref_tours`` must be a list of 1D darrays.")
+            try:
+                self.ref_tours = [np.array(tour) for tour in self.ref_tours]
+                assert all(tour.ndim == 1 for tour in self.ref_tours)
+            except (AssertionError, ValueError):
+                raise ValueError("The ``ref_tours`` must be a list of 1D arrays.")
 
     def _check_depots_not_none(self):
         r"""
@@ -577,11 +585,11 @@ class OPSolver(SolverBase):
                 # create OPSolver
                 >>> solver = OPSolver()
 
-                # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/op/txt/op50.txt")
+                # load data from ``.pkl`` file
+                >>> solver.from_pkl(file_path="examples/op/txt/op50.pkl")
                     
                 # Output data in ``txt`` format
-                >>> solver.to_txt(file_path="examples/op/txt/op50_output.txt")
+                >>> solver.to_txt(file_path="examples/op/txt/op50.txt")
         """
         # check
         self._check_depots_not_none()
@@ -629,7 +637,62 @@ class OPSolver(SolverBase):
                 
                 f.write("\n")
                 
-    
+    def to_pkl(
+        self,
+        file_path: str = "example.pkl",
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        r"""
+        Output(store) data in ``pkl`` format
+
+        :param file_path: string, path to save the `.pkl` file.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import OPSolver
+                
+                # create OPSolver
+                >>> solver = OPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/op/txt/op50.txt")
+                    
+                # Output data in ``pkl`` format
+                >>> solver.to_pkl(file_path="examples/op/pkl/op50_output.pkl")
+        """
+        # check
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_prizes_not_none()
+        self._check_max_lengths_not_none()
+        
+        # variables
+        depots = self.depots.tolist()
+        points = self.ori_points if original else self.points
+        prizes = self.prizes.tolist()
+        max_lengths = self.max_lengths.tolist()
+
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        points = points.tolist()
+
+        # write
+        with open(file_path, "wb") as f:
+            pickle.dump(
+                list(zip(depots, points, prizes, max_lengths)), f, pickle.HIGHEST_PROTOCOL
+            )
 
     ### TODO
     def evaluate(
@@ -795,9 +858,3 @@ class OPSolver(SolverBase):
 
     def __str__(self) -> str:
         return "OPSolver"
-    
-    
-if __name__ == "__main__":
-    solver = OPSolver()
-    solver.from_txt(file_path="/home/zhanghang/chennuoyan/data/op/op_const20_test_seed1234.txt")
-    solver.to_txt(file_path="/home/zhanghang/chennuoyan/data/op/op_const20_test_seed1234_output.txt")

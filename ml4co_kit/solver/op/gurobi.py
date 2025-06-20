@@ -350,6 +350,7 @@ class OPGurobiSolver(OPSolver):
                 for i in range(n_instances):
                     # _solve_single_instance now returns (actual_prize_sum, [n1, n2, ..., nk])
                     cost, tour_nodes_1_indexed = results[i].get()
+                    tour_nodes_1_indexed = np.array(tour_nodes_1_indexed, dtype=int)  # Ensure it's an array
                     
                     # For `calc_op_length`, the tour input should be the 1-indexed nodes (as `tour_nodes_1_indexed` is).
                     calculated_length = self.calc_op_length(self.depots[i], self.points[i], tour_nodes_1_indexed)
@@ -372,10 +373,11 @@ class OPGurobiSolver(OPSolver):
                     self.prizes[i],
                     self.max_lengths[i]
                 )
+                tour_nodes_1_indexed = np.array(tour_nodes_1_indexed, dtype=int)  # Ensure it's an array
                 
                 # Similar changes as above for sequential processing
                 calculated_length = self.calc_op_length(self.depots[i], self.points[i], tour_nodes_1_indexed)
-                print(f"Calculaxted length for instance {i}: {calculated_length}")
+                print(f"Calculated length for instance {i}: {calculated_length}")
                 assert calculated_length <= self.max_lengths[i] + MAX_LENGTH_TOL, \
                     f"Tour exceeds max_length! Instance {i}, Length: {calculated_length}, Max: {self.max_lengths[i]}"
                 
