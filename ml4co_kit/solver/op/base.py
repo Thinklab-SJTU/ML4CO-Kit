@@ -694,7 +694,6 @@ class OPSolver(SolverBase):
                 list(zip(depots, points, prizes, max_lengths)), f, pickle.HIGHEST_PROTOCOL
             )
 
-    ### TODO
     def evaluate(
         self,
         calculate_gap: bool = False,
@@ -735,92 +734,87 @@ class OPSolver(SolverBase):
                 >>> solver.evaluate(calculate_gap=False)
                 5.820372200519043
         """
-        # # check
-        # self._check_points_not_none()
-        # self._check_tours_not_none(ref=False)
-        # if calculate_gap:
-        #     self._check_tours_not_none(ref=True)
+        # check
+        self._check_points_not_none()
+        self._check_tours_not_none(ref=False)
+        if calculate_gap:
+            self._check_tours_not_none(ref=True)
             
-        # # variables
-        # points = self.ori_points if original else self.points
-        # tours = self.tours
-        # ref_tours = self.ref_tours
+        # variables
+        depots = self.depots
+        points = self.ori_points if original else self.points
+        prizes = self.prizes if original else self.prizes
+        max_lengths = self.max_lengths if original else self.max_lengths
+        tours = self.tours
+        ref_tours = self.ref_tours
 
-        # # apply scale and dtype
-        # points = self._apply_scale_and_dtype(
-        #     points=points, apply_scale=apply_scale,
-        #     to_int=to_int, round_func=round_func
-        # )
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
 
-        # # prepare for evaluate
-        # tours_cost_list = list()
-        # samples = points.shape[0]
-        # if calculate_gap:
-        #     ref_tours_cost_list = list()
-        #     gap_list = list()
+        # prepare for evaluate
+        tours_cost_list = list()
+        samples = points.shape[0]
+        if calculate_gap:
+            ref_tours_cost_list = list()
+            gap_list = list()
+            
+        if tours.shape[0] != samples:
+            raise NotImplementedError(
+                "Evaluation is not implemented for multiple tours per instance."
+            )
 
-        # # deal with different situation
-        # if tours.shape[0] != samples:
-        #     # a problem has more than one solved tour
-        #     tours = tours.reshape(samples, -1, tours.shape[-1])
-        #     for idx in range(samples):
-        #         evaluator = OPEvaluator(points[idx], self.norm)
-        #         solved_tours = tours[idx]
-        #         solved_costs = list()
-        #         for tour in solved_tours:
-        #             solved_costs.append(evaluator.evaluate(tour))
-        #         solved_cost = np.min(solved_costs)
-        #         tours_cost_list.append(solved_cost)
-        #         if calculate_gap:
-        #             ref_cost = evaluator.evaluate(ref_tours[idx])
-        #             ref_tours_cost_list.appenO(ref_cost)
-        #             gap = (solved_cost - ref_cost) / ref_cost * 100
-        #             gap_list.append(gap)
-        # else:
-        #     # a problem only one solved tour
-        #     for idx in range(samples):
-        #         evaluator = OPEvaluator(points[idx], self.norm)
-        #         solved_tour = tours[idx]
-        #         solved_cost = evaluator.evaluate(solved_tour)
-        #         tours_cost_list.append(solved_cost)
-        #         if calculate_gap:
-        #             ref_cost = evaluator.evaluate(ref_tours[idx])
-        #             ref_tours_cost_list.append(ref_cost)
-        #             gap = (solved_cost - ref_cost) / ref_cost * 100
-        #             gap_list.append(gap)
+        # Suppose a problem only have one solved tour
+        for idx in range(samples):
+            solved_cost = self.calc_op_total(
+                prize=prizes[idx], tour=tours[idx]
+            )
+            tours_cost_list.append(solved_cost)
+            if calculate_gap:
+                ref_cost = self.calc_op_total(
+                    prize=prizes[idx], tour=ref_tours[idx]
+                )
+                ref_tours_cost_list.append(ref_cost)
+                gap = (solved_cost - ref_cost) / ref_cost * 100
+                gap_list.append(gap)
 
-        # # calculate average cost/gap & std
-        # tours_costs = np.array(tours_cost_list)
-        # if calculate_gap:
-        #     ref_costs = np.array(ref_tours_cost_list)
-        #     gaps = np.array(gap_list)
-        # costs_avg = np.average(tours_costs)
-        # if calculate_gap:
-        #     ref_costs_avg = np.average(ref_costs)
-        #     gap_avg = np.sum(gaps) / samples
-        #     gap_std = np.std(gaps)
-        #     return costs_avg, ref_costs_avg, gap_avg, gap_std
-        # else:
-        #     return costs_avg
-        raise NotImplementedError
+        # calculate average cost/gap & std
+        tours_costs = np.array(tours_cost_list)
+        if calculate_gap:
+            ref_costs = np.array(ref_tours_cost_list)
+            gaps = np.array(gap_list)
+        costs_avg = np.average(tours_costs)
+        if calculate_gap:
+            ref_costs_avg = np.average(ref_costs)
+            gap_avg = np.sum(gaps) / samples
+            gap_std = np.std(gaps)
+            return costs_avg, ref_costs_avg, gap_avg, gap_std
+        else:
+            return costs_avg
 
-    ## TODO
     def solve(
         self,
-        points: Union[np.ndarray, list] = None,
-        norm: str = "EUC_2D",
-        normalize: bool = False,
-        num_threads: int = 1,
+        depot: Union[list, np.ndarray] = None,
+        loc: Union[list, np.ndarray] = None,
+        prize: Union[list, np.ndarray] = None,
+        max_length: Union[list, np.ndarray] = None,
+        num_threads: int = 1, 
         show_time: bool = False,
         **kwargs,
     ) -> np.ndarray:
-        """
+        r"""
         This method will be implemented in subclasses.
-        
-        :param points: np.ndarray, the coordinates of nodes. If given, the points 
+
+        :param depot: np.ndarray, the coordinates of the depot. If given, the depot
             originally stored in the solver will be replaced.
-        :param norm: boolean, the normalization type for node coordinates.
-        :param normalize: boolean, whether to normalize node coordinates.
+        :param loc: np.ndarray, the coordinates of the locations. If given, the locations
+            originally stored in the solver will be replaced.
+        :param prize: np.ndarray, the prizes of the locations. If given, the prizes
+            originally stored in the solver will be replaced.
+        :param max_length: float, the maximum length of the tour. If given, the maximum
+            length originally stored in the solver will be replaced.
         :param num_threads: int, number of threads(could also be processes) used in parallel.
         :param show_time: boolean, whether the data is being read with a visual progress display.
         
@@ -828,29 +822,16 @@ class OPSolver(SolverBase):
 
             ::
             
-                >>> from ml4co_kit import TSPLKHSolver
+                >>> from ml4co_kit import OPSolver
                 
                 # create TSPLKHSolver
-                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+                >>> solver = OPSolver()
 
                 # load data and reference solutions from ``.tsp`` file
-                >>> solver.from_tsplib(
-                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
-                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
-                        ref=False,
-                        norm="EUC_2D",
-                        normalize=True
-                    )
+                >>> solver.from_pkl(file_path="examples/op/pkl/op50.pkl")
                     
                 # solve
                 >>> solver.solve()
-                [[ 0, 52, 39, 11, 48, 17, 28, 45, 23, 31, 60, 25,  6, 81, 77,  8,
-                36, 15, 50, 62, 43, 65, 47, 83, 10, 51, 86, 95, 96, 80, 44, 32,
-                99, 73, 56, 35, 13,  9, 91, 18, 98, 92,  3, 59, 68,  2, 72, 58,
-                40, 88, 20, 22, 69, 75, 90, 93, 94, 49, 61, 82, 71, 85,  4, 42,
-                55, 70, 37, 38, 27, 87, 97, 57, 33, 89, 24, 16,  7, 21, 74,  5,
-                53,  1, 34, 67, 29, 76, 79, 64, 30, 46, 66, 54, 41, 19, 63, 78,
-                12, 14, 26, 84,  0]]
         """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
