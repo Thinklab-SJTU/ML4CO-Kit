@@ -139,30 +139,30 @@ class OPSolver(SolverBase):
             
     def _check_tours_dim(self):
         r"""
-        Ensures that the ``tours`` attribute is a 2D array. If ``tours`` is a 1D array,
-        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``tours``
-        has more than 2 dimensions.
+        Ensures that the ``tours`` attribute is a list of 1D arrays. If ``tours`` is a list
+        of integers, it converts it to a list of arrays. Raises a ``ValueError`` if any
+        element in ``tours`` is not a 1D array.
         """
         if self.tours is not None:
-            if self.tours.ndim == 1:
-                self.tours = np.expand_dims(self.tours, axis=0)
-            if self.tours.ndim != 2:
-                raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
+            if isinstance(self.tours[0], int):
+                # if tours is a list of integers, convert it to a list of arrays
+                self.tours = [np.array(self.tours)]
+            if not all(isinstance(tour, np.ndarray) and tour.ndim == 1 for tour in self.tours):
+                raise ValueError("The ``tours`` must be a list of 1D darrays.")
 
     def _check_ref_tours_dim(self):
         r"""
-        Ensures that the ``ref_tours`` attribute is a 2D array. If ``ref_tours`` is a 1D array,
-        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``ref_tours``
-        has more than 2 dimensions.
+        Ensures that the ``ref_tours`` attribute is a list of 1D arrays. If ``ref_tours``
+        is a list of integers, it converts it to a list of arrays. Raises a ``ValueError``
+        if any element in ``ref_tours`` is not a 1D array.
         """
         if self.ref_tours is not None:
-            if self.ref_tours.ndim == 1:
-                self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
-            if self.ref_tours.ndim != 2:
-                raise ValueError(
-                    "The dimensions of the ``ref_tours`` cannot be larger than 2."
-                )
-                
+            if isinstance(self.ref_tours[0], int):
+                # if ref_tours is a list of integers, convert it to a list of arrays
+                self.ref_tours = [np.array(self.ref_tours)]
+            if not all(isinstance(tour, np.ndarray) and tour.ndim == 1 for tour in self.ref_tours):
+                raise ValueError("The ``ref_tours`` must be a list of 1D darrays.")
+
     def _check_depots_not_none(self):
         r"""
         Checks if the ``depots`` attribute is not ``None``. 
@@ -366,10 +366,10 @@ class OPSolver(SolverBase):
                 points = split_line_2[0]
                 split_line_3 = split_line_2[1].split(" max_length ")
                 prizes = split_line_3[0]
-                # split_line_4 = split_line_3[1].split(" tours ")
-                # max_length = split_line_4[0]
-                # tours = split_line_4[1]
-                max_length = split_line_3[1]
+                split_line_4 = split_line_3[1].split(" tours ")
+                max_length = split_line_4[0]
+                tours = split_line_4[1]
+                # max_length = split_line_3[1]
 
                 # strings to array
                 depot = depot.split(" ")
@@ -386,17 +386,17 @@ class OPSolver(SolverBase):
                     float(prizes[i]) for i in range(len(prizes))
                 ])
                 max_length = float(max_length)
-                # tours = tours.split(" ")
-                # tours = np.array(
-                #     [int(tours[i]) for i in range(len(tours))]
-                # )
+                tours = tours.split(" ")
+                tours = np.array(
+                    [int(tours[i]) for i in range(len(tours))]
+                )
                 
                 # add to the list
                 depots_list.append(depot)
                 points_list.append(points)
                 prizes_list.append(prizes)
                 max_lengths_list.append(max_length)
-                # tours_list.append(tours)
+                tours_list.append(tours)
 
         # check if return list
         if return_list:
@@ -406,15 +406,15 @@ class OPSolver(SolverBase):
         points = np.array(points_list)
         prizes = np.array(prizes_list)
         max_lengths = np.array(max_lengths_list)
-        # tours = np.array(tours_list)
-        
+        tours = np.array(tours_list)
+
         # use ``from_data``
-        # self.from_data(
-        #     depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
-        # )
         self.from_data(
-            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, ref=ref
+            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
         )
+        # self.from_data(
+        #     depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, ref=ref
+        # )
         
     def from_pkl(
         self,
@@ -546,10 +546,10 @@ class OPSolver(SolverBase):
         if tours is not None:
             if ref:
                 self.ref_tours = tours
-                # self._check_ref_tours_dim()
+                self._check_ref_tours_dim()
             else:
                 self.tours = tours
-                # self._check_tours_dim()
+                self._check_tours_dim()
                 
     def to_txt(
         self,
@@ -628,6 +628,8 @@ class OPSolver(SolverBase):
                         f.write(f"{node_idx} ")
                 
                 f.write("\n")
+                
+    
 
     ### TODO
     def evaluate(
