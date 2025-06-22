@@ -717,20 +717,19 @@ class OPSolver(SolverBase):
 
             :: 
             
-                >>> from ml4co_kit import TSPLKHSolver
+                >>> from ml4co_kit import OPGurobiSolver
                 
-                # create TSPLKHSolver
-                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+                # create OPGurobiSolver
+                >>> solver = OPGurobiSolver()
 
                 # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
-                
+                >>> solver.from_txt(file_path="examples/op/txt/op50.txt")
+                                
                 # solve
                 >>> solver.solve()
                     
-                # Evaluate the quality of the solutions solved by LKH
+                # Evaluate the quality of the solutions solved by Gurobi
                 >>> solver.evaluate(calculate_gap=False)
-                5.820372200519043
         """
         # check
         self._check_points_not_none()
@@ -822,10 +821,10 @@ class OPSolver(SolverBase):
             
                 >>> from ml4co_kit import OPSolver
                 
-                # create TSPLKHSolver
-                >>> solver = OPSolver()
+                # create OPGurobiSolver
+                >>> solver = OPGurobiSolver()
 
-                # load data and reference solutions from ``.tsp`` file
+                # load data and reference solutions from ``.pkl`` file
                 >>> solver.from_pkl(file_path="examples/op/pkl/op50.pkl")
                     
                 # solve

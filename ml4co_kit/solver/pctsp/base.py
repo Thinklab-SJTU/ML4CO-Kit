@@ -18,9 +18,9 @@ while satisfying a minimum total prize constraint.
 # See the Mulan PSL v2 for more details.
 
 
-import os
 import sys
 import numpy as np
+import pickle
 from typing import Union
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
@@ -120,6 +120,18 @@ class PCTSPSolver(SolverBase):
             if self.ori_points.ndim != 3:
                 raise ValueError("The ``ori_points`` must be 2D or 3D array.")
             
+    def _check_penalties_dim(self):
+        r"""
+        Ensures that the ``penalties`` attribute is a 2D array. If ``penalties`` is a 1D array,
+        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``penalties``
+        has more than 2 dimensions.
+        """
+        if self.penalties is not None:
+            if self.penalties.ndim == 1:
+                self.penalties = np.expand_dims(self.penalties, axis=0)
+            if self.penalties.ndim != 2:
+                raise ValueError("The dimensions of ``penalties`` cannot be larger than 2.")
+            
     def _check_prizes_dim(self):
         r"""
         Ensures that the ``deterministic_prizes`` and ``stochastic_prizes`` attributes
@@ -199,15 +211,26 @@ class PCTSPSolver(SolverBase):
             )
             raise ValueError(message)
         
-    def _check_prizes_not_none(self):
+    def _check_deterministic_prizes_not_none(self):
         r"""
-        Checks if the ``deterministic_prizes`` or ``stochastic_prizes`` attributes are not ``None``.
-        Raises a ``ValueError`` if both attributes are ``None``.
+        Checks if the ``deterministic_prizes`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``deterministic_prizes`` is ``None``. 
         """
-        if self.deterministic_prizes is None or self.stochastic_prizes is None:
+        if self.deterministic_prizes is None:
             message = (
-                "Both ``deterministic_prizes`` and ``stochastic_prizes`` cannot be None! "
-                "You can load the prizes using the methods including "
+                "``deterministic_prizes`` cannot be None! You can load the ``deterministic_prizes`` using the methods including "
+                "``from_data`` or ``from_txt``."
+            )
+            raise ValueError(message)
+        
+    def _check_stochastic_prizes_not_none(self):
+        r"""
+        Checks if the ``stochastic_prizes`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``stochastic_prizes`` is ``None``. 
+        """
+        if self.stochastic_prizes is None:
+            message = (
+                "``stochastic_prizes`` cannot be None! You can load the ``stochastic_prizes`` using the methods including "
                 "``from_data`` or ``from_txt``."
             )
             raise ValueError(message)
@@ -292,6 +315,56 @@ class PCTSPSolver(SolverBase):
             points = round_func(points)
         
         return points        
+    
+    def from_pkl(
+        self,
+        file_path: str,
+        ref: bool = False,
+        return_list: bool = False,
+        show_time: bool = False
+    ):
+        r"""
+        Read data from `.pkl` file.
+        
+        :param file_path: string, path to the `.pkl` file containing OP instances data.
+        :param ref: boolean, whether the solution is a reference solution.
+        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver.
+        :param show_time: boolean, whether the data is being read with a visual progress display.
+        """
+         # check the file format
+        if not file_path.endswith(".pkl"):
+            raise ValueError("Invalid file format. Expected a ``.pkl`` file.")
+        
+        # read the data from .pkl
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+            
+        # check the data format
+        if isinstance(data, list) and len(data) > 0:
+            if isinstance(data[0], tuple) and len(data[0]) == 4:
+                depots, locs, penalties, deterministic_prizes, stochastic_prizes = zip(*data)
+                self.from_data(
+                    depots=np.array(depots), 
+                    points=np.array(locs),
+                    penalties=np.array(penalties),
+                    deterministic_prizes=np.array(deterministic_prizes),
+                    stochastic_prizes=np.array(stochastic_prizes),
+                    ref=ref,
+                )
+            else:
+                raise ValueError("Invalid data format in PKL file")
+        else:
+            raise ValueError("PKL file should contain a list of tuples")
+        
+        # check if return_list
+        if return_list:
+            return (
+                self.depots.tolist(),
+                self.points.tolist(),
+                self.penalties.tolist(),
+                self.deterministic_prizes.tolist(),
+                self.stochastic_prizes.tolist()
+            )
         
     def from_txt(
         self,
@@ -328,58 +401,63 @@ class PCTSPSolver(SolverBase):
                 >>> solver.tours.shape
                 (16, 51)
         """
-        # check the file format
-        if not file_path.endswith(".txt"):
-            raise ValueError("Invalid file format. Expected a ``.txt`` file.")
+        # # check the file format
+        # if not file_path.endswith(".txt"):
+        #     raise ValueError("Invalid file format. Expected a ``.txt`` file.")
 
-        # read the data form .txt
-        with open(file_path, "r") as file:
-            points_list = list()
-            tour_list = list()
-            load_msg = f"Loading data from {file_path}"
-            for line in iterative_execution_for_file(file, load_msg, show_time):
-                line = line.strip()
-                split_line = line.split(" output ")
-                points = split_line[0]
-                tour = split_line[1]
-                tour = tour.split(" ")
-                tour = np.array([int(t) for t in tour])
-                tour -= 1
-                tour_list.append(tour)
-                points = points.split(" ")
-                points = np.array(
-                    [
-                        [float(points[i]), float(points[i + 1])]
-                        for i in range(0, len(points), 2)
-                    ]
-                )
-                points_list.append(points)
+        # # read the data form .txt
+        # with open(file_path, "r") as file:
+        #     points_list = list()
+        #     tour_list = list()
+        #     load_msg = f"Loading data from {file_path}"
+        #     for line in iterative_execution_for_file(file, load_msg, show_time):
+        #         line = line.strip()
+        #         split_line = line.split(" output ")
+        #         points = split_line[0]
+        #         tour = split_line[1]
+        #         tour = tour.split(" ")
+        #         tour = np.array([int(t) for t in tour])
+        #         tour -= 1
+        #         tour_list.append(tour)
+        #         points = points.split(" ")
+        #         points = np.array(
+        #             [
+        #                 [float(points[i]), float(points[i + 1])]
+        #                 for i in range(0, len(points), 2)
+        #             ]
+        #         )
+        #         points_list.append(points)
 
-        # check if return list
-        if return_list:
-            return points_list, tour_list
+        # # check if return list
+        # if return_list:
+        #     return points_list, tour_list
 
-        # check tours
-        try:
-            points = np.array(points_list)
-            tours = np.array(tour_list)
-        except Exception as e:
-            message = (
-                "This method does not support instances of different numbers of nodes. "
-                "If you want to read the data, please set ``return_list`` as True. "
-                "Anyway, the data will not be saved in the solver. "
-                "Please convert the data to ``np.ndarray`` externally before calling the solver."
-            )
-            raise Exception(message) from e
+        # # check tours
+        # try:
+        #     points = np.array(points_list)
+        #     tours = np.array(tour_list)
+        # except Exception as e:
+        #     message = (
+        #         "This method does not support instances of different numbers of nodes. "
+        #         "If you want to read the data, please set ``return_list`` as True. "
+        #         "Anyway, the data will not be saved in the solver. "
+        #         "Please convert the data to ``np.ndarray`` externally before calling the solver."
+        #     )
+        #     raise Exception(message) from e
 
-        # use ``from_data``
-        self.from_data(
-            points=points, tours=tours, ref=ref, norm=norm, normalize=normalize
-        )
+        # # use ``from_data``
+        # self.from_data(
+        #     points=points, tours=tours, ref=ref, norm=norm, normalize=normalize
+        # )
+        raise NotImplementedError()
 
     def from_data(
         self,
+        depots: Union[list, np.ndarray] = None,
         points: Union[list, np.ndarray] = None,
+        penalties: Union[list, np.ndarray] = None,
+        deterministic_prizes: Union[list, np.ndarray] = None,
+        stochastic_prizes: Union[list, np.ndarray] = None,
         tours: Union[list, np.ndarray] = None,
         ref: bool = False,
         norm: str = "EUC_2D",
@@ -388,8 +466,16 @@ class PCTSPSolver(SolverBase):
         """
         Read data from list or np.ndarray.
 
+        :param depots: np.ndarray, the coordinates of depots. If given, the depots
+            originally stored in the solver will be replaced.
         :param points: np.ndarray, the coordinates of nodes. If given, the points 
             originally stored in the solver will be replaced.
+        :param penalties: np.ndarray, the penalties of nodes. If given, the penalties
+            originally stored in the solver will be replaced.
+        :param deterministic_prizes: np.ndarray, the deterministic prizes of nodes.
+            If given, the deterministic prizes originally stored in the solver will be replaced.
+        :param stochastic_prizes: np.ndarray, the stochastic prizes of nodes. If given,
+            the stochastic prizes originally stored in the solver will be replaced.
         :param tours: np.ndarray, the solutions of the problems. If given, the tours
             originally stored in the solver will be replaced
         :param ref: boolean, whether the solution is a reference solution.
@@ -401,10 +487,10 @@ class PCTSPSolver(SolverBase):
             :: 
 
                 >>> import numpy as np
-                >>> from ml4co_kit import TSPSolver
+                >>> from ml4co_kit import PCTSPSolver
                 
-                # create TSPSolver
-                >>> solver = TSPSolver()
+                # create PCTSPSolver
+                >>> solver = PCTSPSolver()
 
                 # load data from np.ndarray
                 >>> solver.from_data(points=np.random.random(size=(10, 2)))
@@ -413,6 +499,12 @@ class PCTSPSolver(SolverBase):
         """
         # set norm
         self._set_norm(norm)
+        
+        # depots
+        if depots is not None:
+            depots = to_numpy(depots)
+            self.depots = depots.astype(np.float32)
+            self._check_depots_dim()
     
         # points
         if points is not None:
@@ -422,10 +514,27 @@ class PCTSPSolver(SolverBase):
             self._check_ori_points_dim()
             if normalize:
                 self._normalize_points()
+                
+        # penalties
+        if penalties is not None:
+            penalties = to_numpy(penalties)
+            self.penalties = penalties.astype(np.float32)
+            self._check_penalties_dim()
+            
+        # deterministic prizes
+        if deterministic_prizes is not None:
+            deterministic_prizes = to_numpy(deterministic_prizes)
+            self.deterministic_prizes = deterministic_prizes.astype(np.float32)
+            self._check_deterministic_prizes_not_none()
+        
+        # stochastic prizes
+        if stochastic_prizes is not None:
+            stochastic_prizes = to_numpy(stochastic_prizes)
+            self.stochastic_prizes = stochastic_prizes.astype(np.float32)
+            self._check_stochastic_prizes_not_none()
     
         # tours
         if tours is not None:
-            tours = to_numpy(tours).astype(np.int32)
             if ref:
                 self.ref_tours = tours
                 self._check_ref_tours_dim()
@@ -476,46 +585,47 @@ class PCTSPSolver(SolverBase):
                 # Output data in ``txt`` format
                 >>> solver.to_txt("kroC100.txt")
         """
-        # check
-        self._check_points_not_none()
-        self._check_tours_not_none(ref=False)
+        # # check
+        # self._check_points_not_none()
+        # self._check_tours_not_none(ref=False)
         
-        # variables
-        points = self.ori_points if original else self.points
-        tours = self.tours
+        # # variables
+        # points = self.ori_points if original else self.points
+        # tours = self.tours
 
-        # deal with different shapes
-        samples = points.shape[0]
-        if tours.shape[0] != samples:
-            # a problem has more than one solved tour
-            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
-            best_tour_list = list()
-            for idx, solved_tours in enumerate(samples_tours):
-                cur_eva = TSPEvaluator(points[idx])
-                best_tour = solved_tours[0]
-                best_cost = cur_eva.evaluate(best_tour)
-                for tour in solved_tours:
-                    cur_cost = cur_eva.evaluate(tour)
-                    if cur_cost < best_cost:
-                        best_cost = cur_cost
-                        best_tour = tour
-                best_tour_list.append(best_tour)
-            tours = np.array(best_tour_list)
+        # # deal with different shapes
+        # samples = points.shape[0]
+        # if tours.shape[0] != samples:
+        #     # a problem has more than one solved tour
+        #     samples_tours = tours.reshape(samples, -1, tours.shape[-1])
+        #     best_tour_list = list()
+        #     for idx, solved_tours in enumerate(samples_tours):
+        #         cur_eva = TSPEvaluator(points[idx])
+        #         best_tour = solved_tours[0]
+        #         best_cost = cur_eva.evaluate(best_tour)
+        #         for tour in solved_tours:
+        #             cur_cost = cur_eva.evaluate(tour)
+        #             if cur_cost < best_cost:
+        #                 best_cost = cur_cost
+        #                 best_tour = tour
+        #         best_tour_list.append(best_tour)
+        #     tours = np.array(best_tour_list)
 
-        # apply scale and dtype
-        points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
-            to_int=to_int, round_func=round_func
-        )
+        # # apply scale and dtype
+        # points = self._apply_scale_and_dtype(
+        #     points=points, apply_scale=apply_scale,
+        #     to_int=to_int, round_func=round_func
+        # )
 
-        # write
-        with open(file_path, "w") as f:
-            for node_coordes, tour in zip(points, tours):
-                f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
-                f.write(str(" ") + str("output") + str(" "))
-                f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
-                f.write("\n")
-            f.close()
+        # # write
+        # with open(file_path, "w") as f:
+        #     for node_coordes, tour in zip(points, tours):
+        #         f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
+        #         f.write(str(" ") + str("output") + str(" "))
+        #         f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
+        #         f.write("\n")
+        #     f.close()
+        raise NotImplementedError("The method `to_txt` is not implemented yet.")
 
     def evaluate(
         self,
@@ -557,73 +667,74 @@ class PCTSPSolver(SolverBase):
                 >>> solver.evaluate(calculate_gap=False)
                 5.820372200519043
         """
-        # check
-        self._check_points_not_none()
-        self._check_tours_not_none(ref=False)
-        if calculate_gap:
-            self._check_tours_not_none(ref=True)
+        # # check
+        # self._check_points_not_none()
+        # self._check_tours_not_none(ref=False)
+        # if calculate_gap:
+        #     self._check_tours_not_none(ref=True)
             
-        # variables
-        points = self.ori_points if original else self.points
-        tours = self.tours
-        ref_tours = self.ref_tours
+        # # variables
+        # points = self.ori_points if original else self.points
+        # tours = self.tours
+        # ref_tours = self.ref_tours
 
-        # apply scale and dtype
-        points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
-            to_int=to_int, round_func=round_func
-        )
+        # # apply scale and dtype
+        # points = self._apply_scale_and_dtype(
+        #     points=points, apply_scale=apply_scale,
+        #     to_int=to_int, round_func=round_func
+        # )
 
-        # prepare for evaluate
-        tours_cost_list = list()
-        samples = points.shape[0]
-        if calculate_gap:
-            ref_tours_cost_list = list()
-            gap_list = list()
+        # # prepare for evaluate
+        # tours_cost_list = list()
+        # samples = points.shape[0]
+        # if calculate_gap:
+        #     ref_tours_cost_list = list()
+        #     gap_list = list()
 
-        # deal with different situation
-        if tours.shape[0] != samples:
-            # a problem has more than one solved tour
-            tours = tours.reshape(samples, -1, tours.shape[-1])
-            for idx in range(samples):
-                evaluator = TSPEvaluator(points[idx], self.norm)
-                solved_tours = tours[idx]
-                solved_costs = list()
-                for tour in solved_tours:
-                    solved_costs.append(evaluator.evaluate(tour))
-                solved_cost = np.min(solved_costs)
-                tours_cost_list.append(solved_cost)
-                if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
-                    ref_tours_cost_list.append(ref_cost)
-                    gap = (solved_cost - ref_cost) / ref_cost * 100
-                    gap_list.append(gap)
-        else:
-            # a problem only one solved tour
-            for idx in range(samples):
-                evaluator = TSPEvaluator(points[idx], self.norm)
-                solved_tour = tours[idx]
-                solved_cost = evaluator.evaluate(solved_tour)
-                tours_cost_list.append(solved_cost)
-                if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
-                    ref_tours_cost_list.append(ref_cost)
-                    gap = (solved_cost - ref_cost) / ref_cost * 100
-                    gap_list.append(gap)
+        # # deal with different situation
+        # if tours.shape[0] != samples:
+        #     # a problem has more than one solved tour
+        #     tours = tours.reshape(samples, -1, tours.shape[-1])
+        #     for idx in range(samples):
+        #         evaluator = TSPEvaluator(points[idx], self.norm)
+        #         solved_tours = tours[idx]
+        #         solved_costs = list()
+        #         for tour in solved_tours:
+        #             solved_costs.append(evaluator.evaluate(tour))
+        #         solved_cost = np.min(solved_costs)
+        #         tours_cost_list.append(solved_cost)
+        #         if calculate_gap:
+        #             ref_cost = evaluator.evaluate(ref_tours[idx])
+        #             ref_tours_cost_list.append(ref_cost)
+        #             gap = (solved_cost - ref_cost) / ref_cost * 100
+        #             gap_list.append(gap)
+        # else:
+        #     # a problem only one solved tour
+        #     for idx in range(samples):
+        #         evaluator = TSPEvaluator(points[idx], self.norm)
+        #         solved_tour = tours[idx]
+        #         solved_cost = evaluator.evaluate(solved_tour)
+        #         tours_cost_list.append(solved_cost)
+        #         if calculate_gap:
+        #             ref_cost = evaluator.evaluate(ref_tours[idx])
+        #             ref_tours_cost_list.append(ref_cost)
+        #             gap = (solved_cost - ref_cost) / ref_cost * 100
+        #             gap_list.append(gap)
 
-        # calculate average cost/gap & std
-        tours_costs = np.array(tours_cost_list)
-        if calculate_gap:
-            ref_costs = np.array(ref_tours_cost_list)
-            gaps = np.array(gap_list)
-        costs_avg = np.average(tours_costs)
-        if calculate_gap:
-            ref_costs_avg = np.average(ref_costs)
-            gap_avg = np.sum(gaps) / samples
-            gap_std = np.std(gaps)
-            return costs_avg, ref_costs_avg, gap_avg, gap_std
-        else:
-            return costs_avg
+        # # calculate average cost/gap & std
+        # tours_costs = np.array(tours_cost_list)
+        # if calculate_gap:
+        #     ref_costs = np.array(ref_tours_cost_list)
+        #     gaps = np.array(gap_list)
+        # costs_avg = np.average(tours_costs)
+        # if calculate_gap:
+        #     ref_costs_avg = np.average(ref_costs)
+        #     gap_avg = np.sum(gaps) / samples
+        #     gap_std = np.std(gaps)
+        #     return costs_avg, ref_costs_avg, gap_avg, gap_std
+        # else:
+        #     return costs_avg
+        raise NotImplementedError("The method `evaluate` is not implemented yet.")
 
     def solve(
         self,

@@ -16,10 +16,6 @@ mixed-integer programming (MIP), quadratic programming (QP), and more.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-
-import os
-import math
-import uuid
 import itertools
 import numpy as np
 import gurobipy as gp
