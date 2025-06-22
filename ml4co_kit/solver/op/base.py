@@ -18,7 +18,6 @@ while ensuring the total travel cost does not exceed the budget.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import os
 import sys
 import numpy as np
 import pickle
@@ -36,7 +35,7 @@ else:
 
 class OPSolver(SolverBase):
     r"""
-    This class provides a basic framework for solving Orienteering problems. It includes methods for
+    This class provides a basic framework for solving OP problems. It includes methods for
     loading and outputting data in various file formats and evaluating solutions.
     Note that the actual solving method should be implemented in subclasses.
     
@@ -48,8 +47,8 @@ class OPSolver(SolverBase):
         but may later undergo standardization or scaling processing.
     :param prizes: :math:`(B\times N)`, np.ndarray, the prizes of the nodes.
     :param max_lengths: :math:`(B)`, np.ndarray, the maximum lengths of the tours.
-    :param tours: :math:`(B\times L+1)`, np.ndarray, the solutions to the problems. 
-    :param ref_tours: :math:`(B\times (L+1))`, np.ndarray, the reference solutions to the problems. 
+    :param tours: list containing B tours, the solutions to the problems. 
+    :param ref_tours: list containing B tours, the reference solutions to the problems. 
     :param scale: int, magnification scale of coordinates. If the input coordinates are too large,
         you can scale them to 0-1 by setting ``normalize`` to True, and then use ``scale`` to adjust them.
         Note that the magnification scale only applies to ``points`` when solved by the solver.
@@ -64,9 +63,8 @@ class OPSolver(SolverBase):
         super(OPSolver, self).__init__(
             task_type=TASK_TYPE.OP, solver_type=solver_type
         )
-        self.solver_type = solver_type
         self.scale = scale
-        self.time_limit = time_limit
+        self.time_limit: float = time_limit
         self.nodes_num: int = None
         self.depots: np.ndarray = None
         self.points: np.ndarray = None
