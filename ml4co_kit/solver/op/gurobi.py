@@ -35,7 +35,7 @@ class OPGurobiSolver(OPSolver):
         self.threads = None
         self.gap = None
         
-    def _solve_single_instance(
+    def _solve(
         self, 
         depot: np.ndarray, 
         loc: np.ndarray, 
@@ -341,7 +341,7 @@ class OPGurobiSolver(OPSolver):
                         self.prizes[i],
                         self.max_lengths[i]
                     )
-                    results.append(pool.apply_async(self._solve_single_instance, args))
+                    results.append(pool.apply_async(self._solve, args))
                 
                 for i in range(n_instances):
                     # _solve_single_instance now returns (actual_prize_sum, [n1, n2, ..., nk])
@@ -363,7 +363,7 @@ class OPGurobiSolver(OPSolver):
         else:
             # Sequential processing
             for i in range(n_instances):
-                cost, tour_nodes_1_indexed = self._solve_single_instance(
+                cost, tour_nodes_1_indexed = self._solve(
                     self.depots[i],
                     self.points[i],
                     self.prizes[i],

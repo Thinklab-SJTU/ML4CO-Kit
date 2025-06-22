@@ -26,7 +26,6 @@ from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver.routing_enums_pb2 import LocalSearchMetaheuristic
 from ml4co_kit.solver.pctsp.base import PCTSPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.utils.distance_utils import get_distance_matrix
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
@@ -58,7 +57,7 @@ class PCTSPORSolver(PCTSPSolver):
             "generic_tabu": LocalSearchMetaheuristic.GENERIC_TABU_SEARCH,
         }
         
-        self.search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+        self.search_parameters = pywrapcp.DefaultRoutingSearchParameters()
         self.search_parameters.local_search_metaheuristic = (meta_heu_dict[self.strategy])
         self.search_parameters.time_limit.seconds = self.time_limit
         self.search_parameters.log_search = False
@@ -167,10 +166,10 @@ class PCTSPORSolver(PCTSPSolver):
     
     def solve(
         self,
-        depots: Union[np.ndarray, List[np.ndarray]],
-        points: Union[np.ndarray, List[np.ndarray]],
-        penalties: Union[np.ndarray, List[np.ndarray]],
-        prizes: Union[np.ndarray, List[np.ndarray]],
+        depots: Union[np.ndarray, List[np.ndarray]] = None,
+        points: Union[np.ndarray, List[np.ndarray]] = None,
+        penalties: Union[np.ndarray, List[np.ndarray]] = None,
+        prizes: Union[np.ndarray, List[np.ndarray]] = None,
         norm: str = "EUC_2D",
         normalize: bool = False,
         num_threads: int = 1,
@@ -205,10 +204,18 @@ class PCTSPORSolver(PCTSPSolver):
                     self.depots[idx],
                     self.points[idx],
                     self.penalties[idx],
-                    self.deterministic_prizes[idx]
+                    self.deterministic_prizes[idx],
+                    min(sum(self.deterministic_prizes[idx]), 1.)
                 )
+                assert tour[0] == 0, "Tour must start with depot"
+                tour = tour[1:-1]
+                total_cost = self.calc_pctsp_cost(self.depots[0], self.points[0], self.penalties[0], self.deterministic_prizes[0], tour)
+                print(f"Total cost: {total_cost}, Cost from OR-Tools: {cost}")
+                assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
                 costs.append(cost)
                 tours.append(tour)
+                
+                print(f"Instance {idx + 1}/{num_points} solved with cost {cost:.2f} and tour length {len(tour)}")
         else:
             with Pool(num_threads) as p:
                 results = p.starmap(self._solve, [(
@@ -218,7 +225,12 @@ class PCTSPORSolver(PCTSPSolver):
                         self.deterministic_prizes[idx]
                     ) for idx in range(num_points)
                 ])
-            for cost, tour in results:
+            for idx in range(num_points):
+                cost, tour = results[idx]
+                assert tour[0] == 0, "Tour must start with depot"
+                tour = tour[1:-1]
+                total_cost = self.calc_pctsp_cost(self.depots[0], self.points[0], self.penalties[0], self.deterministic_prizes[0], tour)
+                assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
                 costs.append(cost)
                 tours.append(tour)
         

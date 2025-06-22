@@ -314,7 +314,25 @@ class PCTSPSolver(SolverBase):
             round_func = self._get_round_func(round_func)
             points = round_func(points)
         
-        return points        
+        return points      
+    
+    def calc_pctsp_total(self, vals, tour):
+        # Subtract 1 since vals index start with 0 while tour indexing starts with 1 as depot is 0
+        assert (np.array(tour) > 0).all(), "Depot cannot be in tour"
+        return np.array(vals)[np.array(tour) - 1].sum()
+
+    def calc_pctsp_length(self, depot, loc, tour):
+        loc_with_depot = np.vstack((np.array(depot)[None, :], np.array(loc)))
+        sorted_locs = loc_with_depot[np.concatenate(([0], tour, [0]))]
+        return np.linalg.norm(sorted_locs[1:] - sorted_locs[:-1], axis=-1).sum()
+
+    def calc_pctsp_cost(self, depot, loc, penalty, prize, tour):
+        # With some tolerance we should satisfy minimum prize
+        assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
+        assert self.calc_pctsp_total(prize, tour) >= 1 - 1e-5 or len(tour) == len(prize), \
+            "Tour should collect at least 1 as total prize or visit all nodes"
+        # Penalty is only incurred for locations not visited, so charge total penalty minus penalty of locations visited
+        return self.calc_pctsp_length(depot, loc, tour) + np.sum(penalty) - self.calc_pctsp_total(penalty, tour)  
     
     def from_pkl(
         self,
@@ -341,7 +359,7 @@ class PCTSPSolver(SolverBase):
             
         # check the data format
         if isinstance(data, list) and len(data) > 0:
-            if isinstance(data[0], tuple) and len(data[0]) == 4:
+            try:
                 depots, locs, penalties, deterministic_prizes, stochastic_prizes = zip(*data)
                 self.from_data(
                     depots=np.array(depots), 
@@ -351,8 +369,8 @@ class PCTSPSolver(SolverBase):
                     stochastic_prizes=np.array(stochastic_prizes),
                     ref=ref,
                 )
-            else:
-                raise ValueError("Invalid data format in PKL file")
+            except Exception as e:
+                raise ValueError(f"Invalid data format in PKL file: {e}")
         else:
             raise ValueError("PKL file should contain a list of tuples")
         
@@ -375,10 +393,10 @@ class PCTSPSolver(SolverBase):
         normalize: bool = False,
         show_time: bool = False
     ):
-        """
+        r"""
         Read data from `.txt` file.
 
-        :param file_path: string, path to the `.txt` file containing TSP instances data.
+        :param file_path: string, path to the `.txt` file containing PCTSP instances data.
         :param ref: boolean, whether the solution is a reference solution.
         :param return_list: boolean, only use this function to obtain data, but do not save it to the solver. 
         :param norm: boolean, the normalization type for node coordinates.
@@ -389,67 +407,107 @@ class PCTSPSolver(SolverBase):
 
             :: 
             
-                >>> from ml4co_kit import TSPSolver
+                >>> from ml4co_kit import PCTSPSolver
                 
-                # create TSPSolver
-                >>> solver = TSPSolver()
+                # create PCTSPSolver
+                >>> solver = PCTSPSolver()
 
                 # load data from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
+                >>> solver.from_txt(file_path="examples/pctsp/txt/pctsp50_concorde.txt")
                 >>> solver.points.shape
                 (16, 50, 2)
-                >>> solver.tours.shape
-                (16, 51)
         """
-        # # check the file format
-        # if not file_path.endswith(".txt"):
-        #     raise ValueError("Invalid file format. Expected a ``.txt`` file.")
+        # check the file format
+        if not file_path.endswith(".txt"):
+            raise ValueError("Invalid file format. Expected a ``.txt`` file.")
 
-        # # read the data form .txt
-        # with open(file_path, "r") as file:
-        #     points_list = list()
-        #     tour_list = list()
-        #     load_msg = f"Loading data from {file_path}"
-        #     for line in iterative_execution_for_file(file, load_msg, show_time):
-        #         line = line.strip()
-        #         split_line = line.split(" output ")
-        #         points = split_line[0]
-        #         tour = split_line[1]
-        #         tour = tour.split(" ")
-        #         tour = np.array([int(t) for t in tour])
-        #         tour -= 1
-        #         tour_list.append(tour)
-        #         points = points.split(" ")
-        #         points = np.array(
-        #             [
-        #                 [float(points[i]), float(points[i + 1])]
-        #                 for i in range(0, len(points), 2)
-        #             ]
-        #         )
-        #         points_list.append(points)
+        # read the data form .txt
+        with open(file_path, "r") as file:
+            # record to lists
+            depots_list = list()
+            points_list = list()
+            penalties_list = list()
+            deterministic_prizes_list = list()
+            stochastic_prizes_list = list()
+            tours_list = list()
+            
+            # read by lines
+            load_msg = f"Loading data from {file_path}"
+            for line in iterative_execution_for_file(file, load_msg, show_time):
+                # line to strings
+                line = line.strip()
+                split_line_0 = line.split("depot ")[1]
+                split_line_1 = split_line_0.split(" points ")
+                depot = split_line_1[0]
+                split_line_2 = split_line_1[1].split(" penalties ")
+                points = split_line_2[0]
+                split_line_3 = split_line_2[1].split(" deterministic_prizes ")
+                penalties = split_line_3[0]
+                split_line_4 = split_line_3[1].split(" stochastic_prizes ")
+                deterministic_prizes = split_line_4[0]
+                split_line_5 = split_line_4[1].split(" tours ")
+                stochastic_prizes = split_line_5[0]
+                tours = split_line_5[1]
+                # stochastic_prizes = split_line_4[1]
 
-        # # check if return list
-        # if return_list:
-        #     return points_list, tour_list
+                # strings to array
+                depot = depot.split(" ")
+                depot = np.array([float(depot[0]), float(depot[1])])
+                points = points.split(" ")
+                points = np.array(
+                    [
+                        [float(points[i]), float(points[i + 1])]
+                        for i in range(0, len(points), 2)
+                    ]
+                )
+                penalties = penalties.split(" ")
+                penalties = np.array([
+                    float(penalties[i]) for i in range(len(penalties))
+                ])
+                deterministic_prizes = deterministic_prizes.split(" ")
+                deterministic_prizes = np.array(
+                    [float(deterministic_prizes[i]) for i in range(len(deterministic_prizes))]
+                )
+                stochastic_prizes = stochastic_prizes.split(" ")
+                stochastic_prizes = np.array(
+                    [float(stochastic_prizes[i]) for i in range(len(stochastic_prizes))]
+                )
+                tours = tours.split(" ")
+                tours = np.array(
+                    [int(tours[i]) for i in range(len(tours))]
+                )
+                
+                # add to the list
+                depots_list.append(depot)
+                points_list.append(points)
+                penalties_list.append(penalties)
+                deterministic_prizes_list.append(deterministic_prizes)
+                stochastic_prizes_list.append(stochastic_prizes)
+                tours_list.append(tours)
 
-        # # check tours
-        # try:
-        #     points = np.array(points_list)
-        #     tours = np.array(tour_list)
-        # except Exception as e:
-        #     message = (
-        #         "This method does not support instances of different numbers of nodes. "
-        #         "If you want to read the data, please set ``return_list`` as True. "
-        #         "Anyway, the data will not be saved in the solver. "
-        #         "Please convert the data to ``np.ndarray`` externally before calling the solver."
-        #     )
-        #     raise Exception(message) from e
+        # check if return list
+        if return_list:
+            return depots_list, points_list, penalties_list, \
+                     deterministic_prizes_list, stochastic_prizes_list, tours_list
+        
+        depots = np.array(depots_list)
+        points = np.array(points_list)
+        penalties = np.array(penalties_list)
+        deterministic_prizes = np.array(deterministic_prizes_list)
+        stochastic_prizes = np.array(stochastic_prizes_list)
+        tours = np.array(tours_list)
 
-        # # use ``from_data``
+        # use ``from_data``
+        self.from_data(
+            depots=depots, points=points, penalties=penalties,
+            deterministic_prizes=deterministic_prizes,
+            stochastic_prizes=stochastic_prizes, tours=tours, ref=ref,
+        )
         # self.from_data(
-        #     points=points, tours=tours, ref=ref, norm=norm, normalize=normalize
+        #     depots=depots, points=points, penalties=penalties,
+        #     deterministic_prizes=deterministic_prizes,
+        #     stochastic_prizes=stochastic_prizes
         # )
-        raise NotImplementedError()
 
     def from_data(
         self,
@@ -550,82 +608,144 @@ class PCTSPSolver(SolverBase):
         to_int: bool = False,
         round_func: str = "round"
     ):
-        """
+        r"""
         Output(store) data in ``txt`` format
 
         :param file_path: string, path to save the `.txt` file.
-        :param tour_file_path: string, path to the `.tour` file containing TSP solution data.
-            if given, the solver will read tour from the file.
         :param original: boolean, whether to use ``original points`` or ``points``.
         :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
         :param to_int: boolean, whether to transfer the corrdinates to integters.
         :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
-
-        .. note::
-            ``points`` and ``tours`` must not be None.
          
         .. dropdown:: Example
 
             :: 
             
-                >>> from ml4co_kit import TSPSolver
+                >>> from ml4co_kit import PCTSPSolver
                 
-                # create TSPSolver
-                >>> solver = TSPSolver()
+                # create PCTSPSolver
+                >>> solver = PCTSPSolver()
 
-                # load data from ``.tsp`` and ``.opt.tour`` files
-                >>> solver.from_tsplib(
-                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
-                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
-                        ref=False,
-                        norm="EUC_2D",
-                        normalize=True
-                    )
+                # load data from ``.pkl`` file
+                >>> solver.from_pkl(file_path="examples/pctsp/txt/pctsp50.pkl")
                     
                 # Output data in ``txt`` format
-                >>> solver.to_txt("kroC100.txt")
+                >>> solver.to_txt(file_path="examples/pctsp/txt/pctsp50.txt")
         """
-        # # check
-        # self._check_points_not_none()
-        # self._check_tours_not_none(ref=False)
+        # check
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_penalties_not_none()
+        self._check_deterministic_prizes_not_none()
+        self._check_stochastic_prizes_not_none()
         
-        # # variables
-        # points = self.ori_points if original else self.points
-        # tours = self.tours
+        # variables
+        depots = self.depots
+        points = self.ori_points if original else self.points
+        penalties = self.penalties
+        deterministic_prizes = self.deterministic_prizes
+        stochastic_prizes = self.stochastic_prizes
+        tours = self.ref_tours
 
-        # # deal with different shapes
-        # samples = points.shape[0]
-        # if tours.shape[0] != samples:
-        #     # a problem has more than one solved tour
-        #     samples_tours = tours.reshape(samples, -1, tours.shape[-1])
-        #     best_tour_list = list()
-        #     for idx, solved_tours in enumerate(samples_tours):
-        #         cur_eva = TSPEvaluator(points[idx])
-        #         best_tour = solved_tours[0]
-        #         best_cost = cur_eva.evaluate(best_tour)
-        #         for tour in solved_tours:
-        #             cur_cost = cur_eva.evaluate(tour)
-        #             if cur_cost < best_cost:
-        #                 best_cost = cur_cost
-        #                 best_tour = tour
-        #         best_tour_list.append(best_tour)
-        #     tours = np.array(best_tour_list)
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
 
-        # # apply scale and dtype
-        # points = self._apply_scale_and_dtype(
-        #     points=points, apply_scale=apply_scale,
-        #     to_int=to_int, round_func=round_func
-        # )
+        # write
+        with open(file_path, "w") as f:
+            for idx in range(points.shape[0]):
+                # write depot
+                f.write(f"depot {depots[idx][0]} {depots[idx][1]} ")
 
-        # # write
-        # with open(file_path, "w") as f:
-        #     for node_coordes, tour in zip(points, tours):
-        #         f.write(" ".join(str(x) + str(" ") + str(y) for x, y in node_coordes))
-        #         f.write(str(" ") + str("output") + str(" "))
-        #         f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
-        #         f.write("\n")
-        #     f.close()
-        raise NotImplementedError("The method `to_txt` is not implemented yet.")
+                # write points
+                f.write("points ")
+                for node_x, node_y in points[idx]:
+                    f.write(f"{node_x} {node_y} ")
+
+                # write penalties
+                f.write(f"penalties ")
+                for i in range(len(penalties[idx])):
+                    f.write(f"{penalties[idx][i]} ")
+
+                # write deterministic prizes
+                f.write(f"deterministic_prizes ")
+                for i in range(len(deterministic_prizes[idx])):
+                    f.write(f"{deterministic_prizes[idx][i]} ")
+                    
+                # write stochastic prizes
+                f.write(f"stochastic_prizes ")
+                for i in range(len(stochastic_prizes[idx])):
+                    f.write(f"{stochastic_prizes[idx][i]} ")
+                
+                # write tours
+                if tours is not None:
+                    f.write(f"tours ")
+                    for node_idx in tours[idx]:
+                        f.write(f"{node_idx} ")
+                
+                f.write("\n")
+    
+    def to_pkl(
+        self,
+        file_path: str = "example.pkl",
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        r"""
+        Output(store) data in ``pkl`` format
+
+        :param file_path: string, path to save the `.pkl` file.
+        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
+        :param to_int: boolean, whether to transfer the corrdinates to integters.
+        :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
+
+        .. dropdown:: Example
+
+            :: 
+            
+                >>> from ml4co_kit import PCTSPSolver
+                
+                # create PCTSPSolver
+                >>> solver = PCTSPSolver()
+
+                # load data from ``.txt`` file
+                >>> solver.from_txt(file_path="examples/pctsp/txt/pctsp50.txt")
+                    
+                # Output data in ``pkl`` format
+                >>> solver.to_pkl(file_path="examples/pctsp/pkl/pctsp50_output.pkl")
+        """
+        # check
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_penalties_not_none()
+        self._check_deterministic_prizes_not_none()
+        self._check_stochastic_prizes_not_none()
+        
+        # variables
+        depots = self.depots.tolist()
+        points = self.ori_points if original else self.points
+        penalties = self.penalties.tolist()
+        deterministic_prizes = self.deterministic_prizes.tolist()
+        stochastic_prizes = self.stochastic_prizes.tolist()
+
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        points = points.tolist()
+
+        # write
+        with open(file_path, "wb") as f:
+            pickle.dump(
+                list(zip(depots, points, penalties, deterministic_prizes, stochastic_prizes)), f, pickle.HIGHEST_PROTOCOL
+            )
+        
 
     def evaluate(
         self,

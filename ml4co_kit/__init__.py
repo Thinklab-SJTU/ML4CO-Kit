@@ -64,6 +64,7 @@ from .solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
 )
+from .solver import PCTSPSolver, PCTSPORSolver
 
 #######################################################
 #                    Utils Function                   #

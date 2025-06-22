@@ -74,6 +74,12 @@ from .tsp.lkh import TSPLKHSolver
 from .tsp.or_tools import TSPORSolver
 
 #######################################
+#             PCTSP Solver             #  
+#######################################
+from .pctsp.base import PCTSPSolver
+from .pctsp.or_tools import PCTSPORSolver
+
+#######################################
 #     Extension Function (torch)      #
 #######################################
 found_torch = importlib.util.find_spec("torch")
