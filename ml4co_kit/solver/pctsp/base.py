@@ -21,6 +21,7 @@ while satisfying a minimum total prize constraint.
 import sys
 import numpy as np
 import pickle
+import math
 from typing import Union
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
@@ -61,7 +62,7 @@ class PCTSPSolver(SolverBase):
     def __init__(
         self, 
         solver_type: SOLVER_TYPE = None, 
-        scale: int = 1e6,
+        scale: int = 1e7,
         time_limit: float = 60.0
     ):
         super(PCTSPSolver, self).__init__(
@@ -317,16 +318,19 @@ class PCTSPSolver(SolverBase):
         return points      
     
     def calc_pctsp_total(self, vals, tour):
+        r"""Calculate the total prize or penalty of a PCTSP tour."""
         # Subtract 1 since vals index start with 0 while tour indexing starts with 1 as depot is 0
         assert (np.array(tour) > 0).all(), "Depot cannot be in tour"
         return np.array(vals)[np.array(tour) - 1].sum()
 
     def calc_pctsp_length(self, depot, loc, tour):
+        r"""Calculate the length of a PCTSP tour."""
         loc_with_depot = np.vstack((np.array(depot)[None, :], np.array(loc)))
         sorted_locs = loc_with_depot[np.concatenate(([0], tour, [0]))]
-        return np.linalg.norm(sorted_locs[1:] - sorted_locs[:-1], axis=-1).sum()
+        return np.linalg.norm(sorted_locs[1:] - sorted_locs[:-1], axis=-1).sum() 
 
     def calc_pctsp_cost(self, depot, loc, penalty, prize, tour):
+        r"""Calculate the cost of a PCTSP tour."""
         # With some tolerance we should satisfy minimum prize
         assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
         assert self.calc_pctsp_total(prize, tour) >= 1 - 1e-5 or len(tour) == len(prize), \

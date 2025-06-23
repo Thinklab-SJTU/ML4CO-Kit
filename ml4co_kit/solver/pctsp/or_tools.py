@@ -38,7 +38,7 @@ class PCTSPORSolver(PCTSPSolver):
     :param strategy, str, choices: ["auto", "greedy", "guided", "guided", "tabu", "generic_tabu"]
     """
     def __init__(
-        self, scale: int = 1e6, strategy: str = "guided", time_limit: int = 1,
+        self, scale: int = 1e7, strategy: str = "guided", time_limit: int = 1,
     ):
         super(PCTSPORSolver, self).__init__(
             solver_type=SOLVER_TYPE.ORTOOLS, scale=scale
@@ -92,7 +92,6 @@ class PCTSPORSolver(PCTSPSolver):
         min_prize_scaled = _float_to_scaled_int(min_prize)
         total_possible_prize_scaled = sum(prizes_scaled)
         min_prize_scaled = min(min_prize_scaled, total_possible_prize_scaled) # Clamp if initial min_prize is too high
-
 
         num_locations = len(locations_scaled) # Total nodes including depot
         num_vehicles = 1
@@ -158,7 +157,8 @@ class PCTSPORSolver(PCTSPSolver):
                 index = solution.Value(routing.NextVar(index))
             route.append(manager.IndexToNode(index))
 
-            return total_cost, route # route will be [0, n1, n2, ..., nk, 0]
+            # return total_cost, route # route will be [0, n1, n2, ..., nk, 0]
+            return total_cost, route
         else:
             # If no solution found, return default (e.g., very high cost, only depot)
             print(f"OR-Tools: No solution found for instance. Status: {routing.status()}")
@@ -209,7 +209,7 @@ class PCTSPORSolver(PCTSPSolver):
                 )
                 assert tour[0] == 0, "Tour must start with depot"
                 tour = tour[1:-1]
-                total_cost = self.calc_pctsp_cost(self.depots[0], self.points[0], self.penalties[0], self.deterministic_prizes[0], tour)
+                total_cost = self.calc_pctsp_cost(self.depots[idx], self.points[idx], self.penalties[idx], self.deterministic_prizes[idx], tour)                
                 print(f"Total cost: {total_cost}, Cost from OR-Tools: {cost}")
                 assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
                 costs.append(cost)
@@ -229,7 +229,8 @@ class PCTSPORSolver(PCTSPSolver):
                 cost, tour = results[idx]
                 assert tour[0] == 0, "Tour must start with depot"
                 tour = tour[1:-1]
-                total_cost = self.calc_pctsp_cost(self.depots[0], self.points[0], self.penalties[0], self.deterministic_prizes[0], tour)
+                total_cost = self.calc_pctsp_cost(self.depots[idx], self.points[idx], self.penalties[idx], self.deterministic_prizes[idx], tour)
+                print(f"Total cost: {total_cost}, Cost from OR-Tools: {cost}")
                 assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
                 costs.append(cost)
                 tours.append(tour)
