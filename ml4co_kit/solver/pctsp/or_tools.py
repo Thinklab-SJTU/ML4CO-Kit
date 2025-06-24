@@ -104,7 +104,7 @@ class PCTSPORSolver(PCTSPSolver):
         routing = pywrapcp.RoutingModel(manager)
 
         # 4. Define Arc Cost (Distance)
-        distance_evaluator_obj = _CreateDistanceEvaluator(locations_scaled)
+        distance_evaluator_obj = _CreateDistanceEvaluator(locations_scaled, manager)
         transit_callback_index = routing.RegisterTransitCallback(distance_evaluator_obj.distance_evaluator)
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
@@ -120,7 +120,7 @@ class PCTSPORSolver(PCTSPSolver):
 
 
         # 6. Add Minimum Total Prize Constraint (Cumulative Dimension)
-        prize_evaluator_obj = _CreatePrizeEvaluator(prizes_scaled)
+        prize_evaluator_obj = _CreatePrizeEvaluator(prizes_scaled, manager)
         prize_callback_index = routing.RegisterTransitCallback(prize_evaluator_obj.prize_evaluator)
         
         prize_dimension_name = 'Prize'
@@ -208,7 +208,7 @@ class PCTSPORSolver(PCTSPSolver):
                     min(sum(self.deterministic_prizes[idx]), 1.)
                 )
                 assert tour[0] == 0, "Tour must start with depot"
-                tour = tour[1:-1]
+                tour = tour[1:-1]         
                 total_cost = self.calc_pctsp_cost(self.depots[idx], self.points[idx], self.penalties[idx], self.deterministic_prizes[idx], tour)                
                 print(f"Total cost: {total_cost}, Cost from OR-Tools: {cost}")
                 assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
@@ -260,11 +260,11 @@ def _euclidean_distance_scaled(position_1: Tuple[int, int], position_2: Tuple[in
     r"""Computes the Euclidean distance between two scaled integer points."""
     return int(math.sqrt((position_1[0] - position_2[0]) ** 2 + (position_1[1] - position_2[1]) ** 2) + 0.5)
 
-
 class _CreateDistanceEvaluator(object):
     r"""Creates callback to return distance between points."""
-    def __init__(self, locations_scaled: List[Tuple[int, int]]):
+    def __init__(self, locations_scaled: List[Tuple[int, int]], manager: pywrapcp.RoutingIndexManager):
         self._distances = {}
+        self._manager = manager
         num_locations = len(locations_scaled)
         for from_node in range(num_locations):
             self._distances[from_node] = {}
@@ -275,22 +275,30 @@ class _CreateDistanceEvaluator(object):
                     self._distances[from_node][to_node] = (
                         _euclidean_distance_scaled(locations_scaled[from_node], locations_scaled[to_node]))
 
-    def distance_evaluator(self, from_node, to_node):
+    def distance_evaluator(self, from_index: int, to_index: int) -> int:
         r"""Returns the scaled Euclidean distance between the two nodes."""
+        # The 'from_index' and 'to_index' are solver indices, not node indices.
+        from_node = self._manager.IndexToNode(from_index)
+        to_node = self._manager.IndexToNode(to_index)
         return self._distances[from_node][to_node]
-    
-    
+
 class _CreatePrizeEvaluator(object):
     r"""Creates callback to get prizes at each location."""
-    def __init__(self, prizes_scaled: List[int]):
+    def __init__(self, prizes_scaled: List[int], manager: pywrapcp.RoutingIndexManager):
+        # We also need the manager here for index conversion.
         self._prizes = prizes_scaled
+        self._manager = manager
 
-    def prize_evaluator(self, from_node, to_node):
+    def prize_evaluator(self, from_index: int, to_index: int) -> int:
         r"""
         Returns the prize of the current node (0 for depot, prizes for others).
-        Note: from_node is the routing index.
         """
-        del to_node # to_node is not used for prize evaluation in PCTSP
-        # Depot (routing index 0) has no prize
-        # Other nodes (routing index i > 0) map to self._prizes[i - 1]
-        return 0 if from_node == 0 else self._prizes[from_node - 1] # Prize is only for locations, not depot
+        del to_index # to_node is not used for prize evaluation in PCTSP
+        
+        # The 'from_index' is a solver index. Convert it to a node index.
+        from_node = self._manager.IndexToNode(from_index)
+        
+        # The rest of the logic is the same.
+        # Depot (node index 0) has no prize.
+        # Other nodes (node index i > 0) map to self._prizes[i - 1].
+        return 0 if from_node == 0 else self._prizes[from_node - 1]

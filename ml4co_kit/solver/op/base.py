@@ -600,7 +600,7 @@ class OPSolver(SolverBase):
         points = self.ori_points if original else self.points
         prizes = self.prizes
         max_lengths = self.max_lengths
-        tours = self.ref_tours
+        tours = self.tours
 
         # apply scale and dtype
         points = self._apply_scale_and_dtype(

@@ -152,29 +152,36 @@ class PCTSPSolver(SolverBase):
 
     def _check_tours_dim(self):
         r"""
-        Ensures that the ``tours`` attribute is a 2D array. If ``tours`` is a 1D array,
-        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``tours``
-        has more than 2 dimensions.
+        Ensures that the ``tours`` attribute is a list of 1D arrays. If ``tours`` is a list
+        of integers, it converts it to a list of arrays. Raises a ``ValueError`` if any
+        element in ``tours`` is not a 1D array.
         """
         if self.tours is not None:
-            if self.tours.ndim == 1:
-                self.tours = np.expand_dims(self.tours, axis=0)
-            if self.tours.ndim != 2:
-                raise ValueError("The dimensions of ``tours`` cannot be larger than 2.")
+            print(self.tours)
+            if isinstance(self.tours[0], int):
+                # if tours is a list of integers, convert it to a list of arrays
+                self.tours = [np.array(self.tours)]
+            try:
+                self.tours = [np.array(tour) for tour in self.tours]
+                assert all(tour.ndim == 1 for tour in self.tours)
+            except (AssertionError, ValueError):
+                raise ValueError("The ``tours`` must be a list of 1D arrays.")
 
     def _check_ref_tours_dim(self):
         r"""
-        Ensures that the ``ref_tours`` attribute is a 2D array. If ``ref_tours`` is a 1D array,
-        it adds an additional dimension to make it 2D. Raises a ``ValueError`` if ``ref_tours``
-        has more than 2 dimensions.
+        Ensures that the ``ref_tours`` attribute is a list of 1D arrays. If ``ref_tours``
+        is a list of integers, it converts it to a list of arrays. Raises a ``ValueError``
+        if any element in ``ref_tours`` is not a 1D array.
         """
         if self.ref_tours is not None:
-            if self.ref_tours.ndim == 1:
-                self.ref_tours = np.expand_dims(self.ref_tours, axis=0)
-            if self.ref_tours.ndim != 2:
-                raise ValueError(
-                    "The dimensions of the ``ref_tours`` cannot be larger than 2."
-                )
+            if isinstance(self.ref_tours[0], int):
+                # if ref_tours is a list of integers, convert it to a list of arrays
+                self.ref_tours = [np.array(self.ref_tours)]
+            try:
+                self.ref_tours = [np.array(tour) for tour in self.ref_tours]
+                assert all(tour.ndim == 1 for tour in self.ref_tours)
+            except (AssertionError, ValueError):
+                raise ValueError("The ``ref_tours`` must be a list of 1D arrays.")
         
     def _check_depots_not_none(self):
         r"""
@@ -649,7 +656,7 @@ class PCTSPSolver(SolverBase):
         penalties = self.penalties
         deterministic_prizes = self.deterministic_prizes
         stochastic_prizes = self.stochastic_prizes
-        tours = self.ref_tours
+        tours = self.tours
 
         # apply scale and dtype
         points = self._apply_scale_and_dtype(
