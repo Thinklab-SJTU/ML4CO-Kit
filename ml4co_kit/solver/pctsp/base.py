@@ -92,6 +92,18 @@ class PCTSPSolver(SolverBase):
                 self.depots = np.expand_dims(self.depots, axis=0)
             if self.depots.ndim != 2:
                 raise ValueError("The dimensions of ``depots`` cannot be larger than 2.")
+            
+    def _check_ori_points_not_none(self):
+        r"""
+        Checks if the ``ori_points`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``ori_points`` is ``None``. 
+        """
+        if self.ori_points is None:
+            message = (
+                "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
+                "``from_data`` or ``from_txt``."
+            )
+            raise ValueError(message)
         
     def _check_points_dim(self):
         r"""
@@ -783,93 +795,101 @@ class PCTSPSolver(SolverBase):
 
             :: 
             
-                >>> from ml4co_kit import TSPLKHSolver
+                >>> from ml4co_kit import PCTSPORSolver
                 
-                # create TSPLKHSolver
-                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+                # create PCTSPORSolver
+                >>> solver = PCTSPORSolver()
 
                 # load data and reference solutions from ``.txt`` file
-                >>> solver.from_txt(file_path="examples/tsp/txt/tsp50_concorde.txt")
+                >>> solver.from_txt(file_path="examples/pctsp/txt/pctsp50.txt")
                 
                 # solve
                 >>> solver.solve()
                     
-                # Evaluate the quality of the solutions solved by LKH
+                # Evaluate the quality of the solutions solved by ORTools
                 >>> solver.evaluate(calculate_gap=False)
-                5.820372200519043
         """
-        # # check
-        # self._check_points_not_none()
-        # self._check_tours_not_none(ref=False)
-        # if calculate_gap:
-        #     self._check_tours_not_none(ref=True)
+        # check
+        self._check_depots_not_none()
+        if original:
+            self._check_ori_points_not_none()
+        else:
+            self._check_points_not_none()
+        self._check_penalties_not_none()
+        self._check_deterministic_prizes_not_none()
+        self._check_tours_not_none(ref=False)
+        if calculate_gap:
+            self._check_tours_not_none(ref=True)
             
-        # # variables
-        # points = self.ori_points if original else self.points
-        # tours = self.tours
-        # ref_tours = self.ref_tours
+        # variables
+        depots = self.depots
+        points = self.ori_points if original else self.points
+        penalties = self.penalties
+        deterministic_prizes = self.deterministic_prizes
+        tours = self.tours
+        ref_tours = self.ref_tours
 
-        # # apply scale and dtype
-        # points = self._apply_scale_and_dtype(
-        #     points=points, apply_scale=apply_scale,
-        #     to_int=to_int, round_func=round_func
-        # )
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
 
-        # # prepare for evaluate
-        # tours_cost_list = list()
-        # samples = points.shape[0]
-        # if calculate_gap:
-        #     ref_tours_cost_list = list()
-        #     gap_list = list()
+        # prepare for evaluate
+        tours_cost_list = list()
+        samples = points.shape[0]
+        if calculate_gap:
+            ref_tours_cost_list = list()
+            gap_list = list()
 
-        # # deal with different situation
-        # if tours.shape[0] != samples:
-        #     # a problem has more than one solved tour
-        #     tours = tours.reshape(samples, -1, tours.shape[-1])
-        #     for idx in range(samples):
-        #         evaluator = TSPEvaluator(points[idx], self.norm)
-        #         solved_tours = tours[idx]
-        #         solved_costs = list()
-        #         for tour in solved_tours:
-        #             solved_costs.append(evaluator.evaluate(tour))
-        #         solved_cost = np.min(solved_costs)
-        #         tours_cost_list.append(solved_cost)
-        #         if calculate_gap:
-        #             ref_cost = evaluator.evaluate(ref_tours[idx])
-        #             ref_tours_cost_list.append(ref_cost)
-        #             gap = (solved_cost - ref_cost) / ref_cost * 100
-        #             gap_list.append(gap)
-        # else:
-        #     # a problem only one solved tour
-        #     for idx in range(samples):
-        #         evaluator = TSPEvaluator(points[idx], self.norm)
-        #         solved_tour = tours[idx]
-        #         solved_cost = evaluator.evaluate(solved_tour)
-        #         tours_cost_list.append(solved_cost)
-        #         if calculate_gap:
-        #             ref_cost = evaluator.evaluate(ref_tours[idx])
-        #             ref_tours_cost_list.append(ref_cost)
-        #             gap = (solved_cost - ref_cost) / ref_cost * 100
-        #             gap_list.append(gap)
+        if len(tours) != samples:
+            raise NotImplementedError(
+                "Evaluation is not implemented for multiple tours per instance."
+            )
+        
+        # Suppose a problem only have one solved tour
+        for idx in range(samples):
+            solved_cost = self.calc_pctsp_cost(
+                depot=depots[idx],
+                loc=points[idx],
+                penalty=penalties[idx],
+                prize=deterministic_prizes[idx],
+                tour=tours[idx]
+            )
+            tours_cost_list.append(solved_cost)
+            if calculate_gap:
+                ref_cost = self.calc_pctsp_cost(
+                    depot=depots[idx],
+                    loc=points[idx],
+                    penalty=penalties[idx],
+                    prize=deterministic_prizes[idx],
+                    tour=ref_tours[idx]
+                )
+                ref_tours_cost_list.append(ref_cost)
+                gap = (solved_cost - ref_cost) / ref_cost * 100
+                gap_list.append(gap)
 
-        # # calculate average cost/gap & std
-        # tours_costs = np.array(tours_cost_list)
-        # if calculate_gap:
-        #     ref_costs = np.array(ref_tours_cost_list)
-        #     gaps = np.array(gap_list)
-        # costs_avg = np.average(tours_costs)
-        # if calculate_gap:
-        #     ref_costs_avg = np.average(ref_costs)
-        #     gap_avg = np.sum(gaps) / samples
-        #     gap_std = np.std(gaps)
-        #     return costs_avg, ref_costs_avg, gap_avg, gap_std
-        # else:
-        #     return costs_avg
-        raise NotImplementedError("The method `evaluate` is not implemented yet.")
+        # calculate average cost/gap & std
+        tours_costs = np.array(tours_cost_list)
+        if calculate_gap:
+            ref_costs = np.array(ref_tours_cost_list)
+            gaps = np.array(gap_list)
+        costs_avg = np.average(tours_costs)
+        if calculate_gap:
+            ref_costs_avg = np.average(ref_costs)
+            gap_avg = np.sum(gaps) / samples
+            gap_std = np.std(gaps)
+            return costs_avg, ref_costs_avg, gap_avg, gap_std
+        else:
+            return costs_avg
 
     def solve(
         self,
-        points: Union[np.ndarray, list] = None,
+        depots: Union[list, np.ndarray] = None,
+        points: Union[list, np.ndarray] = None,
+        penalties: Union[list, np.ndarray] = None,
+        deterministic_prizes: Union[list, np.ndarray] = None,
+        stochastic_prizes: Union[list, np.ndarray] = None,
         norm: str = "EUC_2D",
         normalize: bool = False,
         num_threads: int = 1,
@@ -879,8 +899,16 @@ class PCTSPSolver(SolverBase):
         """
         This method will be implemented in subclasses.
         
+        :param depots: np.ndarray, the coordinates of depots. If given, the depots
+            originally stored in the solver will be replaced.
         :param points: np.ndarray, the coordinates of nodes. If given, the points 
             originally stored in the solver will be replaced.
+        :param penalties: np.ndarray, the penalties of nodes. If given, the penalties
+            originally stored in the solver will be replaced.
+        :param deterministic_prizes: np.ndarray, the deterministic prizes of nodes.
+            If given, the deterministic prizes originally stored in the solver will be replaced.
+        :param stochastic_prizes: np.ndarray, the stochastic prizes of nodes. If given,
+            the stochastic prizes originally stored in the solver will be replaced.
         :param norm: boolean, the normalization type for node coordinates.
         :param normalize: boolean, whether to normalize node coordinates.
         :param num_threads: int, number of threads(could also be processes) used in parallel.
@@ -890,29 +918,16 @@ class PCTSPSolver(SolverBase):
 
             ::
             
-                >>> from ml4co_kit import TSPLKHSolver
+                >>> from ml4co_kit import PCTSPORSolver
                 
-                # create TSPLKHSolver
-                >>> solver = TSPLKHSolver(lkh_max_trials=1)
+                # create 
+                >>> solver = PCTSPORSolver()
 
-                # load data and reference solutions from ``.tsp`` file
-                >>> solver.from_tsplib(
-                        tsp_file_path="examples/tsp/tsplib_1/problem/kroC100.tsp",
-                        tour_file_path="examples/tsp/tsplib_1/solution/kroC100.opt.tour",
-                        ref=False,
-                        norm="EUC_2D",
-                        normalize=True
-                    )
+                # load data and reference solutions from ``.pkl`` file
+                >>> solver.from_pkl(file_path="examples/pctsp/pkl/pctsp50.pkl")
                     
                 # solve
                 >>> solver.solve()
-                [[ 0, 52, 39, 11, 48, 17, 28, 45, 23, 31, 60, 25,  6, 81, 77,  8,
-                36, 15, 50, 62, 43, 65, 47, 83, 10, 51, 86, 95, 96, 80, 44, 32,
-                99, 73, 56, 35, 13,  9, 91, 18, 98, 92,  3, 59, 68,  2, 72, 58,
-                40, 88, 20, 22, 69, 75, 90, 93, 94, 49, 61, 82, 71, 85,  4, 42,
-                55, 70, 37, 38, 27, 87, 97, 57, 33, 89, 24, 16,  7, 21, 74,  5,
-                53,  1, 34, 67, 29, 76, 79, 64, 30, 46, 66, 54, 41, 19, 63, 78,
-                12, 14, 26, 84,  0]]
         """
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."

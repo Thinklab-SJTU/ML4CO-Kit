@@ -210,11 +210,9 @@ class PCTSPORSolver(PCTSPSolver):
                 assert tour[0] == 0, "Tour must start with depot"
                 tour = tour[1:-1]         
                 total_cost = self.calc_pctsp_cost(self.depots[idx], self.points[idx], self.penalties[idx], self.deterministic_prizes[idx], tour)                
-                print(f"Total cost: {total_cost}, Cost from OR-Tools: {cost}")
                 assert abs(total_cost - cost) <= 1e-5, "Cost is incorrect"
                 costs.append(cost)
                 tours.append(tour)
-                
                 print(f"Instance {idx + 1}/{num_points} solved with cost {cost:.2f} and tour length {len(tour)}")
         else:
             with Pool(num_threads) as p:

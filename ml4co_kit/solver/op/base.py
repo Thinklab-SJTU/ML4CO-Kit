@@ -180,6 +180,18 @@ class OPSolver(SolverBase):
                 "``from_data`` or ``from_txt``."
             )
             raise ValueError(message)
+        
+    def _check_ori_points_not_none(self):
+        r"""
+        Checks if the ``ori_points`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``ori_points`` is ``None``. 
+        """
+        if self.ori_points is None:
+            message = (
+                "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
+                "``from_data`` or ``from_txt``."
+            )
+            raise ValueError(message)
             
     def _check_points_not_none(self):
         r"""
@@ -732,7 +744,13 @@ class OPSolver(SolverBase):
                 >>> solver.evaluate(calculate_gap=False)
         """
         # check
-        self._check_points_not_none()
+        self._check_depots_not_none()
+        if original:
+            self._check_ori_points_not_none()   
+        else:
+            self._check_points_not_none()
+        self._check_prizes_not_none()
+        self._check_max_lengths_not_none()
         self._check_tours_not_none(ref=False)
         if calculate_gap:
             self._check_tours_not_none(ref=True)
@@ -740,7 +758,7 @@ class OPSolver(SolverBase):
         # variables
         depots = self.depots
         points = self.ori_points if original else self.points
-        prizes = self.prizes if original else self.prizes
+        prizes = self.prizes
         max_lengths = self.max_lengths if original else self.max_lengths
         tours = self.tours
         ref_tours = self.ref_tours
