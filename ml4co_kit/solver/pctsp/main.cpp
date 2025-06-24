@@ -165,6 +165,9 @@ void greedyRandomizedConst(Params *params, Solution *solution) {
 					rlc.push_back(j);
 			}
 
+			if (rlc.empty()) {
+                break;
+            }
 			selectedPos = (unsigned int)(rand() % rlc.size());
 			selectedPos = rlc[selectedPos];
 			params->visited[selectedPos] = true;

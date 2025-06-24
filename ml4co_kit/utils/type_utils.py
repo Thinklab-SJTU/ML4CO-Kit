@@ -45,6 +45,7 @@ class SOLVER_TYPE(str, Enum):
     NEUROLKH = "NeuroLKH" # Support for TSP
     ORTOOLS = "OR-Tools" # Support TSP, ATSP, MIS, MCl, KP
     PYVRP = "PyVRP" # Support CVRP
+    ILS = "Iterated Local Search (ILS)" # Support PCTSP
 
 
 TASK_SUPPORT_SOLVER = {

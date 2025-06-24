@@ -78,6 +78,7 @@ from .tsp.or_tools import TSPORSolver
 #######################################
 from .pctsp.base import PCTSPSolver
 from .pctsp.or_tools import PCTSPORSolver
+from .pctsp.ils import PCTSPILSSolver
 
 #######################################
 #     Extension Function (torch)      #

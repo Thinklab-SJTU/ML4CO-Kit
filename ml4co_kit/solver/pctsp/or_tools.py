@@ -196,8 +196,7 @@ class PCTSPORSolver(PCTSPSolver):
         # solve
         costs = list()
         tours = list()
-        p_shape = self.points.shape
-        num_points = p_shape[0]
+        num_points = self.points.shape[0]
         if num_threads == 1:
             for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
                 cost, tour = self._solve(
