@@ -61,17 +61,7 @@ class PCTSPILSSolver(PCTSPSolver):
     ) -> Tuple[np.ndarray, np.ndarray]: # Returns (costs, routes)
         r"""
         Solve PCTSP instances using ILS (C++).
-        
-        ::param depots: (num_instances, 2), the coordinates of depots for each instance.
-        :param points: (num_instances, num_nodes, 2), the coordinates of nodes for each instance (excluding depot).
-        :param penalties: (num_instances, num_nodes), the penalties for not visiting each node for each instance (excluding depot).
-        :param prizes: (num_instances, num_nodes), the prizes for each node for each instance (excluding depot).
-        :param min_prizes: The minimum total prize required for each instance.
-        :param norm: The normalization type for node coordinates.
-        :param normalize: boolean, whether to normalize node coordinates.
-        :param num_threads: int, number of threads(could also be processes) used in parallel.
-        :param show_time: boolean, whether the data is being read with a visual progress display.
-        """
+        """        
         # preparation
         self.from_data(depots=depots, points=points, penalties=penalties, deterministic_prizes=prizes, norm=norm, normalize=normalize)
         timer = Timer(apply=show_time)
@@ -81,17 +71,23 @@ class PCTSPILSSolver(PCTSPSolver):
         costs = list()
         tours = list()
         num_points = self.points.shape[0]
+
+        # We will use this to convert all floats to integers before writing to file.
+        SCALE_FACTOR = 100000.0
+        
         for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
             temp_input_file = f"temp_instance_{idx}.txt"
             
             try:
                 # Prepare the input data for the C++ solver
                 all_coords = np.vstack([self.depots[idx], self.points[idx]])
-                dist_matrix = (cdist(all_coords, all_coords, 'euclidean') * 1000).astype(int)
-                prizes_full = np.insert(self.deterministic_prizes[idx], 0, 0)
-                penalties_full = np.insert(self.penalties[idx], 0, 0)
                 
-                # Write the input data to a temporary file
+                dist_matrix = np.round(cdist(all_coords, all_coords, 'euclidean') * SCALE_FACTOR).astype(int)
+                prizes_full = np.round(np.insert(self.deterministic_prizes[idx], 0, 0) * SCALE_FACTOR).astype(int)
+                penalties_full = np.round(np.insert(self.penalties[idx], 0, 0) * SCALE_FACTOR).astype(int)
+                min_prize_scaled = int(1.0 * SCALE_FACTOR)
+                
+                # Write the properly scaled integer data to a temporary file
                 with open(temp_input_file, 'w') as f:
                     # Prizes
                     f.write(' '.join(map(str, prizes_full)) + '\n')
@@ -103,13 +99,12 @@ class PCTSPILSSolver(PCTSPSolver):
                 
                 print(f"Wrote instance data to {temp_input_file}")
                 
-                # Call the C++ solver 
-                min_prize = 1 
+                # Call the C++ solver with the scaled min_prize
                 command = [
-                    self.cpp_solver_path,    # argv[0] - Path to the C++ solver executable
-                    temp_input_file,         # argv[1] - File name of the input instance
-                    str(min_prize),          # argv[2] - Minimum total prize
-                    str(self.runs_per_instance) # argv[3] - Number of runs for the ILS
+                    self.cpp_solver_path,
+                    temp_input_file,
+                    str(min_prize_scaled), # Use the scaled integer value for min_prize
+                    str(self.runs_per_instance)
                 ]
                 
                 print(f"Executing command: {' '.join(command)}")
@@ -139,7 +134,17 @@ class PCTSPILSSolver(PCTSPSolver):
 
                 if final_cost is None or final_route is None:
                     raise RuntimeError("Failed to parse cost or route from C++ solver output.")
-                costs.append(final_cost / 1000.0)
+                
+                # Recalculate cost in Python using original float data for validation.
+                total_cost = self.calc_pctsp_cost(self.depots[idx], self.points[idx], self.penalties[idx], self.deterministic_prizes[idx], final_route)
+                
+                # The cost from C++ is scaled, so scale it back down before comparing.
+                cost_from_ils = final_cost / SCALE_FACTOR
+                
+                print(f"Total cost: {total_cost}, Cost from ILS: {cost_from_ils}")
+                assert abs(total_cost - cost_from_ils) <= 1e-4, "Cost is incorrect" # Relaxed tolerance slightly for float precision
+                
+                costs.append(cost_from_ils)
                 tours.append(final_route)
                 
             finally:
