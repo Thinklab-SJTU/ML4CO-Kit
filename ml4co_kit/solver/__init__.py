@@ -22,12 +22,6 @@ from .kp.base import KPSolver
 from .kp.or_tools import KPORSolver
 
 #######################################
-#              OP Solver              #
-#######################################
-from .op.base import OPSolver
-from .op.gurobi import OPGurobiSolver
-
-#######################################
 #              LP Solver             #  
 #######################################
 from .lp.base import LPSolver
@@ -61,6 +55,12 @@ from .mis.or_tools import MISORSolver
 from .mvc.base import MVCSolver
 from .mvc.gurobi import MVCGurobiSolver
 from .mvc.or_tools import MVCORSolver
+
+#######################################
+#              OP Solver              #
+#######################################
+from .op.base import OPSolver
+from .op.gurobi import OPGurobiSolver
 
 #######################################
 #             TSP Solver             #  

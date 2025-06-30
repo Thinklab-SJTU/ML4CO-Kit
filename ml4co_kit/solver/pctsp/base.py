@@ -518,7 +518,7 @@ class PCTSPSolver(SolverBase):
         penalties = np.array(penalties_list)
         deterministic_prizes = np.array(deterministic_prizes_list)
         stochastic_prizes = np.array(stochastic_prizes_list)
-        tours = np.array(tours_list)
+        tours = tours_list
 
         # use ``from_data``
         self.from_data(

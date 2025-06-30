@@ -143,7 +143,6 @@ class OPSolver(SolverBase):
         element in ``tours`` is not a 1D array.
         """
         if self.tours is not None:
-            print(self.tours)
             if isinstance(self.tours[0], int):
                 # if tours is a list of integers, convert it to a list of arrays
                 self.tours = [np.array(self.tours)]
@@ -424,7 +423,7 @@ class OPSolver(SolverBase):
         points = np.array(points_list)
         prizes = np.array(prizes_list)
         max_lengths = np.array(max_lengths_list)
-        tours = np.array(tours_list)
+        tours = tours_list
 
         # use ``from_data``
         self.from_data(
