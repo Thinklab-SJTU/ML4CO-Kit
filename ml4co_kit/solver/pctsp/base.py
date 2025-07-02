@@ -21,13 +21,10 @@ while satisfying a minimum total prize constraint.
 import sys
 import numpy as np
 import pickle
-import math
 from typing import Union
-from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
-from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
+from ml4co_kit.utils.time_utils import iterative_execution_for_file
 
 
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
@@ -66,7 +63,7 @@ class PCTSPSolver(SolverBase):
         time_limit: float = 60.0
     ):
         super(PCTSPSolver, self).__init__(
-            task_type=TASK_TYPE.TSP, solver_type=solver_type
+            task_type=TASK_TYPE.PCTSP, solver_type=solver_type
         )
         self.scale: np.ndarray = scale
         self.time_limit: float = time_limit

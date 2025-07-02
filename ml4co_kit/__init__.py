@@ -60,11 +60,12 @@ from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
 from .solver import MVCSolver, MVCGurobiSolver, MVCORSolver
 from .solver import KPSolver, KPORSolver
 from .solver import OPSolver, OPGurobiSolver
+from .solver import PCTSPSolver, PCTSPORSolver, PCTSPILSSolver
+from .solver import SPCTSPSolver, SPCTSPReoptSolver
 from .solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
 )
-from .solver import PCTSPSolver, PCTSPORSolver, PCTSPILSSolver
 
 #######################################################
 #                    Utils Function                   #

@@ -74,11 +74,17 @@ from .tsp.lkh import TSPLKHSolver
 from .tsp.or_tools import TSPORSolver
 
 #######################################
-#             PCTSP Solver             #  
+#             PCTSP Solver            #  
 #######################################
 from .pctsp.base import PCTSPSolver
 from .pctsp.or_tools import PCTSPORSolver
 from .pctsp.ils import PCTSPILSSolver
+
+#######################################
+#             SPCTSP Solver           #  
+#######################################
+from .spctsp.base import SPCTSPSolver
+from .spctsp.reopt import SPCTSPReoptSolver
 
 #######################################
 #     Extension Function (torch)      #
