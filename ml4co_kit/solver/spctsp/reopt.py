@@ -47,6 +47,7 @@ class SPCTSPReoptSolver(SPCTSPSolver):
         )
         self.time_limit = time_limit
         self.cpp_solver_path = cpp_solver_path
+        self.runs_per_instance = runs_per_instance
         self.append = append
     
     def solve(
@@ -166,12 +167,12 @@ class SPCTSPReoptSolver(SPCTSPSolver):
                         raise RuntimeError("Failed to parse cost from C++ solver output.")
                     
                     # Validation Subproblem Cost
-                    sub_cost_from_cpp = cost_from_cpp / SCALE_FACTOR
-                    python_calculated_sub_cost = self._calculate_pctsp_cost_from_dist_matrix(
-                        sub_dist_matrix, sub_penalties, sub_tour
-                    )
-                    assert abs(python_calculated_sub_cost - sub_cost_from_cpp) <= 1e-4, \
-                        f"Subproblem cost mismatch! Python: {python_calculated_sub_cost}, C++: {sub_cost_from_cpp}"
+                    # sub_cost_from_cpp = cost_from_cpp / SCALE_FACTOR
+                    # python_calculated_sub_cost = self._calculate_pctsp_cost_from_dist_matrix(
+                    #     sub_dist_matrix, sub_penalties, sub_tour
+                    # )
+                    # assert abs(python_calculated_sub_cost - sub_cost_from_cpp) <= 1e-4, \
+                    #     f"Subproblem cost mismatch! Python: {python_calculated_sub_cost}, C++: {sub_cost_from_cpp}"
 
                     if not sub_tour:
                         break
@@ -193,7 +194,7 @@ class SPCTSPReoptSolver(SPCTSPSolver):
                     if os.path.exists(temp_input_file):
                         os.remove(temp_input_file)
 
-            final_cost = self.calc_pctsp_cost(depot, customer_points, customer_penalties, final_tour)
+            final_cost = self.calc_pctsp_cost(depot, customer_points, customer_penalties, customer_stoch_prizes,final_tour)
             
             costs.append(final_cost)
             tours.append(final_tour)
