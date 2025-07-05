@@ -271,11 +271,6 @@ class OPGurobiSolver(OPSolver):
                     # We want [n1, n2, ..., nk] for calc_op_length and calc_op_total.
                     nodes_in_tour_no_depot = reconstructed_path[1:-1]
                     
-                    # Calculate the tour length using Gurobi's own 'dist' values
-                    # gurobi_calculated_tour_length = gp.quicksum(x[i,j] * dist[i,j] for i,j in selected_edges_raw).getValue()
-                    # print(f"Gurobi's calculated length for this solution: {gurobi_calculated_tour_length}")
-                    # print(f"Max length allowed: {max_length}")
-                    
                     # Calculate actual objective value from the reconstructed tour and prizes.
                     # The `model.objVal` is based on minimizing negative prizes.
                     actual_prize_sum = sum(prize[node_idx - 1] for node_idx in nodes_in_tour_no_depot)
@@ -373,7 +368,7 @@ class OPGurobiSolver(OPSolver):
                 
                 # Similar changes as above for sequential processing
                 calculated_length = self.calc_op_length(self.depots[i], self.points[i], tour_nodes_1_indexed)
-                print(f"Calculated length for instance {i}: {calculated_length}")
+                # print(f"Calculated length for instance {i}: {calculated_length}")
                 assert calculated_length <= self.max_lengths[i] + MAX_LENGTH_TOL, \
                     f"Tour exceeds max_length! Instance {i}, Length: {calculated_length}, Max: {self.max_lengths[i]}"
                 

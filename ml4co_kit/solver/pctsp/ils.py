@@ -97,7 +97,7 @@ class PCTSPILSSolver(PCTSPSolver):
                     for row in dist_matrix:
                         f.write(' '.join(map(str, row)) + '\n')
                 
-                print(f"Wrote instance data to {temp_input_file}")
+                # print(f"Wrote instance data to {temp_input_file}")
                 
                 # Call the C++ solver with the scaled min_prize
                 command = [
@@ -107,17 +107,17 @@ class PCTSPILSSolver(PCTSPSolver):
                     str(self.runs_per_instance)
                 ]
                 
-                print(f"Executing command: {' '.join(command)}")
+                # print(f"Executing command: {' '.join(command)}")
                 
                 result = subprocess.run(
                     command, capture_output=True, text=True, check=True, encoding='utf-8'
                 )
                 
-                print("C++ solver finished. Parsing output...")
+                # print("C++ solver finished. Parsing output...")
                 output = result.stdout
-                print("--- C++ Output ---")
-                print(output)
-                print("--------------------")
+                # print("--- C++ Output ---")
+                # print(output)
+                # print("--------------------")
 
                 # Process the output of the C++ solver
                 final_cost = None
@@ -141,7 +141,7 @@ class PCTSPILSSolver(PCTSPSolver):
                 # The cost from C++ is scaled, so scale it back down before comparing.
                 cost_from_ils = final_cost / SCALE_FACTOR
                 
-                print(f"Total cost: {total_cost}, Cost from ILS: {cost_from_ils}")
+                # print(f"Total cost: {total_cost}, Cost from ILS: {cost_from_ils}")
                 assert abs(total_cost - cost_from_ils) <= 1e-4, "Cost is incorrect" # Relaxed tolerance slightly for float precision
                 
                 costs.append(cost_from_ils)
@@ -151,7 +151,7 @@ class PCTSPILSSolver(PCTSPSolver):
                 # Clean up the temporary input file
                 if os.path.exists(temp_input_file):
                     os.remove(temp_input_file)
-                    print(f"Cleaned up {temp_input_file}")
+                    # print(f"Cleaned up {temp_input_file}")
 
         # format
         costs = np.array(costs)

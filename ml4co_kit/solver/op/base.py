@@ -42,10 +42,10 @@ class OPSolver(SolverBase):
     :param nodes_num: :math:`N`, int, the number of nodes in OP problem.
     :param depots: :math:`(B \times 2)`, np.ndarray, the coordinates of the depots.
     :param ori_points: :math:`(B\times N \times 2)`, np.ndarray, the original coordinates data read.
-    :param points: :math:`(B\times N \times 2)`, np.ndarray, the coordinates data called 
+    :param points: :math:`(B \times N \times 2)`, np.ndarray, the coordinates data called 
         by the solver during solving. They may initially be the same as ``ori_points``,
         but may later undergo standardization or scaling processing.
-    :param prizes: :math:`(B\times N)`, np.ndarray, the prizes of the nodes.
+    :param prizes: :math:`(B \times N)`, np.ndarray, the prizes of the nodes.
     :param max_lengths: :math:`(B)`, np.ndarray, the maximum lengths of the tours.
     :param tours: list containing B tours, the solutions to the problems. 
     :param ref_tours: list containing B tours, the reference solutions to the problems. 
@@ -176,7 +176,7 @@ class OPSolver(SolverBase):
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the ``depots`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -188,7 +188,7 @@ class OPSolver(SolverBase):
         if self.ori_points is None:
             message = (
                 "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
             
@@ -200,7 +200,7 @@ class OPSolver(SolverBase):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -212,7 +212,7 @@ class OPSolver(SolverBase):
         if self.prizes is None:
             message = (
                 "``prizes`` cannot be None! You can load the instances using the methods"
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -224,7 +224,7 @@ class OPSolver(SolverBase):
         if self.max_lengths is None:
             message = (
                 "``max_lengths`` cannot be None! You can load the instances using the methods"
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -238,7 +238,7 @@ class OPSolver(SolverBase):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``OPSolver``"
-            "or use methods including ``from_data`` or  ``from_txt`` to obtain them."
+            "or use methods including ``from_data``, ``from_txt`` or ``from_pkl`` to obtain them."
         )  
         if ref:
             if self.ref_tours is None:
@@ -386,7 +386,6 @@ class OPSolver(SolverBase):
                 split_line_4 = split_line_3[1].split(" tours ")
                 max_length = split_line_4[0]
                 tours = split_line_4[1]
-                # max_length = split_line_3[1]
 
                 # strings to array
                 depot = depot.split(" ")
@@ -429,9 +428,6 @@ class OPSolver(SolverBase):
         self.from_data(
             depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
         )
-        # self.from_data(
-        #     depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, ref=ref
-        # )
         
     def from_pkl(
         self,

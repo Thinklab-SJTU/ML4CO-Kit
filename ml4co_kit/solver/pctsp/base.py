@@ -41,16 +41,16 @@ class PCTSPSolver(SolverBase):
     solutions. Note that the actual solving method should be implemented in subclasses.
     
     :param nodes_num: :math:`N`, int, the number of nodes in TSP problem.
-    :param depots: :math:`(B\times 2)`, np.ndarray, the coordinates of depots.
+    :param depots: :math:`(B \times 2)`, np.ndarray, the coordinates of depots.
     :param ori_points: :math:`(B\times N \times 2)`, np.ndarray, the original coordinates data read.
-    :param points: :math:`(B\times N \times 2)`, np.ndarray, the coordinates data called 
+    :param points: :math:`(B \times N \times 2)`, np.ndarray, the coordinates data called 
         by the solver during solving. They may initially be the same as ``ori_points``,
         but may later undergo standardization or scaling processing.
-    :param penalties: :math:`(B\times N)`, np.ndarray, the penalties of nodes.
+    :param penalties: :math:`(B \times N)`, np.ndarray, the penalties of nodes.
     :param deterministic_prizes: :math:`(B\times N)`, np.ndarray, the deterministic prizes of nodes.
     :param stochastic_prizes: :math:`(B\times N)`, np.ndarray, the stochastic prizes of nodes.
-    :param tours: :math:`(B\times (N+1))`, np.ndarray, the solutions to the problems. 
-    :param ref_tours: :math:`(B\times (N+1))`, np.ndarray, the reference solutions to the problems. 
+    :param tours: :math:`(B \times (N+1))`, np.ndarray, the solutions to the problems. 
+    :param ref_tours: :math:`(B \times (N+1))`, np.ndarray, the reference solutions to the problems. 
     :param scale: int, magnification scale of coordinates. If the input coordinates are too large,
         you can scale them to 0-1 by setting ``normalize`` to True, and then use ``scale`` to adjust them.
         Note that the magnification scale only applies to ``points`` when solved by the solver.
@@ -59,11 +59,12 @@ class PCTSPSolver(SolverBase):
     def __init__(
         self, 
         solver_type: SOLVER_TYPE = None, 
+        task_type: TASK_TYPE = TASK_TYPE.PCTSP,
         scale: int = 1e7,
         time_limit: float = 60.0
     ):
         super(PCTSPSolver, self).__init__(
-            task_type=TASK_TYPE.PCTSP, solver_type=solver_type
+            task_type=task_type, solver_type=solver_type
         )
         self.scale: np.ndarray = scale
         self.time_limit: float = time_limit
@@ -89,18 +90,6 @@ class PCTSPSolver(SolverBase):
                 self.depots = np.expand_dims(self.depots, axis=0)
             if self.depots.ndim != 2:
                 raise ValueError("The dimensions of ``depots`` cannot be larger than 2.")
-            
-    def _check_ori_points_not_none(self):
-        r"""
-        Checks if the ``ori_points`` attribute is not ``None``. 
-        Raises a ``ValueError`` if ``ori_points`` is ``None``. 
-        """
-        if self.ori_points is None:
-            message = (
-                "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
-                "``from_data`` or ``from_txt``."
-            )
-            raise ValueError(message)
         
     def _check_points_dim(self):
         r"""
@@ -166,7 +155,6 @@ class PCTSPSolver(SolverBase):
         element in ``tours`` is not a 1D array.
         """
         if self.tours is not None:
-            print(self.tours)
             if isinstance(self.tours[0], int):
                 # if tours is a list of integers, convert it to a list of arrays
                 self.tours = [np.array(self.tours)]
@@ -200,7 +188,7 @@ class PCTSPSolver(SolverBase):
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the ``depots`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -212,7 +200,19 @@ class PCTSPSolver(SolverBase):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
+            )
+            raise ValueError(message)
+        
+    def _check_ori_points_not_none(self):
+        r"""
+        Checks if the ``ori_points`` attribute is not ``None``. 
+        Raises a ``ValueError`` if ``ori_points`` is ``None``. 
+        """
+        if self.ori_points is None:
+            message = (
+                "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -224,7 +224,7 @@ class PCTSPSolver(SolverBase):
         if self.penalties is None:
             message = (
                 "``penalties`` cannot be None! You can load the ``penalties`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -236,7 +236,7 @@ class PCTSPSolver(SolverBase):
         if self.deterministic_prizes is None:
             message = (
                 "``deterministic_prizes`` cannot be None! You can load the ``deterministic_prizes`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
         
@@ -248,7 +248,7 @@ class PCTSPSolver(SolverBase):
         if self.stochastic_prizes is None:
             message = (
                 "``stochastic_prizes`` cannot be None! You can load the ``stochastic_prizes`` using the methods including "
-                "``from_data`` or ``from_txt``."
+                "``from_data``, ``from_txt`` or ``from_pkl``."
             )
             raise ValueError(message)
 
@@ -261,8 +261,8 @@ class PCTSPSolver(SolverBase):
         """
         msg = "ref_tours" if ref else "tours"
         message = (
-            f"``{msg}`` cannot be None! You can use solvers based on ``OPSolver``"
-            "or use methods including ``from_data`` or  ``from_txt`` to obtain them."
+            f"``{msg}`` cannot be None! You can use solvers based on ``PCTSPSolver``"
+            "or use methods including ``from_data``, ``from_txt`` or ``from_pkl`` to obtain them."
         )  
         if ref:
             if self.ref_tours is None:
@@ -364,7 +364,7 @@ class PCTSPSolver(SolverBase):
         r"""
         Read data from `.pkl` file.
         
-        :param file_path: string, path to the `.pkl` file containing OP instances data.
+        :param file_path: string, path to the `.pkl` file containing PCTSP instances data.
         :param ref: boolean, whether the solution is a reference solution.
         :param return_list: boolean, only use this function to obtain data, but do not save it to the solver.
         :param show_time: boolean, whether the data is being read with a visual progress display.

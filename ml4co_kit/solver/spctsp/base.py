@@ -34,10 +34,10 @@ class SPCTSPSolver(PCTSPSolver):
     ):
         super(SPCTSPSolver, self).__init__(
             solver_type=solver_type,
+            task_type=TASK_TYPE.SPCTSP,
             scale=scale,
             time_limit=time_limit
         )
-        self.task_type = TASK_TYPE.SPCTSP
         
     def evaluate(
         self,

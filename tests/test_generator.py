@@ -1,6 +1,7 @@
 import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(root_folder)
 sys.path.insert(0, root_folder)
 import shutil
 from ml4co_kit import *
