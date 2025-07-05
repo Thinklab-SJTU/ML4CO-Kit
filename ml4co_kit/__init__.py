@@ -48,6 +48,7 @@ from .generator import MISDataGenerator
 from .generator import MVCDataGenerator
 from .generator import OPDataGenerator
 from .generator import PCTSPDataGenerator
+from .generator import SPCTSPDataGenerator
 from .generator import TSPDataGenerator
 
 #######################################################
