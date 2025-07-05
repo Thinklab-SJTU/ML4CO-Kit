@@ -165,14 +165,6 @@ class SPCTSPReoptSolver(SPCTSPSolver):
                     
                     if cost_from_cpp is None:
                         raise RuntimeError("Failed to parse cost from C++ solver output.")
-                    
-                    # Validation Subproblem Cost
-                    # sub_cost_from_cpp = cost_from_cpp / SCALE_FACTOR
-                    # python_calculated_sub_cost = self._calculate_pctsp_cost_from_dist_matrix(
-                    #     sub_dist_matrix, sub_penalties, sub_tour
-                    # )
-                    # assert abs(python_calculated_sub_cost - sub_cost_from_cpp) <= 1e-4, \
-                    #     f"Subproblem cost mismatch! Python: {python_calculated_sub_cost}, C++: {sub_cost_from_cpp}"
 
                     if not sub_tour:
                         break
@@ -194,7 +186,7 @@ class SPCTSPReoptSolver(SPCTSPSolver):
                     if os.path.exists(temp_input_file):
                         os.remove(temp_input_file)
 
-            final_cost = self.calc_pctsp_cost(depot, customer_points, customer_penalties, customer_stoch_prizes,final_tour)
+            final_cost = self.calc_pctsp_cost(depot, customer_points, customer_penalties, customer_stoch_prizes, final_tour)
             
             costs.append(final_cost)
             tours.append(final_tour)
@@ -209,30 +201,7 @@ class SPCTSPReoptSolver(SPCTSPSolver):
         
         # return
         return costs, self.tours
-    
-    def _calculate_pctsp_cost_from_dist_matrix(self, dist_matrix: np.ndarray, penalties: np.ndarray, tour: List[int]) -> float:
-        r"""Helper to calculate PCTSP cost for a subproblem given a distance matrix."""
-        # Calculate tour length from the distance matrix
-        tour_length = 0.0
-        if tour:
-            # Path from the subproblem's depot (index 0) to the first node
-            tour_length += dist_matrix[0, tour[0]]
-            # Path between nodes in the tour
-            for i in range(len(tour) - 1):
-                tour_length += dist_matrix[tour[i], tour[i+1]]
-            # Path from the last node back to the depot
-            tour_length += dist_matrix[tour[-1], 0]
-
-        # Calculate total penalty for unvisited nodes in the subproblem
-        visited_mask = np.zeros(len(penalties), dtype=bool)
-        if tour:
-            # tour contains 1-based indices for customers in the subproblem
-            visited_mask[np.array(tour) - 1] = True
-        
-        unvisited_penalty = np.sum(penalties[~visited_mask])
-        
-        return tour_length + unvisited_penalty
         
 
     def __str__(self) -> str:
-        return "PCTSPReoptSolver"
+        return "SPCTSPReoptSolver"

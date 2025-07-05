@@ -616,4 +616,3 @@ int main(int argc, char *argv[]) {
     cout << "Average Time: " << averageTime / runs << endl;
 	return 0;
 }
-

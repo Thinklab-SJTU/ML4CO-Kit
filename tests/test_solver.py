@@ -735,10 +735,10 @@ def test_spctsp_base_solver():
     
 
 def _test_spctsp_reopt_solver(show_time: bool, num_threads: int):
-    pctsp_ils_solver = SPCTSPReoptSolver()
-    pctsp_ils_solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=True)
-    pctsp_ils_solver.solve(show_time=show_time, num_threads=num_threads)
-    _, _, gap_avg, _ = pctsp_ils_solver.evaluate(calculate_gap=True)
+    spctsp_reopt_solver = SPCTSPReoptSolver()
+    spctsp_reopt_solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=True)
+    spctsp_reopt_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = spctsp_reopt_solver.evaluate(calculate_gap=True)
     print(f"SPCTSPReoptSolver Gap: {gap_avg}")
     if gap_avg >= 1e-3:
         message = (
@@ -943,7 +943,7 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    # test_atsp()
+    test_atsp()
     # test_cvrp()
     # test_kp()
     # test_lp()
@@ -952,5 +952,6 @@ if __name__ == "__main__":
     # test_mis()
     # test_mvc()
     # test_op()
-    test_pctsp()
+    # test_pctsp()
+    # test_spctsp()
     # test_tsp()
