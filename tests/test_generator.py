@@ -692,9 +692,9 @@ def _test_op_gurobi_generator(num_threads: int, data_type: str):
         os.makedirs(save_path)
 
     # solver
-    solver = OPGurobiSolver(time_limit=1.0)
+    solver = OPGurobiSolver(time_limit=1)
  
-    # create LPDataGenerator using OR-Tools solver
+    # create OPDataGenerator using Gurobi solver
     op_data_gurobi = OPDataGenerator(
         num_threads=num_threads,
         data_type=data_type,
@@ -710,7 +710,7 @@ def _test_op_gurobi_generator(num_threads: int, data_type: str):
     op_data_gurobi.generate()
     
     # remove the save path
-    # shutil.rmtree(save_path)
+    shutil.rmtree(save_path)
 
 
 def test_op():
@@ -723,6 +723,84 @@ def test_op():
     _test_op_gurobi_generator(num_threads=4, data_type="unif")
     _test_op_gurobi_generator(num_threads=1, data_type="dist")
     _test_op_gurobi_generator(num_threads=4, data_type="dist")
+    
+    
+##############################################
+#             Test Func For PCTSP            #
+##############################################
+
+def _test_pctsp_or_generator(num_threads: int, data_type: str):
+    """
+    Test PCTSPDataGenerator using PCTSPORSolver
+    """
+    
+    # save path
+    save_path = f"tmp/pctsp_{data_type}_or"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # solver
+    solver = PCTSPORSolver(time_limit=1)
+ 
+    # create PCTSPDataGenerator using OR-Tools solver
+    pctsp_data_or = PCTSPDataGenerator(
+        num_threads=num_threads,
+        data_type=data_type,
+        nodes_num=20,
+        solver=solver,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path
+    )
+    
+    # generate data
+    pctsp_data_or.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+    
+
+def _test_pctsp_ils_generator(num_threads: int, data_type: str):
+    """
+    Test PCTSPDataGenerator using PCTSPILSSolver
+    """
+    
+    # save path
+    save_path = f"tmp/pctsp_{data_type}_ils"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # solver
+    solver = PCTSPILSSolver(time_limit=1.0)
+ 
+    # create PCTSPDataGenerator using OR-Tools solver
+    pctsp_data_or = PCTSPDataGenerator(
+        num_threads=num_threads,
+        data_type=data_type,
+        nodes_num=20,
+        solver=solver,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path
+    )
+    
+    # generate data
+    pctsp_data_or.generate()
+    
+    # remove the save path
+    shutil.rmtree(save_path)
+
+
+def test_pctsp():
+    """
+    Test PCTSPDataGenerator
+    """
+    _test_pctsp_or_generator(num_threads=1, data_type="uniform")
+    _test_pctsp_or_generator(num_threads=4, data_type="uniform")
+    _test_pctsp_ils_generator(num_threads=1, data_type="uniform")
+    _test_pctsp_ils_generator(num_threads=4, data_type="uniform")
 
    
 ##############################################
@@ -895,6 +973,7 @@ if __name__ == "__main__":
     # test_mcut()
     # test_mis()
     # test_mvc()
-    test_op()
+    # test_op()
+    test_pctsp()
     # test_tsp()
-    # shutil.rmtree("tmp")
+    shutil.rmtree("tmp")

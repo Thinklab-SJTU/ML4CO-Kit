@@ -83,7 +83,7 @@ class OPDataGenerator(GeneratorBase):
             prize = np.ones((self.num_threads, self.nodes_num))
         elif prize_type == "unif":
             prize = (1 + np.random.randint(0, 100, size=(self.num_threads, self.nodes_num))) / 100.
-        elif prize_type == "dist":
+        elif prize_type == "dist":  # Based on distance to depot
             prize_ = np.linalg.norm(depots[:, None, :] - locs, axis=-1)
             prize = (1 + (prize_ / prize_.max(axis=-1, keepdims=True) * 99).astype(int)) / 100.
         else:
@@ -91,6 +91,8 @@ class OPDataGenerator(GeneratorBase):
         return prize
     
     def _generate_max_lengths(self) -> np.ndarray:
+        # Max length is approximately half of optimal TSP tour, such that half (a bit more) of the nodes can be visited
+        # which is maximally difficult as this has the largest number of possibilities
         if self.nodes_num not in self.max_length_dict:
             raise ValueError(f"Unsupported nodes number: {self.nodes_num}. Supported: {list(self.max_length_dict.keys())}")
         return np.full(self.num_threads, self.max_length_dict[self.nodes_num])
@@ -153,7 +155,7 @@ class OPDataGenerator(GeneratorBase):
 
         # write to txt
         with open(self.file_save_path, "a+") as f:
-            for idx, _, tours in enumerate(items_label):
+            for idx, tour in enumerate(items_label[1]):
                 depot = depots[idx]
                 loc = locs[idx]
                 prize = prizes[idx]
@@ -166,4 +168,9 @@ class OPDataGenerator(GeneratorBase):
                 for i in range(len(prize)):
                     f.write(f"{prize[i]} ")
                 f.write("max_length ")
-                f.write(f"{max_length}\n")
+                f.write(f"{max_length} ")
+                f.write("tours ")
+                for node_idx in tour:
+                    f.write(f"{node_idx} ")
+                f.write("\n")
+                
