@@ -55,6 +55,9 @@ We are systematically building a foundational framework for ML4CO with a collect
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS``, ``OR-Tools`` |
 |  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
+|  OP    | ``const``, ``unif``, ``dist`` | ``gpickle``, ``txt`` | ``Gurobi`` |
+|  PCTSP   | ``uniform`` | ``gpickle``, ``txt`` | ``OR-Tools``, ``ILS(C++)`` |
+|  SPCTSP   | ``uniform`` | ``gpickle``, ``txt`` | ``REOPT`` |
 |  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools``, ``NeuroLKH`` |
 
 #### Extension
@@ -69,6 +72,9 @@ We are systematically building a foundational framework for ML4CO with a collect
 |  MCut   | ✔  | 3 | 3 | 2 |
 |  MIS    | ✔  | 10 | 6 | 4 |
 |  MVC    | ✔  | 5 | 5 | 2 |
+|  OP   | 📆 | 📆 | 📆 | 📆 |
+|  PCTSP   | 📆 | 📆 | 📆 | 📆 |
+|  SPCTSP   | 📆 | 📆 | 📆 | 📆 |
 |  TSP    | ✔  | 5 | 7 | 6 |
 
 **1~99: Number of supports; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
