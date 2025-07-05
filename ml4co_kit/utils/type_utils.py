@@ -22,7 +22,10 @@ class TASK_TYPE(str, Enum):
     TSP = "Traveling Salesman Problem (TSP)"
     LP = "Linear Program (LP)"
     KP = "Knapsack Problme (KP)"
-
+    OP = "Orienteering Problem (OP)"
+    PCTSP = "Prize Collection Traveling Salesman Problem (PCTSP)"
+    SPCTSP = "Stochastic Prize Collection Traveling Salesman Problem (SPCTSP)"
+    
 
 class SOLVER_TYPE(str, Enum):
     CONCORDE = "PyConcorde" # Support TSP
@@ -44,6 +47,8 @@ class SOLVER_TYPE(str, Enum):
     NEUROLKH = "NeuroLKH" # Support for TSP
     ORTOOLS = "OR-Tools" # Support TSP, ATSP, MIS, MCl, KP
     PYVRP = "PyVRP" # Support CVRP
+    ILS = "Iterated Local Search (ILS)" # Support PCTSP
+    REOPT = "REOPT" # Support SPCTSP
 
 
 TASK_SUPPORT_SOLVER = {

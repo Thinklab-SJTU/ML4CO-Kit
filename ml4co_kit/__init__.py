@@ -46,6 +46,9 @@ from .generator import MClDataGenerator
 from .generator import MCutDataGenerator
 from .generator import MISDataGenerator
 from .generator import MVCDataGenerator
+from .generator import OPDataGenerator
+from .generator import PCTSPDataGenerator
+from .generator import SPCTSPDataGenerator
 from .generator import TSPDataGenerator
 
 #######################################################
@@ -59,6 +62,9 @@ from .solver import MCutSolver, MCutGurobiSolver, MCutORSolver
 from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
 from .solver import MVCSolver, MVCGurobiSolver, MVCORSolver
 from .solver import KPSolver, KPORSolver
+from .solver import OPSolver, OPGurobiSolver
+from .solver import PCTSPSolver, PCTSPORSolver, PCTSPILSSolver
+from .solver import SPCTSPSolver, SPCTSPReoptSolver
 from .solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
     TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver

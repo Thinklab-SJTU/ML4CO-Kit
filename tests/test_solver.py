@@ -1,7 +1,8 @@
 import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(root_folder)
+# sys.path.append(root_folder)
+sys.path.insert(0, root_folder)
 import shutil
 from ml4co_kit import *
 
@@ -621,6 +622,143 @@ def test_mvc():
     """
     test_mvc_gurobi_solver()
     test_mvc_or_solver()
+    
+    
+##############################################
+#              Test Func For OP              #
+##############################################
+
+
+def test_op_base_solver():
+    solver = OPSolver()
+    solver.from_txt("tests/data_for_tests/solver/op/op_example.txt", ref=False)
+    os.remove("tests/data_for_tests/solver/op/op_example.txt")
+    solver.to_txt("tests/data_for_tests/solver/op/op_example.txt")
+    
+
+def _test_op_gurobi_solver(show_time: bool, num_threads: int):
+    or_solver = OPGurobiSolver(time_limit=10.0)
+    or_solver.from_txt(
+        file_path="tests/data_for_tests/solver/op/op_example.txt", ref=True
+    )
+    or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = or_solver.evaluate(calculate_gap=True)
+    print(f"OPGurobiSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-2:
+        message = (
+            f"The average gap ({gap_avg}) of OP solved by OPGurobiSolver "
+            "is larger than or equal to 1e-2%."
+        )
+        raise ValueError(message)
+
+
+def test_op_gurobi_solver():
+    _test_op_gurobi_solver(True, 1)
+    _test_op_gurobi_solver(False, 2)
+
+
+def test_op():
+    """
+    Test OPSolver
+    """
+    test_op_base_solver()
+    test_op_gurobi_solver()
+
+
+##############################################
+#             Test Func For PCTSP            #
+##############################################
+
+def test_pctsp_base_solver():
+    solver = PCTSPSolver()
+    solver.from_txt("tests/data_for_tests/solver/pctsp/pctsp_example.txt", ref=False)
+    os.remove("tests/data_for_tests/solver/pctsp/pctsp_example.txt")
+    solver.to_txt(file_path="tests/data_for_tests/solver/pctsp/pctsp_example.txt")
+    
+
+def _test_pctsp_ils_solver(show_time: bool, num_threads: int):
+    pctsp_ils_solver = PCTSPILSSolver()
+    pctsp_ils_solver.from_txt("tests/data_for_tests/solver/pctsp/pctsp_example.txt", ref=True)
+    pctsp_ils_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = pctsp_ils_solver.evaluate(calculate_gap=True)
+    print(f"PCTSPILSSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-3:
+        message = (
+            f"The average gap ({gap_avg}) of PCTSP50 solved by PCTSPILSSolver "
+            "is larger than or equal to 1e-3%."
+        )
+        raise ValueError(message)
+
+
+def test_pctsp_ils_solver():
+    _test_pctsp_ils_solver(True, 1)
+    _test_pctsp_ils_solver(False, 2)
+
+
+def _test_pctsp_or_solver(show_time: bool, num_threads: int):
+    pctsp_or_solver = PCTSPORSolver()
+    pctsp_or_solver.from_txt("tests/data_for_tests/solver/pctsp/pctsp_example.txt", ref=True)
+    pctsp_or_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = pctsp_or_solver.evaluate(calculate_gap=True)
+    print(f"TSPORSolver Gap: {gap_avg}")
+    if gap_avg >= 5:
+        message = (
+            f"The average gap ({gap_avg}) of PCTSP50 solved by TSPORSolver "
+            "is larger than or equal to 5%."
+        )
+        raise ValueError(message)
+    
+    
+def test_pctsp_or_solver():
+    _test_pctsp_or_solver(True, 1)
+    _test_pctsp_or_solver(False, 2)
+    
+    
+def test_pctsp():
+    """
+    Test PCTSPSolver
+    """
+    test_pctsp_base_solver()
+    test_pctsp_ils_solver()
+    test_pctsp_or_solver()
+    
+    
+##############################################
+#             Test Func For SPCTSP           #
+##############################################
+
+def test_spctsp_base_solver():
+    solver = SPCTSPSolver()
+    solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=False)
+    os.remove("tests/data_for_tests/solver/spctsp/spctsp_example.txt")
+    solver.to_txt(file_path="tests/data_for_tests/solver/spctsp/spctsp_example.txt")
+    
+
+def _test_spctsp_reopt_solver(show_time: bool, num_threads: int):
+    spctsp_reopt_solver = SPCTSPReoptSolver()
+    spctsp_reopt_solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=True)
+    spctsp_reopt_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = spctsp_reopt_solver.evaluate(calculate_gap=True)
+    print(f"SPCTSPReoptSolver Gap: {gap_avg}")
+    if gap_avg >= 1e-3:
+        message = (
+            f"The average gap ({gap_avg}) of SPCTSP50 solved by SPCTSPReoptSolver "
+            "is larger than or equal to 1e-3%."
+        )
+        raise ValueError(message)
+
+
+def test_spctsp_reopt_solver():
+    _test_spctsp_reopt_solver(True, 1)
+    _test_spctsp_reopt_solver(False, 2)
+    
+    
+def test_spctsp():
+    """
+    Test SPCTSPSolver
+    """
+    test_spctsp_base_solver()
+    test_spctsp_reopt_solver()
 
 
 ##############################################
@@ -813,4 +951,7 @@ if __name__ == "__main__":
     # test_mcut()
     # test_mis()
     # test_mvc()
+    # test_op()
+    # test_pctsp()
+    # test_spctsp()
     # test_tsp()

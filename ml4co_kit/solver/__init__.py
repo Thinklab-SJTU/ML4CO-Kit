@@ -57,6 +57,12 @@ from .mvc.gurobi import MVCGurobiSolver
 from .mvc.or_tools import MVCORSolver
 
 #######################################
+#              OP Solver              #
+#######################################
+from .op.base import OPSolver
+from .op.gurobi import OPGurobiSolver
+
+#######################################
 #             TSP Solver             #  
 #######################################
 from .tsp.base import TSPSolver
@@ -66,6 +72,19 @@ from .tsp.ga_eax_normal import TSPGAEAXSolver
 from .tsp.ga_eax_large import TSPGAEAXLargeSolver
 from .tsp.lkh import TSPLKHSolver
 from .tsp.or_tools import TSPORSolver
+
+#######################################
+#             PCTSP Solver            #  
+#######################################
+from .pctsp.base import PCTSPSolver
+from .pctsp.or_tools import PCTSPORSolver
+from .pctsp.ils import PCTSPILSSolver
+
+#######################################
+#             SPCTSP Solver           #  
+#######################################
+from .spctsp.base import SPCTSPSolver
+from .spctsp.reopt import SPCTSPReoptSolver
 
 #######################################
 #     Extension Function (torch)      #
