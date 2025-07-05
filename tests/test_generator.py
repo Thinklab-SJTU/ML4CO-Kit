@@ -1,7 +1,7 @@
 import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(root_folder)
+sys.path.insert(0, root_folder)
 import shutil
 from ml4co_kit import *
 
@@ -675,6 +675,54 @@ def test_mvc():
     _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="hk", num_threads=1)
     _test_mvc_ortools_generator(nodes_num_min=50, nodes_num_max=100, data_type="ws", num_threads=1)
     _test_mvc_ortools_generator(nodes_num_min=200, nodes_num_max=300, data_type="rb", num_threads=1)
+    
+    
+##############################################
+#             Test Func For OP               #
+##############################################
+
+def _test_op_gurobi_generator(num_threads: int, data_type: str):
+    """
+    Test OPDataGenerator using OPGurobiSolver
+    """
+    
+    # save path
+    save_path = f"tmp/op_{data_type}_gurobi"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # solver
+    solver = OPGurobiSolver(time_limit=1.0)
+ 
+    # create LPDataGenerator using OR-Tools solver
+    op_data_gurobi = OPDataGenerator(
+        num_threads=num_threads,
+        data_type=data_type,
+        nodes_num=20,
+        solver=solver,
+        train_samples_num=4,
+        val_samples_num=4,
+        test_samples_num=4,
+        save_path=save_path
+    )
+    
+    # generate data
+    op_data_gurobi.generate()
+    
+    # remove the save path
+    # shutil.rmtree(save_path)
+
+
+def test_op():
+    """
+    Test OPDataGenerator
+    """
+    _test_op_gurobi_generator(num_threads=1, data_type="const")
+    _test_op_gurobi_generator(num_threads=4, data_type="const")
+    _test_op_gurobi_generator(num_threads=1, data_type="unif")
+    _test_op_gurobi_generator(num_threads=4, data_type="unif")
+    _test_op_gurobi_generator(num_threads=1, data_type="dist")
+    _test_op_gurobi_generator(num_threads=4, data_type="dist")
 
    
 ##############################################
@@ -839,13 +887,14 @@ def test_tsp():
 ##############################################
 
 if __name__ == "__main__":
-    test_atsp()
-    test_cvrp()
-    test_kp()
-    test_lp()
-    test_mcl()
-    test_mcut()
-    test_mis()
-    test_mvc()
-    test_tsp()
-    shutil.rmtree("tmp")
+    # test_atsp()
+    # test_cvrp()
+    # test_kp()
+    # test_lp()
+    # test_mcl()
+    # test_mcut()
+    # test_mis()
+    # test_mvc()
+    test_op()
+    # test_tsp()
+    # shutil.rmtree("tmp")

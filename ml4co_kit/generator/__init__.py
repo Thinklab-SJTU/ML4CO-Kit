@@ -6,5 +6,6 @@ from .mcl_data import MClDataGenerator
 from .mcut_data import MCutDataGenerator
 from .mis_data import MISDataGenerator
 from .mvc_data import MVCDataGenerator
+from .op_data import OPDataGenerator
 from .tsp_data import TSPDataGenerator
 from .base import GeneratorBase, NodeGeneratorBase, EdgeGeneratorBase

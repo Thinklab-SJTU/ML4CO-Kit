@@ -46,6 +46,7 @@ from .generator import MClDataGenerator
 from .generator import MCutDataGenerator
 from .generator import MISDataGenerator
 from .generator import MVCDataGenerator
+from .generator import OPDataGenerator
 from .generator import TSPDataGenerator
 
 #######################################################
