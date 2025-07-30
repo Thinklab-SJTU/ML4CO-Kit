@@ -491,14 +491,14 @@ class MClSolver(SolverBase):
                 f.write("\n")
             f.close()
     
-    def evaluate(self, calculate_gap: bool = False, check_constraint: bool = True):
+    def evaluate(self, calculate_gap: bool = False, check_constraints: bool = True):
         if calculate_gap:
             snn_list = list()
             rsnn_list = list()
             gap_list = list()
             for graph in self.graph_data:
                 snn, rsnn, gap = graph.evaluate(
-                    calculate_gap=True, check_constraint=check_constraint
+                    calculate_gap=True, check_constraints=check_constraints
                 )
                 snn_list.append(snn)
                 rsnn_list.append(rsnn)
@@ -513,7 +513,7 @@ class MClSolver(SolverBase):
             snn_list = list()
             for graph in self.graph_data:
                 snn = graph.evaluate(
-                    calculate_gap=False, check_constraint=check_constraint
+                    calculate_gap=False, check_constraints=check_constraints
                 )
                 snn_list.append(snn)
             snn_avg = np.average(np.array(snn_list))   

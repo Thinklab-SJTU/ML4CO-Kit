@@ -309,7 +309,7 @@ class CVRPSolver(SolverBase):
             self.points[idx] = cur_points
             self.depots[idx] = cur_depots
     
-    def _check_demands_meet(self, ref: bool):
+    def _check_constraints_meet(self, ref: bool):
         r"""
         Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
         there is a split tour don't meet the demands.
@@ -1280,7 +1280,7 @@ class CVRPSolver(SolverBase):
     def evaluate(
         self,
         calculate_gap: bool = False,
-        check_demands: bool = True,
+        check_constraints: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
@@ -1290,7 +1290,7 @@ class CVRPSolver(SolverBase):
         Evaluate the solution quality of the solver
 
         :param calculate_gap: boolean, whether to calculate the gap with the reference solutions.
-        :param _check_demands: boolean, whether to check if demands are met.
+        :param _check_constraints: boolean, whether to check if demands are met.
         :param original: boolean, whether to use ``original points`` or ``points``, etc.
         :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
         :param to_int: boolean, whether to transfer the corrdinates to integters.
@@ -1322,12 +1322,12 @@ class CVRPSolver(SolverBase):
         # check
         self._check_points_not_none()
         self._check_tours_not_none(ref=False)
-        if check_demands:
-            self._check_demands_meet(ref=False)
+        if check_constraints:
+            self._check_constraints_meet(ref=False)
         if calculate_gap:
             self._check_tours_not_none(ref=True)
-            if check_demands:
-                self._check_demands_meet(ref=True)
+            if check_constraints:
+                self._check_constraints_meet(ref=True)
             
         # variables
         depots = self.ori_depots if original else self.depots

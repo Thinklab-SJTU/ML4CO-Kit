@@ -23,6 +23,7 @@ import numpy as np
 import pickle
 from typing import Union
 from ml4co_kit.solver.base import SolverBase
+from ml4co_kit.evaluate.op import OPEvaluator, OPChecker
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution_for_file
 
@@ -58,10 +59,11 @@ class OPSolver(SolverBase):
         self, 
         solver_type: SOLVER_TYPE = None, 
         scale: int = 1e6,
-        time_limit: float = 60.0
+        time_limit: float = 60.0,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(OPSolver, self).__init__(
-            task_type=TASK_TYPE.OP, solver_type=solver_type
+            task_type=TASK_TYPE.OP, solver_type=solver_type, precision=precision
         )
         self.scale = scale
         self.time_limit: float = time_limit
@@ -176,19 +178,7 @@ class OPSolver(SolverBase):
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the ``depots`` using the methods including "
-                "``from_data``, ``from_txt`` or ``from_pkl``."
-            )
-            raise ValueError(message)
-        
-    def _check_ori_points_not_none(self):
-        r"""
-        Checks if the ``ori_points`` attribute is not ``None``. 
-        Raises a ``ValueError`` if ``ori_points`` is ``None``. 
-        """
-        if self.ori_points is None:
-            message = (
-                "``ori_points`` cannot be None! You can load the ``ori_points`` using the methods including "
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
             
@@ -200,7 +190,7 @@ class OPSolver(SolverBase):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
         
@@ -212,7 +202,7 @@ class OPSolver(SolverBase):
         if self.prizes is None:
             message = (
                 "``prizes`` cannot be None! You can load the instances using the methods"
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
         
@@ -224,7 +214,7 @@ class OPSolver(SolverBase):
         if self.max_lengths is None:
             message = (
                 "``max_lengths`` cannot be None! You can load the instances using the methods"
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
         
@@ -238,7 +228,7 @@ class OPSolver(SolverBase):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``OPSolver``"
-            "or use methods including ``from_data``, ``from_txt`` or ``from_pkl`` to obtain them."
+            "or use methods including ``from_data``, ``from_txt`` or ``from_pickle`` to obtain them."
         )  
         if ref:
             if self.ref_tours is None:
@@ -264,16 +254,47 @@ class OPSolver(SolverBase):
             raise ValueError(message)
         self.norm = norm
         
-    def _normalize_points(self):
+    def _normalize_points_depots(self):
         r"""
-        Normalizes the ``points`` attribute to scale all coordinates between 0 and 1.
+        Normalizes the ``points`` attribute and ``depots`` attribute to scale 
+        all coordinates between 0 and 1.
         """
         for idx in range(self.points.shape[0]):
             cur_points = self.points[idx]
-            max_value = np.max(cur_points)
-            min_value = np.min(cur_points)
+            cur_depots = self.depots[idx]
+            max_value = max(np.max(cur_points), np.max(cur_depots))
+            min_value = min(np.min(cur_points), np.min(cur_depots))
             cur_points = (cur_points - min_value) / (max_value - min_value)
+            cur_depots = (cur_depots - min_value) / (max_value - min_value)
             self.points[idx] = cur_points
+            self.depots[idx] = cur_depots
+
+    def _check_constraints_meet(self, ref: bool):
+        r"""
+        Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
+        there is a split tour don't meet the demands.
+        """
+        tours = self.ref_tours if ref else self.tours
+        num_tours = len(tours)
+        num_instances = self.points.shape[0]
+        if num_tours % num_instances != 0:
+            raise ValueError(
+                "The number of solutions cannot be divided evenly by the number of problems."
+            )
+        instance_per_sols = num_tours // num_tours
+        for idx in range(num_tours):
+            cur_eva = OPChecker(
+                depots=self.depots[idx // instance_per_sols],
+                points=self.points[idx // instance_per_sols],
+                norm=self.norm
+            )
+            total_length = cur_eva.calc_length(tours[idx])
+            if total_length > self.max_lengths[idx] + 1e-5:
+                message = (
+                    f"Prize Constraint not met (ref = {ref}) in tour {idx}. The sum of the "
+                    f"tour length is {total_length} while the max_length is {self.max_lengths[idx]}."
+                )
+                raise ValueError(message)
 
     def _get_round_func(self, round_func: str):
         r"""
@@ -309,20 +330,50 @@ class OPSolver(SolverBase):
         
         return points
     
-    def calc_op_length(self, depot, loc, tour):
-        r"""
-        Calculate the length of the tour in the Orienteering Problem.
-        """
-        assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
-        loc_with_depot = np.vstack((np.array(depot)[None, :], np.array(loc)))
-        sorted_locs = loc_with_depot[np.concatenate(([0], tour, [0]))]
-        return np.linalg.norm(sorted_locs[1:] - sorted_locs[:-1], axis=-1).sum()
-    
-    def calc_op_total(self, prize, tour):
-        # Subtract 1 since vals index start with 0 while tour indexing starts with 1 as depot is 0
-        assert (np.array(tour) > 0).all(), "Depot cannot be in tour"
-        assert len(np.unique(tour)) == len(tour), "Tour cannot contain duplicates"
-        return np.array(prize)[np.array(tour) - 1].sum()
+    def _prepare_for_output(
+        self, 
+        depots: np.ndarray = None, 
+        points: np.ndarray = None, 
+        prizes: np.ndarray = None,
+        max_lengths: np.ndarray = None,
+        tours: np.ndarray = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        if points is None:
+            return depots, points, prizes, max_lengths, tours
+
+        # deal with different shapes
+        samples = points.shape[0]
+        if tours is not None and len(tours) != samples:
+            # a problem has more than one solved tour
+            if len(tours) % samples != 0:
+                raise ValueError(
+                    "The number of solutions cannot be divided evenly by the number of problems."
+                )
+            per_tour_num = len(tours) // samples    
+            best_tour_list = list()
+            for idx in range(samples):
+                cur_eva = OPEvaluator(prizes=prizes[idx])
+                solved_tours = tours[idx*per_tour_num, (idx+1)*per_tour_num]
+                best_tour = solved_tours[0]
+                best_cost = cur_eva.evaluate(route=best_tour)
+                for tour in solved_tours[1:]:
+                    cur_cost = cur_eva.evaluate(route=tour)
+                    if cur_cost < best_cost:
+                        best_cost = cur_cost
+                        best_tour = tour
+                best_tour_list.append(best_tour)
+            tours = best_tour_list
+        
+        # apply scale and dtype
+        depots, points, penalties = self._apply_scale_and_dtype(
+            depots=depots, points=points, penalties=penalties, 
+            apply_scale=apply_scale, to_int=to_int, round_func=round_func
+        )
+        
+        return depots, points, prizes, max_lengths, tours
     
     def from_txt(
         self,
@@ -376,31 +427,31 @@ class OPSolver(SolverBase):
             for line in iterative_execution_for_file(file, load_msg, show_time):
                 # line to strings
                 line = line.strip()
-                split_line_0 = line.split("depot ")[1]
+                split_line_0 = line.split("depots ")[1]
                 split_line_1 = split_line_0.split(" points ")
                 depot = split_line_1[0]
                 split_line_2 = split_line_1[1].split(" prizes ")
                 points = split_line_2[0]
                 split_line_3 = split_line_2[1].split(" max_length ")
                 prizes = split_line_3[0]
-                split_line_4 = split_line_3[1].split(" tours ")
+                split_line_4 = split_line_3[1].split(" output ")
                 max_length = split_line_4[0]
                 tours = split_line_4[1]
 
                 # strings to array
                 depot = depot.split(" ")
-                depot = np.array([float(depot[0]), float(depot[1])])
+                depot = np.array([float(depot[0]), float(depot[1])], dtype=self.precision)
                 points = points.split(" ")
                 points = np.array(
                     [
                         [float(points[i]), float(points[i + 1])]
                         for i in range(0, len(points), 2)
-                    ]
+                    ], dtype=self.precision
                 )
                 prizes = prizes.split(" ")
-                prizes = np.array([
-                    float(prizes[i]) for i in range(len(prizes))
-                ])
+                prizes = np.array(
+                    [float(prizes[i]) for i in range(len(prizes))], dtype=self.precision
+                )
                 max_length = float(max_length)
                 tours = tours.split(" ")
                 tours = np.array(
@@ -426,23 +477,19 @@ class OPSolver(SolverBase):
 
         # use ``from_data``
         self.from_data(
-            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, ref=ref
+            depots=depots, points=points, prizes=prizes, 
+            max_lengths=max_lengths, tours=tours, ref=ref
         )
         
-    def from_pkl(
+    def from_pickle(
         self,
         file_path: str,
         ref: bool = False,
-        return_list: bool = False,
-        show_time: bool = False
+        norm: str = "EUC_2D",
+        normalize: bool = False,
     ):
         r"""
         Read data from `.pkl` file.
-        
-        :param file_path: string, path to the `.pkl` file containing OP instances data.
-        :param ref: boolean, whether the solution is a reference solution.
-        :param return_list: boolean, only use this function to obtain data, but do not save it to the solver.
-        :param show_time: boolean, whether the data is being read with a visual progress display.
         """
          # check the file format
         if not file_path.endswith(".pkl"):
@@ -455,27 +502,19 @@ class OPSolver(SolverBase):
         # check the data format
         if isinstance(data, list) and len(data) > 0:
             if isinstance(data[0], tuple) and len(data[0]) == 4:
-                depots, locs, prizes, max_lengths = zip(*data)
+                depots, points, prizes, max_lengths, tours = zip(*data)
+                depots = np.array(depots)
+                points = np.array(points)
+                prizes = np.array(prizes)
+                max_lengths = np.array(max_lengths)
                 self.from_data(
-                    depots=np.array(depots), 
-                    points=np.array(locs),
-                    prizes=np.array(prizes),
-                    max_lengths=np.array(max_lengths),
-                    ref=ref,
+                    depots=depots, points=points, prizes=prizes, max_lengths=max_lengths,
+                    tours=tours, ref=ref, norm=norm, normalize=normalize
                 )
             else:
                 raise ValueError("Invalid data format in PKL file")
         else:
             raise ValueError("PKL file should contain a list of tuples")
-        
-        # check if return_list
-        if return_list:
-            return (
-                self.depots.tolist(),
-                self.points.tolist(),
-                self.prizes.tolist(),
-                self.max_lengths.tolist(),
-            )
 
     def from_data(
         self,
@@ -531,28 +570,31 @@ class OPSolver(SolverBase):
         # depots
         if depots is not None:
             depots = to_numpy(depots)
-            self.depots = depots.astype(np.float32)
+            self.ori_depots = depots
+            self.depots = depots.astype(self.precision)
             self._check_depots_dim()
         
         # points
         if points is not None:
             points = to_numpy(points)
             self.ori_points = points
-            self.points = points.astype(np.float32)
+            self.points = points.astype(self.precision)
             self._check_ori_points_dim()
-            if normalize:
-                self._normalize_points()
+        
+        # normalize
+        if normalize:
+            self._normalize_points_depots()
                 
         # prizes
         if prizes is not None:
             prizes = to_numpy(prizes)
-            self.prizes = prizes.astype(np.float32)
+            self.prizes = prizes.astype(self.precision)
             self._check_prizes_dim()
             
         # max_lengths
         if max_lengths is not None:
             max_lengths = to_numpy(max_lengths)
-            self.max_lengths = max_lengths.astype(np.float32)
+            self.max_lengths = max_lengths.astype(self.precision)
             self._check_max_lengths_dim()
             
         # tours
@@ -591,7 +633,7 @@ class OPSolver(SolverBase):
                 >>> solver = OPSolver()
 
                 # load data from ``.pkl`` file
-                >>> solver.from_pkl(file_path="examples/op/txt/op50.pkl")
+                >>> solver.from_pickle(file_path="examples/op/txt/op50.pkl")
                     
                 # Output data in ``txt`` format
                 >>> solver.to_txt(file_path="examples/op/txt/op50.txt")
@@ -619,30 +661,30 @@ class OPSolver(SolverBase):
         with open(file_path, "w") as f:
             for idx in range(points.shape[0]):
                 # write depot
-                f.write(f"depot {depots[idx][0]} {depots[idx][1]} ")
+                f.write(f"depots {str(depots[idx][0])} {str(depots[idx][1])} ")
 
                 # write points
                 f.write("points ")
                 for node_x, node_y in points[idx]:
-                    f.write(f"{node_x} {node_y} ")
+                    f.write(f"{str(node_x)} {str(node_y)} ")
 
                 # write prizes
                 f.write(f"prizes ")
                 for i in range(len(prizes[idx])):
-                    f.write(f"{prizes[idx][i]} ")
+                    f.write(f"{str(prizes[idx][i])} ")
 
                 # write max_length
-                f.write(f"max_length {max_lengths[idx]} ")
+                f.write(f"max_length {str(max_lengths[idx])} ")
                 
                 # write tours
                 if tours is not None:
-                    f.write(f"tours ")
+                    f.write(f"output ")
                     for node_idx in tours[idx]:
                         f.write(f"{node_idx} ")
                 
                 f.write("\n")
                 
-    def to_pkl(
+    def to_pickle(
         self,
         file_path: str = "example.pkl",
         original: bool = True,
@@ -672,7 +714,7 @@ class OPSolver(SolverBase):
                 >>> solver.from_txt(file_path="examples/op/txt/op50.txt")
                     
                 # Output data in ``pkl`` format
-                >>> solver.to_pkl(file_path="examples/op/pkl/op50_output.pkl")
+                >>> solver.to_pickle(file_path="examples/op/pkl/op50_output.pkl")
         """
         # check
         self._check_depots_not_none()
@@ -681,27 +723,29 @@ class OPSolver(SolverBase):
         self._check_max_lengths_not_none()
         
         # variables
-        depots = self.depots.tolist()
+        depots = self.depots if original else self.ori_depots
         points = self.ori_points if original else self.points
-        prizes = self.prizes.tolist()
-        max_lengths = self.max_lengths.tolist()
+        prizes = self.prizes
+        max_lengths = self.max_lengths
+        tours = self.tours
 
-        # apply scale and dtype
-        points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
-            to_int=to_int, round_func=round_func
+        # deal with different shapes and apply scale and dtype
+        depots, points, prizes, max_lengths, tours = self._prepare_for_output(
+            depots=depots, points=points, prizes=prizes, max_lengths=max_lengths, tours=tours, 
+            apply_scale=apply_scale, to_int=to_int, round_func=round_func
         )
-        points = points.tolist()
 
         # write
         with open(file_path, "wb") as f:
             pickle.dump(
-                list(zip(depots, points, prizes, max_lengths)), f, pickle.HIGHEST_PROTOCOL
+                list(zip(depots, points, prizes, max_lengths, tours)), 
+                f, pickle.HIGHEST_PROTOCOL
             )
 
     def evaluate(
         self,
         calculate_gap: bool = False,
+        check_constraints: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
@@ -740,64 +784,71 @@ class OPSolver(SolverBase):
         """
         # check
         self._check_depots_not_none()
-        if original:
-            self._check_ori_points_not_none()   
-        else:
-            self._check_points_not_none()
+        self._check_points_not_none()
         self._check_prizes_not_none()
         self._check_max_lengths_not_none()
         self._check_tours_not_none(ref=False)
+        if check_constraints:
+            self._check_constraints_meet(ref=False)
         if calculate_gap:
             self._check_tours_not_none(ref=True)
-            
+            if check_constraints:
+                self._check_constraints_meet(ref=True)
+                
         # variables
-        depots = self.depots
-        points = self.ori_points if original else self.points
         prizes = self.prizes
-        max_lengths = self.max_lengths if original else self.max_lengths
         tours = self.tours
         ref_tours = self.ref_tours
 
-        # apply scale and dtype
-        points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
-            to_int=to_int, round_func=round_func
-        )
-
         # prepare for evaluate
-        tours_cost_list = list()
-        samples = points.shape[0]
+        total_prizes_list = list()
+        samples = len(tours)
         if calculate_gap:
-            ref_tours_cost_list = list()
+            ref_total_prizes_list = list()
             gap_list = list()
-            
+        
+        # deal with different situation
         if len(tours) != samples:
-            raise NotImplementedError(
-                "Evaluation is not implemented for multiple tours per instance."
-            )
-
-        # Suppose a problem only have one solved tour
-        for idx in range(samples):
-            solved_cost = self.calc_op_total(
-                prize=prizes[idx], tour=tours[idx]
-            )
-            tours_cost_list.append(solved_cost)
-            if calculate_gap:
-                ref_cost = self.calc_op_total(
-                    prize=prizes[idx], tour=ref_tours[idx]
+            if len(tours) % samples != 0:
+                raise ValueError("The number of solutions cannot be divided evenly by the number of problems.")
+            per_tour_num = len(tours) // samples
+            for idx in range(samples):
+                evaluator = OPEvaluator(prizes=prizes[idx])
+                solved_tours = tours[idx*per_tour_num, (idx+1)*per_tour_num]
+                solved_costs = list()
+                for tour in solved_tours:
+                    solved_costs.append(evaluator.evaluate(route=tour))
+                solved_cost = np.min(solved_costs)
+                total_prizes_list.append(solved_cost)
+                if calculate_gap:
+                    ref_cost = evaluator.evaluate(route=ref_tours[idx])
+                    ref_total_prizes_list.append(ref_cost)
+                    gap = (solved_cost - ref_cost) / ref_cost * 100
+                    gap_list.append(gap)
+        else:
+            # a problem only one solved tour
+            for idx in range(samples):
+                evaluator = OPEvaluator(prizes=prizes[idx])
+                solved_cost = evaluator.evaluate(
+                    route=tours[idx], to_int=to_int, round_func=round_func
                 )
-                ref_tours_cost_list.append(ref_cost)
-                gap = (solved_cost - ref_cost) / ref_cost * 100
-                gap_list.append(gap)
+                total_prizes_list.append(solved_cost)
+                if calculate_gap:
+                    ref_cost = evaluator.evaluate(
+                        route=ref_tours[idx], to_int=to_int, round_func=round_func
+                    )
+                    ref_total_prizes_list.append(ref_cost)
+                    gap = (solved_cost - ref_cost) / ref_cost * 100
+                    gap_list.append(gap)
 
         # calculate average cost/gap & std
-        tours_costs = np.array(tours_cost_list)
+        total_prizes = np.array(total_prizes_list)
         if calculate_gap:
-            ref_costs = np.array(ref_tours_cost_list)
+            ref_total_prizes = np.array(ref_total_prizes_list)
             gaps = np.array(gap_list)
-        costs_avg = np.average(tours_costs)
+        costs_avg = np.average(total_prizes)
         if calculate_gap:
-            ref_costs_avg = np.average(ref_costs)
+            ref_costs_avg = np.average(ref_total_prizes)
             gap_avg = np.sum(gaps) / samples
             gap_std = np.std(gaps)
             return costs_avg, ref_costs_avg, gap_avg, gap_std
@@ -806,10 +857,10 @@ class OPSolver(SolverBase):
 
     def solve(
         self,
-        depot: Union[list, np.ndarray] = None,
-        loc: Union[list, np.ndarray] = None,
-        prize: Union[list, np.ndarray] = None,
-        max_length: Union[list, np.ndarray] = None,
+        depots: Union[list, np.ndarray] = None,
+        points: Union[list, np.ndarray] = None,
+        prizes: Union[list, np.ndarray] = None,
+        max_lengths: Union[list, np.ndarray] = None,
         num_threads: int = 1, 
         show_time: bool = False,
         **kwargs,
@@ -838,7 +889,7 @@ class OPSolver(SolverBase):
                 >>> solver = OPGurobiSolver()
 
                 # load data and reference solutions from ``.pkl`` file
-                >>> solver.from_pkl(file_path="examples/op/pkl/op50.pkl")
+                >>> solver.from_pickle(file_path="examples/op/pkl/op50.pkl")
                     
                 # solve
                 >>> solver.solve()

@@ -47,18 +47,18 @@ We are systematically building a foundational framework for ML4CO with a collect
 
 | Problem | Generator | Basic Solver (IO) | Traditional Solver |
 | :-----: | :-------: | :---------------: | :----------------: |
-|  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt`` | ``LKH``, ``OR-Tools`` |
-|  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt`` | ``LKH``, ``HGS``, ``PyVRP`` |
+|  ATSP   | ``sat``, ``hcp``, ``uniform`` | ``tsplib``, ``txt``, ``pkl`` | ``LKH``, ``OR-Tools`` |
+|  CVRP   | ``uniform``, ``gaussian`` | ``vrplib``, ``txt``, ``pkl`` | ``LKH``, ``HGS``, ``PyVRP`` |
 |  KP    | ``uniform`` | ``txt`` | ``OR-Tools`` |
 |  LP    | ``uniform`` | ``txt`` | ``Gurobi`` |
 |  MCl    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MCut   | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
 |  MIS    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``KaMIS``, ``OR-Tools`` |
 |  MVC    | ``er``, ``ba``, ``hk``, ``ws``, ``rb`` | ``gpickle``, ``txt``, ``networkx`` | ``Gurobi``, ``OR-Tools`` |
-|  OP    | ``const``, ``unif``, ``dist`` | ``gpickle``, ``txt`` | ``Gurobi`` |
-|  PCTSP   | ``uniform`` | ``gpickle``, ``txt`` | ``OR-Tools``, ``ILS(C++)`` |
-|  SPCTSP   | ``uniform`` | ``gpickle``, ``txt`` | ``REOPT`` |
-|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools``, ``NeuroLKH`` |
+|  OP    | ``constant``, ``uniform``, ``dist`` | ``txt``, ``pkl`` | ``Gurobi`` |
+|  PCTSP   | ``uniform`` | ``txt``, ``pkl`` | ``OR-Tools``, ``ILS`` |
+|  SPCTSP   | ``uniform`` | ``txt``, ``pkl`` | ``REOPT`` |
+|  TSP    | ``uniform``, ``gaussian``, ``cluster`` | ``tsplib``, ``txt``, ``pkl`` | ``LKH``, ``Concorde``, ``GA-EAX``, ``OR-Tools``, ``NeuroLKH`` |
 
 #### Extension
 

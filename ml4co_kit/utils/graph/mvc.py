@@ -59,12 +59,12 @@ class MVCGraphData(GraphData):
                 self.nodes_label = nodes_label
             self._check_nodes_label(ref=ref)
         
-    def evaluate(self, calculate_gap: bool = False, check_constraint: bool = False):
+    def evaluate(self, calculate_gap: bool = False, check_constraints: bool = False):
         # check constraint
-        if check_constraint:
-            self.check_constraint(ref=False)
+        if check_constraints:
+            self.check_constraints(ref=False)
             if calculate_gap:
-                self.check_constraint(ref=True)
+                self.check_constraints(ref=True)
             
         # solved solution
         if self.sel_nodes_num is None:
@@ -89,7 +89,7 @@ class MVCGraphData(GraphData):
         else:
             return self.sel_nodes_num
         
-    def check_constraint(self, ref: bool):
+    def check_constraints(self, ref: bool):
         self._check_nodes_label(ref=ref)
         sol = self.ref_nodes_label if ref else self.nodes_label
         if sol is not None:

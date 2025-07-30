@@ -70,7 +70,7 @@ class SPCTSPSolver(PCTSPSolver):
             )
             raise ValueError(message)
    
-    def _check_demands_meet(self, ref: bool):
+    def _check_constraints_meet(self, ref: bool):
         r"""
         Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
         there is a split tour don't meet the demands.
@@ -405,7 +405,7 @@ class SPCTSPSolver(PCTSPSolver):
     def evaluate(
         self,
         calculate_gap: bool = False,
-        check_demands: bool = True,
+        check_constraints: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
@@ -420,17 +420,17 @@ class SPCTSPSolver(PCTSPSolver):
         self._check_penalties_not_none()
         self._check_norm_prizes_not_none()
         self._check_tours_not_none(ref=False)
-        if check_demands:
-            self._check_demands_meet(ref=False)
+        if check_constraints:
+            self._check_constraints_meet(ref=False)
         if calculate_gap:
             self._check_tours_not_none(ref=True)
-            if check_demands:
-                self._check_demands_meet(ref=True)
+            if check_constraints:
+                self._check_constraints_meet(ref=True)
             
         # variables
-        depots = self.depots
+        depots = self.ori_depots if original else self.points
         points = self.ori_points if original else self.points
-        penalties = self.penalties
+        penalties = self.ori_penalties if original else self.penalties
         tours = self.tours
         ref_tours = self.ref_tours
 

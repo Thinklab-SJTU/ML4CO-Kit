@@ -8,12 +8,11 @@ from ml4co_kit.utils.distance_utils import geographical
 SUPPORT_NORM_TYPE = ["EUC_2D", "GEO"]
 
 
-class PCTSPEvaluator(object):
+class OPChecker(object):
     def __init__(
         self,
         depots: Union[list, np.ndarray],
         points: Union[list, np.ndarray],
-        penalties: Union[list, np.ndarray],
         norm: str = "EUC_2D"
     ):
         # depots
@@ -30,19 +29,11 @@ class PCTSPEvaluator(object):
         if points.ndim != 2:
             raise ValueError("points must be 2D array.")
         
-        # penalties
-        penalties = to_numpy(penalties)
-        if penalties.ndim == 2 and penalties.shape[0] == 1:
-            penalties = penalties[0]
-        if penalties.ndim != 1:
-            raise ValueError("penalties must be 1D array.")
-        
         points_shape = points.shape
         coords = np.zeros(shape=(points_shape[0] + 1, points_shape[1]))
         coords[0] = depots
         coords[1:] = points
         self.points = coords
-        self.penalties = penalties
         self.set_norm(norm)     
 
     def set_norm(self, norm: str):
@@ -60,9 +51,9 @@ class PCTSPEvaluator(object):
         elif self.norm == "GEO":
             return geographical(x, y)
 
-    def evaluate(
+    def calc_length(
         self, route: Union[np.ndarray, list], 
-        to_int: bool = False, round_func: str="round"
+        to_int: bool = False, round_func: str="round" 
     ):
         if not to_int:
             round_func = "none"
@@ -76,18 +67,25 @@ class PCTSPEvaluator(object):
                 f" or one of {ROUND_FUNCS.keys()}."
             )
         
-        # cost of route
-        route_cost = 0
+        # length of route
+        route_length = 0
         for i in range(len(route) - 1):
-            cost = self.get_weight(
+            length = self.get_weight(
                 self.points[route[i]], self.points[route[i + 1]]
             )
-            route_cost += round_func(cost)
-        
-        # penalty of unvisited nodes
-        unvisited_penalty = np.sum(self.penalties) - np.sum(self.penalties[route[1:-1]-1])
-        unvisited_penalty = round_func(unvisited_penalty)
-        
-        # total cost
-        total_cost = unvisited_penalty + route_cost
-        return total_cost
+            route_length += round_func(length)
+            
+        return route_length
+    
+    
+class OPEvaluator(object):
+    def __init__(self, prizes: Union[list, np.ndarray],):
+        prizes = to_numpy(prizes)
+        if prizes.ndim == 2 and prizes.shape[0] == 1:
+            prizes = prizes[0]
+        if prizes.ndim != 1:
+            raise ValueError("prizes must be 1D array.")   
+        self.prizes = prizes     
+    
+    def evaluate(self, route: Union[np.ndarray, list]):
+        return self.prizes[to_numpy(route)[1:-1] - 1].sum()

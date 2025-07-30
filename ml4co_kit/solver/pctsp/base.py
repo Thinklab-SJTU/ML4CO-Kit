@@ -197,7 +197,7 @@ class PCTSPSolver(SolverBase):
         if self.depots is None:
             message = (
                 "``depots`` cannot be None! You can load the ``depots`` using the methods including "
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
     
@@ -209,7 +209,7 @@ class PCTSPSolver(SolverBase):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
-                "``from_data``, ``from_txt`` or ``from_pkl``."
+                "``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
         
@@ -221,7 +221,7 @@ class PCTSPSolver(SolverBase):
         if self.penalties is None:
             message = (
                 "``penalties`` cannot be None! You can load the ``penalties`` "
-                "using the methods including ``from_data``, ``from_txt`` or ``from_pkl``."
+                "using the methods including ``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
         
@@ -233,7 +233,7 @@ class PCTSPSolver(SolverBase):
         if self.norm_prizes is None:
             message = (
                 "``norm_prizes`` cannot be None! You can load the ``norm_prizes`` "
-                "using the methods including ``from_data``, ``from_txt`` or ``from_pkl``."
+                "using the methods including ``from_data``, ``from_txt`` or ``from_pickle``."
             )
             raise ValueError(message)
     
@@ -247,7 +247,7 @@ class PCTSPSolver(SolverBase):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``PCTSPSolver``"
-            "or use methods including ``from_data``, ``from_txt`` or ``from_pkl`` to obtain them."
+            "or use methods including ``from_data``, ``from_txt`` or ``from_pickle`` to obtain them."
         )  
         if ref:
             if self.ref_tours is None:
@@ -304,9 +304,9 @@ class PCTSPSolver(SolverBase):
             cur_penalties = cur_penalties / (max_value - min_value)
             self.points[idx] = cur_points
             self.depots[idx] = cur_depots
-            self.penalties = cur_penalties
+            self.penalties[idx] = cur_penalties
 
-    def _check_demands_meet(self, ref: bool):
+    def _check_constraints_meet(self, ref: bool):
         r"""
         Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
         there is a split tour don't meet the demands.
@@ -663,7 +663,7 @@ class PCTSPSolver(SolverBase):
                 >>> solver = PCTSPSolver()
 
                 # load data from ``.pkl`` file
-                >>> solver.from_pkl(file_path="examples/pctsp/txt/pctsp50.pkl")
+                >>> solver.from_pickle(file_path="examples/pctsp/txt/pctsp50.pkl")
                     
                 # Output data in ``txt`` format
                 >>> solver.to_txt(file_path="examples/pctsp/txt/pctsp50.txt")
@@ -778,7 +778,7 @@ class PCTSPSolver(SolverBase):
     def evaluate(
         self,
         calculate_gap: bool = False,
-        check_demands: bool = True,
+        check_constraints: bool = True,
         original: bool = True,
         apply_scale: bool = False,
         to_int: bool = False,
@@ -821,17 +821,17 @@ class PCTSPSolver(SolverBase):
         self._check_penalties_not_none()
         self._check_norm_prizes_not_none()
         self._check_tours_not_none(ref=False)
-        if check_demands:
-            self._check_demands_meet(ref=False)
+        if check_constraints:
+            self._check_constraints_meet(ref=False)
         if calculate_gap:
             self._check_tours_not_none(ref=True)
-            if check_demands:
-                self._check_demands_meet(ref=True)
+            if check_constraints:
+                self._check_constraints_meet(ref=True)
             
         # variables
-        depots = self.depots
+        depots = self.ori_depots if original else self.points
         points = self.ori_points if original else self.points
-        penalties = self.penalties
+        penalties = self.ori_penalties if original else self.penalties
         tours = self.tours
         ref_tours = self.ref_tours
 
@@ -948,7 +948,7 @@ class PCTSPSolver(SolverBase):
                 >>> solver = PCTSPORSolver()
 
                 # load data and reference solutions from ``.pkl`` file
-                >>> solver.from_pkl(file_path="examples/pctsp/pkl/pctsp50.pkl")
+                >>> solver.from_pickle(file_path="examples/pctsp/pkl/pctsp50.pkl")
                     
                 # solve
                 >>> solver.solve()

@@ -252,9 +252,9 @@ class GraphData(object):
             edge_nums = self.edge_index.shape[1]
             self.edge_attr = np.ones(shape=(edge_nums,))
             
-    def check_constraint(self, ref: bool):
+    def check_constraints(self, ref: bool):
         raise NotImplementedError(
-            "The ``check_constraint`` function is required to implemented in subclasses."
+            "The ``check_constraints`` function is required to implemented in subclasses."
         )
         
         
