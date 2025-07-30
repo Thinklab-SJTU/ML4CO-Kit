@@ -38,9 +38,10 @@ class TSPConcordeSolver(TSPSolver):
     def __init__(
         self,
         scale: int = 1e6,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(TSPConcordeSolver, self).__init__(
-            solver_type=SOLVER_TYPE.CONCORDE, scale=scale
+            solver_type=SOLVER_TYPE.CONCORDE, scale=scale, precision=precision
         )
 
     def _solve(self, nodes_coord: np.ndarray, name: str) -> np.ndarray:

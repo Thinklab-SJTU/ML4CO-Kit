@@ -37,9 +37,14 @@ class ATSPORSolver(ATSPSolver):
     :param strategy, str, choices: ["auto", "greedy", "guided", "guided", "tabu", "generic_tabu"]
     """
     def __init__(
-        self, scale: int = 1e6, strategy: str = "guided", time_limit: int = 1,
+        self, scale: int = 1e6, 
+        strategy: str = "guided", 
+        time_limit: int = 1,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
-        super(ATSPORSolver, self).__init__(solver_type=SOLVER_TYPE.ORTOOLS, scale=scale)
+        super(ATSPORSolver, self).__init__(
+            solver_type=SOLVER_TYPE.ORTOOLS, scale=scale, precision=precision
+        )
         self.strategy = strategy
         self.time_limit = time_limit
         self.set_search_parameters()

@@ -21,12 +21,13 @@ once and returns to the starting point in a directed graph.
 import os
 import sys
 import math
+import pickle
 import numpy as np
 import networkx as nx
 from typing import Union
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.evaluate.atsp.base import ATSPEvaluator
+from ml4co_kit.evaluate.atsp import ATSPEvaluator
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
@@ -40,7 +41,7 @@ else:
 class ATSPSolver(SolverBase):
     r"""
     This class provides a basic framework for solving ATSP problems. It includes methods for 
-    loading and outputting data in various file formats, normalizing points, and evaluating 
+    loading and outputting data in various file formats, normalizing dists, and evaluating 
     solutions. Note that the actual solving method should be implemented in subclasses.
     
     :param nodes_num: :math:`N`, int, the number of nodes in ATSP problem.
@@ -52,11 +53,16 @@ class ATSPSolver(SolverBase):
     :param ref_tours: :math:`(B\times (N+1))`, np.ndarray, the reference solutions to the problems. 
     :param scale: int, magnification scale of coordinates. If the input coordinates are too large,
         you can scale them to 0-1 by setting ``normalize`` to True, and then use ``scale`` to adjust them.
-        Note that the magnification scale only applies to ``points`` when solved by the solver.
+        Note that the magnification scale only applies to ``dists`` when solved by the solver.
     """
-    def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
+    def __init__(
+        self, 
+        solver_type: SOLVER_TYPE = None, 
+        scale: int = 1e6,
+        precision: Union[np.float32, np.float64] = np.float32
+    ):
         super(ATSPSolver, self).__init__(
-            task_type=TASK_TYPE.ATSP, solver_type=solver_type
+            task_type=TASK_TYPE.ATSP, solver_type=solver_type, precision=precision
         )
         self.scale = scale
         self.dists: np.ndarray = None
@@ -70,7 +76,7 @@ class ATSPSolver(SolverBase):
         Ensures that the ``dists`` attribute is a 3D array. If ``dists`` is a 2D array,
         it adds an additional dimension to make it 3D. Raises a ``ValueError`` if ``dists`` 
         is neither 2D or 3D. Also sets the ``nudes_norm`` attribute to the number of nodes
-        (points) in the problem. 
+        (dists) in the problem. 
         """
         if self.dists is not None:
             if self.dists.ndim == 2:
@@ -127,7 +133,8 @@ class ATSPSolver(SolverBase):
         if self.dists is None:
             message = (
                 "``dists`` cannot be None! You can load the dists using the methods"
-                "``from_data``, ``from_txt``, ``from_atsp`` or ``from_atsp_folder``."
+                "``from_data``, ``from_txt``, ``from_pickle``, ``from_atsp`` "
+                "or ``from_atsp_folder``."
             )
             raise ValueError(message)
 
@@ -142,7 +149,7 @@ class ATSPSolver(SolverBase):
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on "
             "``ATSPSolver`` like ``ATSPLKHSolver`` or use methods including "
-            "``from_data``, ``from_txt`` or ``from_tsplib`` to obtain them."
+            "``from_data``, ``from_txt``, ``from_pickle`` or ``from_tsplib`` to obtain them."
         )  
         if ref:
             if self.ref_tours is None:
@@ -195,6 +202,42 @@ class ATSPSolver(SolverBase):
             dists = round_func(dists)
         
         return dists
+
+    def _prepare_for_output(
+        self, 
+        dists: np.ndarray = None, 
+        tours: np.ndarray = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round",
+    ):
+        if dists is None:
+            return dists, tours
+        
+        # deal with different shapes
+        samples = dists.shape[0]
+        if tours.shape[0] != samples:
+            # a problem has more than one solved tour
+            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
+            best_tour_list = list()
+            for idx, solved_tours in enumerate(samples_tours):
+                cur_eva = ATSPEvaluator(dists[idx])
+                best_tour = solved_tours[0]
+                best_cost = cur_eva.evaluate(best_tour)
+                for tour in solved_tours[1:]:
+                    cur_cost = cur_eva.evaluate(tour)
+                    if cur_cost < best_cost:
+                        best_cost = cur_cost
+                        best_tour = tour
+                best_tour_list.append(best_tour)
+            tours = np.array(best_tour_list)
+
+        # apply scale and dtype
+        dists = self._apply_scale_and_dtype(
+            dists=dists, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        return dists, tours
 
     def _read_data_from_atsp_file(self, atsp_file_path: str) -> np.ndarray:
         r"""
@@ -497,7 +540,10 @@ class ATSPSolver(SolverBase):
                 tour_list.append(tour)
                 dist = dist.split(" ")
                 dist.append('')           
-                dist = np.array([float(dist[2*i]) for i in range(len(dist) // 2)])
+                dist = np.array(
+                    [float(dist[2*i]) for i in range(len(dist) // 2)], 
+                    dtype=self.precision
+                )
                 num_nodes = int(math.sqrt(len(dist)))
                 dist = dist.reshape(num_nodes, num_nodes)
                 dists_list.append(dist)
@@ -521,6 +567,34 @@ class ATSPSolver(SolverBase):
             dists=dists, tours=tours, ref=ref, normalize=normalize
         )
 
+    def from_pickle(
+        self,
+        file_path: str,
+        ref: bool = False,
+        normalize: bool = False,
+    ):
+        # check the file format
+        if not file_path.endswith(".pkl"):
+            raise ValueError("Invalid file format. Expected a ``.pkl`` file.")
+
+        # read the data from .pkl
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+
+        # check the data format
+        if isinstance(data, list) and len(data) > 0:
+            try:
+                dists, tours = zip(*data)
+                dists = np.array(dists)
+                tours = np.array(tours)
+                self.from_data(
+                    dists=dists, tours=tours, ref=ref, normalize=normalize
+                )
+            except Exception as e:
+                raise ValueError(f"Invalid data format in PKL file: {e}")
+        else:
+            raise ValueError("PKL file should contain a list of tuples")    
+    
     def from_data(
         self, 
         dists: Union[list, np.ndarray] = None,
@@ -559,7 +633,7 @@ class ATSPSolver(SolverBase):
         if dists is not None:
             dists = to_numpy(dists)
             self.ori_dists = dists
-            self.dists = dists.astype(np.float32)
+            self.dists = dists.astype(self.precision)
             self._check_ori_dists_dim()
             if normalize:
                 self._normalize_dists()
@@ -595,14 +669,14 @@ class ATSPSolver(SolverBase):
         :param tour_save_path: string, path to save the `.opt.tour` files. If given,
             the solution will be saved as ``.opt.tour`` file for each instance.
         :param tour_filename: string, the basic file name of the `.opt.tour` files.
-        :param original: boolean, whether to use ``original points`` or ``points``.
+        :param original: boolean, whether to use ``original dists`` or ``dists``.
         :param apply_scale: boolean, whether to perform data scaling for the corrdinates.
         :param to_int: boolean, whether to transfer the corrdinates to integters.
         :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
         :param show_time: boolean, whether the data is being output with a visual progress display.
 
         .. note::
-            ``points`` and ``tours`` must not be None.
+            ``dists`` and ``tours`` must not be None.
          
         .. dropdown:: Example
 
@@ -673,7 +747,9 @@ class ATSPSolver(SolverBase):
             if tour_filename.endswith(".tour"):
                 tour_filename = tour_filename.replace(".tour", "")
             self._check_tours_not_none(ref=False)
+            dists = self.ori_dists if original else self.dists
             tours = self.tours
+            _, tours = self._prepare_for_output(dists=dists, tours=tours)
             samples = tours.shape[0]
             
             # makedirs
@@ -718,7 +794,7 @@ class ATSPSolver(SolverBase):
         :param round_func: string, the category of the rounding function, used when ``to_int`` is True.
 
         .. note::
-            ``points`` and ``tours`` must not be None.
+            ``dists`` and ``tours`` must not be None.
          
         .. dropdown:: Example
 
@@ -748,30 +824,11 @@ class ATSPSolver(SolverBase):
         dists = self.ori_dists if original else self.dists
         tours = self.tours
 
-        # deal with different shapes
-        samples = dists.shape[0]
-        if tours.shape[0] != samples:
-            # a problem has more than one solved tour
-            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
-            best_tour_list = list()
-            for idx, solved_tours in enumerate(samples_tours):
-                cur_eva = ATSPEvaluator(dists[idx])
-                best_tour = solved_tours[0]
-                best_cost = cur_eva.evaluate(best_tour)
-                for tour in solved_tours:
-                    cur_cost = cur_eva.evaluate(tour)
-                    if cur_cost < best_cost:
-                        best_cost = cur_cost
-                        best_tour = tour
-                best_tour_list.append(best_tour)
-            tours = np.array(best_tour_list)
-
-        # apply scale and dtype
-        dists = self._apply_scale_and_dtype(
-            dists=dists, apply_scale=apply_scale,
+        # deal with different shapes and apply scale and dtype
+        dists, tours = self._prepare_for_output(
+            dists=dists, tours=tours, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )
-
 
         # write
         with open(file_path, "w") as f:
@@ -782,6 +839,34 @@ class ATSPSolver(SolverBase):
                 f.write(str(" ").join(str(node_idx + 1) for node_idx in tour))
                 f.write("\n")
             f.close()
+
+    def to_pickle(
+        self,
+        file_path: str = "example.pkl",
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        # check
+        self._check_dists_not_none()
+        self._check_tours_not_none(ref=False)
+        
+        # variables
+        dists = self.ori_dists if original else self.dists
+        tours = self.tours
+        
+        # deal with different shapes and apply scale and dtype
+        dists, tours = self._prepare_for_output(
+            dists=dists, tours=tours, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        
+        # to pickle
+        with open(file_path, "wb") as f:
+            pickle.dump(
+                list(zip(dists, tours)), f, pickle.HIGHEST_PROTOCOL
+            )
 
     def evaluate(
         self,

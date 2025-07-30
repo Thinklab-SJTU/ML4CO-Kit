@@ -58,10 +58,11 @@ class TSPNeuroLKHSolver(TSPSolver):
         lkh_initial_period: int = 15,
         use_nn: bool = True,
         sparse_factor: int = 20,
-        neurolkh_device: str = "cpu"
+        neurolkh_device: str = "cpu",
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(TSPNeuroLKHSolver, self).__init__(
-            solver_type=SOLVER_TYPE.NEUROLKH, scale=scale
+            solver_type=SOLVER_TYPE.NEUROLKH, scale=scale, precision=precision
         )
         
         # lkh params

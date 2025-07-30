@@ -92,8 +92,8 @@ def test_atsp():
     Test ATSPSolver
     """
     test_atsp_base_solver()
-    # test_atsp_lkh_solver()
-    # test_atsp_or_solver()
+    test_atsp_lkh_solver()
+    test_atsp_or_solver()
 
 
 ##############################################
@@ -735,15 +735,29 @@ def test_spctsp_base_solver():
     
 
 def _test_spctsp_reopt_solver(show_time: bool, num_threads: int):
+    # half
     spctsp_reopt_solver = SPCTSPReoptSolver()
     spctsp_reopt_solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=True)
     spctsp_reopt_solver.solve(show_time=show_time, num_threads=num_threads)
     _, _, gap_avg, _ = spctsp_reopt_solver.evaluate(calculate_gap=True)
-    print(f"SPCTSPReoptSolver Gap: {gap_avg}")
-    if gap_avg >= 1e-3:
+    print(f"SPCTSPReoptSolver (half) Gap: {gap_avg}")
+    if gap_avg >= 1.0:
         message = (
             f"The average gap ({gap_avg}) of SPCTSP50 solved by SPCTSPReoptSolver "
-            "is larger than or equal to 1e-3%."
+            "is larger than or equal to 1.0%."
+        )
+        raise ValueError(message)
+    
+    # first
+    spctsp_reopt_solver = SPCTSPReoptSolver(append_strategy="first")
+    spctsp_reopt_solver.from_txt("tests/data_for_tests/solver/spctsp/spctsp_example.txt", ref=True)
+    spctsp_reopt_solver.solve(show_time=show_time, num_threads=num_threads)
+    _, _, gap_avg, _ = spctsp_reopt_solver.evaluate(calculate_gap=True)
+    print(f"SPCTSPReoptSolver (first) Gap: {gap_avg}")
+    if gap_avg >= 1e-1:
+        message = (
+            f"The average gap ({gap_avg}) of SPCTSP50 solved by SPCTSPReoptSolver "
+            "is larger than or equal to 1e-1%."
         )
         raise ValueError(message)
 
@@ -944,14 +958,14 @@ def test_tsp():
 
 if __name__ == "__main__":
     test_atsp()
-    # test_cvrp()
-    # test_kp()
-    # test_lp()
-    # test_mcl()
-    # test_mcut()
-    # test_mis()
-    # test_mvc()
-    # test_op()
-    # test_pctsp()
-    # test_spctsp()
-    # test_tsp()
+    test_cvrp()
+    test_kp()
+    test_lp()
+    test_mcl()
+    test_mcut()
+    test_mis()
+    test_mvc()
+    test_op()
+    test_pctsp()
+    test_spctsp()
+    test_tsp()

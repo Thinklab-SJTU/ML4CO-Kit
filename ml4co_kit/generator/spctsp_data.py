@@ -1,17 +1,12 @@
 import pathlib
 import numpy as np
-from typing import Union, Sequence, Iterable
+from typing import Union, Sequence
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.generator.base import GeneratorBase
+from ml4co_kit.generator.base import EdgeGeneratorBase
 from ml4co_kit.solver import SPCTSPSolver, SPCTSPReoptSolver
 
-MAX_LENGTHS = {
-    20: 2.,
-    50: 3.,
-    100: 4.
-}
 
-class SPCTSPDataGenerator(GeneratorBase):
+class SPCTSPDataGenerator(EdgeGeneratorBase):
     def __init__(
         self,
         only_instance_for_us: bool = False,
@@ -24,19 +19,26 @@ class SPCTSPDataGenerator(GeneratorBase):
         test_samples_num: int = 1280,
         save_path: pathlib.Path = "data/spctsp",
         filename: str = None,
-        # args for SPCTSP
-        max_length_dict: dict = None,
-        penalty_factor: int = 3
+        # special args for uniform
+        uniform_k: float = 3.0,
+        uniform_prize_factor: float = 4.0, 
+        uniform_penalty_factor: float = 3.0,
     ):
         # filename
         if filename is None:
             filename = f"spctsp{nodes_num}_{data_type}"
 
+        # special args for uniform
+        self.uniform_k = uniform_k
+        self.uniform_prize_factor = uniform_prize_factor
+        self.uniform_penalty_factor = uniform_penalty_factor
+
+        # re-define
         generate_func_dict = {
             "uniform": self._generate_uniform,
         }
         supported_solver_dict = {
-            SOLVER_TYPE.REOPT: SPCTSPReoptSolver,
+            SOLVER_TYPE.REOPT: SPCTSPReoptSolver
         }
         check_solver_dict = {
             SOLVER_TYPE.REOPT: self._check_free,
@@ -46,6 +48,7 @@ class SPCTSPDataGenerator(GeneratorBase):
         super(SPCTSPDataGenerator, self).__init__(
             only_instance_for_us=only_instance_for_us,
             num_threads=num_threads,
+            nodes_num=nodes_num,
             data_type=data_type,
             solver=solver,
             train_samples_num=train_samples_num,
@@ -59,46 +62,30 @@ class SPCTSPDataGenerator(GeneratorBase):
         )
         self.solver: SPCTSPSolver
 
-        self.nodes_num = nodes_num
-        self.max_length_dict = max_length_dict if max_length_dict is not None else MAX_LENGTHS
-        self.penalty_factor = penalty_factor
-
     ##################################
     #         Generate Funcs         #
     ##################################
     
-    def _generate_depots(self) -> np.ndarray:
-        return np.random.uniform(size=(self.num_threads, 2))
+    def _generate_uniform(self) -> Sequence[np.ndarray]:
+        # depots
+        depots = np.random.uniform(size=(self.num_threads, 2))
         
-    def _generate_locs(self) -> np.ndarray:
-        return np.random.uniform(size=(self.num_threads, self.nodes_num, 2))
+        # points
+        points = np.random.uniform(size=(self.num_threads, self.nodes_num, 2))
         
-    def _generate_penalties(self) -> np.ndarray:
-        if self.nodes_num not in self.max_length_dict:
-            raise ValueError(f"Unsupported nodes number: {self.nodes_num}. Supported: {list(self.max_length_dict.keys())}")
-        penalty_max = self.max_length_dict[self.nodes_num] * (self.penalty_factor) / float(self.nodes_num)
-        return np.random.uniform(size=(self.num_threads, self.nodes_num)) * penalty_max
-    
-    def _generate_deterministic_prizes(self) -> np.ndarray:
-        # Now expectation is 0.5 so expected total prize is n / 2, we want to force to visit approximately half of the nodes
-        # so the constraint will be that total prize >= (n / 2) / 2 = n / 4
-        # equivalently, we divide all prizes by n / 4 and the total prize should be >= 1
-        return np.random.uniform(size=(self.num_threads, self.nodes_num)) * 4 / float(self.nodes_num)
-    
-    def _generate_stochastic_prizes(self, deterministic_prizes: np.ndarray) -> np.ndarray:
-        # In the deterministic setting, the stochastic_prize is not used and the deterministic prize is known
-        # In the stochastic setting, the deterministic prize is the expected prize and is known up front but the
-        # stochastic prize is only revealed once the node is visited
-        # Stochastic prize is between (0, 2 * expected_prize) such that E(stochastic prize) = E(deterministic_prize)
-        return np.random.uniform(size=(self.num_threads, self.nodes_num)) * deterministic_prizes * 2
-    
-    def _generate_uniform(self) -> Iterable[np.ndarray]:
-        depots = self._generate_depots()
-        locs = self._generate_locs()
-        penalties = self._generate_penalties()
-        deterministic_prizes = self._generate_deterministic_prizes()
-        stochastic_prizes = self._generate_stochastic_prizes(deterministic_prizes)
-        return depots, locs, penalties, deterministic_prizes, stochastic_prizes
+        # penalties
+        penalty_max = self.uniform_penalty_factor * self.uniform_k / self.nodes_num
+        penalties = penalty_max * np.random.uniform(size=(self.num_threads, self.nodes_num))
+        
+        # norm_prizes
+        prize_max = self.uniform_prize_factor / self.nodes_num
+        norm_prizes = prize_max * np.random.uniform(size=(self.num_threads, self.nodes_num))
+
+        # stochastic_norm_prizes
+        stochastic_scale = np.random.uniform(size=(self.num_threads, self.nodes_num)) * 2
+        stochastic_norm_prizes = norm_prizes * stochastic_scale
+
+        return depots, points, penalties, norm_prizes, stochastic_norm_prizes
     
     ##################################
     #      Solver-Checking Funcs     #
@@ -113,53 +100,63 @@ class SPCTSPDataGenerator(GeneratorBase):
     
     def generate_only_instance_for_us(self, samples: int) -> Sequence[np.ndarray]:
         self.num_threads = samples
-        depots, locs, penalties, deterministic_prizes, stochastic_prizes = self.generate_func()
+        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self.generate_func()
         self.solver.from_data(
-            depots=depots,
-            points=locs,
-            penalties=penalties,
-            deterministic_prizes=deterministic_prizes,
-            stochastic_prizes=stochastic_prizes,
+            depots=depots, 
+            points=points, 
+            node_penalties=penalties, 
+            norm_node_prizes=norm_prizes, 
+            stochastic_norm_prizes=stochastic_norm_prizes
         )
-        return self.solver.depots, self.solver.points, self.solver.penalties, self.solver.deterministic_prizes, self.solver.stochastic_prizes
-
+        return (
+            self.solver.depots,  
+            self.solver.points, 
+            self.solver.penalties, 
+            self.solver.norm_prizes, 
+            self.solver.stochastic_norm_prizes
+        )
+        
     def _generate_core(self):
         # call generate_func to generate data
-        depots, locs, penalties, deterministic_prizes, stochastic_prizes = self.generate_func()
-
+        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self.generate_func()
+        depots: np.ndarray = depots.dtype(np.float32)
+        points: np.ndarray = points.dtype(np.float32)
+        penalties: np.ndarray = penalties.dtype(np.float32)
+        norm_prizes: np.ndarray = norm_prizes.dtype(np.float32)
+        stochastic_norm_prizes: np.ndarray = stochastic_norm_prizes.dtype(np.float32)
+        
         # solve
-        items_label = self.solver.solve(
-            depots=depots,
-            points=locs,
-            penalties=penalties,
-            deterministic_prizes=deterministic_prizes,
-            stochastic_prizes=stochastic_prizes,
+        tours = self.solver.solve(
+            depots=depots, 
+            points=points, 
+            penalties=penalties, 
+            norm_prizes=norm_prizes,
+            stochastic_norm_prizes=stochastic_norm_prizes, 
             num_threads=self.num_threads
         )
-
+        
         # write to txt
-        with open(self.file_save_path, "a+") as f:
-            for idx, tour in enumerate(items_label[1]):
-                depot = depots[idx]
-                loc = locs[idx]
-                penalty = penalties[idx]
-                deterministic_prize = deterministic_prizes[idx]
-                stochastic_prize = stochastic_prizes[idx]
-                f.write(f"depot {depot[0]} {depot[1]} ")
+        for idx, tour in enumerate(tours):
+            with open(self.file_save_path, "a+") as f:
+                cur_depot = depots[idx]
+                cur_points = points[idx]
+                cur_penalty = penalties[idx]
+                cur_prize = norm_prizes[idx]
+                cur_stoc_prize = stochastic_norm_prizes[idx]
+                f.write(f"depots {cur_depot[0]} {cur_depot[1]} ")
                 f.write("points ")
-                for i in range(len(loc)):
-                    f.write(f"{loc[i][0]} {loc[i][1]} ")
+                for i in range(len(cur_points)):
+                    f.write(f"{cur_points[i][0]} {cur_points[i][1]} ")
                 f.write("penalties ")
-                for i in range(len(penalty)):
-                    f.write(f"{penalty[i]} ")
-                f.write(f"deterministic_prizes ")
-                for i in range(len(deterministic_prize)):
-                    f.write(f"{deterministic_prize[i]} ")
-                f.write(f"stochastic_prizes ")
-                for i in range(len(stochastic_prize)):
-                    f.write(f"{stochastic_prize[i]} ")
-                f.write("tours ")
+                for i in range(len(cur_penalty)):
+                    f.write(f"{cur_penalty[i]} ")
+                f.write(f"norm_prizes ")
+                for i in range(len(cur_prize)):
+                    f.write(f"{cur_prize[i]} ")
+                f.write(f"stochastic_norm_prizes ")
+                for i in range(len(cur_stoc_prize)):
+                    f.write(f"{cur_stoc_prize[i]} ")
+                f.write("output ")
                 for node_idx in tour:
                     f.write(f"{node_idx} ")
                 f.write("\n")
-                

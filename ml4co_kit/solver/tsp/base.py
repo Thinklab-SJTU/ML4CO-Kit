@@ -18,11 +18,12 @@ vertex of the graph exactly once and returns to the starting node.
 
 import os
 import sys
+import pickle
 import numpy as np
 from typing import Union
 from ml4co_kit.utils import tsplib95
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.evaluate.tsp.base import TSPEvaluator
+from ml4co_kit.evaluate.tsp import TSPEvaluator
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
 
@@ -52,9 +53,14 @@ class TSPSolver(SolverBase):
         Note that the magnification scale only applies to ``points`` when solved by the solver.
     :param norm: string, coordinate type. It can be a 2D Euler distance or geographic data type.
     """
-    def __init__(self, solver_type: SOLVER_TYPE = None, scale: int = 1e6):
+    def __init__(
+        self, 
+        solver_type: SOLVER_TYPE = None, 
+        scale: int = 1e6,
+        precision: Union[np.float32, np.float64] = np.float32
+    ):
         super(TSPSolver, self).__init__(
-            task_type=TASK_TYPE.TSP, solver_type=solver_type
+            task_type=TASK_TYPE.TSP, solver_type=solver_type, precision=precision
         )
         self.scale: np.ndarray = scale
         self.points: np.ndarray = None
@@ -126,7 +132,7 @@ class TSPSolver(SolverBase):
         if self.points is None:
             message = (
                 "``points`` cannot be None! You can load the ``points`` using the methods including "
-                "``from_data``, ``from_txt``, ``from_tsplib`` or ``from_tsplib_folder`."
+                "``from_data``, ``from_txt``, ``from_pickle``, ``from_tsplib`` or ``from_tsplib_folder`."
             )
             raise ValueError(message)
 
@@ -140,9 +146,9 @@ class TSPSolver(SolverBase):
         msg = "ref_tours" if ref else "tours"
         message = (
             f"``{msg}`` cannot be None! You can use solvers based on ``TSPSolver``"
-            "like ``TSPLKHSolver`` or use methods including ``from_data``, "
-            "``from_txt``, ``from_tsplib`` or ``from_tsplib_folder`` to obtain them."
-        )  
+            "like ``TSPLKHSolver`` or use methods including ``from_data``, ``from_txt``, "
+            "``from_pickle``, ``from_tsplib`` or ``from_tsplib_folder`` to obtain them."
+        )
         if ref:
             if self.ref_tours is None:
                 raise ValueError(message)
@@ -211,6 +217,42 @@ class TSPSolver(SolverBase):
             points = round_func(points)
         
         return points
+
+    def _prepare_for_output(
+        self, 
+        points: np.ndarray = None, 
+        tours: np.ndarray = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round",
+    ):
+        if points is None:
+            return points, tours
+        
+        # deal with different shapes
+        samples = points.shape[0]
+        if tours is not None and tours.shape[0] != samples:
+            # a problem has more than one solved tour
+            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
+            best_tour_list = list()
+            for idx, solved_tours in enumerate(samples_tours):
+                cur_eva = TSPEvaluator(points[idx])
+                best_tour = solved_tours[0]
+                best_cost = cur_eva.evaluate(best_tour)
+                for tour in solved_tours[1:]:
+                    cur_cost = cur_eva.evaluate(tour)
+                    if cur_cost < best_cost:
+                        best_cost = cur_cost
+                        best_tour = tour
+                best_tour_list.append(best_tour)
+            tours = np.array(best_tour_list)
+
+        # apply scale and dtype
+        points = self._apply_scale_and_dtype(
+            points=points, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        return points, tours
 
     def _read_data_from_tsp_file(self, tsp_file_path: str) -> np.ndarray:
         r"""
@@ -521,7 +563,7 @@ class TSPSolver(SolverBase):
                     [
                         [float(points[i]), float(points[i + 1])]
                         for i in range(0, len(points), 2)
-                    ]
+                    ], dtype=self.precision
                 )
                 points_list.append(points)
 
@@ -547,6 +589,36 @@ class TSPSolver(SolverBase):
             points=points, tours=tours, ref=ref, norm=norm, normalize=normalize
         )
 
+    def from_pickle(
+        self,
+        file_path: str,
+        ref: bool = False,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
+    ):
+        # check the file format
+        if not file_path.endswith(".pkl"):
+            raise ValueError("Invalid file format. Expected a ``.pkl`` file.")
+
+        # read the data from .pkl
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+
+        # check the data format
+        if isinstance(data, list) and len(data) > 0:
+            try:
+                points, tours = zip(*data)
+                points = np.array(points)
+                tours = np.array(tours)
+                self.from_data(
+                    points=points, tours=tours, ref=ref,
+                    norm=norm, normalize=normalize
+                )
+            except Exception as e:
+                raise ValueError(f"Invalid data format in PKL file: {e}")
+        else:
+            raise ValueError("PKL file should contain a list of tuples")
+    
     def from_data(
         self,
         points: Union[list, np.ndarray] = None,
@@ -588,7 +660,7 @@ class TSPSolver(SolverBase):
         if points is not None:
             points = to_numpy(points)
             self.ori_points = points
-            self.points = points.astype(np.float32)
+            self.points = points.astype(self.precision)
             self._check_ori_points_dim()
             if normalize:
                 self._normalize_points()
@@ -703,7 +775,9 @@ class TSPSolver(SolverBase):
             if tour_filename.endswith(".tour"):
                 tour_filename = tour_filename.replace(".tour", "")
             self._check_tours_not_none(ref=False)
+            points = self.ori_points if original else self.points
             tours = self.tours
+            _, tours = self._prepare_for_output(points=points, tours=tours)
             samples = tours.shape[0]
             
             # makedirs
@@ -778,28 +852,10 @@ class TSPSolver(SolverBase):
         # variables
         points = self.ori_points if original else self.points
         tours = self.tours
-
-        # deal with different shapes
-        samples = points.shape[0]
-        if tours.shape[0] != samples:
-            # a problem has more than one solved tour
-            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
-            best_tour_list = list()
-            for idx, solved_tours in enumerate(samples_tours):
-                cur_eva = TSPEvaluator(points[idx])
-                best_tour = solved_tours[0]
-                best_cost = cur_eva.evaluate(best_tour)
-                for tour in solved_tours:
-                    cur_cost = cur_eva.evaluate(tour)
-                    if cur_cost < best_cost:
-                        best_cost = cur_cost
-                        best_tour = tour
-                best_tour_list.append(best_tour)
-            tours = np.array(best_tour_list)
-
-        # apply scale and dtype
-        points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
+        
+        # deal with different shapes and apply scale and dtype
+        points, tours = self._prepare_for_output(
+            points=points, tours=tours, apply_scale=apply_scale,
             to_int=to_int, round_func=round_func
         )
 
@@ -812,6 +868,34 @@ class TSPSolver(SolverBase):
                 f.write("\n")
             f.close()
 
+    def to_pickle(
+        self,
+        file_path: str = "example.pkl",
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        # check
+        self._check_points_not_none()
+        self._check_tours_not_none(ref=False)
+        
+        # variables
+        points = self.ori_points if original else self.points
+        tours = self.tours
+        
+        # deal with different shapes and apply scale and dtype
+        points, tours = self._prepare_for_output(
+            points=points, tours=tours, apply_scale=apply_scale,
+            to_int=to_int, round_func=round_func
+        )
+        
+        # to pickle
+        with open(file_path, "wb") as f:
+            pickle.dump(
+                list(zip(points, tours)), f, pickle.HIGHEST_PROTOCOL
+            )
+    
     def evaluate(
         self,
         calculate_gap: bool = False,
@@ -865,8 +949,7 @@ class TSPSolver(SolverBase):
 
         # apply scale and dtype
         points = self._apply_scale_and_dtype(
-            points=points, apply_scale=apply_scale,
-            to_int=to_int, round_func=round_func
+            points=points, apply_scale=apply_scale, to_int=False, round_func=None
         )
 
         # prepare for evaluate
@@ -885,11 +968,15 @@ class TSPSolver(SolverBase):
                 solved_tours = tours[idx]
                 solved_costs = list()
                 for tour in solved_tours:
-                    solved_costs.append(evaluator.evaluate(tour))
+                    solved_costs.append(
+                        route=evaluator.evaluate(tour), to_int=to_int, round_func=round_func
+                    )
                 solved_cost = np.min(solved_costs)
                 tours_cost_list.append(solved_cost)
                 if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
+                    ref_cost = evaluator.evaluate(
+                        route=ref_tours[idx], to_int=to_int, round_func=round_func
+                    )
                     ref_tours_cost_list.append(ref_cost)
                     gap = (solved_cost - ref_cost) / ref_cost * 100
                     gap_list.append(gap)
@@ -898,10 +985,14 @@ class TSPSolver(SolverBase):
             for idx in range(samples):
                 evaluator = TSPEvaluator(points[idx], self.norm)
                 solved_tour = tours[idx]
-                solved_cost = evaluator.evaluate(solved_tour)
+                solved_cost = evaluator.evaluate(
+                    route=solved_tour, to_int=to_int, round_func=round_func
+                )
                 tours_cost_list.append(solved_cost)
                 if calculate_gap:
-                    ref_cost = evaluator.evaluate(ref_tours[idx])
+                    ref_cost = evaluator.evaluate(
+                        route=ref_tours[idx], to_int=to_int, round_func=round_func
+                    )
                     ref_tours_cost_list.append(ref_cost)
                     gap = (solved_cost - ref_cost) / ref_cost * 100
                     gap_list.append(gap)

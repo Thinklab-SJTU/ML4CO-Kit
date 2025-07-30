@@ -46,9 +46,12 @@ class ATSPLKHSolver(ATSPSolver):
         lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
-        lkh_special: bool = False
+        lkh_special: bool = False,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
-        super(ATSPLKHSolver, self).__init__(solver_type=SOLVER_TYPE.LKH, scale=scale)
+        super(ATSPLKHSolver, self).__init__(
+            solver_type=SOLVER_TYPE.LKH, scale=scale, precision=precision
+        )
         self.lkh_max_trials = lkh_max_trials
         self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs

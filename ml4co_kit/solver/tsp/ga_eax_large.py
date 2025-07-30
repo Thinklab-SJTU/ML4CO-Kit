@@ -27,11 +27,11 @@ import numpy as np
 from typing import Union
 from multiprocessing import Pool
 from ml4co_kit.solver.tsp.base import TSPSolver
+from ml4co_kit.evaluate.tsp import TSPEvaluator
 from ml4co_kit.solver.tsp.c_ga_eax_large import (
     GA_EAX_LARGE_TMP_PATH, tsp_ga_eax_large_solve
 )
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
 
 
@@ -51,10 +51,11 @@ class TSPGAEAXLargeSolver(TSPSolver):
         max_trials: int = 1,
         population_num: int = 300,
         offspring_num: int = 30,
-        show_info: bool = False
+        show_info: bool = False,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(TSPGAEAXLargeSolver, self).__init__(
-            solver_type=SOLVER_TYPE.GA_EAX_LARGE, scale=scale
+            solver_type=SOLVER_TYPE.GA_EAX_LARGE, scale=scale, precision=precision
         )
         self.max_trials = max_trials
         self.population_num = population_num

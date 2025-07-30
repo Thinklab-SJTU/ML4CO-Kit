@@ -193,21 +193,21 @@ class EdgeGeneratorBase(GeneratorBase):
         
     def download_lkh(self):
         # download
-        lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.7.tgz"
-        download("LKH-3.0.7.tgz", url=lkh_url)
+        lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
+        download("LKH-3.0.13.tgz", url=lkh_url)
         # tar .tgz file
-        os.system("tar xvfz LKH-3.0.7.tgz")
+        os.system("tar xvfz LKH-3.0.13.tgz")
         # build LKH
         ori_dir = os.getcwd()
-        os.chdir("LKH-3.0.7")
+        os.chdir("LKH-3.0.13")
         os.system("make")
         # move LKH to the bin dir
         target_dir = os.path.join(sys.prefix, "bin")
         os.system(f"cp LKH {target_dir}")
         os.chdir(ori_dir)
         # delete .tgz file
-        os.remove("LKH-3.0.7.tgz")
-        shutil.rmtree("LKH-3.0.7")
+        os.remove("LKH-3.0.13.tgz")
+        shutil.rmtree("LKH-3.0.13")
         
         
 class NodeGeneratorBase(GeneratorBase):

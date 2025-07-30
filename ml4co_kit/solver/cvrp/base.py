@@ -19,12 +19,13 @@ with limited capacity to deliver goods to a set of customers while minimizing co
 import os
 import sys
 import math
+import pickle
 import numpy as np
 from typing import Union
 from pyvrp import Model
 from pyvrp import read as read_vrp
 from ml4co_kit.solver.base import SolverBase
-from ml4co_kit.evaluate.cvrp.base import CVRPEvaluator
+from ml4co_kit.evaluate.cvrp import CVRPEvaluator
 from ml4co_kit.utils.distance_utils import geographical
 from ml4co_kit.utils.type_utils import to_numpy, TASK_TYPE, SOLVER_TYPE
 from ml4co_kit.utils.time_utils import iterative_execution, iterative_execution_for_file
@@ -72,9 +73,10 @@ class CVRPSolver(SolverBase):
         points_scale: int = 1e4,
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(CVRPSolver, self).__init__(
-            task_type=TASK_TYPE.CVRP, solver_type=solver_type
+            task_type=TASK_TYPE.CVRP, solver_type=solver_type, precision=precision
         )
         self.solver_type = solver_type
         self.depots_scale = depots_scale
@@ -307,23 +309,30 @@ class CVRPSolver(SolverBase):
             self.points[idx] = cur_points
             self.depots[idx] = cur_depots
     
-    def _check_demands_meet(self):
+    def _check_demands_meet(self, ref: bool):
         r"""
         Checks if the ``tour`` satisfies the capacities demands. Raise a `ValueError` if 
         there is a split tour don't meet the demands.
         """
-        tours_shape = self.tours.shape
-        for idx in range(tours_shape[0]):
-            cur_demand = self.demands[idx]
-            cur_capacity = self.capacities[idx]
-            cur_tour = self.tours[idx]
+        tours = self.ref_tours if ref else self.tours
+        num_tours = tours.shape[0]
+        num_instances = self.points.shape[0]
+        if num_tours % num_instances != 0:
+            raise ValueError(
+                "The number of solutions cannot be divided evenly by the number of problems."
+            )
+        instance_per_sols = num_tours // num_tours
+        for idx in range(num_tours):
+            cur_demand = self.demands[idx // instance_per_sols]
+            cur_capacity = self.capacities[idx // instance_per_sols]
+            cur_tour = tours[idx]
             split_tours = np.split(cur_tour, np.where(cur_tour == 0)[0])[1: -1]
             for split_idx in range(len(split_tours)):
                 split_tour = split_tours[split_idx][1:]
                 split_demand_need = np.sum(cur_demand[split_tour.astype(int) - 1], dtype=np.float32)
                 if split_demand_need > cur_capacity + 1e-5:
                     message = (
-                        f"Capacity constraint not met in tour {idx}. "
+                        f"Capacity constraint not met (ref = {ref}) in tour {idx}. "
                         f"The split tour is ``{split_tour}`` with the demand of {split_demand_need}."
                         f"However, the maximum capacity of the vehicle is {cur_capacity}."
                     )
@@ -385,6 +394,52 @@ class CVRPSolver(SolverBase):
             capacities = round_func(capacities)
         
         return depots, points, demands, capacities
+    
+    def _prepare_for_output(
+        self, 
+        depots: np.ndarray = None, 
+        points: np.ndarray = None, 
+        demands: np.ndarray = None,
+        capacities: np.ndarray = None,
+        tours: np.ndarray = None,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        if points is None:
+            return depots, points, demands, capacities, tours
+
+        # deal with different shapes
+        samples = points.shape[0]
+        if tours is not None and tours.shape[0] != samples:
+            # a problem has more than one solved tour
+            samples_tours = tours.reshape(samples, -1, tours.shape[-1])
+            best_tour_list = list()
+            for idx, solved_tours in enumerate(samples_tours):
+                cur_eva = CVRPEvaluator(depots[idx], points[idx], self.norm)
+                best_tour = solved_tours[0]
+                best_cost = cur_eva.evaluate(
+                    route=self._modify_tour(best_tour), 
+                    to_int=to_int, round_func=round_func
+                )
+                for tour in solved_tours[1:]:
+                    cur_cost = cur_eva.evaluate(
+                        route=self._modify_tour(tour), 
+                        to_int=to_int, round_func=round_func
+                    )
+                    if cur_cost < best_cost:
+                        best_cost = cur_cost
+                        best_tour = tour
+                best_tour_list.append(best_tour)
+            tours = np.array(best_tour_list)
+        
+        # apply scale and dtype
+        depots, points, demands, capacities = self._apply_scale_and_dtype(
+            depots=depots, points=points, demands=demands, capacities=capacities, 
+            apply_scale=apply_scale, to_int=to_int, round_func=round_func
+        )
+        
+        return depots, points, demands, capacities, tours
     
     def _read_data_from_vrp_file(self, vrp_file_path: str, round_func: str= "none"):
         r"""
@@ -761,18 +816,18 @@ class CVRPSolver(SolverBase):
                 
                 # strings to array
                 depot = depot.split(" ")
-                depot = np.array([float(depot[0]), float(depot[1])])
+                depot = np.array([float(depot[0]), float(depot[1])], dtype=self.precision)
                 points = points.split(" ")
                 points = np.array(
                     [
                         [float(points[i]), float(points[i + 1])]
                         for i in range(0, len(points), 2)
-                    ]
+                    ], dtype=self.precision
                 )
                 demands = demands.split(" ")
-                demands = np.array([
-                    float(demands[i]) for i in range(len(demands))
-                ])
+                demands = np.array(
+                    [float(demands[i]) for i in range(len(demands))], dtype=self.precision
+                )
                 capacity = float(capacity)
                 tour = tour.split(" ")
                 tour = [int(t) for t in tour]
@@ -794,7 +849,40 @@ class CVRPSolver(SolverBase):
             demands=demands_list, capacities=capacity_list, 
             tours=tours, ref=ref, norm=norm, normalize=normalize
         )
-              
+
+    def from_pickle(
+        self,
+        file_path: str,
+        ref: bool = False,
+        norm: str = "EUC_2D",
+        normalize: bool = False,
+    ):
+        # check the file format
+        if not file_path.endswith(".pkl"):
+            raise ValueError("Invalid file format. Expected a ``.pkl`` file.")
+
+        # read the data from .pkl
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+
+        # check the data format
+        if isinstance(data, list) and len(data) > 0:
+            try:
+                depots, points, demands, capacities, tours = zip(*data)
+                depots = np.array(depots)
+                points = np.array(points)
+                demands = np.array(demands)
+                capacities = np.array(capacities)
+                tours = np.array(tours)
+                self.from_data(
+                    depots=depots, points=points, demands=demands, capacities=capacities, 
+                    tours=tours, ref=ref, norm=norm, normalize=normalize
+                )
+            except Exception as e:
+                raise ValueError(f"Invalid data format in PKL file: {e}")
+        else:
+            raise ValueError("PKL file should contain a list of tuples")
+        
     def from_data(
         self,
         depots: Union[list, np.ndarray] = None,
@@ -849,20 +937,20 @@ class CVRPSolver(SolverBase):
         if depots is not None:
             depots = to_numpy(depots)
             self.ori_depots = depots
-            self.depots = depots.astype(np.float32)
+            self.depots = depots.astype(self.precision)
             self._check_ori_depots_dim()
         
         # points
         if points is not None:
             points = to_numpy(points)
             self.ori_points = points
-            self.points = points.astype(np.float32)
+            self.points = points.astype(self.precision)
             self._check_ori_points_dim()
         
         # demands
         if demands is not None:
             demands = to_numpy(demands)
-            self.demands = demands.astype(np.float32)
+            self.demands = demands.astype(self.precision)
             self._check_demands_dim()
         
         # capacities
@@ -871,7 +959,7 @@ class CVRPSolver(SolverBase):
                 capacities = np.array([capacities])
             if isinstance(capacities, list):
                 capacities = np.array(capacities)
-            self.capacities = capacities.astype(np.float32)
+            self.capacities = capacities.astype(self.precision)
             self.capacities = capacities
             self._check_capacities_dim()
 
@@ -1026,6 +1114,10 @@ class CVRPSolver(SolverBase):
             
             # variables
             tours = self.tours   
+            _, _, _, _, tours = self._prepare_for_output(
+                depots=depots, points=points, demands=demands, 
+                capacities=capacities, tours=tours
+            )
             
             # filename
             if sol_filename.endswith(".sol"):
@@ -1120,10 +1212,10 @@ class CVRPSolver(SolverBase):
         capacities = self.capacities
         tours = self.tours
         
-        # apply scale and dtype
-        depots, points, demands, capacities = self._apply_scale_and_dtype(
+        # deal with different shapes and apply scale and dtype
+        depots, points, demands, capacities, tours = self._prepare_for_output(
             depots=depots, points=points, demands=demands, capacities=capacities, 
-            apply_scale=apply_scale, to_int=to_int, round_func=round_func
+            tours=tours, apply_scale=apply_scale, to_int=to_int, round_func=round_func
         )
         
         # write
@@ -1150,7 +1242,40 @@ class CVRPSolver(SolverBase):
                 f.write(str(" ").join(str(node_idx) for node_idx in _tour.tolist()))
                 f.write("\n")
             f.close()
-
+    
+    def to_pickle(
+        self,
+        file_path: str = "example.pkl",
+        original: bool = True,
+        apply_scale: bool = False,
+        to_int: bool = False,
+        round_func: str = "round"
+    ):
+        # check
+        self._check_depots_not_none()
+        self._check_points_not_none()
+        self._check_demands_not_none()
+        self._check_capacities_not_none()
+        self._check_tours_not_none(ref=False)
+        
+        # variables
+        depots = self.ori_depots if original else self.depots
+        points = self.ori_points if original else self.points
+        demands = self.demands
+        capacities = self.capacities
+        tours = self.tours
+        
+        # deal with different shapes and apply scale and dtype
+        depots, points, demands, capacities, tours = self._prepare_for_output(
+            depots=depots, points=points, demands=demands, capacities=capacities, 
+            tours=tours, apply_scale=apply_scale, to_int=to_int, round_func=round_func
+        )
+        
+        # to pickle
+        with open(file_path, "wb") as f:
+            pickle.dump(
+               list(zip(depots, points, demands, capacities, tours)), f, pickle.HIGHEST_PROTOCOL
+            )
     
     def evaluate(
         self,
@@ -1198,9 +1323,11 @@ class CVRPSolver(SolverBase):
         self._check_points_not_none()
         self._check_tours_not_none(ref=False)
         if check_demands:
-            self._check_demands_meet()
+            self._check_demands_meet(ref=False)
         if calculate_gap:
-            self._check_tours_not_none(ref=False)
+            self._check_tours_not_none(ref=True)
+            if check_demands:
+                self._check_demands_meet(ref=True)
             
         # variables
         depots = self.ori_depots if original else self.depots
@@ -1223,25 +1350,52 @@ class CVRPSolver(SolverBase):
             ref_tours_cost_list = list()
             gap_list = list()
             
-        # evaluate
-        for idx in range(samples):
-            evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
-            solved_tour = tours[idx]
-            solved_cost = evaluator.evaluate(
-                route=self._modify_tour(solved_tour), 
-                to_int=to_int, 
-                round_func=round_func
-            )
-            tours_cost_list.append(solved_cost)
-            if calculate_gap:
-                ref_cost = evaluator.evaluate(
-                    route=self._modify_tour(ref_tours[idx]), 
+        # deal with different situation
+        if tours.shape[0] != samples:
+            # a problem has more than one solved tour
+            tours = tours.reshape(samples, -1, tours.shape[-1])
+            for idx in range(samples):
+                evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
+                solved_tours = tours[idx]
+                solved_costs = list()
+                for tour in solved_tours:
+                    solved_costs.append(
+                        evaluator.evaluate(
+                            route=self._modify_tour(tour), 
+                            to_int=to_int, 
+                            round_func=round_func
+                        )
+                    )
+                solved_cost = np.min(solved_costs)
+                tours_cost_list.append(solved_cost)
+                if calculate_gap:
+                    ref_cost = evaluator.evaluate(
+                        route=self._modify_tour(ref_tours[idx]), 
+                        to_int=to_int, 
+                        round_func=round_func
+                    )
+                    ref_tours_cost_list.append(ref_cost)
+                    gap = (solved_cost - ref_cost) / ref_cost * 100
+                    gap_list.append(gap)
+        else:
+            # a problem only one solved tour
+            for idx in range(samples):
+                evaluator = CVRPEvaluator(depots[idx], points[idx], self.norm)
+                solved_cost = evaluator.evaluate(
+                    route=self._modify_tour(tours[idx]), 
                     to_int=to_int, 
                     round_func=round_func
                 )
-                ref_tours_cost_list.append(ref_cost)
-                gap = (solved_cost - ref_cost) / ref_cost * 100
-                gap_list.append(gap)
+                tours_cost_list.append(solved_cost)
+                if calculate_gap:
+                    ref_cost = evaluator.evaluate(
+                        route=self._modify_tour(ref_tours[idx]), 
+                        to_int=to_int, 
+                        round_func=round_func
+                    )
+                    ref_tours_cost_list.append(ref_cost)
+                    gap = (solved_cost - ref_cost) / ref_cost * 100
+                    gap_list.append(gap)
 
         # calculate average cost/gap & std
         tours_costs = np.array(tours_cost_list)

@@ -48,14 +48,16 @@ class CVRPHGSSolver(CVRPSolver):
         demands_scale: int = 1e3,
         capacities_scale: int = 1e3,
         time_limit: float = 1.0,
-        show_info: bool = False
+        show_info: bool = False,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
         super(CVRPHGSSolver, self).__init__(
             solver_type=SOLVER_TYPE.HGS, 
-            depots_scale = depots_scale,
-            points_scale = points_scale,
-            demands_scale = demands_scale,
-            capacities_scale = capacities_scale,
+            depots_scale=depots_scale,
+            points_scale=points_scale,
+            demands_scale=demands_scale,
+            capacities_scale=capacities_scale,
+            precision=precision
         )
         self.time_limit = time_limit
         self.show_info = show_info

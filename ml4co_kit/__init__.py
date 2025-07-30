@@ -30,9 +30,9 @@ from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPD
 #                      Evaluator                      #
 #######################################################
 from .evaluate import ATSPEvaluator
-from .evaluate import CVRPEvaluator, CVRPUniformEvaluator
-from .evaluate import SATLIBEvaluator
-from .evaluate import TSPEvaluator, TSPLIBOriEvaluator, TSPLIB4MLEvaluator, TSPUniformEvaluator
+from .evaluate import CVRPEvaluator
+from .evaluate import TSPEvaluator
+from .evaluate import PCTSPEvaluator
 
 #######################################################
 #                    Data Generator                   #

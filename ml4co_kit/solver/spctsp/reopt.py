@@ -14,15 +14,16 @@ The algorithm plans a tour, executes part of it and then re-optimizes using the 
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import subprocess
 import os
+import subprocess
 import numpy as np
+from multiprocessing import Pool
 from typing import Union, Tuple, List
 from scipy.spatial.distance import cdist
-from ml4co_kit.solver.spctsp.base import SPCTSPSolver
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
+from ml4co_kit.solver.spctsp.base import SPCTSPSolver
+from ml4co_kit.solver.spctsp.c_reopt import spctsp_reopt_solve
 from ml4co_kit.utils.time_utils import iterative_execution, Timer
-
 
 class SPCTSPReoptSolver(SPCTSPSolver):
     r"""
@@ -38,25 +39,47 @@ class SPCTSPReoptSolver(SPCTSPSolver):
         self, 
         scale: int = 1e7, 
         time_limit: int = 1,
-        cpp_solver_path: str = "./ml4co_kit/solver/spctsp/reopt_solver",
         runs_per_instance: int = 1,
-        append: str = "half"
+        append_strategy: str = "half"
     ):
         super(SPCTSPReoptSolver, self).__init__(
             solver_type=SOLVER_TYPE.REOPT, scale=scale
         )
         self.time_limit = time_limit
-        self.cpp_solver_path = cpp_solver_path
         self.runs_per_instance = runs_per_instance
-        self.append = append
+        self.append_strategy = append_strategy
     
+    def _solve(
+        self, depots: np.ndarray, points: np.ndarray, penalties: np.ndarray, 
+        norm_prizes: np.ndarray, stochastic_norm_prizes: np.ndarray
+    ) -> np.ndarray:
+        r"""
+        Solve a single PCTSP instance
+        """       
+        # Prepare the input data for the C++ solver
+        coords = np.vstack([depots, points])
+        dist_matrix = cdist(coords, coords, 'euclidean')
+        
+        # Call the C++ solver
+        tour = spctsp_reopt_solve(
+            dist_matrix=dist_matrix, 
+            penalties=penalties, 
+            norm_prizes=norm_prizes, 
+            stochastic_norm_prizes=stochastic_norm_prizes,
+            runs_per_instance=self.runs_per_instance,
+            scale=self.scale,
+            append_strategy=self.append_strategy
+        )
+        final_tour = [0] + tour + [0]
+        return final_tour
+
     def solve(
         self,
         depots: Union[np.ndarray, List[np.ndarray]] = None,
         points: Union[np.ndarray, List[np.ndarray]] = None,
         penalties: Union[np.ndarray, List[np.ndarray]] = None,
-        deterministic_prizes: Union[np.ndarray, List[np.ndarray]] = None,
-        stochastic_prizes: Union[np.ndarray, List[np.ndarray]] = None,
+        norm_prizes: Union[np.ndarray, List[np.ndarray]] = None,
+        stochastic_norm_prizes: Union[np.ndarray, List[np.ndarray]] = None,
         norm: str = "EUC_2D",
         normalize: bool = False,
         num_threads: int = 1,
@@ -70,8 +93,8 @@ class SPCTSPReoptSolver(SPCTSPSolver):
             depots=depots, 
             points=points, 
             penalties=penalties, 
-            deterministic_prizes=deterministic_prizes, 
-            stochastic_prizes=stochastic_prizes, 
+            norm_prizes=norm_prizes, 
+            stochastic_norm_prizes=stochastic_norm_prizes, 
             norm=norm, 
             normalize=normalize
         )
@@ -79,120 +102,34 @@ class SPCTSPReoptSolver(SPCTSPSolver):
         timer.start()
         
         # solve
-        costs = list()
         tours = list()
-        num_instances = self.points.shape[0]
-
-        # We will use this to convert all floats to integers before writing to file.
-        SCALE_FACTOR = 100000.0
+        p_shape = self.points.shape
+        num_points = p_shape[0]
+        if num_threads == 1:
+            for idx in iterative_execution(range, num_points, self.solve_msg, show_time):
+                tours.append(self._solve(
+                    self.depots[idx], self.points[idx], self.penalties[idx], 
+                    self.norm_prizes[idx], self.stochastic_norm_prizes[idx]
+                ))
+        else:
+            for idx in iterative_execution(
+                range, num_points // num_threads, self.solve_msg, show_time
+            ):
+                with Pool(num_threads) as p1:
+                    cur_tours = p1.starmap(
+                        self._solve,
+                        [
+                            (self.depots[idx*num_threads+inner_idx],
+                             self.points[idx*num_threads+inner_idx],
+                             self.penalties[idx*num_threads+inner_idx],
+                             self.norm_prizes[idx*num_threads+inner_idx],
+                             self.stochastic_norm_prizes[idx*num_threads+inner_idx])
+                            for inner_idx in range(num_threads)
+                        ],
+                    )
+                for tour in cur_tours:
+                    tours.append(tour)
         
-        for idx in iterative_execution(range, num_instances, self.solve_msg, show_time):
-            # Per-instance data
-            depot = self.depots[idx]
-            customer_points = self.points[idx]
-            customer_penalties = self.penalties[idx]
-            customer_det_prizes = self.deterministic_prizes[idx]
-            customer_stoch_prizes = self.stochastic_prizes[idx]
-            
-            # Combine depot and customer coordinates for distance matrix calculation
-            all_coords = np.vstack([depot, customer_points])
-            num_customers = len(customer_points)
-            
-            # Pre-calculate the full, original distance matrix
-            original_dist_matrix = cdist(all_coords, all_coords, 'euclidean')
-
-            # Variables for the re-optimization loop
-            final_tour = []
-            
-            # The re-optimization loop continues as long as not all customers have been visited
-            while len(final_tour) < num_customers:
-                temp_input_file = f"temp_instance_{idx}.txt"
-                try:
-                    # State Update
-                    visited_mask = np.zeros(len(all_coords), dtype=bool)
-                    if final_tour:
-                        visited_mask[final_tour] = True
-                    
-                    current_dist_matrix = original_dist_matrix.copy()
-                    if final_tour:
-                        last_node_idx = final_tour[-1]
-                        current_dist_matrix[0, :] = original_dist_matrix[last_node_idx, :]
-
-                    # Prepare Subproblem
-                    unvisited_mask = ~visited_mask
-                    sub_dist_matrix = current_dist_matrix[np.ix_(unvisited_mask, unvisited_mask)]
-                    sub_penalties = customer_penalties[unvisited_mask[1:]]
-                    sub_det_prizes = customer_det_prizes[unvisited_mask[1:]]
-                    total_collected_stoch_prize = np.sum(customer_stoch_prizes[np.array(final_tour) - 1]) if final_tour else 0.0
-                    prize_to_collect = 1.0 - total_collected_stoch_prize
-                    min_prize_scaled = int(max(0, prize_to_collect) * SCALE_FACTOR)
-                    max_possible_prize_scaled = int(np.sum(sub_det_prizes) * SCALE_FACTOR)
-                    min_prize_scaled = min(min_prize_scaled, max_possible_prize_scaled)
-
-                    # Write Subproblem to File
-                    with open(temp_input_file, 'w') as f:
-                        # Prizes (for subproblem, depot prize is 0)
-                        prizes_full = np.round(np.insert(sub_det_prizes, 0, 0) * SCALE_FACTOR).astype(int)
-                        f.write(' '.join(map(str, prizes_full)) + '\n')
-                        # Penalties (for subproblem, depot penalty is 0)
-                        penalties_full = np.round(np.insert(sub_penalties, 0, 0) * SCALE_FACTOR).astype(int)
-                        f.write(' '.join(map(str, penalties_full)) + '\n')
-                        # Distance matrix (for subproblem)
-                        dist_matrix_int = np.round(sub_dist_matrix * SCALE_FACTOR).astype(int)
-                        for row in dist_matrix_int:
-                            f.write(' '.join(map(str, row)) + '\n')
-                            
-                    # Call C++ Solver
-                    command = [
-                        self.cpp_solver_path,
-                        temp_input_file,
-                        str(min_prize_scaled),
-                        str(self.runs_per_instance)
-                    ]
-                    
-                    result = subprocess.run(command, capture_output=True, text=True, check=True, encoding='utf-8')
-                    output = result.stdout
-
-                    # Parse Output and Update Tour
-                    sub_tour = []
-                    for line in output.strip().split('\n'):
-                        if line.startswith("Best Result Cost:"):
-                            cost_from_cpp = float(line.split(':')[1].strip())
-                        elif line.startswith("Best Result Route:"):
-                            full_route = [int(node) for node in line.split(':')[1].strip().split()]
-                            if len(full_route) > 2 and full_route[0] == 0 and full_route[-1] == 0:
-                                sub_tour = full_route[1:-1]
-                    
-                    if cost_from_cpp is None:
-                        raise RuntimeError("Failed to parse cost from C++ solver output.")
-
-                    if not sub_tour:
-                        break
-                        
-                    unvisited_indices = np.where(unvisited_mask)[0]
-                    original_node_indices = unvisited_indices[sub_tour].tolist()
-                    
-                    # Append part of the new tour to the final tour based on the 'append' strategy
-                    if self.append == 'first':
-                        final_tour.append(original_node_indices[0])
-                    elif self.append == 'half':
-                        nodes_to_add = max(1, len(original_node_indices) // 2)
-                        final_tour.extend(original_node_indices[:nodes_to_add])
-                    else: # 'all'
-                        final_tour.extend(original_node_indices)
-                        
-                finally:
-                    # Cleanup 
-                    if os.path.exists(temp_input_file):
-                        os.remove(temp_input_file)
-
-            final_cost = self.calc_pctsp_cost(depot, customer_points, customer_penalties, customer_stoch_prizes, final_tour)
-            
-            costs.append(final_cost)
-            tours.append(final_tour)
-
-        # format
-        costs = np.array(costs)
         self.from_data(tours=tours, ref=False)
         
         # show time
@@ -200,8 +137,7 @@ class SPCTSPReoptSolver(SPCTSPSolver):
         timer.show_time()
         
         # return
-        return costs, self.tours
-        
+        return self.tours
 
     def __str__(self) -> str:
         return "SPCTSPReoptSolver"

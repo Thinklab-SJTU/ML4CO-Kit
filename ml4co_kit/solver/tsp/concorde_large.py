@@ -40,9 +40,10 @@ class TSPConcordeLargeSolver(TSPConcordeSolver):
     def __init__(
         self,
         scale: int = 1e6,
-        time_limit: float = 3600
+        time_limit: float = 3600,
+        precision: Union[np.float32, np.float64] = np.float32
     ):
-        super(TSPConcordeLargeSolver, self).__init__(scale=scale)
+        super(TSPConcordeLargeSolver, self).__init__(scale=scale, precision=precision)
         self.solver_type = SOLVER_TYPE.CONCORDE_LARGE
         self.time_limit = time_limit
 

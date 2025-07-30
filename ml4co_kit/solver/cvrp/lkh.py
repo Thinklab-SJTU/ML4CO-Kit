@@ -233,21 +233,16 @@ class CVRPLKHSolver(CVRPSolver):
                     capacity=self.capacities[idx]
                 ))
         else:
-            num_tqdm = num_points // num_threads
-            batch_depots = self.depots.reshape(num_tqdm, num_threads, -1)
-            batch_demands = self.demands.reshape(num_tqdm, num_threads, -1)
-            batch_capacities = self.capacities.reshape(num_tqdm, num_threads)
-            batch_points = self.points.reshape(-1, num_threads, p_shape[-2], p_shape[-1])
             for idx in iterative_execution(
                 range, num_points // num_threads, self.solve_msg, show_time
             ):
                 with Pool(num_threads) as p1:
                     cur_tours = p1.starmap(
                         self._solve,
-                        [  (batch_depots[idx][inner_idx], 
-                            batch_points[idx][inner_idx], 
-                            batch_demands[idx][inner_idx], 
-                            batch_capacities[idx][inner_idx]) 
+                        [  (self.depots[idx*num_threads+inner_idx], 
+                            self.points[idx*num_threads+inner_idx], 
+                            self.demands[idx*num_threads+inner_idx], 
+                            self.capacities[idx*num_threads+inner_idx]) 
                             for inner_idx in range(num_threads)
                         ],
                     )

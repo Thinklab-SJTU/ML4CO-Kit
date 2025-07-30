@@ -101,12 +101,12 @@ class CVRPDataGenerator(EdgeGeneratorBase):
             size=(self.num_threads,)
         )
     
-    def _generate_uniform(self) -> np.ndarray:
+    def _generate_uniform(self) -> Sequence[np.ndarray]:
         depots = np.random.random([self.num_threads, 2])
         points = np.random.random([self.num_threads, self.nodes_num, 2]) 
         return depots, points
 
-    def _generate_gaussian(self) -> np.ndarray:
+    def _generate_gaussian(self) -> Sequence[np.ndarray]:
         depots = np.random.normal(
             loc=[self.gaussian_mean_x, self.gaussian_mean_y],
             scale=self.gaussian_std,
@@ -165,8 +165,10 @@ class CVRPDataGenerator(EdgeGeneratorBase):
     def _generate_core(self):
         # call generate_func to generate data
         batch_depots_coord, batch_nodes_coord = self.generate_func()
-        batch_demands = self._generate_demands()
-        batch_capacities = self._generate_capacities()
+        batch_depots_coord: np.ndarray = batch_depots_coord.dtype(np.float32)
+        batch_nodes_coord: np.ndarray = batch_nodes_coord.dtype(np.float32)
+        batch_demands = self._generate_demands().dtype(np.float32)
+        batch_capacities = self._generate_capacities().dtype(np.float32)
         
         # solve
         tours = self.solver.solve(

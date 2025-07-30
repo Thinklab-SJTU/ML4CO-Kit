@@ -5,8 +5,8 @@ import itertools
 import numpy as np
 from typing import Union
 from multiprocessing import Pool
+from ml4co_kit.evaluate.tsp import TSPEvaluator
 from ml4co_kit.utils.type_utils import SOLVER_TYPE
-from ml4co_kit.evaluate.tsp.base import TSPEvaluator
 from ml4co_kit.generator.base import EdgeGeneratorBase
 from ml4co_kit.solver import (
     TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPConcordeLargeSolver,
@@ -118,7 +118,7 @@ class TSPDataGenerator(EdgeGeneratorBase):
             size=(self.num_threads, self.nodes_num, 2),
         )
 
-    def _generate_cluster(self):
+    def _generate_cluster(self) -> np.ndarray:
         nodes_coords = np.zeros([self.num_threads, self.nodes_num, 2])
         for i in range(self.num_threads):
             cluster_centers = np.random.random([self.cluster_nums, 2])
@@ -193,6 +193,7 @@ class TSPDataGenerator(EdgeGeneratorBase):
     def _generate_core(self):
         # call generate_func to generate data
         batch_nodes_coord = self.generate_func()
+        batch_nodes_coord: np.ndarray = batch_nodes_coord.astype(np.float32)
         
         # solve
         tours = self.solver.solve(

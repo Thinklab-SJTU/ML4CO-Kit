@@ -237,6 +237,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
     def _generate_core(self):
         # call generate_func to generate data
         batch_dists, tours = self.generate_func()
+        batch_dists: np.ndarray = batch_dists.astype(np.float32)
         
         # solve
         if tours is None:
