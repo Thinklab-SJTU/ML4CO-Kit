@@ -39,6 +39,8 @@ repos/**
 ml4co_kit/solver/cvrp/c_hgs/tmp/**
 ml4co_kit/solver/tsp/c_ga_eax_large/tmp/**
 ml4co_kit/solver/tsp/c_ga_eax_normal/tmp/**
+ml4co_kit/solver/pctsp/c_ils/tmp/**
+ml4co_kit/solver/spctsp/c_reopt/tmp/**
 
 # coverage
 coverage.xml
