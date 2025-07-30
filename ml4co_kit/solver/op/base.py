@@ -829,14 +829,10 @@ class OPSolver(SolverBase):
             # a problem only one solved tour
             for idx in range(samples):
                 evaluator = OPEvaluator(prizes=prizes[idx])
-                solved_cost = evaluator.evaluate(
-                    route=tours[idx], to_int=to_int, round_func=round_func
-                )
+                solved_cost = evaluator.evaluate(route=tours[idx])
                 total_prizes_list.append(solved_cost)
                 if calculate_gap:
-                    ref_cost = evaluator.evaluate(
-                        route=ref_tours[idx], to_int=to_int, round_func=round_func
-                    )
+                    ref_cost = evaluator.evaluate(route=ref_tours[idx])
                     ref_total_prizes_list.append(ref_cost)
                     gap = (solved_cost - ref_cost) / ref_cost * 100
                     gap_list.append(gap)
