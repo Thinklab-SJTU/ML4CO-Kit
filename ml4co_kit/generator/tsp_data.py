@@ -125,14 +125,14 @@ class TSPDataGenerator(EdgeGeneratorBase):
         for i in range(self.num_threads):
             cluster_centers = np.random.random([self.cluster_nums, 2])
             cluster_points = []
-        for center in cluster_centers:
-            points = np.random.normal(
-                loc=center,
-                scale=self.cluster_std,
-                size=(self.nodes_num // self.cluster_nums, 2),
-            )
-            cluster_points.append(points)
-        nodes_coords[i] = np.concatenate(cluster_points, axis=0)
+            for center in cluster_centers:
+                points = np.random.normal(
+                    loc=center,
+                    scale=self.cluster_std,
+                    size=(self.nodes_num // self.cluster_nums, 2),
+                )
+                cluster_points.append(points)
+            nodes_coords[i] = np.concatenate(cluster_points, axis=0)
         return nodes_coords
     
     ##################################
