@@ -167,6 +167,7 @@ class EdgeGeneratorBase(GeneratorBase):
         test_samples_num: int,
         save_path: pathlib.Path,
         filename: str,
+        precision: Union[np.float32, np.float64],
         # need to pre-define
         generate_func_dict: dict,
         supported_solver_dict: dict,
@@ -190,6 +191,7 @@ class EdgeGeneratorBase(GeneratorBase):
         
         # other args
         self.nodes_num = nodes_num
+        self.precision = precision
         
     def download_lkh(self):
         # download

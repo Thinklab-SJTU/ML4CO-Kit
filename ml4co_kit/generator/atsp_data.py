@@ -21,6 +21,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
         test_samples_num: int = 1280,
         save_path: pathlib.Path = "dataset/atsp",
         filename: str = None,
+        precision: Union[np.float32, np.float64] = np.float32,
         # special for sat
         sat_vars_nums: int = 5,
         sat_clauses_nums: int = 5,
@@ -60,6 +61,7 @@ class ATSPDataGenerator(EdgeGeneratorBase):
             test_samples_num=test_samples_num,
             save_path=save_path,
             filename=filename,
+            precision=precision,
             generate_func_dict=generate_func_dict,
             supported_solver_dict=supported_solver_dict,
             check_solver_dict=check_solver_dict
@@ -228,16 +230,20 @@ class ATSPDataGenerator(EdgeGeneratorBase):
     #      Data-Generating Funcs     #
     ##################################
     
+    def _generate_batch_data(self) -> Tuple[np.ndarray, np.ndarray]:
+        batch_dists, tours = self.generate_func()
+        batch_dists: np.ndarray = batch_dists.astype(self.precision)
+        return batch_dists, tours
+    
     def generate_only_instance_for_us(self, samples: int) -> np.ndarray:
         self.num_threads = samples
-        dists = self.generate_func()[0]
+        dists = self._generate_batch_data()[0]
         self.solver.from_data(dists=dists)
         return self.solver.dists
 
     def _generate_core(self):
         # call generate_func to generate data
-        batch_dists, tours = self.generate_func()
-        batch_dists: np.ndarray = batch_dists.astype(np.float32)
+        batch_dists, tours = self._generate_batch_data()
         
         # solve
         if tours is None:

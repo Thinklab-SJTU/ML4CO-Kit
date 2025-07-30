@@ -19,6 +19,7 @@ class SPCTSPDataGenerator(EdgeGeneratorBase):
         test_samples_num: int = 1280,
         save_path: pathlib.Path = "data/spctsp",
         filename: str = None,
+        precision: Union[np.float32, np.float64] = np.float32,
         # special args for uniform
         uniform_k: float = 3.0,
         uniform_prize_factor: float = 4.0, 
@@ -56,6 +57,7 @@ class SPCTSPDataGenerator(EdgeGeneratorBase):
             test_samples_num=test_samples_num,
             save_path=save_path,
             filename=filename,
+            precision=precision,
             generate_func_dict=generate_func_dict,
             supported_solver_dict=supported_solver_dict,
             check_solver_dict=check_solver_dict
@@ -98,14 +100,23 @@ class SPCTSPDataGenerator(EdgeGeneratorBase):
     #      Data-Generating Funcs     #
     ##################################
     
+    def _generate_batch_data(self) -> Sequence[np.ndarray]:
+        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self.generate_func()
+        depots: np.ndarray = depots.astype(self.precision)
+        points: np.ndarray = points.astype(self.precision)
+        penalties: np.ndarray = penalties.astype(self.precision)
+        norm_prizes: np.ndarray = norm_prizes.astype(self.precision)
+        stochastic_norm_prizes: np.ndarray = stochastic_norm_prizes.astype(self.precision)
+        return depots, points, penalties, norm_prizes, stochastic_norm_prizes
+    
     def generate_only_instance_for_us(self, samples: int) -> Sequence[np.ndarray]:
         self.num_threads = samples
-        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self.generate_func()
+        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self._generate_batch_data()
         self.solver.from_data(
             depots=depots, 
             points=points, 
-            node_penalties=penalties, 
-            norm_node_prizes=norm_prizes, 
+            penalties=penalties, 
+            norm_prizes=norm_prizes, 
             stochastic_norm_prizes=stochastic_norm_prizes
         )
         return (
@@ -118,12 +129,7 @@ class SPCTSPDataGenerator(EdgeGeneratorBase):
         
     def _generate_core(self):
         # call generate_func to generate data
-        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self.generate_func()
-        depots: np.ndarray = depots.dtype(np.float32)
-        points: np.ndarray = points.dtype(np.float32)
-        penalties: np.ndarray = penalties.dtype(np.float32)
-        norm_prizes: np.ndarray = norm_prizes.dtype(np.float32)
-        stochastic_norm_prizes: np.ndarray = stochastic_norm_prizes.dtype(np.float32)
+        depots, points, penalties, norm_prizes, stochastic_norm_prizes = self._generate_batch_data()
         
         # solve
         tours = self.solver.solve(

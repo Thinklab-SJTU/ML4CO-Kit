@@ -30,6 +30,7 @@ class TSPDataGenerator(EdgeGeneratorBase):
         test_samples_num: int = 1280,
         save_path: pathlib.Path = "data/tsp",
         filename: str = None,
+        precision: Union[np.float32, np.float64] = np.float32,
         # special args for gaussian
         gaussian_mean_x: float = 0.0,
         gaussian_mean_y: float = 0.0,
@@ -97,6 +98,7 @@ class TSPDataGenerator(EdgeGeneratorBase):
             test_samples_num=test_samples_num,
             save_path=save_path,
             filename=filename,
+            precision=precision,
             generate_func_dict=generate_func_dict,
             supported_solver_dict=supported_solver_dict,
             check_solver_dict=check_solver_dict
@@ -184,16 +186,20 @@ class TSPDataGenerator(EdgeGeneratorBase):
     #      Data-Generating Funcs     #
     ##################################
     
+    def _generate_batch_data(self) -> np.ndarray:
+        batch_nodes_coord = self.generate_func()
+        batch_nodes_coord: np.ndarray = batch_nodes_coord.astype(self.precision)
+        return batch_nodes_coord
+    
     def generate_only_instance_for_us(self, samples: int) -> np.ndarray:
         self.num_threads = samples
-        points = self.generate_func()
+        points = self._generate_batch_data()
         self.solver.from_data(points=points)
         return self.solver.points
 
     def _generate_core(self):
         # call generate_func to generate data
-        batch_nodes_coord = self.generate_func()
-        batch_nodes_coord: np.ndarray = batch_nodes_coord.astype(np.float32)
+        batch_nodes_coord = self._generate_batch_data()
         
         # solve
         tours = self.solver.solve(

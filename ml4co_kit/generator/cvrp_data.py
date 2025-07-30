@@ -22,6 +22,7 @@ class CVRPDataGenerator(EdgeGeneratorBase):
         test_samples_num: int = 1280,
         save_path: pathlib.Path = "data/cvrp",
         filename: str = None,
+        precision: Union[np.float32, np.float64] = np.float32,
         # args for demand and capacity
         min_demand: int = 1,
         max_demand: int = 10,
@@ -75,6 +76,7 @@ class CVRPDataGenerator(EdgeGeneratorBase):
             test_samples_num=test_samples_num,
             save_path=save_path,
             filename=filename,
+            precision=precision,
             generate_func_dict=generate_func_dict,
             supported_solver_dict=supported_solver_dict,
             check_solver_dict=check_solver_dict
@@ -146,11 +148,18 @@ class CVRPDataGenerator(EdgeGeneratorBase):
     #      Data-Generating Funcs     #
     ##################################
     
+    def _generate_batch_data(self) -> Sequence[np.ndarray]:
+        batch_depots_coord, batch_nodes_coord = self.generate_func()
+        batch_depots_coord: np.ndarray = batch_depots_coord.astype(self.precision)
+        batch_nodes_coord: np.ndarray = batch_nodes_coord.astype(self.precision)
+        batch_demands = self._generate_demands().astype(self.precision)
+        batch_capacities = self._generate_capacities().astype(self.precision)
+        return batch_depots_coord, batch_nodes_coord, batch_demands, batch_capacities
+    
     def generate_only_instance_for_us(self, samples: int) -> Sequence[np.ndarray]:
         self.num_threads = samples
-        batch_depots_coord, batch_nodes_coord = self.generate_func()
-        batch_demands = self._generate_demands()
-        batch_capacities = self._generate_capacities()
+        batch_depots_coord, batch_nodes_coord, batch_demands, \
+            batch_capacities = self._generate_batch_data()
         self.solver.from_data(
             depots=batch_depots_coord,
             points=batch_nodes_coord,
@@ -164,12 +173,9 @@ class CVRPDataGenerator(EdgeGeneratorBase):
 
     def _generate_core(self):
         # call generate_func to generate data
-        batch_depots_coord, batch_nodes_coord = self.generate_func()
-        batch_depots_coord: np.ndarray = batch_depots_coord.dtype(np.float32)
-        batch_nodes_coord: np.ndarray = batch_nodes_coord.dtype(np.float32)
-        batch_demands = self._generate_demands().dtype(np.float32)
-        batch_capacities = self._generate_capacities().dtype(np.float32)
-        
+        batch_depots_coord, batch_nodes_coord, batch_demands, \
+            batch_capacities = self._generate_batch_data()
+
         # solve
         tours = self.solver.solve(
             depots=batch_depots_coord,
