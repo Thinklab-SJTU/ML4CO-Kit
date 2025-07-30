@@ -216,9 +216,13 @@ class PCTSPORSolver(PCTSPSolver):
     
 
 # Euclidean distance function (scaled)
-def _euclidean_distance_scaled(position_1: Tuple[int, int], position_2: Tuple[int, int]) -> int:
+def _euclidean_distance_scaled(position_1: np.ndarray, position_2: np.ndarray) -> int:
     r"""Computes the Euclidean distance between two scaled integer points."""
-    return int(math.sqrt((position_1[0] - position_2[0]) ** 2 + (position_1[1] - position_2[1]) ** 2) + 0.5)
+    p1 = position_1.astype(np.int64)
+    p2 = position_2.astype(np.int64)
+    dx = p1[0] - p2[0]
+    dy = p1[1] - p2[1]
+    return int(math.sqrt((dx ** 2 + dy ** 2) + 0.5))
 
 
 class _CreateDistanceEvaluator(object):
