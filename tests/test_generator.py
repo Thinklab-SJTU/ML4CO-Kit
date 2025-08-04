@@ -718,10 +718,10 @@ def test_op():
     """
     Test OPDataGenerator
     """
-    _test_op_gurobi_generator(num_threads=1, data_type="const")
-    _test_op_gurobi_generator(num_threads=4, data_type="const")
-    _test_op_gurobi_generator(num_threads=1, data_type="unif")
-    _test_op_gurobi_generator(num_threads=4, data_type="unif")
+    _test_op_gurobi_generator(num_threads=1, data_type="constant")
+    _test_op_gurobi_generator(num_threads=4, data_type="constant")
+    _test_op_gurobi_generator(num_threads=1, data_type="uniform")
+    _test_op_gurobi_generator(num_threads=4, data_type="uniform")
     _test_op_gurobi_generator(num_threads=1, data_type="dist")
     _test_op_gurobi_generator(num_threads=4, data_type="dist")
     
