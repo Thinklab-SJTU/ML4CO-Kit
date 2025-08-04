@@ -171,7 +171,6 @@ class PCTSPORSolver(PCTSPSolver):
         timer.start()
         
         # solve
-        costs = list()
         tours = list()
         num_points = self.points.shape[0]
         if num_threads == 1:

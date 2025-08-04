@@ -59,14 +59,12 @@ class OPSolver(SolverBase):
         self, 
         solver_type: SOLVER_TYPE = None, 
         scale: int = 1e6,
-        time_limit: float = 60.0,
         precision: Union[np.float32, np.float64] = np.float32
     ):
         super(OPSolver, self).__init__(
             task_type=TASK_TYPE.OP, solver_type=solver_type, precision=precision
         )
         self.scale = scale
-        self.time_limit: float = time_limit
         self.nodes_num: int = None
         self.depots: np.ndarray = None
         self.points: np.ndarray = None

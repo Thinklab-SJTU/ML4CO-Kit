@@ -96,10 +96,10 @@ class OPDataGenerator(EdgeGeneratorBase):
     
     def generate_only_instance_for_us(self, samples: int) -> Sequence[np.ndarray]:
         self.num_threads = samples
-        depots, locs, prizes, max_lengths = self._generate_batch_data()
+        depots, pointss, prizes, max_lengths = self._generate_batch_data()
         self.solver.from_data(
             depots=depots,
-            points=locs,
+            points=pointss,
             prizes=prizes,
             max_lengths=max_lengths
         )
@@ -107,33 +107,33 @@ class OPDataGenerator(EdgeGeneratorBase):
 
     def _generate_core(self):
         # call generate_func to generate data
-        depots, locs, prizes, max_lengths = self._generate_batch_data()
+        depots, points, prizes, max_lengths = self._generate_batch_data()
 
         # solve
-        items_label = self.solver.solve(
-            depot=depots,
-            loc=locs,
-            prize=prizes,
-            max_length=max_lengths,
+        tours = self.solver.solve(
+            depots=depots,
+            points=points,
+            prizes=prizes,
+            max_lengths=max_lengths,
             num_threads=self.num_threads
         )
 
         # write to txt
         with open(self.file_save_path, "a+") as f:
-            for idx, tour in enumerate(items_label[1]):
-                depot = depots[idx]
-                loc = locs[idx]
-                prize = prizes[idx]
-                max_length = max_lengths[idx]
-                f.write(f"depots {depot[0]} {depot[1]} ")
+            for idx, tour in enumerate(tours):
+                cur_depot = depots[idx]
+                cur_points = points[idx]
+                cur_prizes = prizes[idx]
+                cur_max_length = max_lengths[idx]
+                f.write(f"depots {cur_depot[0]} {cur_depot[1]} ")
                 f.write("points ")
-                for i in range(len(loc)):
-                    f.write(f"{loc[i][0]} {loc[i][1]} ")
+                for i in range(len(cur_points)):
+                    f.write(f"{cur_points[i][0]} {cur_points[i][1]} ")
                 f.write("prizes ")
-                for i in range(len(prize)):
-                    f.write(f"{prize[i]} ")
+                for i in range(len(cur_prizes)):
+                    f.write(f"{cur_prizes[i]} ")
                 f.write("max_length ")
-                f.write(f"{max_length} ")
+                f.write(f"{cur_max_length} ")
                 f.write("tours ")
                 for node_idx in tour:
                     f.write(f"{node_idx} ")
