@@ -21,33 +21,27 @@ ml4co_kit/solver/cvrp/hgs/source/cvrp_hgs_solver
 *.pyd
 *.so
 *.o
-ml4co_kit/solver/tsp/pyconcorde/build/**
-ml4co_kit/solver/mis/KaMIS/**
-ml4co_kit/solver/tsp/pyconcorde/concorde/_concorde.c
-ml4co_kit/solver/tsp/c_ga_eax_large/ga_eax_large_solver
-ml4co_kit/solver/tsp/c_ga_eax_normal/ga_eax_normal_solver
-ml4co_kit/solver/cvrp/c_hgs/cvrp_hgs_solver
+ml4co_kit/solver/lib/concorde/pyconcorde/build/**
+ml4co_kit/solver/lib/kamis/KaMIS/**
+ml4co_kit/solver/lib/concorde/pyconcorde/concorde/_concorde.c
+ml4co_kit/solver/lib/ga_eax/c_ga_eax_large/ga_eax_large_solver
+ml4co_kit/solver/lib/ga_eax/c_ga_eax_normal/ga_eax_normal_solver
+ml4co_kit/solver/lib/hgs/c_hgs/cvrp_hgs_solver
+ml4co_kit/solver/lib/greedy/cython_tsp_greedy/source/cython_tsp_greedy.c
 
-# datasets
+# datasets and weights
 dataset/**
 data/**
+weights/**
 
 # tmp
 tmp/**
 tmp.py
 repos/**
-ml4co_kit/solver/cvrp/c_hgs/tmp/**
-ml4co_kit/solver/tsp/c_ga_eax_large/tmp/**
-ml4co_kit/solver/tsp/c_ga_eax_normal/tmp/**
-ml4co_kit/solver/pctsp/c_ils/tmp/**
-ml4co_kit/solver/spctsp/c_reopt/tmp/**
 
 # coverage
 coverage.xml
 .coverage
-
-# tests (solver)
-tests/data_for_tests/solver/mis/mis_example/instance/preprocessed/**
 
 # tests (draw)
 tests/data_for_tests/draw/tsp/tsp_draw_example_solution.png
@@ -58,10 +52,6 @@ tests/data_for_tests/draw/mis/mis_draw_example_solution.png
 tests/data_for_tests/draw/mis/mis_draw_example_problem.png
 tests/data_for_tests/draw/cvrp/cvrp_draw_example_problem.png
 tests/data_for_tests/draw/cvrp/cvrp_draw_example_solution.png
-
-# special
-ml4co_kit/algorithm/tsp/decoder/cython_tsp_greedy/source/cython_tsp_greedy.c
-ml4co_kit/solver/tsp/pyneurolkh/pretrained_file/neurolkh.pt
 
 # docs
 docs/_build/**

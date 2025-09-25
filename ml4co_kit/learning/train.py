@@ -1,15 +1,31 @@
+r"""
+Trainer for ML4CO models.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import os
 import torch
-import torch.distributed
 from torch import nn
 from typing import Optional, List
 from wandb.util import generate_id
 from typing import Union, Optional
-from pytorch_lightning.trainer import Trainer
-from pytorch_lightning.strategies import Strategy, DDPStrategy
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint, TQDMProgressBar
-from pytorch_lightning.utilities import rank_zero_info
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.utilities import rank_zero_info
+from pytorch_lightning.trainer import Trainer as PLTrainer
+from pytorch_lightning.strategies import Strategy, DDPStrategy
+from pytorch_lightning.callbacks import (
+    LearningRateMonitor, ModelCheckpoint, TQDMProgressBar
+)
 
 
 class Checkpoint(ModelCheckpoint):
@@ -58,7 +74,7 @@ class Logger(WandbLogger):
         )
 
 
-class Trainer(Trainer):
+class Trainer(PLTrainer):
     def __init__(
         self,
         model: nn.Module,

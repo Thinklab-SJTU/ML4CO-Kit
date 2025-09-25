@@ -38,28 +38,6 @@ from huggingface_hub import HfApi
 def download(filename: str, url: Union[str, list], md5: str = None, retries: int = 5):
     r"""
     Download data form url and check md5.
-    Raise ``RuntimeError`` if exceeded the maximum number of attempts.
-    Raise ``ValueError`` if ``url``is neither string nor list.
- 
-    :param filename: string, the name of the file need to download.
-    :param url: string or list, the url path of the data set.
-    :param md5: string, the md5 used to check the md5 of download data.
-    :param retries: int, the max accepectable retry count. Defaults to '5'.
-
-    ..dropdown:: Example
-    
-        ::
-            # we try to download tsp_uniform dataset as example.
-            >>> from ml4co_kit import download
-            
-            #create downloader and load data from huggingface.co
-            >>> download(
-                "tsp_uniform_20240825.tar.gz",
-                "https://huggingface.co/datasets/ML4CO/TSPUniformDataset/resolve/main/tsp_uniform_20240825.tar.gz?download=true,
-                "44371d7c99b35d77fe18220122c564c1"
-            )
-            
-            # The data will be stored in the specified path if the download is successful.
     """
     if type(url) == str:
         return _download(filename, url, md5, retries)
@@ -116,7 +94,7 @@ def _download(filename: str, url: str, md5: str, retries: int):
                 return _download(filename, url, md5, retries - 1)
 
     if md5 is not None:
-        md5_returned = _get_md5(filename)
+        md5_returned = get_md5(filename)
         if md5 != md5_returned:
             print("Warning: MD5 check failed for the downloaded content. Retrying...")
             os.remove(filename)
@@ -125,7 +103,7 @@ def _download(filename: str, url: str, md5: str, retries: int):
     return filename
 
 
-def _get_md5(filename: str):
+def get_md5(filename: str):
     r"""
     Get the md5 of the specified file.
     """
@@ -175,13 +153,12 @@ def pull_file_from_huggingface(
 
 
 ###############################################
-#                  Compress                   #
+#            Compress and Extract             #
 ###############################################
 
 
 def compress_folder(
-    folder: str,
-    compress_path: str,
+    folder: str, compress_path: str,
 ):
     """
     Compresses a folder into the specified output format.
@@ -247,3 +224,19 @@ def extract_archive(archive_path: str, extract_path: str):
     else:
         message = "Unsupported file format. Only .zip, .tar.gz"
         raise ValueError(message)
+    
+    
+###############################################
+#                  Check Path                 #
+###############################################
+
+def check_file_path(file_path: str):
+    r"""
+    Check if the directory of the file path exists, if not, create it.
+    """
+    # Get Directory
+    directory = os.path.dirname(file_path)
+    
+    # Create Directory if it does not exist
+    if not directory == "":
+        os.makedirs(directory, exist_ok=True)

@@ -1,10 +1,19 @@
-import importlib.util
+r"""
+Learning Module.
+"""
 
-# torch
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
-    from .utils import to_numpy, to_tensor, check_dim
-    from .utils import points_to_distmat, sparse_points
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
+import importlib.util
 
 # pytorch_lightning  
 found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")

@@ -1,117 +1,86 @@
 import importlib.util
 
-#######################################################
-#                       Support                       #
-#######################################################
-from .utils.type_utils import TASK_TYPE, SOLVER_TYPE, TASK_SUPPORT_SOLVER 
+###################################################
+#                      Task                       #
+###################################################
 
-#######################################################
-#                      Algorithm                      #
-#######################################################
-from .algorithm import atsp_greedy_decoder, atsp_2opt_local_search
-from .algorithm import cvrp_greedy_decoder, cvrp_classic_local_search
-from .algorithm import mcl_greedy_decoder, mcl_beam_decoder, mcl_gp_degree_decoder, mcl_lc_degree_decoder
-from .algorithm import mcut_lc_degree_decoder
-from .algorithm import (
-    mis_greedy_decoder, mis_beam_decoder, mis_gp_degree_decoder, mis_lc_degree_decoder, mis_evo_decoder
+# Base Task
+from .task import TaskBase, TASK_TYPE
+
+# Graph Task
+from .task import GraphTaskBase, MClTask, MCutTask, MISTask, MVCTask
+
+# Routing Task
+from .task import ATSPTask, CVRPTask, TSPTask, OPTask, PCTSPTask, SPCTSPTask
+
+
+###################################################
+#                    Generator                    #
+###################################################
+
+# Base Generator
+from .generator import GeneratorBase
+
+# Graph Generator
+from .generator import (
+    GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
+    MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
 )
-from .algorithm import mis_2improve_local_search, mis_3improve_local_search, mis_ils_local_search
-from .algorithm import mvc_greedy_decoder, mvc_gp_degree_decoder, mvc_lc_degree_decoder
-from .algorithm import tsp_greedy_decoder, tsp_insertion_decoder, tsp_mcts_decoder, tsp_mcts_local_search
 
-#######################################################
-#                     Free Dataset                    #
-#######################################################
-from .data import VRPLIBOriDataset, CVRPUniformDataset
-from .data import SATLIBOriDataset
-from .data import TSPLIBOriDataset, TSPUniformDataset, TSPLIB4MLDataset, ML4TSPDataset
+# Routing Generator
+from .generator import (
+    RoutingGenerator, ATSPGenerator, CVRPGenerator, TSPGenerator,
+    OPGenerator, PCTSPGenerator, SPCTSPGenerator, ATSP_TYPE, 
+    CVRP_TYPE, TSP_TYPE, OP_TYPE, PCTSP_TYPE, SPCTSP_TYPE
+)
 
-#######################################################
-#                      Evaluator                      #
-#######################################################
-from .evaluate import ATSPEvaluator
-from .evaluate import CVRPEvaluator
-from .evaluate import TSPEvaluator
-from .evaluate import PCTSPEvaluator
 
-#######################################################
-#                    Data Generator                   #
-#######################################################
-from .generator import GeneratorBase, NodeGeneratorBase, EdgeGeneratorBase
-from .generator import ATSPDataGenerator
-from .generator import CVRPDataGenerator
-from .generator import KPDataGenerator
-from .generator import LPDataGenerator
-from .generator import MClDataGenerator
-from .generator import MCutDataGenerator
-from .generator import MISDataGenerator
-from .generator import MVCDataGenerator
-from .generator import OPDataGenerator
-from .generator import PCTSPDataGenerator
-from .generator import SPCTSPDataGenerator
-from .generator import TSPDataGenerator
+####################################################
+#                      Solver                      #
+####################################################
+# Base Solver
+from .solver import SolverBase, SOLVER_TYPE
 
-#######################################################
-#                        Solver                       #
-#######################################################
-from .solver import ATSPSolver, ATSPLKHSolver, ATSPORSolver
-from .solver import CVRPSolver, CVRPPyVRPSolver, CVRPLKHSolver, CVRPHGSSolver
-from .solver import LPSolver, LPGurobiSolver
-from .solver import MClSolver, MClGurobiSolver, MClORSolver
-from .solver import MCutSolver, MCutGurobiSolver, MCutORSolver
-from .solver import MISSolver, KaMISSolver, MISGurobiSolver, MISORSolver
-from .solver import MVCSolver, MVCGurobiSolver, MVCORSolver
-from .solver import KPSolver, KPORSolver
-from .solver import OPSolver, OPGurobiSolver
-from .solver import PCTSPSolver, PCTSPORSolver, PCTSPILSSolver
-from .solver import SPCTSPSolver, SPCTSPReoptSolver
+# Solver (not use torch backend)
 from .solver import (
-    TSPSolver, TSPLKHSolver, TSPConcordeSolver, TSPORSolver,
-    TSPConcordeLargeSolver, TSPGAEAXSolver, TSPGAEAXLargeSolver
+    LKHSolver, ConcordeSolver, KaMISSolver, RLSASolver, HGSSolver,
+    GpDegreeSolver, LcDegreeSolver, MCTSSolver, InsertionSolver
 )
 
-#######################################################
-#                    Utils Function                   #
-#######################################################
-from .utils import download, compress_folder, extract_archive, _get_md5
-from .utils import iterative_execution_for_file, iterative_execution, Timer
-from .utils import np_dense_to_sparse, np_sparse_to_dense, GraphData, tsplib95
-from .utils import MISGraphData, MVCGraphData, MClGraphData, MCutGraphData
-from .utils import sat_to_mis_graph, cnf_folder_to_gpickle_folder, cnf_to_gpickle
-
-#######################################################
-#           Extension Function (matplotlib)           #
-#######################################################
-found_matplotlib = importlib.util.find_spec("matplotlib")
-if found_matplotlib is not None:
-    from .draw import draw_cvrp_problem, draw_cvrp_solution
-    from .draw import draw_mcl_problem, draw_mcl_solution
-    from .draw import draw_mcut_problem, draw_mcut_solution
-    from .draw import draw_mis_problem, draw_mis_solution
-    from .draw import draw_mvc_problem, draw_mvc_solution
-    from .draw import draw_tsp_problem, draw_tsp_solution
-
-#######################################################
-#              Extension Function (torch)             #
-#######################################################
+# Greedy Solver (use torch backend)
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
-    from .learning import to_numpy, to_tensor, check_dim
-    from .learning import points_to_distmat, sparse_points
-    from .algorithm import mcl_rlsa_decoder, mcl_rlsa_local_search
-    from .algorithm import mcut_rlsa_decoder, mcut_rlsa_local_search
-    from .algorithm import mis_rlsa_decoder, mis_rlsa_local_search
-    from .algorithm import mvc_rlsa_decoder, mvc_rlsa_local_search
-    from .algorithm import tsp_2opt_local_search
-    from .solver import TSPNeuroLKHSolver
-    
-#######################################################
-#        Extension Function (pytorch_lightning)       #
-#######################################################
-found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
-if found_pytorch_lightning is not None:
-    from .learning import BaseEnv, BaseModel, Checkpoint, Logger, Trainer
+    from .solver import GreedySolver
 
 
-__version__ = "0.3.3"
+####################################################
+#                     Wrapper                      #
+####################################################
+from .wrapper import (
+    WrapperBase, TSPWrapper, ATSPWrapper, CVRPWrapper,
+    MISWrapper, MCutWrapper, MClWrapper, MVCWrapper,
+    OPWrapper, PCTSPWrapper, SPCTSPWrapper
+)
+
+
+####################################################
+#                  Utils Function                  #
+####################################################
+
+# File Utils
+from .utils import (
+    download, pull_file_from_huggingface, get_md5,
+    compress_folder, extract_archive, check_file_path
+)
+
+# Time Utils
+from .utils import tqdm_by_time, Timer
+
+# GNN4CO
+from .extension.gnn4co import (
+    GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
+)
+
+
+__version__ = "1.0.0"
 __author__ = "SJTU-ReThinkLab"

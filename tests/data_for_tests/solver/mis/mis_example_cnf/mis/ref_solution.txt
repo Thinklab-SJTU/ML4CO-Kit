@@ -1,4 +1,0 @@
-CBS_k3_n100_m403_b10_18.gpickle: 403
-CBS_k3_n100_m418_b10_927.gpickle: 418
-CBS_k3_n100_m429_b50_1.gpickle: 429
-CBS_k3_n100_m449_b70_15.gpickle: 449
