@@ -1,5 +1,6 @@
+
 r"""
-Solver Test Module.
+Tester for PCTSP generator.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,14 +14,18 @@ Solver Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-from .base import SolverBase
-from .concorde import ConcordeSolverTester
-from .gp_degree import GpDegreeSolverTester
-from .greedy import GreedySolverTester
-from .lkh import LKHSolverTester
-from .lc_degree import LcDegreeSolverTester
-from .insertion import InsertionSolverTester
-from .rlsa import RLSASolverTester
-from .hgs import HGSSolverTester
-from .ga_eax import GAEAXSolverTester
-from .kamis import KaMISSolverTester
+from ml4co_kit import PCTSPGenerator, PCTSP_TYPE
+from tests.generator_test.base import GenTesterBase
+
+
+class PCTSPGenTester(GenTesterBase):
+    def __init__(self):
+        super(PCTSPGenTester, self).__init__(
+            test_gen_class=PCTSPGenerator,
+            test_args_list=[
+                # Uniform
+                {
+                    "distribution_type": PCTSP_TYPE.UNIFORM,
+                },
+            ]
+        )

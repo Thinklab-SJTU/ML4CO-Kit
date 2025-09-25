@@ -55,22 +55,29 @@ class OPWrapper(WrapperBase):
             for idx, line in tqdm_by_time(enumerate(file), load_msg, show_time):
                 # Load data
                 line = line.strip()
-                split_line = line.split(" prizes ")
-                coords = split_line[0]
-                split_line = split_line[1].split(" max_length ")
-                prizes = split_line[0]
-                max_length = split_line[1]
+                split_line_0 = line.split("depots ")[1]
+                split_line_1 = split_line_0.split(" points ")
+                depots = split_line_1[0]
+                split_line_2 = split_line_1[1].split(" prizes ")
+                points = split_line_2[0]
+                split_line_3 = split_line_2[1].split(" max_length ")
+                prizes = split_line_3[0]
+                split_line_4 = split_line_3[1].split(" output ")
+                max_length = split_line_4[0]
+                tours = split_line_4[1]
                 
-                # Parse coordinates (first point is depot, rest are points)
-                coords = coords.split(" ")
-                coords = np.array(
+                # Parse depot coordinates
+                depots = depots.split(" ")
+                depots = np.array([float(depots[0]), float(depots[1])], dtype=self.precision)
+                
+                # Parse points coordinates
+                points = points.split(" ")
+                points = np.array(
                     [
-                        [float(coords[i]), float(coords[i + 1])]
-                        for i in range(0, len(coords), 2)
+                        [float(points[i]), float(points[i + 1])]
+                        for i in range(0, len(points), 2)
                     ], dtype=self.precision
                 )
-                depots = coords[0]  # First coordinate is depot
-                points = coords[1:]  # Rest are points
                 
                 # Parse prizes
                 prizes = prizes.split(" ")
@@ -80,6 +87,12 @@ class OPWrapper(WrapperBase):
                 
                 # Parse max_length
                 max_length = float(max_length)
+                
+                # Parse tours
+                tours = tours.split(" ")
+                tours = np.array(
+                    [int(tours[i]) for i in range(len(tours))]
+                )
                 
                 # Create a new task and add it to ``self.task_list``
                 if overwrite:
@@ -91,8 +104,8 @@ class OPWrapper(WrapperBase):
                 else:
                     op_task = self.task_list[idx]
                 op_task.from_data(
-                    depots=depots, points=points, prizes=prizes, max_length=max_length,
-                    ref=ref, normalize=normalize
+                    depots=depots, points=points, prizes=prizes, 
+                    max_length=max_length, sol=tours, ref=ref, normalize=normalize 
                 )
                 if overwrite:
                     self.task_list.append(op_task)
@@ -113,17 +126,27 @@ class OPWrapper(WrapperBase):
                 task._check_points_not_none()
                 task._check_prizes_not_none()
                 task._check_max_length_not_none()
+                task._check_sol_not_none()
+                
                 depots = task.depots
                 points = task.points
                 prizes = task.prizes
                 max_length = task.max_length
+                sol = task.sol
 
                 # Write data to ``.txt`` file
-                # Combine depots and points for output
-                coords = np.concatenate([np.expand_dims(depots, axis=0), points], axis=0)
-                f.write(" ".join(str(x) + str(" ") + str(y) for x, y in coords))
+                f.write("depots " + str(depots[0]) + str(" ") + str(depots[1]))
+                f.write(" points" + str(" "))
+                f.write(
+                    " ".join(
+                        str(x) + str(" ") + str(y)
+                        for x, y in points
+                    )
+                )
                 f.write(str(" prizes "))
                 f.write(str(" ").join(str(prize) for prize in prizes))
                 f.write(str(" max_length ") + str(max_length))
+                f.write(str(" output "))
+                f.write(str(" ").join(str(node_idx) for node_idx in sol))
                 f.write("\n")
             f.close()

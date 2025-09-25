@@ -21,3 +21,6 @@ from .mcl import MClGenTester
 from .mis import MISGenTester
 from .mvc import MVCGenTester
 from .tsp import TSPGenTester
+from .pctsp import PCTSPGenTester
+from .spctsp import SPCTSPGenTester
+from .op import OPGenTester

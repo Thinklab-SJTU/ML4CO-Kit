@@ -13,3 +13,4 @@ from .insertion import InsertionSolver
 from .mcts import MCTSSolver
 from .rlsa import RLSASolver
 from .hgs import HGSSolver
+from .ga_eax import GAEAXSolver

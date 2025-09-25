@@ -30,7 +30,7 @@ class SOLVER_TYPE(str, Enum):
     LC_DEGREE = "lc_degree"
     INSERTION = "insertion"
     
-    # Traditional Exact Algorithms
+    # Traditional Algorithms
     CONCORDE = "concorde"
     GA_EAX = "ga_eax"
     GUROBI = "gurobi"

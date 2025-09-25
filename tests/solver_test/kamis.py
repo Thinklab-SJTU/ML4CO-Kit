@@ -35,4 +35,5 @@ class KaMISSolverTester(SolverTesterBase):
         )
         
     def pre_test(self):
-        pass
+        solver = KaMISSolver()
+        solver.install()

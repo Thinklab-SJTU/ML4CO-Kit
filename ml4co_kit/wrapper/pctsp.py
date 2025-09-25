@@ -118,8 +118,8 @@ class PCTSPWrapper(WrapperBase):
                 else:
                     pctsp_task = self.task_list[idx]
                 pctsp_task.from_data(
-                    depots=depots, points=points, prizes=prizes, penalties=penalties, 
-                    required_prize=required_prize, ref=ref, normalize=normalize
+                    depots=depots, points=points, penalties=penalties, prizes=prizes, 
+                    required_prize=required_prize, sol=tours, ref=ref, normalize=normalize
                 )
                 if overwrite:
                     self.task_list.append(pctsp_task)
@@ -150,7 +150,7 @@ class PCTSPWrapper(WrapperBase):
                 required_prize = task.required_prize
                 sol = task.sol
                 
-                # write depot
+                # Write data to ``.txt`` file
                 f.write("depots " + str(depots[0]) + str(" ") + str(depots[1]))
                 f.write(" points" + str(" "))
                 f.write(

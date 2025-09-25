@@ -73,7 +73,7 @@ def tsp_lkh(
     # Store the tour in the task_data
     task_data.from_tsplib(tour_file_path=tour_file.name, ref=False)
     
-    # Clean
+    # Clean files
     os.remove(par_file.name)
     if "tsp_file" in locals():
         os.remove(tsp_file.name)

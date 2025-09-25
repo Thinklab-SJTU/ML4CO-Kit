@@ -120,9 +120,9 @@ class SPCTSPWrapper(WrapperBase):
                 else:
                     spctsp_task = self.task_list[idx]
                 spctsp_task.from_data(
-                    depots=depots, points=points, expected_prizes=expected_prizes, 
-                    actual_prizes=actual_prizes, penalties=penalties, 
-                    required_prize=required_prize, ref=ref, normalize=normalize
+                    depots=depots, points=points, penalties=penalties, 
+                    expected_prizes=expected_prizes, actual_prizes=actual_prizes, 
+                    required_prize=required_prize, sol=tours, ref=ref, normalize=normalize
                 )
                 if overwrite:
                     self.task_list.append(spctsp_task)

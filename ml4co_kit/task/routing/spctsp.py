@@ -69,10 +69,10 @@ class SPCTSPTask(RoutingTaskBase):
         self.penalties = normalized_penalties
 
     def _check_depots_dim(self):
-        """Check if depots are 2D or 3D."""
-        if self.depots.ndim != 2 or self.depots.shape[1] not in [2, 3]:
+        """Check if depots are 1D or 2D."""
+        if self.depots.ndim != 1 or self.depots.shape[0] not in [2, 3]:
             raise ValueError(
-                "Depots should be a 2D array with shape (num_depots, 2) or (num_depots, 3)."
+                "Depots should be a 1D array with shape (2,) or (3,)."
             )
             
     def _check_depots_not_none(self):
@@ -165,9 +165,9 @@ class SPCTSPTask(RoutingTaskBase):
         self,
         depots: np.ndarray = None,
         points: np.ndarray = None,
+        penalties: np.ndarray = None,
         expected_prizes: np.ndarray = None,
         actual_prizes: np.ndarray = None,
-        penalties: np.ndarray = None,
         required_prize: float = None,
         sol: np.ndarray = None, 
         ref: bool = False,
@@ -181,15 +181,15 @@ class SPCTSPTask(RoutingTaskBase):
         if points is not None:
             self.points = points.astype(self.precision)
             self._check_points_dim()
+        if penalties is not None:
+            self.penalties = penalties.astype(self.precision)
+            self._check_penalties_dim()
         if expected_prizes is not None:
             self.expected_prizes = expected_prizes.astype(self.precision)
             self._check_expected_prizes_dim()
         if actual_prizes is not None:
             self.actual_prizes = actual_prizes.astype(self.precision)
             self._check_actual_prizes_dim()
-        if penalties is not None:
-            self.penalties = penalties.astype(self.precision)
-            self._check_penalties_dim()
         if required_prize is not None:
             self.required_prize = required_prize
             

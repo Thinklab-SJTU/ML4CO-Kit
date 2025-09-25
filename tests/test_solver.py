@@ -21,16 +21,19 @@ from tests.solver_test import (
     GreedySolverTester, LKHSolverTester, 
     ConcordeSolverTester, RLSASolverTester,
     GpDegreeSolverTester, LcDegreeSolverTester,
-    InsertionSolverTester, HGSSolverTester
+    InsertionSolverTester, HGSSolverTester,
+    GAEAXSolverTester, KaMISSolverTester,
 )
 
 
 if __name__ == "__main__":
-    # ConcordeSolverTester().test()
-    # GreedySolverTester().test()
-    # GpDegreeSolverTester().test()
-    # LKHSolverTester().test()
-    # LcDegreeSolverTester().test()
-    # InsertionSolverTester().test()
-    # RLSASolverTester().test()
+    ConcordeSolverTester().test()
+    GreedySolverTester().test()
+    GpDegreeSolverTester().test()
+    LKHSolverTester().test()
+    LcDegreeSolverTester().test()
+    InsertionSolverTester().test()
+    RLSASolverTester().test()
     HGSSolverTester().test()
+    GAEAXSolverTester().test()
+    KaMISSolverTester().test()

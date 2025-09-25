@@ -44,7 +44,7 @@ from .solver import SolverBase, SOLVER_TYPE
 # Solver (not use torch backend)
 from .solver import (
     LKHSolver, ConcordeSolver, KaMISSolver, RLSASolver, HGSSolver,
-    GpDegreeSolver, LcDegreeSolver, MCTSSolver, InsertionSolver
+    GpDegreeSolver, LcDegreeSolver, MCTSSolver, InsertionSolver, GAEAXSolver
 )
 
 # Greedy Solver (use torch backend)

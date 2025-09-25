@@ -14,6 +14,9 @@ KaMIS Solver.
 # See the Mulan PSL v2 for more details.
 
 
+import os
+import shutil
+import pathlib
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
@@ -42,3 +45,24 @@ class KaMISSolver(SolverBase):
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."
             )
+        
+    def install(self):
+        """Install KaMIS Solver."""
+        self.kamis_path = pathlib.Path(__file__).parent / "lib/kamis"
+        if os.path.exists(self.kamis_path / "KaMIS/deploy/"):
+            shutil.rmtree(self.kamis_path / "KaMIS/deploy/")
+        if os.path.exists(self.kamis_path / "KaMIS/tmp_build/"):
+            shutil.rmtree(self.kamis_path / "KaMIS/tmp_build/")
+        shutil.copytree(
+            self.kamis_path / "kamis-source/", self.kamis_path / "KaMIS/tmp_build/"
+        )
+        ori_dir = os.getcwd()
+        os.chdir(self.kamis_path / "KaMIS/tmp_build/")
+        os.system("bash cleanup.sh")
+        os.system("bash compile_withcmake.sh")
+        os.chdir(ori_dir)
+        shutil.copytree(
+            self.kamis_path / "KaMIS/tmp_build/deploy/",
+            self.kamis_path / "KaMIS/deploy/",
+        )
+        shutil.rmtree(self.kamis_path / "KaMIS/tmp_build/")
