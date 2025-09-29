@@ -14,10 +14,11 @@ Base class for all wrappers in the ML4CO kit.
 # See the Mulan PSL v2 for more details.
 
 
+import os
 import pickle
 import pathlib
 import numpy as np
-from typing import Union
+from typing import Union, Type
 from multiprocessing import Pool
 from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.utils.time_utils import Timer
@@ -37,6 +38,12 @@ class WrapperBase(object):
         self.precision = precision
         self.task_list = list()
     
+    def swap_sol_and_ref_sol(self):
+        for task_data in self.task_list:
+            tmp = task_data.ref_sol
+            task_data.ref_sol = task_data.sol
+            task_data.sol = tmp
+ 
     def generate_w_to_txt(
         self,
         file_path: pathlib.Path,
@@ -49,15 +56,15 @@ class WrapperBase(object):
         show_time: bool = True
     ):
         # Calculate the total number of iterations
-        if num_samples % (num_threads * batch_size) != 0:
+        if num_samples % (num_threads * batch_size * write_per_iters) != 0:
             raise ValueError((
                 "The number of samples must be divisible by "
-                "the number of threads and batch size."
+                "the product of num_threads, batch size, and write_per_iters."
             ))
         tot_iters = num_samples // num_threads // batch_size
         
         # Generate tasks by chunks
-        for _ in tqdm_by_time(
+        for cur_iter in tqdm_by_time(
             iterable=range(tot_iters),
             desc=f"Generating {self.task_type}",
             show_time=show_time
@@ -66,20 +73,17 @@ class WrapperBase(object):
             self.generate(
                 generator=generator,
                 solver=solver,
-                num_samples=num_samples,
+                num_samples=num_threads*batch_size,
                 num_threads=num_threads,
                 batch_size=batch_size,
                 show_time=False
             )
             
             # Write tasks to txt
-            self.to_txt(
-                file_path=file_path,
-                write_per_iters=write_per_iters,
-                show_time=False,
-                mode="a"
-            )
-    
+            if (cur_iter+1) % write_per_iters == 0:
+                self.to_txt(file_path=file_path, show_time=False, mode="a")
+                self.task_list = list()
+                
     def generate(
         self, 
         generator: GeneratorBase,
@@ -162,7 +166,7 @@ class WrapperBase(object):
             "The ``from_txt`` function is required to implemented in subclasses."
         )
         
-    def to_txt(self, file_path: pathlib.Path, *args, **kwargs):
+    def to_txt(file_path: pathlib.Path, show_time: bool = False, mode: str = "w"):
         raise NotImplementedError(
             "The ``to_txt`` function is required to implemented in subclasses."
         )
@@ -179,7 +183,31 @@ class WrapperBase(object):
         with open(file_path, "wb") as f:
             pickle.dump(self.task_list, f)
             f.close()
+    
+    def from_task_pickle_folder(
+        self, task_class: Type[TaskBase], folder_path: pathlib.Path
+    ):
+        # Get pickle files
+        pickle_files = os.listdir(folder_path)
+        pickle_files.sort()
         
+        # Load task data
+        self.task_list = list()
+        for pickle_file in pickle_files:
+            pkl_path = folder_path / pickle_file
+            task_data = task_class()
+            task_data.from_pickle(pkl_path)
+            self.task_list.append(task_data)
+    
+    def to_task_pickle_folder(self, folder_path: pathlib.Path):
+        # Create folder
+        os.makedirs(folder_path, exist_ok=True)
+        
+        # Save task data
+        for task_data in self.task_list:
+            pkl_path = folder_path / f"{task_data.name}.pkl"
+            task_data.to_pickle(pkl_path)
+    
     def solve(
         self, 
         solver: SolverBase, 
@@ -223,7 +251,7 @@ class WrapperBase(object):
                     )
                     for j, task_data in enumerate(task_data_list):
                         self.task_list[idx*num_threads+j] = task_data
-        
+                        
         # Case 3: Single Thread and Batch Size is not 1
         elif num_threads == 1 and batch_size != 1:
             # Check if the number of tasks is divisible by the batch size
@@ -255,7 +283,7 @@ class WrapperBase(object):
         """Evaluate the task list."""
         sol_costs_list = list()
         for task_data in self.task_list:
-            sol_cost = task_data.evaluate()
+            sol_cost = task_data.evaluate(task_data.sol)
             sol_costs_list.append(sol_cost)
         return np.mean(sol_costs_list)
     

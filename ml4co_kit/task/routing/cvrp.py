@@ -340,7 +340,7 @@ class CVRPTask(RoutingTaskBase):
         # Every node is visited exactly once
         ordered_sol = np.sort(sol)[-self.nodes_num:]
         if not np.all(ordered_sol == (np.arange(self.nodes_num) + 1)):
-            raise False
+            return False
         
         # Demands Constraint
         demands = self.demands

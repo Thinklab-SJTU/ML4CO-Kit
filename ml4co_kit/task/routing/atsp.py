@@ -203,6 +203,8 @@ class ATSPTask(RoutingTaskBase):
         """Evaluate the total distance of the TSP solution."""
         # Check Constraints
         if not self.check_constraints(sol):
+            import pdb
+            pdb.set_trace()
             raise ValueError("Invalid solution!")
         
         # Evaluate

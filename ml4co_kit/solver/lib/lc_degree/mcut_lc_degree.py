@@ -23,7 +23,7 @@ def mcut_lc_degree(task_data: MCutTask):
     adj_matrix = task_data.to_adj_matrix()
     lc_graph = copy.deepcopy(adj_matrix)
     np.fill_diagonal(lc_graph, 0) # Remove self-loops
-    nodes_num = adj_matrix.shape[0]
+    nodes_num = lc_graph.shape[0]
     mask = np.zeros(shape=(nodes_num,)).astype(np.bool_)
     set_A = np.zeros(shape=(nodes_num,)).astype(np.bool_)
     set_B = np.zeros(shape=(nodes_num,)).astype(np.bool_)    
@@ -36,8 +36,8 @@ def mcut_lc_degree(task_data: MCutTask):
         # get degree
         degree_A = lc_graph[set_A].sum(0)
         degree_B = lc_graph[set_B].sum(0)
-        degree_A[mask] = 0
-        degree_B[mask] = 0
+        degree_A[mask] = -1
+        degree_B[mask] = -1
         
         # select next node and update
         max_A = np.max(degree_A)
@@ -50,7 +50,7 @@ def mcut_lc_degree(task_data: MCutTask):
             next_node = np.argmax(degree_B)
             set_A[next_node] = True
             mask[next_node] = True
-                
+            
     # Store the solution in the task_data
     sol = set_A.astype(np.int32)
     task_data.from_data(sol=sol, ref=False)

@@ -13,7 +13,6 @@ Global Prediction Degree Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
 from ml4co_kit import TASK_TYPE, LcDegreeSolver
 from tests.solver_test.base import SolverTesterBase
 
@@ -22,28 +21,11 @@ class LcDegreeSolverTester(SolverTesterBase):
     def __init__(self):
         super(LcDegreeSolverTester, self).__init__(
             test_solver_class=LcDegreeSolver,
-            test_files_list=[
-                pathlib.Path("test_dataset/mis/mis_single_task.pkl"),
-                pathlib.Path("test_dataset/mvc/mvc_single_task.pkl"),
-                pathlib.Path("test_dataset/mcl/mcl_single_task.pkl"),
-                pathlib.Path("test_dataset/mcut/mcut_single_task.pkl"),
-             ],
-            test_tasks_list=[
-                TASK_TYPE.MIS, 
-                TASK_TYPE.MVC, 
-                TASK_TYPE.MCL, 
-                TASK_TYPE.MCUT,
+            test_task_type_list=[
+                TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC
             ],
-            test_args_list=[
-                # MIS
-                {},
-                # MVC
-                {},
-                # MCL
-                {},
-                # MCUT
-                {}
-            ]
+            test_args_list=[{}, {}, {}, {}],
+            exclude_test_files_list=[[], [], [], []]
         )
         
     def pre_test(self):

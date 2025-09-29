@@ -13,7 +13,6 @@ HGS Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
 from ml4co_kit import TASK_TYPE, HGSSolver
 from tests.solver_test.base import SolverTesterBase
 
@@ -22,11 +21,9 @@ class HGSSolverTester(SolverTesterBase):
     def __init__(self):
         super(HGSSolverTester, self).__init__(
             test_solver_class=HGSSolver,
-            test_files_list=[
-                pathlib.Path("test_dataset/cvrp/cvrp50_single_task.pkl"),
-            ],
-            test_tasks_list=[TASK_TYPE.CVRP],
-            test_args_list=[{}]
+            test_task_type_list=[TASK_TYPE.CVRP],
+            test_args_list=[{}],
+            exclude_test_files_list=[[]]
         )
         
     def pre_test(self):

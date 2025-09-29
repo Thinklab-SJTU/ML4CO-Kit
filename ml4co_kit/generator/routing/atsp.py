@@ -39,8 +39,8 @@ class ATSPGenerator(RoutingGenerator):
         precision: Union[np.float32, np.float64] = np.float32,
         nodes_num: int = 50,
         # special args for sat
-        sat_vars_nums: int = 5,
-        sat_clauses_nums: int = 5,
+        sat_vars_nums: int = 4,
+        sat_clauses_nums: int = 6,
     ):
         # Super Initialization
         super().__init__(
@@ -164,13 +164,18 @@ class ATSPGenerator(RoutingGenerator):
                     if vars[i] == vars[fix_var_id]:
                         ref_tour.insert(ref_tour.index(ofs_var + 2 * c), ofs_clause + c)
 
+        # Adjust the ref_tour to set the starting point to 0
+        ref_tour = np.array(ref_tour)
+        sol = np.roll(ref_tour[1:], -np.argmin(ref_tour[1:]))
+        sol = np.insert(sol, len(sol), 0)
+        
         # Create ATSP Instance from Data
         data = ATSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(dists=dists, sol=np.array(ref_tour))
+        data.from_data(dists=dists, sol=sol)
         return data
         
     def _generate_hcp(self) -> ATSPTask:
@@ -196,7 +201,9 @@ class ATSPGenerator(RoutingGenerator):
 
         # Convert the hpath to a list and append the first node to form a closed tour
         ref_tour: list = hpath.tolist()
-        ref_tour.append(ref_tour[0])
+        ref_tour = np.array(ref_tour)
+        sol = np.roll(ref_tour, -np.argmin(ref_tour))
+        sol = np.insert(sol, len(sol), 0)
         
         # Create ATSP Instance from Data
         data = ATSPTask(
@@ -204,5 +211,5 @@ class ATSPGenerator(RoutingGenerator):
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(dists=dists, sol=np.array(ref_tour))
+        data.from_data(dists=dists, sol=sol)
         return data

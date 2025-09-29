@@ -34,11 +34,11 @@ class MCutGenerator(GraphGeneratorBase):
         precision: Union[np.float32, np.float64] = np.float32,
         nodes_num: int = 250, # unused if RB is selected
         # special args for different distributions (structural)
-        er_prob: float = 0.5,
+        er_prob: float = 0.15,
         ba_conn_degree: int = 10,
-        hk_prob: float = 0.5,
+        hk_prob: float = 0.3,
         hk_conn_degree: int = 10,
-        ws_prob: float = 0.5,
+        ws_prob: float = 0.3,
         ws_ring_neighbors: int = 2,
         rb_n_scale: tuple = (20, 25),
         rb_k_scale: tuple = (5, 12),

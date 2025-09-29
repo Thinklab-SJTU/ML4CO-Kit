@@ -22,25 +22,26 @@ class GAEAXSolverTester(SolverTesterBase):
     def __init__(self):
         super(GAEAXSolverTester, self).__init__(
             test_solver_class=GAEAXSolver,
-            test_files_list=[
-                pathlib.Path("test_dataset/tsp/tsp50_single_task.pkl"),
-                pathlib.Path("test_dataset/tsp/tsp500_single_task.pkl"),
-            ],
-            test_tasks_list=[
-                TASK_TYPE.TSP, 
-                TASK_TYPE.TSP, 
-            ],
+            test_task_type_list=[TASK_TYPE.TSP, TASK_TYPE.TSP],
             test_args_list=[
-                # TSP-50
                 {
-                    "use_large_solver": False,  
+                    "use_large_solver": False
                 },
-                # TSP-500
                 {
                     "use_large_solver": True,
                     "ga_eax_population_num": 300,
                     "ga_eax_offspring_num": 30,
                 },
+            ],
+            exclude_test_files_list=[
+                [
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"), 
+                ],
+                [
+                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"), 
+                ], 
             ]
         )
         

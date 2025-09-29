@@ -69,28 +69,13 @@ gnn4mcut_model = GNN4COModel(
 )
 
 
-
 class GreedySolverTester(SolverTesterBase):
     def __init__(self):
         super(GreedySolverTester, self).__init__(
             test_solver_class=GreedySolver,
-            test_files_list=[
-                pathlib.Path("test_dataset/tsp/tsp50_single_task.pkl"),
-                pathlib.Path("test_dataset/tsp/tsp500_single_task.pkl"),
-                pathlib.Path("test_dataset/atsp/atsp50_single_task.pkl"),
-                pathlib.Path("test_dataset/mis/mis_single_task.pkl"),
-                pathlib.Path("test_dataset/mvc/mvc_single_task.pkl"),
-                pathlib.Path("test_dataset/mcl/mcl_single_task.pkl"),
-                pathlib.Path("test_dataset/mcut/mcut_single_task.pkl"),
-            ],
-            test_tasks_list=[
-                TASK_TYPE.TSP, 
-                TASK_TYPE.TSP,
-                TASK_TYPE.ATSP,
-                TASK_TYPE.MIS,
-                TASK_TYPE.MVC,
-                TASK_TYPE.MCL,
-                TASK_TYPE.MCUT,
+            test_task_type_list=[
+                TASK_TYPE.TSP, TASK_TYPE.TSP, TASK_TYPE.ATSP,
+                TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC 
             ],
             test_args_list=[
                 # TSP-50 (dense)
@@ -107,6 +92,20 @@ class GreedySolverTester(SolverTesterBase):
                 {"model": gnn4mcl_model},
                 # MCut (sparse)
                 {"model": gnn4mcut_model},
+            ],
+            exclude_test_files_list=[
+                # TSP-50 (dense)
+                [
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"), 
+                ], 
+                # TSP-500 (sparse)
+                [
+                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"), 
+                ], 
+                # Others
+                [], [], [], [], []
             ]
         )
         

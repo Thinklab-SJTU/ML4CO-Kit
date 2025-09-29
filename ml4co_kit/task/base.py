@@ -111,11 +111,15 @@ class TaskBase(object):
         sol_cost = self.evaluate(self.sol)
         ref_cost = self.evaluate(self.ref_sol)
 
-        if self.minimize:
-            gap = (sol_cost - ref_cost) / ref_cost
+        # Calculate the gap
+        if ref_cost < 1e-6:
+            gap = None
         else:
-            gap = (ref_cost - sol_cost) / ref_cost
-        gap = gap * np.array(100.0).astype(self.precision)
+            if self.minimize:
+                gap = (sol_cost - ref_cost) / ref_cost
+            else:
+                gap = (ref_cost - sol_cost) / ref_cost
+            gap = gap * np.array(100.0).astype(self.precision)
         
         return sol_cost, ref_cost, gap
     

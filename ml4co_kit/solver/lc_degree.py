@@ -29,7 +29,7 @@ class LcDegreeSolver(SolverBase):
             solver_type=SOLVER_TYPE.LC_DEGREE, optimizer=optimizer
         )
 
-    def solve(self, task_data: TaskBase):
+    def _solve(self, task_data: TaskBase):
         """Solve the task data using Local Construction Degree Solver."""
         if task_data.task_type == TASK_TYPE.MCL:
             return mcl_lc_degree(task_data=task_data)

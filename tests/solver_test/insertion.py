@@ -22,20 +22,9 @@ class InsertionSolverTester(SolverTesterBase):
     def __init__(self):
         super(InsertionSolverTester, self).__init__(
             test_solver_class=InsertionSolver,
-            test_files_list=[
-                pathlib.Path("test_dataset/tsp/tsp50_single_task.pkl"),
-                pathlib.Path("test_dataset/tsp/tsp500_single_task.pkl"),
-            ],
-            test_tasks_list=[
-                TASK_TYPE.TSP,
-                TASK_TYPE.TSP,
-            ],
-            test_args_list=[
-                # TSP-50
-                {}, 
-                # TSP-500
-                {}
-            ]
+            test_task_type_list=[TASK_TYPE.TSP],
+            test_args_list=[{}],
+            exclude_test_files_list=[[]]
         )
         
     def pre_test(self):

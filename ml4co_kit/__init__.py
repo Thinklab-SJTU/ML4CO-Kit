@@ -43,7 +43,7 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    LKHSolver, ConcordeSolver, KaMISSolver, RLSASolver, HGSSolver,
+    LKHSolver, ConcordeSolver, KaMISSolver, RLSASolver, HGSSolver, BeamSolver,
     GpDegreeSolver, LcDegreeSolver, MCTSSolver, InsertionSolver, GAEAXSolver
 )
 

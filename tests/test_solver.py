@@ -1,5 +1,5 @@
 r"""
-Test Generator Module.
+Test Solver Module.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -28,12 +28,12 @@ from tests.solver_test import (
 
 if __name__ == "__main__":
     ConcordeSolverTester().test()
-    GreedySolverTester().test()
-    GpDegreeSolverTester().test()
-    LKHSolverTester().test()
-    LcDegreeSolverTester().test()
-    InsertionSolverTester().test()
-    RLSASolverTester().test()
-    HGSSolverTester().test()
     GAEAXSolverTester().test()
+    GpDegreeSolverTester().test()
+    GreedySolverTester().test()
+    HGSSolverTester().test()
+    InsertionSolverTester().test()
     KaMISSolverTester().test()
+    LcDegreeSolverTester().test()
+    LKHSolverTester().test()
+    RLSASolverTester().test()

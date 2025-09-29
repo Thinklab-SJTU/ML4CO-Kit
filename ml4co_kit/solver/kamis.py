@@ -34,7 +34,7 @@ class KaMISSolver(SolverBase):
         )
         self.kamis_time_limit = kamis_time_limit
 
-    def solve(self, task_data: TaskBase):
+    def _solve(self, task_data: TaskBase):
         """Solve the task data using KaMIS Solver."""
         if task_data.task_type == TASK_TYPE.MIS:
             return mis_kamis(
