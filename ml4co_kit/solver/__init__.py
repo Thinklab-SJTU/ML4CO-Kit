@@ -15,3 +15,4 @@ from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .mcts import MCTSSolver
 from .rlsa import RLSASolver
+from .gurobi import GurobiSolver

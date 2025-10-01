@@ -170,18 +170,17 @@ class GraphGeneratorBase(GeneratorBase):
         task_type: TASK_TYPE, 
         distribution_type: GRAPH_TYPE = GRAPH_TYPE.ER,
         precision: Union[np.float32, np.float64] = np.float32,
-        nodes_num: int = 250, # unused if RB is selected
+        nodes_num_scale: tuple = (200, 300),
         # special args for different distributions (structural)
-        er_prob: float = 0.5,
+        er_prob: float = 0.15,
         ba_conn_degree: int = 10,
-        hk_prob: float = 0.5,
+        hk_prob: float = 0.3,
         hk_conn_degree: int = 10,
-        ws_prob: float = 0.5,
+        ws_prob: float = 0.3,
         ws_ring_neighbors: int = 2,
         rb_n_scale: tuple = (20, 25),
         rb_k_scale: tuple = (5, 12),
         rb_p_scale: tuple = (0.3, 1.0),
-        rb_nodes_num_scale: tuple = (200, 300),
         # special args for weighted graph (node/edge weights)
         node_weighted: bool = False,
         node_weighted_gen: GraphWeightGenerator = GraphWeightGenerator(
@@ -198,7 +197,8 @@ class GraphGeneratorBase(GeneratorBase):
         )
 
         # Initialize Attributes
-        self.nodes_num = nodes_num
+        self.nodes_num_min, self.nodes_num_max = nodes_num_scale
+        self.nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
         
         # Special args for different distributions (structural)
         self.er_prob = er_prob
@@ -210,7 +210,6 @@ class GraphGeneratorBase(GeneratorBase):
         self.rb_n_min, self.rb_n_max = rb_n_scale
         self.rb_k_min, self.rb_k_max = rb_k_scale
         self.rb_p_min, self.rb_p_max = rb_p_scale
-        self.rb_nodes_num_min, self.rb_nodes_num_max = rb_nodes_num_scale
         
         # Special args for weighted graph (node/edge weights)
         self.node_weighted = node_weighted
@@ -229,7 +228,7 @@ class GraphGeneratorBase(GeneratorBase):
     
     def _generate_barabasi_albert(self):
         # Generate Barabasi-Albert graph
-        nx_graph = nx.barabasi_albert_graph(
+        nx_graph: nx.Graph = nx.barabasi_albert_graph(
             n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
         )
         
@@ -241,7 +240,7 @@ class GraphGeneratorBase(GeneratorBase):
 
     def _generate_erdos_renyi(self):
         # Generate Erdos-Renyi graph
-        nx_graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
+        nx_graph: nx.Graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
         
         # Add weights to nodes and edges if required
         nx_graph = self._if_need_weighted(nx_graph)
@@ -251,7 +250,7 @@ class GraphGeneratorBase(GeneratorBase):
     
     def _generate_holme_kim(self):
         # Generate Holme-Kim graph
-        nx_graph = nx.powerlaw_cluster_graph(
+        nx_graph: nx.Graph = nx.powerlaw_cluster_graph(
             n=self.nodes_num, 
             m=min(self.hk_conn_degree, self.nodes_num), 
             p=self.hk_prob
@@ -265,10 +264,10 @@ class GraphGeneratorBase(GeneratorBase):
     
     def _generate_watts_strogatz(self):
         # Generate Watts-Strogatz graph
-        nx_graph = nx.barabasi_albert_graph(
-            n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
+        nx_graph: nx.Graph = nx.watts_strogatz_graph(
+            n=self.nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
         )
-        
+
         # Add weights to nodes and edges if required
         nx_graph = self._if_need_weighted(nx_graph)
         
@@ -281,8 +280,9 @@ class GraphGeneratorBase(GeneratorBase):
             rb_n = np.random.randint(self.rb_n_min, self.rb_n_max)
             rb_k = np.random.randint(self.rb_k_min, self.rb_k_max)
             rb_v = rb_n * rb_k
-            if self.rb_nodes_num_min <= rb_v and self.rb_nodes_num_max >= rb_v:
+            if self.nodes_num_min <= rb_v and self.nodes_num_max >= rb_v:
                 break
+        self.nodes_num = rb_v
         rb_a = np.log(rb_k) / np.log(rb_n)
         
         # Get params for RB model (p, r, s, iterations)
@@ -311,7 +311,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Convert to nx.Graph
         nx_graph = nx.Graph()
         nx_graph.add_edges_from(instance.clauses['NAND'])
-        
+
         # Add weights to nodes and edges if required
         nx_graph = self._if_need_weighted(nx_graph)
         

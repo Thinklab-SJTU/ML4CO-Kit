@@ -81,7 +81,7 @@ class MClWrapper(WrapperBase):
                     # Use ``from_data``
                     if overwrite:
                         mcl_task = MClTask(
-                            node_weighted=False, precision=self.precision
+                            node_weighted=True, precision=self.precision
                         )
                     else:
                         mcl_task = self.task_list[idx]

@@ -158,11 +158,9 @@ class SolverTesterBase(object):
       
     def _get_mcl_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[MClTask]:
         mcl_test_files_list = [
-            pathlib.Path("test_dataset/mcl/task/mcl_ba-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcl/task/mcl_hk-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcl/task/mcl_rb-large_single_task.pkl"),
-            pathlib.Path("test_dataset/mcl/task/mcl_rb-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcl/task/mcl_ws-small_single_task.pkl"),
+            pathlib.Path("test_dataset/mcl/task/mcl_rb-large_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mcl/task/mcl_rb-small_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mcl/task/mcl_rb-small_uniform-weighted_task.pkl")
         ]
         task_list = list()
         for test_file in mcl_test_files_list:
@@ -174,11 +172,9 @@ class SolverTesterBase(object):
     
     def _get_mcut_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[MCutTask]:
         mcut_test_files_list = [
-            pathlib.Path("test_dataset/mcut/task/mcut_ba-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcut/task/mcut_ba-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcut/task/mcut_hk-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcut/task/mcut_rb-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mcut/task/mcut_ws-small_single_task.pkl"),
+            pathlib.Path("test_dataset/mcut/task/mcut_ba-large_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mcut/task/mcut_ba-small_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mcut/task/mcut_ba-small_uniform-weighted_task.pkl")
         ]
         task_list = list()
         for test_file in mcut_test_files_list:
@@ -190,12 +186,10 @@ class SolverTesterBase(object):
     
     def _get_mis_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[MISTask]:
         mis_test_files_list = [
-            pathlib.Path("test_dataset/mis/task/mis_ba-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mis/task/mis_er-700-800_single_task.pkl"),
-            pathlib.Path("test_dataset/mis/task/mis_hk-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mis/task/mis_rb-small_single_task.pkl"),
-            pathlib.Path("test_dataset/mis/task/mis_satlib_single_task.pkl"),
-            pathlib.Path("test_dataset/mis/task/mis_ws-small_single_task.pkl"),
+            pathlib.Path("test_dataset/mis/task/mis_er-700-800_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mis/task/mis_rb-small_uniform-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mis/task/mis_satlib_no-weighted_task.pkl")
         ]
         task_list = list()
         for test_file in mis_test_files_list:
@@ -207,8 +201,9 @@ class SolverTesterBase(object):
     
     def _get_mvc_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[MVCTask]:
         mvc_test_files_list = [
-            pathlib.Path("test_dataset/mvc/task/mvc_rb-large_single_task.pkl"),
-            pathlib.Path("test_dataset/mvc/task/mvc_rb-small_single_task.pkl"),
+            pathlib.Path("test_dataset/mvc/task/mvc_rb-large_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mvc/task/mvc_rb-small_no-weighted_task.pkl"),
+            pathlib.Path("test_dataset/mvc/task/mvc_rb-small_uniform-weighted_task.pkl"),
         ]
         task_list = list()
         for test_file in mvc_test_files_list:

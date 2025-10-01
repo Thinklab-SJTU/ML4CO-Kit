@@ -25,14 +25,16 @@ class MISWrapperTester(WrapperTesterBase):
             generator=MISGenerator(),
             solver=KaMISSolver(kamis_time_limit=1.0),
             pickle_files_list=[
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_16ins.pkl"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_4ins.pkl"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_4ins.pkl"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_no-weighted_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_16ins.txt"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_4ins.txt"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_4ins.txt"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_no-weighted_4ins.txt"),
             ],
         )
         

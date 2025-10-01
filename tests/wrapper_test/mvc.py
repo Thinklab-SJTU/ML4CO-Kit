@@ -25,12 +25,14 @@ class MVCWrapperTester(WrapperTesterBase):
             generator=MVCGenerator(),
             solver=LcDegreeSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_16ins.pkl"),
-                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-large_4ins.pkl"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-large_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_uniform-weighted_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_16ins.txt"),
-                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-large_4ins.txt"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-large_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_uniform-weighted_4ins.txt"),
             ],
         )
         

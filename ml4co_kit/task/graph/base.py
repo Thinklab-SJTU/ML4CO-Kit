@@ -25,7 +25,7 @@ from ml4co_kit.utils.file_utils import check_file_path
 
 class GraphTaskBase(TaskBase):
     r"""
-    Base class for all graph problems in the ML4CO kit.
+    Base class for all undirected graph problems in the ML4CO kit.
     """
     
     def __init__(
@@ -52,10 +52,17 @@ class GraphTaskBase(TaskBase):
         self.edges_weight: np.ndarray = None
         self.edge_index: np.ndarray = None # [Method 1] Edge Index in shape (2, num_edges)
         
+        # Symmetric
+        self.already_symmetric = False
+        
+        # Self-loop
+        self.self_loop = None
+        
         # Initialize Attributes (other structure)
-        self.adj_matrix: np.ndarray = None # [Method 2] Adjacency Matrix
-        self.xadj: np.ndarray = None       # [Method 3] Compressed Sparse Row (CSR) representation
-        self.adjncy: np.ndarray = None     # [Method 3] Compressed Sparse Row (CSR) representation
+        self.adj_matrix: np.ndarray = None           # [Method 2] Adjacency Matrix
+        self.adj_matrix_weighted: np.ndarray = None  # [Method 3] Adjacency Matrix with edges_weight
+        self.xadj: np.ndarray = None                 # [Method 4] Compressed Sparse Row (CSR) representation
+        self.adjncy: np.ndarray = None               # [Method 4] Compressed Sparse Row (CSR) representation
     
     def _check_nodes_weight_dim(self):
         """Ensure node weights is a 1D array."""
@@ -89,6 +96,16 @@ class GraphTaskBase(TaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
     
+    def _invalidate_cached_structures(self):
+        """Invalidate cached structures."""
+        self.adj_matrix = None
+        self.adj_matrix_weighted = None
+        self.xadj = None
+        self.adjncy = None
+    
+    def _deal_with_self_loop(self):
+        raise NotImplementedError("Subclasses should implement this method.")
+    
     def from_data(
         self,
         edge_index: np.ndarray = None,
@@ -106,7 +123,7 @@ class GraphTaskBase(TaskBase):
             self.node_weighted = True
             self.nodes_weight = nodes_weight.astype(self.precision)
             self._check_nodes_weight_dim()
-            self.nodes_num = nodes_weight.shape[0]
+            self.nodes_num = int(nodes_weight.shape[0])
         
         if edges_weight is not None:
             if self.edge_weighted == False:
@@ -116,16 +133,17 @@ class GraphTaskBase(TaskBase):
             self.edge_weighted = True
             self.edges_weight = edges_weight.astype(self.precision)
             self._check_edges_weight_dim()
-            self.edges_num = edges_weight.shape[0]
+            self.edges_num = int(edges_weight.shape[0])
         
         if edge_index is not None:
             self.edge_index = edge_index
             self._check_edges_index_dim()
+            
             # Infer nodes_num and edges_num if not provided
             if self.nodes_num is None:
-                self.nodes_num = np.max(edge_index) + 1
+                self.nodes_num = int(np.max(edge_index) + 1)
             if self.edges_num is None:
-                self.edges_num = edge_index.shape[1]
+                self.edges_num = int(edge_index.shape[1])
         
         if sol is not None:
             if ref:
@@ -142,6 +160,14 @@ class GraphTaskBase(TaskBase):
         if self.edges_weight is None and self.edges_num is not None:
             self.edges_weight = np.ones(self.edges_num, dtype=self.precision)
     
+        # Make the graph symmetric
+        if self.already_symmetric == False:
+            self.make_symmetric()
+            
+        # Deal with self-loop
+        if self.self_loop is None:
+            self._deal_with_self_loop()
+    
     def from_adj_matrix(
         self, 
         adj_matrix: np.ndarray, 
@@ -154,8 +180,8 @@ class GraphTaskBase(TaskBase):
             raise ValueError("Adjacency matrix should be a 2D array.")
         
         # Check if the adjacency matrix is all-ones
-        if not np.all(adj_matrix == 1):
-            raise ValueError("Adjacency matrix should be all-ones.")
+        if not np.all(np.isin(adj_matrix, [0, 1])):
+            raise ValueError("Adjacency matrix should contain only 0s and 1s.")
         
         # Convert adjacency matrix to edge_index and edges_weight
         coo = scipy.sparse.coo_matrix(adj_matrix)
@@ -170,21 +196,32 @@ class GraphTaskBase(TaskBase):
     
     def to_adj_matrix(self, with_edge_weights: bool = False) -> np.ndarray:
         """Convert edge_index and edges_weight to adjacency matrix."""
-        if self.adj_matrix is None:
-            self.adj_matrix = scipy.sparse.coo_matrix(
-                arg1=(
-                    self.edges_weight if with_edge_weights else np.ones_like(self.edges_weight), 
-                    (self.edge_index[0], self.edge_index[1])
-                ), 
-                shape=(self.nodes_num, self.nodes_num)
-            ).toarray().astype(self.precision)
-        return self.adj_matrix
+        if with_edge_weights:
+            if self.adj_matrix_weighted is None:
+                self.adj_matrix_weighted = scipy.sparse.coo_matrix(
+                    arg1=(
+                        self.edges_weight, 
+                        (self.edge_index[0], self.edge_index[1])
+                    ), 
+                    shape=(self.nodes_num, self.nodes_num)
+                ).toarray().astype(self.precision)
+            return self.adj_matrix_weighted
+        else:
+            if self.adj_matrix is None:
+                self.adj_matrix = scipy.sparse.coo_matrix(
+                    arg1=(
+                        np.ones_like(self.edges_weight), 
+                        (self.edge_index[0], self.edge_index[1])
+                    ), 
+                    shape=(self.nodes_num, self.nodes_num)
+                ).toarray().astype(self.precision)
+            return self.adj_matrix
     
     def from_gpickle_result(
         self, 
         gpickle_file_path: pathlib.Path = None,
         result_file_path: pathlib.Path = None, 
-        ref: bool = False
+        ref: bool = False,
     ):
         """Load graph data from a gpickle file."""
         # Read graph data from .gpickle
@@ -233,8 +270,8 @@ class GraphTaskBase(TaskBase):
     def from_networkx(self, nx_graph: nx.Graph):
         """Load graph data from a NetworkX graph object."""
         # Extract nodes and edges information
-        self.nodes_num = nx_graph.number_of_nodes()
-        self.edges_num = nx_graph.number_of_edges()
+        self.nodes_num = int(nx_graph.number_of_nodes())
+        self.edges_num = int(nx_graph.number_of_edges())
         
         # Extract node weights if available
         nodes_weight = None
@@ -299,7 +336,7 @@ class GraphTaskBase(TaskBase):
         xadj: np.ndarray, 
         adjncy: np.ndarray,
         nodes_weight: np.ndarray = None, 
-        edges_weight: np.ndarray = None,
+        edges_weight: np.ndarray = None
     ):
         """Load graph data from a CSR representation."""
         # Store CSR representation
@@ -344,8 +381,49 @@ class GraphTaskBase(TaskBase):
         # Create complement adjacency matrix
         comp_adj = np.logical_not(adj_matrix).astype(int)
         
+        # Invalidate cached structures
+        self.edges_num = None
+        self.edges_weight = None
+        self._invalidate_cached_structures()
+        
         # Use ``from_adj_matrix`` to update graph
         self.from_adj_matrix(adj_matrix=comp_adj)
+    
+    def make_symmetric(self):
+        """Convert the graph to its symmetric."""
+        # Step 1: Check if already symmetric
+        adj_matrix_weighted = self.to_adj_matrix(with_edge_weights=True)
+        
+        # Step 2: Check for conflicting edges (both (i,j) and (j,i) exist)
+        # Check if there are asymmetric edges where both directions exist
+        asymmetric_mask = (adj_matrix_weighted != 0) & (adj_matrix_weighted.T != 0) \
+            & (adj_matrix_weighted != adj_matrix_weighted.T)
+        if np.any(asymmetric_mask):
+            raise ValueError(
+                "Cannot symmetrize graph: both (i,j) and (j,i) edges "
+                "exist with different weights for some i!=j"
+            )
+        
+        # Step 3: Perform symmetrization (both structural and weight)
+        # Create symmetric adjacency matrix by taking maximum of original and transpose
+        symmetric_adj = np.maximum(adj_matrix_weighted, adj_matrix_weighted.T)
+        
+        # Convert symmetric adjacency matrix back to edge_index and edges_weight
+        coo = scipy.sparse.coo_matrix(symmetric_adj)
+        edge_index = np.vstack((coo.row, coo.col)).astype(np.int32)
+        if self.edge_weighted:
+            edges_weight = coo.data.astype(self.precision)
+        else:
+            edges_weight = None
+            
+        # Invalidate cached structures
+        self.edges_num = None
+        self.edges_weight = None
+        self._invalidate_cached_structures()
+        
+        # Using ``from_data``
+        self.already_symmetric = True
+        self.from_data(edge_index=edge_index, edges_weight=edges_weight)
     
     def add_self_loop(self):
         """Add self-loops to the graph."""
@@ -360,12 +438,10 @@ class GraphTaskBase(TaskBase):
         # Combine with existing edges
         self.edge_index = np.hstack((self.edge_index, self_loop_edges))
         self.edges_weight = np.hstack((self.edges_weight, self_loop_weights))
-        self.edges_num = self.edge_index.shape[1]
+        self.edges_num = int(self.edge_index.shape[1])
         
         # Invalidate cached structures
-        self.adj_matrix = None
-        self.xadj = None
-        self.adjncy = None
+        self._invalidate_cached_structures()
         
     def remove_self_loop(self):
         """Remove self-loops from the graph."""
@@ -373,12 +449,10 @@ class GraphTaskBase(TaskBase):
         mask = self.edge_index[0] != self.edge_index[1]
         self.edge_index = self.edge_index[:, mask]
         self.edges_weight = self.edges_weight[mask]
-        self.edges_num = self.edge_index.shape[1]
+        self.edges_num = int(self.edge_index.shape[1])
         
         # Invalidate cached structures
-        self.adj_matrix = None
-        self.xadj = None
-        self.adjncy = None
+        self._invalidate_cached_structures()
         
 
 # NetworkX Layout

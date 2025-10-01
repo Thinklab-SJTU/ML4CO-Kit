@@ -18,9 +18,9 @@ from ml4co_kit import TSPWrapper, TSPGenerator, LKHSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class TSPWrapperTester(WrapperTesterBase):
+class PCTSPWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(TSPWrapperTester, self).__init__(
+        super(PCTSPWrapperTester, self).__init__(
             test_wrapper_class=TSPWrapper,
             generator=TSPGenerator(),
             solver=LKHSolver(),

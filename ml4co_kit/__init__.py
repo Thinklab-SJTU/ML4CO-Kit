@@ -23,8 +23,8 @@ from .generator import GeneratorBase
 
 # Graph Generator
 from .generator import (
-    GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
-    MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
+    GraphWeightGenerator, GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
+    MClGenerator, MCutGenerator, MISGenerator, MVCGenerator,
 )
 
 # Routing Generator
@@ -43,14 +43,16 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    LKHSolver, ConcordeSolver, KaMISSolver, RLSASolver, HGSSolver, BeamSolver,
-    GpDegreeSolver, LcDegreeSolver, MCTSSolver, InsertionSolver, GAEAXSolver
+    LKHSolver, ConcordeSolver, KaMISSolver, HGSSolver, GpDegreeSolver, 
+    LcDegreeSolver, InsertionSolver, GAEAXSolver, GurobiSolver
 )
 
 # Greedy Solver (use torch backend)
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
-    from .solver import GreedySolver
+    from .solver import (
+        BeamSolver, GreedySolver, MCTSSolver, RLSASolver
+    )
 
 
 ####################################################

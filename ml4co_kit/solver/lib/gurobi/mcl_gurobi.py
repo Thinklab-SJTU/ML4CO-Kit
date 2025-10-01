@@ -22,7 +22,7 @@ from ml4co_kit.task.graph.mcl import MClTask
 
 def mcl_gurobi(
     task_data: MClTask,
-    gurobi_time_limit: float = 60.0
+    gurobi_time_limit: float = 10.0
 ):
     # Preparation 
     cp_task_data = copy.deepcopy(task_data)

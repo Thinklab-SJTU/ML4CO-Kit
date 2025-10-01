@@ -32,10 +32,10 @@ class MCutGenerator(GraphGeneratorBase):
         self,
         distribution_type: GRAPH_TYPE = GRAPH_TYPE.ER,
         precision: Union[np.float32, np.float64] = np.float32,
-        nodes_num: int = 250, # unused if RB is selected
+        nodes_num_scale: tuple = (200, 300),
         # special args for different distributions (structural)
         er_prob: float = 0.15,
-        ba_conn_degree: int = 10,
+        ba_conn_degree: int = 4,
         hk_prob: float = 0.3,
         hk_conn_degree: int = 10,
         ws_prob: float = 0.3,
@@ -43,7 +43,6 @@ class MCutGenerator(GraphGeneratorBase):
         rb_n_scale: tuple = (20, 25),
         rb_k_scale: tuple = (5, 12),
         rb_p_scale: tuple = (0.3, 1.0),
-        rb_nodes_num_scale: tuple = (200, 300),
         # special args for weighted graph (node weights)
         edge_weighted: bool = False,
         edge_weighted_gen: GraphWeightGenerator = GraphWeightGenerator(
@@ -53,7 +52,8 @@ class MCutGenerator(GraphGeneratorBase):
         super(MCutGenerator, self).__init__(
             task_type=TASK_TYPE.MCUT, 
             distribution_type=distribution_type, 
-            nodes_num=nodes_num,
+            precision=precision,
+            nodes_num_scale=nodes_num_scale,
             er_prob=er_prob,
             ba_conn_degree=ba_conn_degree,
             hk_prob=hk_prob,
@@ -63,7 +63,6 @@ class MCutGenerator(GraphGeneratorBase):
             rb_n_scale=rb_n_scale,
             rb_k_scale=rb_k_scale,
             rb_p_scale=rb_p_scale,
-            rb_nodes_num_scale=rb_nodes_num_scale,
             node_weighted=False, # MCut does not support node weights   
             edge_weighted=edge_weighted,
             edge_weighted_gen=edge_weighted_gen
@@ -75,4 +74,5 @@ class MCutGenerator(GraphGeneratorBase):
             precision=self.precision
         )
         data.from_networkx(nx_graph)
+        data.remove_self_loop()
         return data

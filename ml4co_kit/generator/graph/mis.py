@@ -32,18 +32,17 @@ class MISGenerator(GraphGeneratorBase):
         self,
         distribution_type: GRAPH_TYPE = GRAPH_TYPE.ER,
         precision: Union[np.float32, np.float64] = np.float32,
-        nodes_num: int = 250, # unused if RB is selected
+        nodes_num_scale: tuple = (200, 300),
         # special args for different distributions (structural)
-        er_prob: float = 0.5,
+        er_prob: float = 0.15,
         ba_conn_degree: int = 10,
-        hk_prob: float = 0.5,
+        hk_prob: float = 0.3,
         hk_conn_degree: int = 10,
-        ws_prob: float = 0.5,
+        ws_prob: float = 0.3,
         ws_ring_neighbors: int = 2,
         rb_n_scale: tuple = (20, 25),
         rb_k_scale: tuple = (5, 12),
         rb_p_scale: tuple = (0.3, 1.0),
-        rb_nodes_num_scale: tuple = (200, 300),
         # special args for weighted graph (node weights)
         node_weighted: bool = False,
         node_weighted_gen: GraphWeightGenerator = GraphWeightGenerator(
@@ -53,7 +52,8 @@ class MISGenerator(GraphGeneratorBase):
         super(MISGenerator, self).__init__(
             task_type=TASK_TYPE.MIS, 
             distribution_type=distribution_type, 
-            nodes_num=nodes_num,
+            precision=precision,
+            nodes_num_scale=nodes_num_scale,
             er_prob=er_prob,
             ba_conn_degree=ba_conn_degree,
             hk_prob=hk_prob,
@@ -63,7 +63,6 @@ class MISGenerator(GraphGeneratorBase):
             rb_n_scale=rb_n_scale,
             rb_k_scale=rb_k_scale,
             rb_p_scale=rb_p_scale,
-            rb_nodes_num_scale=rb_nodes_num_scale,
             node_weighted=node_weighted,
             node_weighted_gen=node_weighted_gen,
             edge_weighted=False # MIS does not support edge weights   
@@ -75,4 +74,5 @@ class MISGenerator(GraphGeneratorBase):
             precision=self.precision
         )
         data.from_networkx(nx_graph)
+        data.remove_self_loop()
         return data

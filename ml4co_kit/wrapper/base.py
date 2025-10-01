@@ -53,6 +53,7 @@ class WrapperBase(object):
         num_threads: int = 1,
         batch_size: int = 1,
         write_per_iters: int = 1,
+        write_mode: str = "a",
         show_time: bool = True
     ):
         # Calculate the total number of iterations
@@ -81,7 +82,7 @@ class WrapperBase(object):
             
             # Write tasks to txt
             if (cur_iter+1) % write_per_iters == 0:
-                self.to_txt(file_path=file_path, show_time=False, mode="a")
+                self.to_txt(file_path=file_path, show_time=False, mode=write_mode)
                 self.task_list = list()
                 
     def generate(

@@ -24,6 +24,7 @@ def mcl_lc_degree(task_data: MClTask):
     adj_matrix = task_data.to_adj_matrix()
     lc_graph = copy.deepcopy(adj_matrix)
     np.fill_diagonal(lc_graph, 1) # Add self-loops
+    lc_graph = lc_graph * task_data.nodes_weight
     degrees: np.ndarray = lc_graph.sum(1)
     sol = np.zeros_like(degrees).astype(np.bool_)
     mask = np.zeros_like(degrees).astype(np.bool_)
@@ -40,8 +41,8 @@ def mcl_lc_degree(task_data: MClTask):
         lc_graph[unconnect_nodes, :] = 0
         lc_graph[:, unconnect_nodes] = 0
         degrees = lc_graph.sum(1)
-        degrees[mask] = 0
-    
+        degrees[mask] = -1
+        
     # Store the solution in the task_data
     sol = sol.astype(np.int32)
     task_data.from_data(sol=sol, ref=False)

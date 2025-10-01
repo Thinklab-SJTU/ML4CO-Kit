@@ -24,3 +24,4 @@ from .rlsa import RLSASolverTester
 from .hgs import HGSSolverTester
 from .ga_eax import GAEAXSolverTester
 from .kamis import KaMISSolverTester
+from .gurobi import GurobiSolverTester

@@ -41,7 +41,7 @@ def mvc_lc_degree(task_data: MVCTask):
         lc_graph[next_node, :] = 0
         lc_graph[:, next_node] = 0
         degrees = lc_graph.sum(1)
-        degrees[mask] = len(degrees)
+        degrees[mask] = len(degrees) + 1
 
     # Store the solution in the task_data
     sol = sol.astype(np.int32)

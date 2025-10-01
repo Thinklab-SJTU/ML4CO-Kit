@@ -21,7 +21,7 @@ from ml4co_kit.task.graph.mvc import MVCTask
 
 def mvc_gurobi(
     task_data: MVCTask,
-    gurobi_time_limit: float = 60.0
+    gurobi_time_limit: float = 10.0
 ):
     # Preparation
     task_data.remove_self_loop()

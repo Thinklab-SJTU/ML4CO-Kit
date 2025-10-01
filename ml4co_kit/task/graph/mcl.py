@@ -41,6 +41,11 @@ class MClTask(GraphTaskBase):
             precision=precision
         )
 
+    def _deal_with_self_loop(self):
+        """Deal with self-loop."""
+        self.add_self_loop()
+        self.self_loop = True
+    
     def check_constraints(self, sol: np.ndarray) -> bool:
         """Check if the solution is valid."""
         index = np.where(sol == 1)[0]

@@ -46,6 +46,7 @@ class TSPTask(RoutingTaskBase):
         # Initialize Attributes
         self.nodes_num = None              # Number of nodes
         self.points = None                 # Coordinates of points
+        self.dists = None                  # Distance matrix
     
     def _normalize_points(self):
         """Normalize points to [0, 1] range."""
@@ -80,6 +81,17 @@ class TSPTask(RoutingTaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _get_dists(self) -> np.ndarray:
+        """Get distance matrix."""
+        if self.dists is None:
+            dists = np.zeros((self.nodes_num, self.nodes_num))
+            for i in range(self.nodes_num):
+                for j in range(i + 1, self.nodes_num):
+                    dists[i, j] = self.dist_eval.cal_distance(self.points[i], self.points[j])
+                    dists[j, i] = dists[i, j]
+            self.dists = dists.astype(self.precision)
+        return self.dists
+    
     def from_data(
         self,
         points: np.ndarray = None, 
@@ -90,6 +102,7 @@ class TSPTask(RoutingTaskBase):
     ):
         # Set Attributes and Check Dimensions
         if points is not None:
+            self.dists = None
             self.points = points.astype(self.precision)
             self._check_points_dim()
         if sol is not None:

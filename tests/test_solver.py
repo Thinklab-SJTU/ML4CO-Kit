@@ -23,6 +23,7 @@ from tests.solver_test import (
     GpDegreeSolverTester, LcDegreeSolverTester,
     InsertionSolverTester, HGSSolverTester,
     GAEAXSolverTester, KaMISSolverTester,
+    GurobiSolverTester
 )
 
 
@@ -37,3 +38,4 @@ if __name__ == "__main__":
     LcDegreeSolverTester().test()
     LKHSolverTester().test()
     RLSASolverTester().test()
+    GurobiSolverTester().test()

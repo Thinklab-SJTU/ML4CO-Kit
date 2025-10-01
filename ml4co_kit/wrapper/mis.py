@@ -71,7 +71,7 @@ class MISWrapper(WrapperBase):
                     
                     nodes_weight = nodes_weight.split(" ")
                     nodes_weight = np.array(
-                        [float(nodes_weight) for node_weight in nodes_weight],
+                        [float(node_weight) for node_weight in nodes_weight],
                         dtype=self.precision
                     )
                     
@@ -81,7 +81,7 @@ class MISWrapper(WrapperBase):
                     # Use ``from_data``
                     if overwrite:
                         mis_task = MISTask(
-                            node_weighted=False, precision=self.precision
+                            node_weighted=True, precision=self.precision
                         )
                     else:
                         mis_task = self.task_list[idx]

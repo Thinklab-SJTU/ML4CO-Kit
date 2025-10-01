@@ -51,7 +51,7 @@ class WrapperTesterBase(object):
         # Test for solve
         self._test_solve_evaluate()
     
-    def make_tmp_file(self) -> str:
+    def _make_tmp_file(self) -> str:
         uuid_str = uuid.uuid4().hex
         tmp_file_path = f"tmp/tmp_{uuid_str}"
         return tmp_file_path
@@ -60,7 +60,7 @@ class WrapperTesterBase(object):
         for pkl_file, txt_file in zip(self.pickle_files_list, self.txt_files_list):
             wrapper = self.test_wrapper_class()
             wrapper.from_pickle(pkl_file)
-            tmp_txt_file_path = self.make_tmp_file() + ".txt"
+            tmp_txt_file_path = self._make_tmp_file() + ".txt"
             wrapper.swap_sol_and_ref_sol()
             wrapper.to_txt(pathlib.Path(tmp_txt_file_path))
             if get_md5(txt_file) != get_md5(tmp_txt_file_path):
@@ -78,7 +78,7 @@ class WrapperTesterBase(object):
         wrapper = self.test_wrapper_class()
         for num_threads in [1, 2]:
             for write_per_iters in [1, 2]:
-                tmp_txt_file_path = self.make_tmp_file() + ".txt"
+                tmp_txt_file_path = self._make_tmp_file() + ".txt"
                 wrapper.generate_w_to_txt(
                     file_path=tmp_txt_file_path,
                     generator=self.generator, 

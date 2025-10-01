@@ -17,7 +17,9 @@ Generator Module.
 from .base import GeneratorBase
 
 # Graph Generator
-from .graph.base import GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE
+from .graph.base import (
+    GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, GraphWeightGenerator
+)
 from .graph.mcl import MClGenerator
 from .graph.mcut import MCutGenerator
 from .graph.mis import MISGenerator

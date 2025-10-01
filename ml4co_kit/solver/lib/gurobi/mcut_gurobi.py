@@ -21,7 +21,7 @@ from ml4co_kit.task.graph.mcut import MCutTask
 
 def mcut_gurobi(
     task_data: MCutTask,
-    gurobi_time_limit: float = 60.0
+    gurobi_time_limit: float = 10.0
 ):
     # Preparation 
     nodes_num = task_data.nodes_num
