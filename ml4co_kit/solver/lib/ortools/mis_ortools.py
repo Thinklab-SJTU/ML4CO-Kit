@@ -50,6 +50,7 @@ def mis_ortools(
         model.Maximize(sum(x[v] * nodes_weight[v] for v in vertices))
     else:
         model.Maximize(sum(x[v] for v in vertices))
+    
     # Solve
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = ortools_time_limit

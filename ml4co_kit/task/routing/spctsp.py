@@ -28,7 +28,8 @@ class SPCTSPTask(RoutingTaskBase):
         self, 
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D, 
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
-        precision: Union[np.float32, np.float64] = np.float32
+        precision: Union[np.float32, np.float64] = np.float32,
+        threshold: float = 1e-5
     ):
         # Super Initialization
         super().__init__(
@@ -50,6 +51,8 @@ class SPCTSPTask(RoutingTaskBase):
         self.norm_actual_prizes = None     # Actual revealed prize values (for simulation)
         self.penalties = None              # Penalty values for unvisited nodes
         self.required_prize = None         # Minimum required prize to collect
+        self.dists = None                  # Distance matrix
+        self.threshold = threshold         # Threshold for floating point precision
     
     def _normalize_depots_and_points_with_penalties(self):
         """
@@ -161,6 +164,17 @@ class SPCTSPTask(RoutingTaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _get_dists(self) -> np.ndarray:
+        """Get distance matrix."""
+        if self.dists is None:
+            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
+            for i in range(self.nodes_num + 1):
+                for j in range(i + 1, self.nodes_num + 1):
+                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
+                    dists[j, i] = dists[i, j]
+            self.dists = dists.astype(self.precision)
+        return self.dists
+    
     def from_data(
         self,
         depots: np.ndarray = None,
@@ -236,7 +250,7 @@ class SPCTSPTask(RoutingTaskBase):
         
         # The total collected prize should be at least the required prize
         collected_norm_prizes = np.sum(self.norm_actual_prizes[sol[1:-1]-1])
-        if collected_norm_prizes < 1 - 1e-6: # 1e-6 is for floating point precision
+        if collected_norm_prizes < 1 - self.threshold: # for floating point precision
             return False
         return True
     

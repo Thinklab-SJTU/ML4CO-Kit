@@ -46,10 +46,7 @@ def atsp_ortools(
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
         return data["distance_matrix"][from_node][to_node]
-
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-
-    # Define cost of each arc
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     
     # Solve the problem

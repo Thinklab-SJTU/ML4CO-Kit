@@ -72,6 +72,7 @@ gnn4mvc_model = GNN4COModel(
 class GreedySolverTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(GreedySolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=GreedySolver,
             test_task_type_list=[
                 TASK_TYPE.ATSP, 

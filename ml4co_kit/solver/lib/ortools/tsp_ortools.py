@@ -48,8 +48,6 @@ def tsp_ortools(
         return data["distance_matrix"][from_node][to_node]
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-
-    # Define cost of each arc
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     
     # Solve the problem

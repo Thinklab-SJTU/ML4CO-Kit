@@ -21,6 +21,7 @@ from tests.solver_test.base import SolverTesterBase
 class GurobiSolverTester(SolverTesterBase):
     def __init__(self):
         super(GurobiSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=GurobiSolver,
             test_task_type_list=[
                 TASK_TYPE.ATSP, 
@@ -42,13 +43,13 @@ class GurobiSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")
+                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl")
                 ],  # ATSP
                 [
                     pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl")
                 ],  # CVRP
                 [
-                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl")
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")
                 ],  # TSP
                 [], # MCl
                 [], # MCut

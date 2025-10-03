@@ -33,6 +33,7 @@ ml4co_kit/solver/lib/greedy/cython_tsp_greedy/source/cython_tsp_greedy.c
 dataset/**
 data/**
 weights/**
+ml4co_kit/solver/lib/neurolkh/tsp_neurolkh.pt
 
 # tmp
 tmp/**

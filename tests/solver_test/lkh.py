@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class LKHSolverTester(SolverTesterBase):
     def __init__(self):
         super(LKHSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=LKHSolver,
             test_task_type_list=[
                 TASK_TYPE.TSP, TASK_TYPE.ATSP, TASK_TYPE.CVRP

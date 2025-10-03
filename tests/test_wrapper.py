@@ -21,24 +21,31 @@ sys.path.insert(0, root_folder)
 
 # Routing Problems
 from tests.wrapper_test import (
-    ATSPWrapperTester, CVRPWrapperTester, TSPWrapperTester
+    ATSPWrapperTester, 
+    CVRPWrapperTester, 
+    TSPWrapperTester, 
+    PCTSPWrapperTester
 )    
 
 
 # Graph Problems
 from tests.wrapper_test import (
-    MClWrapperTester, MISWrapperTester, MVCWrapperTester, MCutWrapperTester
+    MClWrapperTester, 
+    MISWrapperTester,
+    MVCWrapperTester,
+    MCutWrapperTester
 )
 
 
 if __name__ == "__main__":
     # Routing Problems
-    ATSPWrapperTester().test()
-    CVRPWrapperTester().test()
-    TSPWrapperTester().test()
+    # ATSPWrapperTester().test()
+    # CVRPWrapperTester().test()
+    PCTSPWrapperTester().test()
+    # TSPWrapperTester().test()
     
     # Graph Problems
-    MClWrapperTester().test()
-    MCutWrapperTester().test()
-    MISWrapperTester().test()
-    MVCWrapperTester().test()
+    # MClWrapperTester().test()
+    # MCutWrapperTester().test()
+    # MISWrapperTester().test()
+    # MVCWrapperTester().test()

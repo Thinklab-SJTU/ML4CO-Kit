@@ -37,6 +37,7 @@ gnn4tsp500_model = GNN4COModel(
 class MCTSSolverTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(MCTSSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=MCTSSolver,
             test_task_type_list=[
                 TASK_TYPE.TSP, TASK_TYPE.TSP

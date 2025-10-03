@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class HGSSolverTester(SolverTesterBase):
     def __init__(self):
         super(HGSSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=HGSSolver,
             test_task_type_list=[TASK_TYPE.CVRP],
             test_args_list=[{}],

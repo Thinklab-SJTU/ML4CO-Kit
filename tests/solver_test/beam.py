@@ -37,6 +37,7 @@ gnn4mcl_model = GNN4COModel(
 class BeamSolverTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(BeamSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=BeamSolver,
             test_task_type_list=[
                 TASK_TYPE.MCL, 

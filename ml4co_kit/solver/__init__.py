@@ -20,6 +20,7 @@ if found_torch is not None:
     from .beam import BeamSolver
     from .greedy import GreedySolver
     from .mcts import MCTSSolver
+    from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
 else:
     TORCH_SUPPORT = False
@@ -32,6 +33,7 @@ from .ga_eax import GAEAXSolver
 from .gp_degree import GpDegreeSolver
 from .gurobi import GurobiSolver
 from .hgs import HGSSolver
+from .ils import ILSSolver
 from .insertion import InsertionSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver

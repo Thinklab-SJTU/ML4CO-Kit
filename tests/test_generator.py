@@ -21,13 +21,20 @@ sys.path.insert(0, root_folder)
 
 # Routing Problems
 from generator_test import (
-    ATSPGenTester, CVRPGenTester, OPGenTester, 
-    PCTSPGenTester, SPCTSPGenTester, TSPGenTester
+    ATSPGenTester, 
+    CVRPGenTester, 
+    OPGenTester, 
+    PCTSPGenTester, 
+    SPCTSPGenTester, 
+    TSPGenTester
 )
 
 # Graph Problems
 from generator_test import (
-    MClGenTester, MCutGenTester, MISGenTester, MVCGenTester
+    MClGenTester, 
+    MCutGenTester, 
+    MISGenTester, 
+    MVCGenTester
 )
 
 

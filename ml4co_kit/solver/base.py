@@ -39,6 +39,7 @@ class SOLVER_TYPE(str, Enum):
     ORTOOLS = "ortools"
     PYVRP = "pyvrp"
     KAMIS = "kamis"
+    ILS = "ils"
     
     # Sampling-Based Algorithms
     ISCO = "isco"

@@ -24,6 +24,7 @@ from ml4co_kit.solver.lib.ortools.mcl_ortools import mcl_ortools
 from ml4co_kit.solver.lib.ortools.mis_ortools import mis_ortools
 from ml4co_kit.solver.lib.ortools.mvc_ortools import mvc_ortools
 from ml4co_kit.solver.lib.ortools.atsp_ortools import atsp_ortools
+from ml4co_kit.solver.lib.ortools.pctsp_ortools import pctsp_ortools
 
 
 class ORSolver(SolverBase):
@@ -64,6 +65,13 @@ class ORSolver(SolverBase):
         if task_data.task_type == TASK_TYPE.ATSP:
             self._set_search_parameters()
             return atsp_ortools(
+                task_data=task_data,
+                ortools_scale=self.ortools_scale,
+                search_parameters=self.search_parameters
+            )
+        elif task_data.task_type == TASK_TYPE.PCTSP:
+            self._set_search_parameters()
+            return pctsp_ortools(
                 task_data=task_data,
                 ortools_scale=self.ortools_scale,
                 search_parameters=self.search_parameters

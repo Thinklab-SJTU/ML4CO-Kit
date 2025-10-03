@@ -45,8 +45,8 @@ class WrapperTesterBase(object):
         # Test for other read and write methods
         self._test_other_rw_methods()
         
-        # # Test for generate
-        # self._test_generate()
+        # Test for generate
+        self._test_generate()
         
         # Test for solve
         self._test_solve_evaluate()
@@ -87,7 +87,7 @@ class WrapperTesterBase(object):
                     num_threads=num_threads,
                     batch_size=1,
                     write_per_iters=write_per_iters,
-                    show_time=False
+                    show_time=True
                 )
                 lines = self._count_lines(tmp_txt_file_path)
                 if lines != 4:

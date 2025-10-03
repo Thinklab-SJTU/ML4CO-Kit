@@ -13,10 +13,16 @@ Wrapper Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-from .base import WrapperBase
-from .tsp import TSPWrapperTester
+# Base Class
+from .base import WrapperTesterBase
+
+# Routing Problems
 from .atsp import ATSPWrapperTester
 from .cvrp import CVRPWrapperTester
+from .pctsp import PCTSPWrapperTester
+from .tsp import TSPWrapperTester
+
+# Graph Problems
 from .mcl import MClWrapperTester
 from .mis import MISWrapperTester
 from .mvc import MVCWrapperTester

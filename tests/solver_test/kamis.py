@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class KaMISSolverTester(SolverTesterBase):
     def __init__(self):
         super(KaMISSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=KaMISSolver,
             test_task_type_list=[TASK_TYPE.MIS],
             test_args_list=[{"kamis_time_limit": 1.0}],

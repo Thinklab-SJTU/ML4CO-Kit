@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class RLSASolverTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(RLSASolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=RLSASolver,
             test_task_type_list=[
                 TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC,

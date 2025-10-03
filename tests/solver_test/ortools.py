@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class ORSolverTester(SolverTesterBase):
     def __init__(self):
         super(ORSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=ORSolver,
             test_task_type_list=[
                 TASK_TYPE.ATSP, 

@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class ConcordeSolverTester(SolverTesterBase):
     def __init__(self):
         super(ConcordeSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=ConcordeSolver,
             test_task_type_list=[TASK_TYPE.TSP],
             test_args_list=[{}],

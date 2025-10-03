@@ -20,6 +20,7 @@ from tests.solver_test.base import SolverTesterBase
 class GpDegreeSolverTester(SolverTesterBase):
     def __init__(self):
         super(GpDegreeSolverTester, self).__init__(
+            mode_list=["solve"],
             test_solver_class=GpDegreeSolver,
             test_task_type_list=[
                 TASK_TYPE.MCL, TASK_TYPE.MIS, TASK_TYPE.MVC

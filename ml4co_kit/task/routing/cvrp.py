@@ -28,10 +28,6 @@ from ml4co_kit.utils.file_utils import check_file_path
 from ml4co_kit.task.routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 
 
-# Python Version Check
-CP38 = True if sys.version_info.major == 3 and sys.version_info.minor == 8 else False
-
-
 class CVRPTask(RoutingTaskBase):
     def __init__(
         self, 

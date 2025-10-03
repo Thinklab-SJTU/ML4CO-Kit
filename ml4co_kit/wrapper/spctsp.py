@@ -68,7 +68,7 @@ class SPCTSPWrapper(WrapperBase):
                 actual_prizes = split_line_5[0]
                 split_line_6 = split_line_5[1].split(" output ")
                 required_prize = split_line_6[0]
-                tours = split_line_6[1]
+                tour = split_line_6[1]
                 
                 # Parse depot coordinates
                 depots = depots.split(" ")
@@ -104,11 +104,12 @@ class SPCTSPWrapper(WrapperBase):
                 # Parse required prize
                 required_prize = float(required_prize)
                 
-                # Parse tours
-                tours = tours.split(" ")
-                tours = np.array(
-                    [int(tours[i]) for i in range(len(tours))]
+                # Parse tour
+                tour = tour.split(" ")
+                tour = np.array(
+                    [int(tour[i]) for i in range(len(tour))]
                 )
+                tour -= 1
                 
                 # Create a new task and add it to ``self.task_list``
                 if overwrite:
@@ -122,7 +123,7 @@ class SPCTSPWrapper(WrapperBase):
                 spctsp_task.from_data(
                     depots=depots, points=points, penalties=penalties, 
                     expected_prizes=expected_prizes, actual_prizes=actual_prizes, 
-                    required_prize=required_prize, sol=tours, ref=ref, normalize=normalize
+                    required_prize=required_prize, sol=tour, ref=ref, normalize=normalize
                 )
                 if overwrite:
                     self.task_list.append(spctsp_task)
@@ -169,6 +170,6 @@ class SPCTSPWrapper(WrapperBase):
                 f.write(" actual_prizes " + str(" ").join(str(prize) for prize in actual_prizes))
                 f.write(" required_prize " + str(required_prize))
                 f.write(str(" output "))
-                f.write(str(" ").join(str(node_idx) for node_idx in sol))
+                f.write(str(" ").join(str(node_idx + 1) for node_idx in sol))
                 f.write("\n")
             f.close()

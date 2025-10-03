@@ -65,15 +65,16 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, HGSSolver,  
-    InsertionSolver, KaMISSolver, LcDegreeSolver, LKHSolver, ORSolver
+    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
+    HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
+    LcDegreeSolver, LKHSolver, ORSolver
 )
 
 # Solver (use torch backend)
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
     from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver, RLSASolver
+        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver
     )
 
 
