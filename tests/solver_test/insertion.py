@@ -13,7 +13,6 @@ Insertion Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
 from ml4co_kit import TASK_TYPE, InsertionSolver
 from tests.solver_test.base import SolverTesterBase
 

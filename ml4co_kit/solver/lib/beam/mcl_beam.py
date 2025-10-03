@@ -26,8 +26,10 @@ def mcl_beam(task_data: MClTask, beam_size: int = 16):
     np.fill_diagonal(adj_matrix, 1)
     sol = np.zeros_like(heatmap)
     beam_sols = np.repeat(sol.reshape(1, -1), beam_size, axis=0)
+    beam_sols_weighted = np.repeat(sol.reshape(1, -1), beam_size, axis=0)
     mask = np.zeros_like(heatmap).astype(np.bool_)
     sorted_nodes = np.argsort(-heatmap)
+    nodes_weight = task_data.nodes_weight
     
     # Greedy Algorithm for MCl
     for node in sorted_nodes:
@@ -36,13 +38,16 @@ def mcl_beam(task_data: MClTask, beam_size: int = 16):
                 if empty_flag[idx]:
                     clique[idx].append(node)
                     beam_sols[idx][node] = 1
+                    beam_sols_weighted[idx][node] = nodes_weight[node]
                     empty_flag[idx] = False
                     break
                 if (adj_matrix[node][clique[idx]] == 1).all():
                     clique[idx].append(node)
                     beam_sols[idx][node] = 1
+                    beam_sols_weighted[idx][node] = nodes_weight[node]
                     break
-    best_idx = np.argmax(beam_sols.sum(axis=1))
+                
+    best_idx = np.argmax(beam_sols_weighted.sum(axis=1))
     sol: np.ndarray = beam_sols[best_idx]
     sol = sol.astype(np.int32)
     

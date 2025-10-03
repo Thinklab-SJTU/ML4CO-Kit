@@ -47,12 +47,12 @@ from tests.solver_test import SolverTesterBase
 from tests.solver_test import (
     ConcordeSolverTester, GAEAXSolverTester, GpDegreeSolverTester, 
     HGSSolverTester, InsertionSolverTester, KaMISSolverTester,
-    LcDegreeSolverTester, LKHSolverTester
+    LcDegreeSolverTester, LKHSolverTester, ORSolverTester
 )
 basic_solver_class_list = [
     ConcordeSolverTester, GAEAXSolverTester, GpDegreeSolverTester, 
     HGSSolverTester, InsertionSolverTester, KaMISSolverTester,
-    LcDegreeSolverTester, LKHSolverTester
+    LcDegreeSolverTester, LKHSolverTester, ORSolverTester
 ]
 
 
@@ -65,18 +65,20 @@ if GUROBI_SUPPORT:
 # Get solvers to be tested (torch used)
 if TORCH_SUPPORT:
     from tests.solver_test import (
-        GreedySolverTester, RLSASolverTester, MCTSSolverTester
+        BeamSolverTester, GreedySolverTester, 
+        RLSASolverTester, MCTSSolverTester
     )
     torch_solver_class_list = [
-        GreedySolverTester, RLSASolverTester, MCTSSolverTester
+        BeamSolverTester, GreedySolverTester, 
+        RLSASolverTester, MCTSSolverTester
     ]
 
 
 if __name__ == "__main__":
     # Basic Solvers
-    for solver_class in basic_solver_class_list:
-        solver_class: Type[SolverTesterBase]
-        solver_class().test()
+    # for solver_class in basic_solver_class_list:
+    #     solver_class: Type[SolverTesterBase]
+    #     solver_class().test()
     
     # Torch Solvers
     for solver_class in torch_solver_class_list:

@@ -17,11 +17,13 @@ Solver Test Module.
 import importlib.util
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
+    from .beam import BeamSolverTester
     from .greedy import GreedySolverTester
     from .mcts import MCTSSolverTester
     from .rlsa import RLSASolverTester
 else:
     TORCH_SUPPORT = False
+
 
 # Load other solver testers
 from .base import SolverTesterBase
@@ -34,3 +36,4 @@ from .insertion import InsertionSolverTester
 from .kamis import KaMISSolverTester
 from .lc_degree import LcDegreeSolverTester
 from .lkh import LKHSolverTester
+from .ortools import ORSolverTester

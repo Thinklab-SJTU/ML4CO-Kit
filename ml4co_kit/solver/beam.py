@@ -28,12 +28,16 @@ class BeamSolver(SolverBase):
     def __init__(
         self, 
         model: GNN4COModel, 
+        device: str = "cpu",
         optimizer: OptimizerBase = None
     ):
         super(BeamSolver, self).__init__(
             solver_type=SOLVER_TYPE.GREEDY, optimizer=optimizer
         )
+        self.device = device
         self.model = model
+        self.model.model.to(self.device)
+        self.model.env.change_device(self.device)
 
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Beam Solver."""

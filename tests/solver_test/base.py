@@ -131,10 +131,10 @@ class SolverTesterBase(object):
     def _get_op_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[OPTask]:
         pass
     
-    def _get_pctsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[OPTask]:
+    def _get_pctsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[PCTSPTask]:
         pass
     
-    def _get_spctsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[OPTask]:
+    def _get_spctsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[SPCTSPTask]:
         pass
     
     def _get_tsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[TSPTask]:

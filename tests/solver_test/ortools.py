@@ -13,45 +13,36 @@ Gurobi Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
-from ml4co_kit import TASK_TYPE, GurobiSolver
+from ml4co_kit import TASK_TYPE, ORSolver
 from tests.solver_test.base import SolverTesterBase
 
 
-class GurobiSolverTester(SolverTesterBase):
+class ORSolverTester(SolverTesterBase):
     def __init__(self):
-        super(GurobiSolverTester, self).__init__(
-            test_solver_class=GurobiSolver,
+        super(ORSolverTester, self).__init__(
+            test_solver_class=ORSolver,
             test_task_type_list=[
                 TASK_TYPE.ATSP, 
-                TASK_TYPE.CVRP, 
                 TASK_TYPE.TSP, 
                 TASK_TYPE.MCL, 
-                TASK_TYPE.MCUT, 
                 TASK_TYPE.MIS, 
-                TASK_TYPE.MVC,
+                TASK_TYPE.MVC
             ],
             test_args_list=[
-                {}, # ATSP
-                {}, # CVRP
-                {}, # TSP
+                {
+                    "ortools_time_limit": 1
+                },  # ATSP
+                {
+                    "ortools_time_limit": 1
+                },  # TSP
                 {}, # MCl
-                {}, # MCut
                 {}, # MIS
                 {}, # MVC
             ],
             exclude_test_files_list=[
-                [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")
-                ],  # ATSP
-                [
-                    pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl")
-                ],  # CVRP
-                [
-                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl")
-                ],  # TSP
+                [], # ATSP
+                [], # TSP
                 [], # MCl
-                [], # MCut
                 [], # MIS
                 [], # MVC
             ]
