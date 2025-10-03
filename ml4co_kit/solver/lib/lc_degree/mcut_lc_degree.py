@@ -20,8 +20,8 @@ from ml4co_kit.task.graph.mcut import MCutTask
 
 def mcut_lc_degree(task_data: MCutTask):
     # Preparation for decoding
-    adj_matrix = task_data.to_adj_matrix()
-    lc_graph = copy.deepcopy(adj_matrix)
+    adj_matrix_weighted = task_data.to_adj_matrix(with_edge_weights=True)
+    lc_graph = copy.deepcopy(adj_matrix_weighted)
     np.fill_diagonal(lc_graph, 0) # Remove self-loops
     nodes_num = lc_graph.shape[0]
     mask = np.zeros(shape=(nodes_num,)).astype(np.bool_)

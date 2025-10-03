@@ -8,10 +8,12 @@ import importlib.util
 from .task import TaskBase, TASK_TYPE
 
 # Graph Task
-from .task import GraphTaskBase, MClTask, MCutTask, MISTask, MVCTask
+from .task import GraphTaskBase
+from .task import MClTask, MCutTask, MISTask, MVCTask
 
 # Routing Task
-from .task import ATSPTask, CVRPTask, TSPTask, OPTask, PCTSPTask, SPCTSPTask
+from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
+from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 
 
 ###################################################
@@ -23,15 +25,20 @@ from .generator import GeneratorBase
 
 # Graph Generator
 from .generator import (
-    GraphWeightGenerator, GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
-    MClGenerator, MCutGenerator, MISGenerator, MVCGenerator,
+    GraphWeightGenerator, GraphGeneratorBase, 
+    GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
 )
+from .generator import MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
 
 # Routing Generator
+from .generator import RoutingGenerator
 from .generator import (
-    RoutingGenerator, ATSPGenerator, CVRPGenerator, TSPGenerator,
-    OPGenerator, PCTSPGenerator, SPCTSPGenerator, ATSP_TYPE, 
-    CVRP_TYPE, TSP_TYPE, OP_TYPE, PCTSP_TYPE, SPCTSP_TYPE
+    ATSP_TYPE, CVRP_TYPE, OP_TYPE, 
+    PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE
+)
+from .generator import (
+    ATSPGenerator, CVRPGenerator, OPGenerator,  
+    PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
 
 
@@ -43,11 +50,11 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    LKHSolver, ConcordeSolver, KaMISSolver, HGSSolver, GpDegreeSolver, 
-    LcDegreeSolver, InsertionSolver, GAEAXSolver, GurobiSolver
+    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, HGSSolver,  
+    InsertionSolver, KaMISSolver, LcDegreeSolver, LKHSolver
 )
 
-# Greedy Solver (use torch backend)
+# Solver (use torch backend)
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
     from .solver import (
@@ -58,10 +65,21 @@ if found_torch is not None:
 ####################################################
 #                     Wrapper                      #
 ####################################################
+
+# Base Wrapper
 from .wrapper import (
-    WrapperBase, TSPWrapper, ATSPWrapper, CVRPWrapper,
-    MISWrapper, MCutWrapper, MClWrapper, MVCWrapper,
-    OPWrapper, PCTSPWrapper, SPCTSPWrapper
+    WrapperBase,
+)
+
+# Routing Problems
+from .wrapper import (
+    ATSPWrapper, CVRPWrapper, OPWrapper, 
+    PCTSPWrapper, SPCTSPWrapper, TSPWrapper
+)
+
+# Graph Problems
+from .wrapper import (
+    MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
 )
 
 
@@ -77,6 +95,9 @@ from .utils import (
 
 # Time Utils
 from .utils import tqdm_by_time, Timer
+
+# Type Utils
+from .utils import to_numpy, to_tensor
 
 # GNN4CO
 from .extension.gnn4co import (

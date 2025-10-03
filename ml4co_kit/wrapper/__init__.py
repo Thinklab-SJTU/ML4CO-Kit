@@ -3,13 +3,17 @@ Wrapper Module.
 """
 
 from .base import WrapperBase
-from .tsp import TSPWrapper
+
+# Routing Problems
 from .atsp import ATSPWrapper
 from .cvrp import CVRPWrapper
-from .mis import MISWrapper
-from .mcut import MCutWrapper
-from .mcl import MClWrapper
-from .mvc import MVCWrapper
 from .op import OPWrapper
 from .pctsp import PCTSPWrapper
 from .spctsp import SPCTSPWrapper
+from .tsp import TSPWrapper
+
+# Graph Problems
+from .mcl import MClWrapper
+from .mcut import MCutWrapper
+from .mis import MISWrapper
+from .mvc import MVCWrapper

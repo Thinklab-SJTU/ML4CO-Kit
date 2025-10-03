@@ -56,7 +56,8 @@ class CVRPTask(RoutingTaskBase):
         self.demands = None                # Demands of points
         self.norm_demands = None           # Normalized demands of points
         self.capacity = None               # Capacity of vehicles
-    
+        self.dists = None                  # Distance matrix
+        
     def _normalize_depots_and_points(self):
         """Normalize depots and points to [0, 1] range."""
         depots = self.depots
@@ -67,7 +68,7 @@ class CVRPTask(RoutingTaskBase):
         normalized_depots = (depots - min_vals) / (max_vals - min_vals)
         self.points = normalized_points
         self.depots = normalized_depots
-    
+
     def _check_depots_dim(self):
         """Check if depots are 1D or 2D."""
         if self.depots.ndim != 1 or self.depots.shape[0] not in [2, 3]:
@@ -133,6 +134,17 @@ class CVRPTask(RoutingTaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _get_dists(self) -> np.ndarray:
+        """Get distance matrix."""
+        if self.dists is None:
+            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
+            for i in range(self.nodes_num + 1):
+                for j in range(i + 1, self.nodes_num + 1):
+                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
+                    dists[j, i] = dists[i, j]
+            self.dists = dists.astype(self.precision)
+        return self.dists
+    
     def from_data(
         self,
         depots: np.ndarray = None,

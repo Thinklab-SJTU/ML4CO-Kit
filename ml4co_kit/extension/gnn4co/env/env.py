@@ -100,6 +100,10 @@ class GNN4COEnv(BaseEnv):
         if self.mode is not None:
             self.load_data()
 
+    def change_device(self, device: str):
+        self.device = device
+        self.data_processor.device = device
+    
     def load_data(self):
         if self.mode == "train":
             self.train_sub_files = [

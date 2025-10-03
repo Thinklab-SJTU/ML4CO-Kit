@@ -14,27 +14,36 @@ MCTS Solver.
 # See the Mulan PSL v2 for more details.
 
 
+import torch
+from ml4co_kit.utils.type_utils import to_numpy
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.lib.mcts.tsp_mcts import tsp_mcts
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
+from ml4co_kit.extension.gnn4co.model.model import GNN4COModel
 
 
 class MCTSSolver(SolverBase):
     def __init__(
         self, 
-        model, 
+        model: GNN4COModel,
         mcts_time_limit: float = 1.0,
         mcts_max_depth: int = 10, 
         mcts_type_2opt: int = 1, 
         mcts_max_iterations_2opt: int = 5000,
+        device: str = "cpu",
         optimizer: OptimizerBase = None
     ):
         # Super Initialization
-        super(MCTSSolver).__init__(SOLVER_TYPE.MCTS, optimizer=optimizer)
+        super(MCTSSolver, self).__init__(SOLVER_TYPE.MCTS, optimizer=optimizer)
         
-        # Set Attributes
+        # Set Attributes for Model
+        self.device = device
         self.model = model
+        self.model.model.to(self.device)
+        self.model.env.change_device(self.device)
+        
+        # Set Attributes for MCTS
         self.mcts_time_limit = mcts_time_limit
         self.mcts_max_depth = mcts_max_depth
         self.mcts_type_2opt = mcts_type_2opt
@@ -42,9 +51,17 @@ class MCTSSolver(SolverBase):
             
     def _solve(self, task_data: TaskBase):
         """Solve the task data using LKH solver."""
+        # Using ``data_process`` to process task data
+        data = self.model.env.data_processor.data_process([task_data])        
+
         # Get heatmap 
-        heatmap = self.model.encode(task_data)
-        task_data.cache["heatmap"] = heatmap
+        if self.model.env.sparse:
+            with torch.no_grad():
+                heatmap = self.model.inference_edge_sparse_process(*data)
+        else:
+            with torch.no_grad():
+                heatmap = self.model.inference_edge_dense_process(*data)    
+        task_data.cache["heatmap"] = to_numpy(heatmap[0])
         
         # Solve task data
         if task_data.task_type == TASK_TYPE.TSP:

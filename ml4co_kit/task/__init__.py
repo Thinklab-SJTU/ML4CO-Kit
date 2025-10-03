@@ -13,10 +13,10 @@ from .graph.mis import MISTask
 from .graph.mvc import MVCTask
 
 # Routing Task
-from .routing.base import DISTANCE_TYPE, ROUND_TYPE
+from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .routing.atsp import ATSPTask
 from .routing.cvrp import CVRPTask
-from .routing.tsp import TSPTask
 from .routing.op import OPTask
 from .routing.pctsp import PCTSPTask
 from .routing.spctsp import SPCTSPTask
+from .routing.tsp import TSPTask

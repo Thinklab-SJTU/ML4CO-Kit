@@ -13,15 +13,24 @@ Solver Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-from .base import SolverBase
+# Check if torch is supported
+import importlib.util
+found_torch = importlib.util.find_spec("torch")
+if found_torch is not None:
+    from .greedy import GreedySolverTester
+    from .mcts import MCTSSolverTester
+    from .rlsa import RLSASolverTester
+else:
+    TORCH_SUPPORT = False
+
+# Load other solver testers
+from .base import SolverTesterBase
 from .concorde import ConcordeSolverTester
-from .gp_degree import GpDegreeSolverTester
-from .greedy import GreedySolverTester
-from .lkh import LKHSolverTester
-from .lc_degree import LcDegreeSolverTester
-from .insertion import InsertionSolverTester
-from .rlsa import RLSASolverTester
-from .hgs import HGSSolverTester
 from .ga_eax import GAEAXSolverTester
-from .kamis import KaMISSolverTester
+from .gp_degree import GpDegreeSolverTester
 from .gurobi import GurobiSolverTester
+from .hgs import HGSSolverTester
+from .insertion import InsertionSolverTester
+from .kamis import KaMISSolverTester
+from .lc_degree import LcDegreeSolverTester
+from .lkh import LKHSolverTester

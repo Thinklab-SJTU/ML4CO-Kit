@@ -10,3 +10,6 @@ from .file_utils import (
 
 # Time Utils
 from .time_utils import Timer, tqdm_by_time
+
+# Type Utils
+from .type_utils import to_numpy, to_tensor

@@ -19,7 +19,7 @@ from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
-# from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
+from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.tsp_gurobi import tsp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcl_gurobi import mcl_gurobi
 from ml4co_kit.solver.lib.gurobi.mis_gurobi import mis_gurobi
@@ -51,8 +51,11 @@ class GurobiSolver(SolverBase):
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )
-        # elif task_data.task_type == TASK_TYPE.CVRP:
-        #     return cvrp_gurobi(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.CVRP:
+            return cvrp_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
         elif task_data.task_type == TASK_TYPE.TSP:
             return tsp_gurobi(
                 task_data=task_data,

@@ -54,10 +54,10 @@ class SolverTesterBase(object):
                     solver.solve(test_task)
                     eval_results = test_task.evaluate_w_gap()
                     print(f"{str(test_task)} Eval results: {eval_results}")
-            except:
+            except Exception as e:
                 raise ValueError(
-                    f"Error occurred when testing {self.test_solver_class.__name__}\n"
-                    f"Test args: {test_args} "
+                    f"Error ``{e}`` occurred when testing {self.test_solver_class.__name__}\n"
+                    f"Test args: {test_args}, Task: {test_task} "
                 )
     
     def get_task_list(
@@ -102,10 +102,10 @@ class SolverTesterBase(object):
     
     def _get_atsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[ATSPTask]:
         atsp_test_files_list = [
-            pathlib.Path("test_dataset/atsp/task/atsp50_hcp_single_task.pkl"),
-            pathlib.Path("test_dataset/atsp/task/atsp50_uniform_single_task.pkl"),
-            pathlib.Path("test_dataset/atsp/task/atsp54_sat_single_task.pkl"),
-            pathlib.Path("test_dataset/atsp/task/atsp500_uniform_single_task.pkl"),
+            pathlib.Path("test_dataset/atsp/task/atsp50_hcp_task.pkl"),
+            pathlib.Path("test_dataset/atsp/task/atsp50_uniform_task.pkl"),
+            pathlib.Path("test_dataset/atsp/task/atsp54_sat_task.pkl"),
+            pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl"),
         ]
         task_list = list()
         for test_file in atsp_test_files_list:
@@ -117,8 +117,8 @@ class SolverTesterBase(object):
 
     def _get_cvrp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[CVRPTask]:
         cvrp_test_files_list = [
-            pathlib.Path("test_dataset/cvrp/task/cvrp50_uniform_single_task.pkl"),
-            pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_single_task.pkl"),
+            pathlib.Path("test_dataset/cvrp/task/cvrp50_uniform_task.pkl"),
+            pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl"),
         ]
         task_list = list()
         for test_file in cvrp_test_files_list:
@@ -138,14 +138,22 @@ class SolverTesterBase(object):
         pass
     
     def _get_tsp_tasks(self, exclude_test_files: List[pathlib.Path]) -> List[TSPTask]:
-        tsp_test_files_list = [
-            pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"),
+        tsp_test_files_list_1 = [
+            pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
+            pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
+        ]
+        tsp_test_files_list_2 = [
+            pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"),
+            pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"),
         ]
         task_list = list()
-        for test_file in tsp_test_files_list:
+        for test_file in tsp_test_files_list_1:
+            if test_file not in exclude_test_files:
+                task = TSPTask()
+                task.from_pickle(test_file)
+                task._normalize_points()
+                task_list.append(task)
+        for test_file in tsp_test_files_list_2:
             if test_file not in exclude_test_files:
                 task = TSPTask()
                 task.from_pickle(test_file)

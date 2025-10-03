@@ -23,18 +23,21 @@ class GurobiSolverTester(SolverTesterBase):
         super(GurobiSolverTester, self).__init__(
             test_solver_class=GurobiSolver,
             test_task_type_list=[
-                TASK_TYPE.ATSP, TASK_TYPE.TSP,
+                TASK_TYPE.ATSP, TASK_TYPE.CVRP, TASK_TYPE.TSP, 
                 TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC
             ],
             test_args_list=[
-                {}, {}, {}, {}, {}, {}
+                {}, {}, {}, {}, {}, {}, {}
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl")
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")
                 ], 
                 [
-                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_single_task.pkl")
+                    pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl")
+                ],
+                [
+                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl")
                 ], 
                 [], [], [], []
             ]

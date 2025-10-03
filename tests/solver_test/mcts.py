@@ -21,21 +21,21 @@ from tests.solver_test.base import SolverTesterBase
 
 # Test on TSP-50 (dense)
 gnn4tsp50_model = GNN4COModel(
-    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=0, device="cuda"),
+    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=0, device="cpu"),
     encoder=TSPGNNEncoder(sparse=False),
     weight_path="weights/gnn4co_tsp50_dense.pt"
 )
 
 # Test on TSP-500 (sparse)
 gnn4tsp500_model = GNN4COModel(
-    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=50, device="cuda"),
+    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=50, device="cpu"),
     encoder=TSPGNNEncoder(sparse=True),
     weight_path="weights/gnn4co_tsp500_sparse.pt"
 )
 
 
 class MCTSSolverTester(SolverTesterBase):
-    def __init__(self):
+    def __init__(self, device: str = "cpu"):
         super(MCTSSolverTester, self).__init__(
             test_solver_class=MCTSSolver,
             test_task_type_list=[
@@ -59,12 +59,15 @@ class MCTSSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"), 
                 ],
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"), 
                 ],
             ]
         )
+        
+    def pre_test(self):
+        pass

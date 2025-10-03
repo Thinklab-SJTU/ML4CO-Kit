@@ -15,11 +15,11 @@ Gurobi Solver for ATSP
 
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.atsp import ATSPTask
 
 
 def atsp_gurobi(
-    task_data: TSPTask,
+    task_data: ATSPTask,
     gurobi_time_limit: float = 10.0
 ):
     """

@@ -67,7 +67,6 @@ class GNN4CODenser(object):
             ).to(self.device) # (B, V, V) or (B, V)
         else:
             ground_truth = None
-        
         return (task, x, graph, ground_truth, self.nodes_num_list)  
         
     def node_merge_process(self, task: str, with_gt: bool) -> Any:

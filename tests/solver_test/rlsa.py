@@ -18,7 +18,7 @@ from tests.solver_test.base import SolverTesterBase
 
 
 class RLSASolverTester(SolverTesterBase):
-    def __init__(self):
+    def __init__(self, device: str = "cpu"):
         super(RLSASolverTester, self).__init__(
             test_solver_class=RLSASolver,
             test_task_type_list=[
@@ -33,7 +33,7 @@ class RLSASolverTester(SolverTesterBase):
                     "rlsa_t": 1000,
                     "rlsa_alpha": 0.3,
                     "rlsa_beta": 1.02,
-                    "rlsa_device": "cuda",
+                    "rlsa_device": device,
                     "rlsa_seed": 1234
                 }, 
                 # MCUT
@@ -44,7 +44,7 @@ class RLSASolverTester(SolverTesterBase):
                     "rlsa_t": 1000,
                     "rlsa_alpha": 0.3,
                     "rlsa_beta": 1.02,
-                    "rlsa_device": "cuda",
+                    "rlsa_device": device,
                     "rlsa_seed": 1234
                 },
                 # MIS
@@ -55,7 +55,7 @@ class RLSASolverTester(SolverTesterBase):
                     "rlsa_t": 1000,
                     "rlsa_alpha": 0.3,
                     "rlsa_beta": 1.02,
-                    "rlsa_device": "cuda",
+                    "rlsa_device": device,
                     "rlsa_seed": 1234
                 },
                 # MVC
@@ -66,7 +66,7 @@ class RLSASolverTester(SolverTesterBase):
                     "rlsa_t": 1000,
                     "rlsa_alpha": 0.3,
                     "rlsa_beta": 1.02,
-                    "rlsa_device": "cuda",
+                    "rlsa_device": device,
                     "rlsa_seed": 1234
                 }
             ],

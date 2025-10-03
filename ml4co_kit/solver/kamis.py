@@ -27,19 +27,22 @@ class KaMISSolver(SolverBase):
     def __init__(
         self, 
         kamis_time_limit: float = 10.0,
+        kamis_weighted_scale: float = 1e5,
         optimizer: OptimizerBase = None
     ):
         super(KaMISSolver, self).__init__(
             solver_type=SOLVER_TYPE.KAMIS, optimizer=optimizer
         )
         self.kamis_time_limit = kamis_time_limit
-
+        self.kamis_weighted_scale = kamis_weighted_scale
+        
     def _solve(self, task_data: TaskBase):
         """Solve the task data using KaMIS Solver."""
         if task_data.task_type == TASK_TYPE.MIS:
             return mis_kamis(
                 task_data=task_data, 
-                kamis_time_limit=self.kamis_time_limit
+                kamis_time_limit=self.kamis_time_limit,
+                kamis_weighted_scale=self.kamis_weighted_scale
             )
         else:
             raise ValueError(

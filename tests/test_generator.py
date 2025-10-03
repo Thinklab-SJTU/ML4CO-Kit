@@ -17,21 +17,31 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
+
+
+# Routing Problems
 from generator_test import (
-    ATSPGenTester, CVRPGenTester, TSPGenTester, 
-    PCTSPGenTester, SPCTSPGenTester, OPGenTester,
-    MCutGenTester, MClGenTester, MISGenTester, MVCGenTester
+    ATSPGenTester, CVRPGenTester, OPGenTester, 
+    PCTSPGenTester, SPCTSPGenTester, TSPGenTester
+)
+
+# Graph Problems
+from generator_test import (
+    MClGenTester, MCutGenTester, MISGenTester, MVCGenTester
 )
 
 
 if __name__ == "__main__":
+    # Routing Problems
     ATSPGenTester().test()
     CVRPGenTester().test()
-    TSPGenTester().test()
-    MCutGenTester().test()
-    MClGenTester().test()
-    MISGenTester().test()
-    MVCGenTester().test()
+    OPGenTester().test()
     PCTSPGenTester().test()
     SPCTSPGenTester().test()
-    OPGenTester().test()
+    TSPGenTester().test()
+
+    # Graph Problems
+    MClGenTester().test()
+    MCutGenTester().test()
+    MISGenTester().test()
+    MVCGenTester().test()

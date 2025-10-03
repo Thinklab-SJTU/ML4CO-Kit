@@ -16,11 +16,16 @@ KaMIS Algorithm for MIS
 import pathlib
 import tempfile
 import subprocess
+import numpy as np
 import networkx as nx
 from ml4co_kit.task.graph.mis import MISTask
 
 
-def mis_kamis(task_data: MISTask, kamis_time_limit: float):
+def mis_kamis(
+    task_data: MISTask, 
+    kamis_time_limit: float, 
+    kamis_weighted_scale: float = 1e5
+):
     # Step1: Prepare for the solving
     nx_graph = task_data.to_networkx()
     weighted = task_data.node_weighted
@@ -34,16 +39,21 @@ def mis_kamis(task_data: MISTask, kamis_time_limit: float):
     m = nx_graph.number_of_edges()
     wt = 0 if not weighted else 10
     res = f"{n} {m} {wt}\n"
-    for n, nbrsdict in nx_graph.adjacency():
-        line = []
-        if weighted:
-            line.append(nx_graph.nodes(data="weight", default=1)[n])
-        for nbr, _ in sorted(nbrsdict.items()):
-            line.append(nbr + 1)
-        res += " ".join(map(str, line)) + "\n"
+    if weighted:
+        adj_matrix = task_data.to_adj_matrix()
+        for idx, row in enumerate(adj_matrix):
+            line = [int(task_data.nodes_weight[idx] * kamis_weighted_scale)]
+            line = line + (np.where(row == 1)[0] + 1).tolist()
+            res += " ".join(map(str, line)) + "\n"
+    else:
+        for n, nbrsdict in nx_graph.adjacency():
+            line = []
+            for nbr, _ in sorted(nbrsdict.items()):
+                line.append(nbr + 1)
+            res += " ".join(map(str, line)) + "\n"
     with open(input_path.name, "w") as res_file:
         res_file.write(res)
-    
+
     # Step3: Executable
     if weighted:
         executable = (

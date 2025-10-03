@@ -21,10 +21,11 @@ from ml4co_kit.solver.lib.greedy.mis_greedy import mis_greedy
 def mis_gp_degree_decoder(task_data: MISTask):
     # Preparation for decoding
     adj_matrix = task_data.to_adj_matrix()
-    degrees: np.ndarray = adj_matrix.sum(1)
+    adj_matrix_weighted = adj_matrix * task_data.nodes_weight
+    weighted_degrees: np.ndarray = adj_matrix_weighted.sum(1)
     
     # The more connections, the less likely to be in the solution
-    heatmap = -degrees
+    heatmap = -weighted_degrees + task_data.nodes_weight
     task_data.cache["heatmap"] = heatmap
     
     # Call Greedy Algorithm for MIS

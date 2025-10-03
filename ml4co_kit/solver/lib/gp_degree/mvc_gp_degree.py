@@ -21,10 +21,11 @@ from ml4co_kit.solver.lib.greedy.mvc_greedy import mvc_greedy
 def mvc_gp_degree_decoder(task_data: MVCTask):
     # Preparation for decoding
     adj_matrix = task_data.to_adj_matrix()
-    degrees: np.ndarray = adj_matrix.sum(1)
+    adj_matrix_weighted = adj_matrix * task_data.nodes_weight
+    weighted_degrees: np.ndarray = adj_matrix_weighted.sum(1)
     
     # The more connections, the more likely to be in the solution
-    heatmap = degrees
+    heatmap = weighted_degrees - task_data.nodes_weight
     task_data.cache["heatmap"] = heatmap
 
     # Call Greedy Algorithm for MVC

@@ -21,10 +21,10 @@ from ml4co_kit.task.graph.mcl import MClTask
 
 def mcl_lc_degree(task_data: MClTask):
     # Preparation for decoding
-    adj_matrix = task_data.to_adj_matrix()
-    lc_graph = copy.deepcopy(adj_matrix)
-    np.fill_diagonal(lc_graph, 1) # Add self-loops
-    lc_graph = lc_graph * task_data.nodes_weight
+    adj = task_data.to_adj_matrix()
+    adj_matrix = copy.deepcopy(adj)
+    np.fill_diagonal(adj_matrix, 1) # Add self-loops
+    lc_graph = adj_matrix * task_data.nodes_weight
     degrees: np.ndarray = lc_graph.sum(1)
     sol = np.zeros_like(degrees).astype(np.bool_)
     mask = np.zeros_like(degrees).astype(np.bool_)
@@ -33,13 +33,14 @@ def mcl_lc_degree(task_data: MClTask):
     # Until all nodes are masked
     while not mask.all():
         next_node = np.argmax(degrees)
-        unconnect_nodes = np.where(lc_graph[next_node] == 0)[0]
+        unconnect_nodes = np.where(adj_matrix[next_node] == 0)[0]
         sol[unconnect_nodes] = False
         sol[next_node] = True
         mask[unconnect_nodes] = True
         mask[next_node] = True
-        lc_graph[unconnect_nodes, :] = 0
-        lc_graph[:, unconnect_nodes] = 0
+        adj_matrix[unconnect_nodes, :] = 0
+        adj_matrix[:, unconnect_nodes] = 0
+        lc_graph = adj_matrix * task_data.nodes_weight
         degrees = lc_graph.sum(1)
         degrees[mask] = -1
         

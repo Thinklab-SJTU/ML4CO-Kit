@@ -20,10 +20,11 @@ from ml4co_kit.task.graph.mvc import MVCTask
 
 def mvc_lc_degree(task_data: MVCTask):
     # Preparation for decoding
-    adj_matrix = task_data.to_adj_matrix()
-    lc_graph = copy.deepcopy(adj_matrix)
-    np.fill_diagonal(lc_graph, 0) # Remove self-loops
-    degrees: np.ndarray = lc_graph.sum(1)
+    adj = task_data.to_adj_matrix()
+    adj_matrix = copy.deepcopy(adj)
+    np.fill_diagonal(adj_matrix, 0) # Remove self-loops
+    lc_graph = adj_matrix * task_data.nodes_weight
+    degrees: np.ndarray = lc_graph.sum(1) - task_data.nodes_weight
     sol = np.zeros_like(degrees).astype(np.bool_)
     mask = np.zeros_like(degrees).astype(np.bool_)
     
@@ -31,17 +32,18 @@ def mvc_lc_degree(task_data: MVCTask):
     # Until all nodes are masked
     while not mask.all():
         next_node = np.argmin(degrees)
-        connect_nodes = np.where(lc_graph[next_node] == 1)[0]
+        connect_nodes = np.where(adj_matrix[next_node] == 1)[0]
         sol[connect_nodes] = True
         sol[next_node] = False
         mask[connect_nodes] = True
         mask[next_node] = True
-        lc_graph[connect_nodes, :] = 0
-        lc_graph[:, connect_nodes] = 0
-        lc_graph[next_node, :] = 0
-        lc_graph[:, next_node] = 0
-        degrees = lc_graph.sum(1)
-        degrees[mask] = len(degrees) + 1
+        adj_matrix[connect_nodes, :] = 0
+        adj_matrix[:, connect_nodes] = 0
+        adj_matrix[next_node, :] = 0
+        adj_matrix[:, next_node] = 0
+        lc_graph = adj_matrix * task_data.nodes_weight
+        degrees = lc_graph.sum(1) - task_data.nodes_weight  
+        degrees[mask] = 1000000.0
 
     # Store the solution in the task_data
     sol = sol.astype(np.int32)

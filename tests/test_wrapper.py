@@ -17,17 +17,28 @@ import os
 import sys
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
+
+
+# Routing Problems
 from tests.wrapper_test import (
-    TSPWrapperTester, ATSPWrapperTester, CVRPWrapperTester,
+    ATSPWrapperTester, CVRPWrapperTester, TSPWrapperTester
+)    
+
+
+# Graph Problems
+from tests.wrapper_test import (
     MClWrapperTester, MISWrapperTester, MVCWrapperTester, MCutWrapperTester
 )
 
 
 if __name__ == "__main__":
-    TSPWrapperTester().test()
+    # Routing Problems
     ATSPWrapperTester().test()
     CVRPWrapperTester().test()
+    TSPWrapperTester().test()
+    
+    # Graph Problems
     MClWrapperTester().test()
+    MCutWrapperTester().test()
     MISWrapperTester().test()
     MVCWrapperTester().test()
-    MCutWrapperTester().test()

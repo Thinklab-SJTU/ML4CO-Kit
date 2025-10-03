@@ -13,14 +13,19 @@ Generator Test Module.
 # See the Mulan PSL v2 for more details.
 
 
+# Base Class
 from .base import GenTesterBase
+
+# Routing Problems
 from .atsp import ATSPGenTester
 from .cvrp import CVRPGenTester
+from .op import OPGenTester
+from .pctsp import PCTSPGenTester
+from .spctsp import SPCTSPGenTester
+from .tsp import TSPGenTester
+
+# Graph Problems
 from .mcut import MCutGenTester
 from .mcl import MClGenTester
 from .mis import MISGenTester
 from .mvc import MVCGenTester
-from .tsp import TSPGenTester
-from .pctsp import PCTSPGenTester
-from .spctsp import SPCTSPGenTester
-from .op import OPGenTester
