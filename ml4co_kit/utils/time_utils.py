@@ -21,26 +21,7 @@ from typing import Callable, Iterable, TypeVar
 T = TypeVar('T')
 
 
-def iterative_execution(
-    func: Callable[[Iterable[T]], Iterable[T]], 
-    iterable: Iterable[T], 
-    desc: str = "Running", 
-    show_time: bool = False
-) -> Iterable[T]:
-    r"""
-    Applies a function to an iterable and optionally displays a progress bar using tqdm.    
-    :param func: iterable object, the function to display a progress bar.
-    :param iterable: iterable object, the parameter applied to 'func'.
-    :param desc: string, the descriptive text for the progress bar. Defaults to Running.
-    :param show_time: boolean, whether to display a progress bar.
-    """
-    if show_time:
-        return tqdm(func(iterable), desc=desc)
-    else:
-        return func(iterable)
-    
-
-def iterative_execution_for_file(
+def tqdm_by_time(
     iterable: Iterable[T], 
     desc: str = "Running", 
     show_time: bool = False
