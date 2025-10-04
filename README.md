@@ -14,7 +14,7 @@ Combinatorial Optimization (CO) is a mathematical optimization area that involve
 `ML4CO-Kit` aims to provide foundational support for machine learning practices on CO problems.
 We have designed the ``ML4CO-Kit`` into five levels: 
 
-<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/organization_kit.png" alt="Organization" width="800"/>
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/organization.png" alt="Organization" width="600"/>
 
 * **``Task``(Level 1):** the smallest processing unit, where each task represents a problem instance. At the task level, it mainly involves the definition of CO problems, evaluation of solutions (including constraint checking), and problem visualization, etc.
 * **``Generator``(Level 2):** the generator creates task instances of a specific structure or distribution based on the set parameters.
@@ -24,7 +24,7 @@ We have designed the ``ML4CO-Kit`` into five levels:
 
 Additionally, for higher-level ML4CO (see [ML4CO-Bench-101](https://github.com/Thinklab-SJTU/ML4CO-Bench-101)) services, we also provide learning base classes (see ``ml4co_kit/learning``) based on the PyTorch-Lightning framework, including ``BaseEnv``, ``BaseModel``, ``Trainer``, and so on. The following figure illustrates the relationship between the two.
 
-<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/relation.png" alt="Relation" width="800"/>
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/relation.png" alt="Relation" width="600"/>
 
 **We are still enriching the library and we welcome any contributions/ideas/suggestions from the community.**
 
@@ -81,7 +81,7 @@ pytorch_lightning
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
+**Graph: MCl & MCut & MIS & MVC; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
 ### **Task (Level 1)**
 
@@ -129,7 +129,6 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | (Graph) | Lognormal (weighted) | Weights with Lognormal distribution | ✔ |
 | (Graph) | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 | (Graph) | Binomial (weighted) | Weights with Binomial distribution | ✔ |
-
 
 ### **Solver (Level 3)**
 
@@ -180,7 +179,6 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | RLSASolver       | MIS   | Python |   |   | ✔ |
 | RLSASolver       | MVC   | Python |   |   | ✔ |
 
-
 ### **Optimizer (Level 4)**
 
 | Optimizer | Support Task | Language | Source | Reference | State | 
@@ -194,10 +192,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | TwoOptOptimizer     | ATSP   | C/C++  |   |   | ✔ |
 | TwoOptOptimizer     | TSP    | Python | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py)  |   | ✔ |
 
-
 ### **Wrapper (Level 5)**
-
-**Graph: MCl & MCut & MIS & MVC**
 
 | Wrapper | TXT | Other R&W |
 | :-----: | :-: | :-------: |
@@ -209,10 +204,6 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | TSPWrapper | "[points] output [sol]" | ``tsplib`` |
 | (Graph)Wrapper | "[edge_index] label [sol]" | ``gpickle`` |
 | (Graph)Wrapper [weighted]| "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
-
-
-
-
 
 
 ## **Our Systematic Benchmark Works**

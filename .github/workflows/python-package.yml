@@ -30,9 +30,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r tests/requirements.txt
-    - name: Compile Solvers
-      run: |
-        python tests/compile_solvers.py
     - name: Test using pytest
       run: |
         pip install pytest
