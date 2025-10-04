@@ -22,16 +22,15 @@ We have designed the ``ML4CO-Kit`` into five levels:
 * **``Optimizer``(Level 4):** to further optimize the initial solution obtained by the solver.
 * **``Wrapper``(Level 5):** user-friendly wrappers, used for handling data reading and writing, task storage, as well as parallelized generation and solving.
 
-Additionally, for higher-level ML4CO (see [ML4CO-Bench-101](https://github.com/Thinklab-SJTU/ML4CO-Bench-101)) services, we also provide learning base classes (see ``ml4co_kit/learning``) based on the PyTorch-Lightning framework, including ``BaseEnv``, ``BaseModel``, ``Trainer``, and so on. The following figure illustrates the relationship between the two.
+Additionally, for higher-level ML4CO (see [ML4CO-Bench-101](https://github.com/Thinklab-SJTU/ML4CO-Bench-101)) services, we also provide learning base classes (see ``ml4co_kit/learning``) based on the PyTorch-Lightning framework, including ``BaseEnv``, ``BaseModel``, ``Trainer``. The following figure illustrates the relationship between the ``ML4CO-Kit`` and ``ML4CO-Bench-101``.
 
-<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/relation.png" alt="Relation" width="600"/>
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/relation.png" alt="Relation" width="400"/>
 
 **We are still enriching the library and we welcome any contributions/ideas/suggestions from the community.**
 
 ⭐ **Official Documentation**: https://ml4co-kit.readthedocs.io/en/latest/
 
 ⭐ **Source Code**: https://github.com/Thinklab-SJTU/ML4CO-Kit
-
 
 
 ## Installation
