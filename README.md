@@ -99,8 +99,6 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 ### **Generator (Level 2)**
 
-**Graph: MCl & MCut & MIS & MVC**
-
 | Task | Distribution | Brief Intro. | State |
 | ---- | :----------: | ------------ | :---: |
 | ATSP | Uniform | Random distance matrix with triangle inequality | ✔ |
@@ -131,25 +129,25 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 ### **Solver (Level 3)**
 
-| Solver | Support Task | Language | Source | Reference | State | 
+| Solver | Support Task | Language | Source | Ref. / Implementation | State | 
 | :----: | :----------: |  ------- | :----: | :-------: | :---: |
-| BeamSolver       | MCl   | Python |   |   | ✔ |
-| BeamSolver       | MIS   | Python |   |   | ✔ |
-| ConcordeSolver   | TSP   | C/C++  | [Concorde](https://www.math.uwaterloo.ca/tsp/concorde.html)  | [PyConcorde](https://github.com/jvkersch/pyconcorde)  | ✔ |
+| BeamSolver       | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| BeamSolver       | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ConcordeSolver   | TSP   | C/C++  | [Concorde](https://www.math.uwaterloo.ca/tsp/concorde.html) | [PyConcorde](https://github.com/jvkersch/pyconcorde)  | ✔ |
 | GAEAXSolver      | TSP   | C/C++  | [GA-EAX](https://github.com/nagata-yuichi/GA-EAX) | [GA-EAX](https://github.com/nagata-yuichi/GA-EAX) | ✔ |
-| GpDegreeSolver   | MCl   | Python |   |   | ✔ |
-| GpDegreeSolver   | MIS   | Python |   |   | ✔ |
-| GpDegreeSolver   | MVC   | Python |   |   | ✔ |
-| GreedySolver     | ATSP  | C/C++  |   |   | ✔ |
-| GreedySolver     | CVRP  | Python |   |   | ✔ |
+| GpDegreeSolver   | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GpDegreeSolver   | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GpDegreeSolver   | MVC   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GreedySolver     | ATSP  | C/C++  | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GreedySolver     | CVRP  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | GreedySolver     | TSP   | Cython | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/tree/main/difusco/utils/cython_merge) | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/tree/main/difusco/utils/cython_merge) | ✔ |
-| GreedySolver     | MCl   | Python |   |   | ✔ |
-| GreedySolver     | MCut  | Python |   |   | ✔ |
-| GreedySolver     | MIS   | Python |   |   | ✔ |
-| GreedySolver     | MVC   | Python |   |   | ✔ |
-| GurobiSolver     | ATSP  | C/C++  | [Gurobi](https://www.gurobi.com/) |   | ✔ |
-| GurobiSolver     | CVRP  | C/C++  | [Gurobi](https://www.gurobi.com/) |   | ✔ |
-| GurobiSolver     | TSP   | C/C++  | [Gurobi](https://www.gurobi.com/) |   | ✔ |
+| GreedySolver     | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GreedySolver     | MCut  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GreedySolver     | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GreedySolver     | MVC   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| GurobiSolver     | ATSP  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+| GurobiSolver     | CVRP  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+| GurobiSolver     | TSP   | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
 | GurobiSolver     | MCl   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 | GurobiSolver     | MCut  | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 | GurobiSolver     | MIS   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
@@ -158,43 +156,43 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | ILSSolver        | PCTSP | Python | [PCTSP](https://github.com/jordanamecler/PCTSP) | [PCTSP](https://github.com/jordanamecler/PCTSP) | ✔ |
 | InsertionSolver  | TSP   | Python | [GLOP](https://github.com/henry-yeh/GLOP) | [GLOP](https://github.com/henry-yeh/GLOP) | ✔ |
 | KaMISSolver      | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [MIS-Bench](https://github.com/MaxiBoether/mis-benchmark-framework) | ✔ |
-| LcDegreeSolver   | MCl   | Python |   |   | ✔ |
-| LcDegreeSolver   | MCut  | Python |   |   | ✔ |
-| LcDegreeSolver   | MIS   | Python |   |   | ✔ |
-| LcDegreeSolver   | MVC   | Python |   |   | ✔ |
-| LKHSolver        | TSP   | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) |   | ✔ |
-| LKHSolver        | ATSP  | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) |   | ✔ |
-| LKHSolver        | CVRP  | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) |   | ✔ |
-| MCTSSolver       | TSP   | Python |   |   | ✔ |
-| NeuroLKHSolver   | TSP   | Python | [NeuroLKH](https://github.com/liangxinedu/NeuroLKH) |   | ✔ |
-| ORSolver         | ATSP  | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| ORSolver         | PCTSP | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| ORSolver         | TSP   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| ORSolver         | MCl   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| ORSolver         | MIS   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| ORSolver         | MVC   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction)  |   | ✔ |
-| RLSASolver       | MCl   | Python |   |   | ✔ |
-| RLSASolver       | MCut  | Python |   |   | ✔ |
-| RLSASolver       | MIS   | Python |   |   | ✔ |
-| RLSASolver       | MVC   | Python |   |   | ✔ |
+| LcDegreeSolver   | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| LcDegreeSolver   | MCut  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| LcDegreeSolver   | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| LcDegreeSolver   | MVC   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| LKHSolver        | TSP   | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+| LKHSolver        | ATSP  | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+| LKHSolver        | CVRP  | C/C++  | [LKH](http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+| MCTSSolver       | TSP   | Python | [Att-GCRN](https://github.com/Spider-scnu/TSP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| NeuroLKHSolver   | TSP   | Python | [NeuroLKH](https://github.com/liangxinedu/NeuroLKH) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | ATSP  | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | PCTSP | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | TSP   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | MCl   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | MIS   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| ORSolver         | MVC   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSASolver       | MCl   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSASolver       | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSASolver       | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSASolver       | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
 ### **Optimizer (Level 4)**
 
 | Optimizer | Support Task | Language | Source | Reference | State | 
 | :-------: | :----------: |  ------- | :----: | :-------: | :---: |
-| CVRPLSOptimizer     | CVRP   | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP)  |   | ✔ |
-| MCTSOptimizer       | TSP    | C/C++  |   |   | ✔ |
-| RLSAOptimizer       | MCl    | Python |   |   | ✔ |
-| RLSAOptimizer       | MCut   | Python |   |   | ✔ |
-| RLSAOptimizer       | MIS    | Python |   |   | ✔ |
-| RLSAOptimizer       | MVC    | Python |   |   | ✔ |
-| TwoOptOptimizer     | ATSP   | C/C++  |   |   | ✔ |
-| TwoOptOptimizer     | TSP    | Python | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py)  |   | ✔ |
+| CVRPLSOptimizer     | CVRP   | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| MCTSOptimizer       | TSP    | C/C++  | [Att-GCRN](https://github.com/Spider-scnu/TSP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSAOptimizer       | MCl    | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSAOptimizer       | MCut   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSAOptimizer       | MIS    | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| RLSAOptimizer       | MVC    | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| TwoOptOptimizer     | ATSP   | C/C++  | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| TwoOptOptimizer     | TSP    | Python | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
 ### **Wrapper (Level 5)**
 
 | Wrapper | TXT | Other R&W |
-| :-----: | :-: | :-------: |
+| :-----: | --- | :-------: |
 | ATSPWrapper | "[dists] output [sol]" | ``tsplib`` |
 | CVRPWrapper | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
 | ORWrapper | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
