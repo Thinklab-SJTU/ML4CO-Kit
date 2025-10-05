@@ -17,6 +17,8 @@ r"""
 Utils Functions and Modules.
 """
 
+import importlib.util
+
 # Env Utils
 from .env_utils import EnvInstallHelper, EnvChecker
 
@@ -30,4 +32,5 @@ from .file_utils import (
 from .time_utils import Timer, tqdm_by_time
 
 # Type Utils
-from .type_utils import to_numpy, to_tensor
+if importlib.util.find_spec("torch") is not None:
+    from .type_utils import to_numpy, to_tensor
