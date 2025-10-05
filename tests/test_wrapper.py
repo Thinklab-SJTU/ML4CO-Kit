@@ -37,15 +37,21 @@ from tests.wrapper_test import (
 )
 
 
-if __name__ == "__main__":
+# Test Wrapper
+def test_wrapper():
     # Routing Problems
-    # ATSPWrapperTester().test()
-    # CVRPWrapperTester().test()
+    ATSPWrapperTester().test()
+    CVRPWrapperTester().test()
     PCTSPWrapperTester().test()
-    # TSPWrapperTester().test()
+    TSPWrapperTester().test()
     
     # Graph Problems
-    # MClWrapperTester().test()
-    # MCutWrapperTester().test()
-    # MISWrapperTester().test()
-    # MVCWrapperTester().test()
+    MClWrapperTester().test()
+    MCutWrapperTester().test()
+    MISWrapperTester().test()
+    MVCWrapperTester().test()
+    
+
+# Main
+if __name__ == "__main__":
+    test_wrapper()

@@ -28,7 +28,7 @@ URL = "https://github.com/Thinklab-SJTU/ML4CO-Kit"
 AUTHOR = get_property("__author__", PACKAGE_NAME)
 VERSION = get_property("__version__", PACKAGE_NAME)
 REQUIRED = [
-    "numpy>=1.24.4",
+    "numpy>=1.24.3",
     "networkx>=2.8.8",
     "tqdm>=4.66.3",
     "pulp>=2.8.0",
@@ -69,7 +69,6 @@ else:
 
 class BdistWheelCommand(_bdist_wheel):
     def run(self):
-        os.system("python publish/compile_solvers.py")
         super().run()
 
     def get_tag(self):
@@ -113,6 +112,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: Unix",

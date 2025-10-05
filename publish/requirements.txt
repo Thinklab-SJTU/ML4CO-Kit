@@ -1,4 +1,4 @@
-numpy>=1.24.4
+numpy>=1.24.3
 networkx==2.8.8
 tqdm>=4.66.1
 wget>=3.2

@@ -81,7 +81,7 @@ class SolverTesterBase(object):
             except Exception as e:
                 raise ValueError(
                     f"Error ``{e}`` occurred when testing {self.test_solver_class.__name__}\n"
-                    f"Test args: {test_args}, Task: {test_task_list[0]} "
+                    f"Test args: {test_args}, Mode: {mode}, Task: {test_task_type} "
                 )
     
     def get_task_list(
@@ -164,8 +164,8 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             cvrp_test_files_list = [
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/cvrp/task/cvrp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrp_test_files_list:

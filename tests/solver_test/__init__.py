@@ -14,16 +14,15 @@ Solver Test Module.
 
 
 # Check if torch is supported
-import importlib.util
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
+from ml4co_kit.utils.env_utils import EnvChecker
+env_checker = EnvChecker()
+if env_checker.check_gnn4co():
     from .beam import BeamSolverTester
     from .greedy import GreedySolverTester
     from .mcts import MCTSSolverTester
+if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolverTester
     from .rlsa import RLSASolverTester
-else:
-    TORCH_SUPPORT = False
 
 
 # Load other solver testers

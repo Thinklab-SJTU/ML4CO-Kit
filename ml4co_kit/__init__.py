@@ -13,7 +13,37 @@ ML4CO-Kit Module.
 # See the Mulan PSL v2 for more details.
 
 
-import importlib.util
+####################################################
+#                  Utils Function                  #
+####################################################
+
+# Env Utils
+from .utils import EnvInstallHelper, EnvChecker
+env_checker = EnvChecker()
+
+# File Utils
+from .utils import (
+    download, pull_file_from_huggingface, get_md5,
+    compress_folder, extract_archive, check_file_path
+)
+
+# Time Utils
+from .utils import tqdm_by_time, Timer
+
+# Type Utils
+from .utils import to_numpy, to_tensor
+
+
+####################################################
+#                    Extension                     #
+####################################################
+
+# GNN4CO
+if env_checker.check_gnn4co():
+    from .extension.gnn4co import (
+        GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
+    )
+
 
 ###################################################
 #                      Task                       #
@@ -71,10 +101,13 @@ from .solver import (
 )
 
 # Solver (use torch backend)
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
+if env_checker.check_gnn4co():
     from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver
+        BeamSolver, GreedySolver, MCTSSolver
+    )
+if env_checker.check_torch():
+    from .solver import (
+        NeuroLKHSolver, RLSASolver
     )
 
 
@@ -100,26 +133,8 @@ from .wrapper import (
 
 
 ####################################################
-#                  Utils Function                  #
+#                 Version & Author                 #
 ####################################################
-
-# File Utils
-from .utils import (
-    download, pull_file_from_huggingface, get_md5,
-    compress_folder, extract_archive, check_file_path
-)
-
-# Time Utils
-from .utils import tqdm_by_time, Timer
-
-# Type Utils
-from .utils import to_numpy, to_tensor
-
-# GNN4CO
-from .extension.gnn4co import (
-    GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
-)
-
 
 __version__ = "1.0.0"
 __author__ = "SJTU-ReThinkLab"

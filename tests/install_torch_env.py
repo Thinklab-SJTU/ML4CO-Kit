@@ -1,5 +1,5 @@
 r"""
-Utils Module.
+Install PyTorch Environment.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,21 +13,13 @@ Utils Module.
 # See the Mulan PSL v2 for more details.
 
 
-r"""
-Utils Functions and Modules.
-"""
+import os
+import sys
+root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, root_folder)
+from ml4co_kit import EnvInstallHelper
 
-# Env Utils
-from .env_utils import EnvInstallHelper, EnvChecker
 
-# File Utils
-from .file_utils import (
-    download, pull_file_from_huggingface, get_md5,
-    compress_folder, extract_archive, check_file_path
-)
-
-# Time Utils
-from .time_utils import Timer, tqdm_by_time
-
-# Type Utils
-from .type_utils import to_numpy, to_tensor
+if __name__ == "__main__":
+    env_install_helper = EnvInstallHelper()
+    env_install_helper.install()

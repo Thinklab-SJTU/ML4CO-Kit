@@ -15,31 +15,14 @@ Test Solver Module.
 
 import os
 import sys
-import importlib.util
 from typing import Type
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
 
 
-# Check if torch is supported
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
-    import torch
-    TORCH_SUPPORT = True
-    CUDA_SUPPORT = torch.cuda.is_available()
-else:
-    TORCH_SUPPORT = False
-    CUDA_SUPPORT = False
-
-
-# Check if gurobi is supported
-import gurobipy as gp
-try:
-    env = gp.Env(empty=True)
-    env.start()
-    GUROBI_SUPPORT = True
-except gp.GurobiError as e:
-    GUROBI_SUPPORT = False
+# Checker
+from ml4co_kit.utils.env_utils import EnvChecker
+env_checker = EnvChecker()
 
 
 # Get solvers to be tested (no torch used)
@@ -57,44 +40,50 @@ from tests.solver_test import (
     ORSolverTester
 )
 basic_solver_class_list = [
-    # ConcordeSolverTester, 
-    # GAEAXSolverTester,
-    # GpDegreeSolverTester, 
-    # HGSSolverTester, 
+    ConcordeSolverTester, 
+    GAEAXSolverTester,
+    GpDegreeSolverTester, 
+    HGSSolverTester, 
     ILSSolverTester, 
-    # InsertionSolverTester, 
-    # KaMISSolverTester,
-    # LcDegreeSolverTester,
-    # LKHSolverTester,
-    # ORSolverTester
+    InsertionSolverTester, 
+    KaMISSolverTester,
+    LcDegreeSolverTester,
+    LKHSolverTester,
+    ORSolverTester
 ]
 
 
 # Gurobi
-if GUROBI_SUPPORT:
+if env_checker.check_gurobi():
     from tests.solver_test import GurobiSolverTester
     basic_solver_class_list.append(GurobiSolverTester)
    
     
 # Get solvers to be tested (torch used)
-if TORCH_SUPPORT:
+if env_checker.check_torch():
     from tests.solver_test import (
-        BeamSolverTester, 
-        GreedySolverTester, 
         RLSASolverTester, 
-        NeuroLKHSolverTester,
-        MCTSSolverTester
+        NeuroLKHSolverTester
     )
     torch_solver_class_list = [
-        # BeamSolverTester, 
-        # GreedySolverTester, 
-        # RLSASolverTester,
+        RLSASolverTester,
         NeuroLKHSolverTester,
-        # MCTSSolverTester
     ]
+if env_checker.check_gnn4co():
+    from tests.solver_test import (
+        BeamSolverTester, 
+        GreedySolverTester,
+        MCTSSolverTester
+    )
+    torch_solver_class_list += [
+        BeamSolverTester, 
+        GreedySolverTester,
+        MCTSSolverTester
+    ]
+    
 
-
-if __name__ == "__main__":
+# Test Solver
+def test_solver():
     # Basic Solvers
     for solver_class in basic_solver_class_list:
         solver_class: Type[SolverTesterBase]
@@ -104,5 +93,10 @@ if __name__ == "__main__":
     for solver_class in torch_solver_class_list:
         solver_class: Type[SolverTesterBase]
         solver_class(device="cpu").test()
-        if CUDA_SUPPORT:
+        if env_checker.check_cuda():
             solver_class(device="cuda").test()
+
+
+# Main
+if __name__ == "__main__":
+    test_solver()
