@@ -229,10 +229,10 @@ If you find our code helpful in your research, please cite
     url={https://openreview.net/forum?id=ye4ntB1Kzi}
 }
 
-@inproceedings{li2025streamlining,
-    title={Streamlining the Design Space of ML4TSP Suggests Principles for Learning and Search}, 
-    author={Yang Li and Jiale Ma and Wenzheng Pan and Runzhong Wang and Haoyu Geng and Nianzu Yang and Junchi Yan},
-    year={2025},
-    booktitle={International Conference on Learning Representations}
+@inproceedings{li2025unify,
+  title={Unify ml4tsp: Drawing methodological principles for tsp and beyond from streamlined design space of learning and search},
+  author={Li, Yang and Ma, Jiale and Pan, Wenzheng and Wang, Runzhong and Geng, Haoyu and Yang, Nianzu and Yan, Junchi},
+  booktitle={The Thirteenth International Conference on Learning Representations},
+  year={2025}
 }
 ```
