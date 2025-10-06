@@ -14,7 +14,7 @@ MIS Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import MISWrapper, MISGenerator, KaMISSolver
+from ml4co_kit import MISWrapper, MISGenerator, LcDegreeSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
@@ -23,7 +23,7 @@ class MISWrapperTester(WrapperTesterBase):
         super(MISWrapperTester, self).__init__(
             test_wrapper_class=MISWrapper,
             generator=MISGenerator(),
-            solver=KaMISSolver(kamis_time_limit=1.0),
+            solver=LcDegreeSolver(),
             pickle_files_list=[
                 pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.pkl"),

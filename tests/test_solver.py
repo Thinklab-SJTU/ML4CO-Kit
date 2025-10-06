@@ -40,13 +40,13 @@ from tests.solver_test import (
     ORSolverTester
 )
 basic_solver_class_list = [
-    # ConcordeSolverTester, 
-    # GAEAXSolverTester,
-    # GpDegreeSolverTester, 
-    # HGSSolverTester, 
-    # ILSSolverTester, 
-    # InsertionSolverTester, 
-    # KaMISSolverTester,
+    ConcordeSolverTester, 
+    GAEAXSolverTester,
+    GpDegreeSolverTester, 
+    HGSSolverTester, 
+    ILSSolverTester, 
+    InsertionSolverTester, 
+    KaMISSolverTester,
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester
