@@ -31,7 +31,8 @@ from .utils import (
 from .utils import tqdm_by_time, Timer
 
 # Type Utils
-from .utils import to_numpy, to_tensor
+if env_checker.check_torch():
+    from .utils import to_numpy, to_tensor
 
 
 ####################################################

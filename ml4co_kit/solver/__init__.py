@@ -25,7 +25,7 @@ if env_checker.check_torch():
     from .rlsa import RLSASolver
 
 
-# Load other solver testers   
+# Load other solvers
 from .base import SolverBase, SOLVER_TYPE
 from .concorde import ConcordeSolver
 from .ga_eax import GAEAXSolver

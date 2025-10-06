@@ -61,7 +61,7 @@ class EnvChecker(object):
         return all(check_list)
     
     def check_torch(self) -> bool:
-        return self.torch_support is not None
+        return self.torch_support
     
     def check_gurobi(self) -> bool:
         return self.gurobi_support
@@ -119,7 +119,7 @@ class EnvInstallHelper(object):
         os.system(f"pip install --no-index torch-cluster -f {html_link}")
         
         # wandb
-        os.system(f"pip install wandb >= 0.16.3")
+        os.system(f"pip install wandb>=0.16.3")
         
         # pytorch-lightning
         os.system(f"pip install pytorch-lightning=={self.pytorch_version}")
