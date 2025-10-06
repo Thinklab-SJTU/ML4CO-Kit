@@ -214,7 +214,7 @@ class PCTSPTask(RoutingTaskBase):
         if name is not None:
             self.name = name
   
-    def check_constraints(self, sol: np.ndarray) -> bool:
+    def check_constraints(self, sol: np.ndarray) -> np.floating:
         """Check if the solution is valid."""
         # Every tour starts and ends with the depot
         if sol[0] != 0 or sol[-1] != 0:

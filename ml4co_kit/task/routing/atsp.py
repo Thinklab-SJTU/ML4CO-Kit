@@ -199,12 +199,10 @@ class ATSPTask(RoutingTaskBase):
         ordered_sol = np.sort(sol[1:])
         return True if np.all(ordered_sol == np.arange(self.nodes_num)) else False
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total distance of the TSP solution."""
         # Check Constraints
         if not self.check_constraints(sol):
-            import pdb
-            pdb.set_trace()
             raise ValueError("Invalid solution!")
         
         # Evaluate

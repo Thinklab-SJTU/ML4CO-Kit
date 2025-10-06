@@ -183,7 +183,7 @@ class OPTask(RoutingTaskBase):
             
         return True
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total prize collected by the OP solution."""
         # Check Constraints
         if not self.check_constraints(sol):

@@ -38,7 +38,7 @@ class EnvChecker(object):
             env = gp.Env(empty=True)
             env.start()
             self.gurobi_support = True
-        except gp.GurobiError as e:
+        except:
             self.gurobi_support = False
         
         # Cuda
@@ -90,19 +90,23 @@ class EnvInstallHelper(object):
     def _install_numpy(self):
         if version.parse(self.pytorch_version) < version.parse("2.4.0"):
             os.system(f"pip install 'numpy<2'")
-            
-    def install(self):
-        # numpy 
-        self._install_numpy()
-        
-        # torch
+    
+    def _install_torch(self):
         if self.use_cuda:
             os.system(f"pip install torch=={self.pytorch_version}")
         else:
-            os.system((
-                f"pip install torch=={self.pytorch_version}+cpu "
-                f"-f https://download.pytorch.org/whl/torch_stable.html"
-            ))
+            if version.parse(self.pytorch_version) < version.parse("2.4.0"):
+                os.system((
+                    f"pip install torch=={self.pytorch_version}+cpu "
+                    f"-f https://download.pytorch.org/whl/torch_stable.html"
+                ))
+            else:
+                os.system(f"pip install torch=={self.pytorch_version}")
+         
+    def install(self):
+        # numpy & torch
+        self._install_numpy()
+        self._install_torch()
             
         # scipy
         os.system(f"pip install scipy>=1.10.1")

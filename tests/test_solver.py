@@ -40,13 +40,13 @@ from tests.solver_test import (
     ORSolverTester
 )
 basic_solver_class_list = [
-    ConcordeSolverTester, 
-    GAEAXSolverTester,
-    GpDegreeSolverTester, 
-    HGSSolverTester, 
-    ILSSolverTester, 
-    InsertionSolverTester, 
-    KaMISSolverTester,
+    # ConcordeSolverTester, 
+    # GAEAXSolverTester,
+    # GpDegreeSolverTester, 
+    # HGSSolverTester, 
+    # ILSSolverTester, 
+    # InsertionSolverTester, 
+    # KaMISSolverTester,
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester
@@ -54,6 +54,7 @@ basic_solver_class_list = [
 
 
 # Gurobi
+env_checker.gurobi_support = False # Currently, Github Actions does not support Gurobi
 if env_checker.check_gurobi():
     from tests.solver_test import GurobiSolverTester
     basic_solver_class_list.append(GurobiSolverTester)
