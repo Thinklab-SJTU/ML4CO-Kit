@@ -37,7 +37,7 @@ SUPPORTS = [
     "gnn4co_mis_rb-large_sparse.pt",
     "gnn4co_mis_rb-small_sparse.pt",
     "gnn4co_mis_satlib_sparse.pt",
-    "gnn4co_mvc_rb-large_sparse.pt,"
+    "gnn4co_mvc_rb-large_sparse.pt",
     "gnn4co_mvc_rb-small_sparse.pt",
     "gnn4co_tsp1k_sparse.pt",
     "gnn4co_tsp10k_sparse.pt",
