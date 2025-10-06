@@ -71,6 +71,7 @@ def _download(filename: str, url: str, md5: str, retries: int):
     if retries <= 0:
         raise RuntimeError("Max Retries exceeded!")
     if not os.path.exists(filename):
+        check_file_path(filename)
         print(f"\nDownloading to {filename}...")
         if retries % 3 == 1:
             try:
