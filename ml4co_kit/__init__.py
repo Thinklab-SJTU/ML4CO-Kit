@@ -35,17 +35,6 @@ if env_checker.check_torch():
     from .utils import to_numpy, to_tensor
 
 
-####################################################
-#                    Extension                     #
-####################################################
-
-# GNN4CO
-if env_checker.check_gnn4co():
-    from .extension.gnn4co import (
-        GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
-    )
-
-
 ###################################################
 #                      Task                       #
 ###################################################

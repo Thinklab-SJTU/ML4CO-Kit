@@ -15,7 +15,7 @@ MCTS Solver Tester.
 
 import pathlib
 from ml4co_kit import TASK_TYPE, MCTSSolver
-from ml4co_kit import GNN4COModel, GNN4COEnv, TSPGNNEncoder
+from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, TSPGNNEncoder
 from tests.solver_test.base import SolverTesterBase
 
 

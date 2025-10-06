@@ -15,7 +15,9 @@ Greedy Solver Tester.
 
 import pathlib
 from ml4co_kit import TASK_TYPE, GreedySolver
-from ml4co_kit import GNN4COModel, GNN4COEnv, GNNEncoder, TSPGNNEncoder
+from ml4co_kit.extension.gnn4co import (
+    GNN4COModel, GNN4COEnv, GNNEncoder, TSPGNNEncoder
+)
 from tests.solver_test.base import SolverTesterBase
 
 

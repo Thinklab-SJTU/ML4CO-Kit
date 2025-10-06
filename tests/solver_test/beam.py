@@ -14,7 +14,7 @@ Beam Solver Tester.
 
 
 from ml4co_kit import TASK_TYPE, BeamSolver
-from ml4co_kit import GNN4COModel, GNN4COEnv, GNNEncoder
+from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, GNNEncoder
 from tests.solver_test.base import SolverTesterBase
 
 
