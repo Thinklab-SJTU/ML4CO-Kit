@@ -17,6 +17,7 @@ Base class for all problems in the ML4CO kit.
 import uuid
 import pickle
 import pathlib
+import hashlib
 import numpy as np
 from enum import Enum
 from typing import Sequence, Union
@@ -126,6 +127,37 @@ class TaskBase(object):
     def render(self):
         """Render the problem instance. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
+    
+    def get_data_md5(self) -> str:
+        """
+        Calculate MD5 hash of the task's data content.
+        
+        This method computes the MD5 hash based on the actual data content
+        rather than the file content, which is useful for verifying data
+        integrity when pickle files may have different object references.
+        
+        Returns:
+            str: MD5 hash of the task's data content
+        """
+        data_parts = []
+        
+        # Get all attributes from __dict__ except dist_eval (which contains object references)
+        task_dict = {k: v for k, v in self.__dict__.items() if k != 'dist_eval'}
+        
+        # Sort keys for consistent ordering
+        for key in sorted(task_dict.keys()):
+            value = task_dict[key]
+            
+            # Handle numpy arrays
+            if isinstance(value, np.ndarray) and value is not None:
+                data_parts.append(value.tobytes())
+            # Handle other data types
+            elif value is not None:
+                data_parts.append(str(value).encode())
+        
+        # Combine all data and compute MD5
+        combined_data = b''.join(data_parts)
+        return hashlib.md5(combined_data).hexdigest()
     
     def __repr__(self):
         return f"{self.task_type.value}Task"

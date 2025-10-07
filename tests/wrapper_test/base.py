@@ -57,6 +57,14 @@ class WrapperTesterBase(object):
         return tmp_file_path
         
     def _test_pickle_txt(self):
+        # Test overwrite in ``from_txt``
+        wrapper = self.test_wrapper_class()
+        wrapper.from_txt(self.txt_files_list[0], ref=False)
+        wrapper.from_txt(self.txt_files_list[0], ref=True, overwrite=False)
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"Test for overwrite in ``from_txt``: {eval_result}")
+        
+        # Test ``from_pickle`` and ``to_txt``
         for pkl_file, txt_file in zip(self.pickle_files_list, self.txt_files_list):
             wrapper = self.test_wrapper_class()
             wrapper.from_pickle(pkl_file)

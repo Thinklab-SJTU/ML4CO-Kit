@@ -37,27 +37,45 @@ class ATSPWrapperTester(WrapperTesterBase):
         )
         
     def _test_other_rw_methods(self):
-        self._test_tsplib_folder()
         
-    def _test_tsplib_folder(self):
-        # Step1: Read Real-World TSPLIB data using ``from_tsplib_folder``
+        ###############################################################
+        #   Test-1: Solve the TSPLIB data and evaluate the solution   #
+        ###############################################################
+        
+        # 1.1 Read Real-World TSPLIB data using ``from_tsplib_folder``
         wrapper = ATSPWrapper()
-        for normalize in [True, False]:
-            wrapper.from_tsplib_folder(
-                atsp_folder_path=pathlib.Path("test_dataset/atsp/tsplib/problem"),
-                tour_folder_path=pathlib.Path("test_dataset/atsp/tsplib/solution"),
-                ref=True,
-                overwrite=True,
-                normalize=normalize
-            )
+        wrapper.from_tsplib_folder(
+            atsp_folder_path=pathlib.Path("test_dataset/atsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/atsp/tsplib/solution"),
+            ref=True,
+            overwrite=True,
+            normalize=True
+        )
+    
+        # 1.2 Using LKHSolver to solve and evaluate
+        solver = LKHSolver()
+        wrapper.solve(solver=solver, show_time=True)
         
-            # Using LKHSolver to solve and evaluate
-            solver = LKHSolver() if normalize else LKHSolver(lkh_scale=100)
-            wrapper.solve(solver=solver, show_time=True)
-            eval_result = wrapper.evaluate_w_gap()
-            print(f"TSPLIB for ATSP (normalize={normalize}): {eval_result}")
+        # 1.3 Evaluate the solution under the normalized data
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"TSPLIB for ATSP (normalize=True): {eval_result}")
         
-        # Step2: Read pickle data and transfer it to TSPLIB format
+        # 1.4 Using ``overwrite`` to evaluate solution under the original data
+        wrapper.from_tsplib_folder(
+            atsp_folder_path=pathlib.Path("test_dataset/atsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/atsp/tsplib/solution"),
+            ref=True,
+            overwrite=False,
+            normalize=False
+        )
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"TSPLIB for ATSP (normalize=False): {eval_result}")
+        
+        ###############################################################
+        #    Test-2: Transfer data in TXT format to TSPLIB format     #
+        ###############################################################
+        
+        # 2.1 Read pickle data and transfer it to TSPLIB format
         txt_path = pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.txt")
         pkl_path = pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.pkl")
         wrapper.from_pickle(pkl_path)
@@ -70,7 +88,7 @@ class ATSPWrapperTester(WrapperTesterBase):
             tour_folder_path=tmp_tour_folder_path,
         )
 
-        # Step3: Read TSPLIB data and transfer it to pickle format to check the correctness
+        # 2.2 Read TSPLIB data and transfer it to pickle format to check the correctness
         wrapper.from_tsplib_folder(
             atsp_folder_path=tmp_atsp_folder_path,
             tour_folder_path=tmp_tour_folder_path,
@@ -82,7 +100,7 @@ class ATSPWrapperTester(WrapperTesterBase):
         if get_md5(txt_path) != get_md5(tmp_txt_path):
             raise ValueError("Inconsistent txt data.")
         
-        # Clean up
+        # 2.3 Clean up
         shutil.rmtree(tmp_atsp_folder_path)
         shutil.rmtree(tmp_tour_folder_path)
         os.remove(tmp_txt_path)

@@ -37,43 +37,78 @@ class CVRPWrapperTester(WrapperTesterBase):
         )
         
     def _test_other_rw_methods(self):
-        self._test_vrplib_folder()
         
-    def _test_vrplib_folder(self):
-        # Step1-1: Read Real-World (X) VRPLIB data using ``from_vrplib_folder``
+        ###############################################################
+        # Test-1: Solve the VRPLIB data (X) and evaluate the solution #
+        ###############################################################
+        
+        # 1.1 Read Real-World (X) VRPLIB data using ``from_vrplib_folder``
         wrapper = CVRPWrapper()
-        for normalize in [True, False]:
-            wrapper.from_vrplib_folder(
-                vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_1"),
-                sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_1"),
-                ref=True,
-                overwrite=True,
-                normalize=normalize
-            )
+        wrapper.from_vrplib_folder(
+            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_1"),
+            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_1"),
+            ref=True,
+            overwrite=True,
+            normalize=True
+        )
             
-            # Using HGSSolver to solve and evaluate
-            solver = HGSSolver() if normalize else HGSSolver(hgs_scale=1)
-            wrapper.solve(solver=solver, show_time=True)
-            eval_result = wrapper.evaluate_w_gap()
-            print(f"VRPLIB (X) for CVRP (normalize={normalize}): {eval_result}")
+        # 1.2 Using HGSSolver to solve
+        solver = HGSSolver()
+        wrapper.solve(solver=solver, show_time=True)
         
-        # Step1-2: Read Real-World (A) VRPLIB data using ``from_vrplib_folder``
-        for normalize in [True, False]:
-            wrapper.from_vrplib_folder(
-                vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_2"),
-                sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_2"),
-                ref=True,
-                overwrite=True,
-                normalize=normalize
-            )
-            
-            # Using HGSSolver to solve and evaluate
-            solver = HGSSolver() if normalize else HGSSolver(hgs_scale=1)
-            wrapper.solve(solver=solver, show_time=True)
-            eval_result = wrapper.evaluate_w_gap()
-            print(f"VRPLIB (A) for CVRP (normalize={normalize}): {eval_result}")
+        # 1.3 Evaluate the solution under the normalized data
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"VRPLIB (X) for CVRP (normalize=True): {eval_result}")
         
-        # Step2: Read pickle data and transfer it to VRPLIB format
+        # 1.4 Using ``overwrite`` to evaluate solution under the original data
+        wrapper.from_vrplib_folder(
+            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_1"),
+            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_1"),
+            ref=True,
+            overwrite=False,
+            normalize=False
+        )
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"VRPLIB (X) for CVRP (normalize=False): {eval_result}")
+        
+        
+        ###############################################################
+        # Test-2: Solve the VRPLIB data (A) and evaluate the solution #
+        ###############################################################
+        
+        # 2.1 Read Real-World (A) VRPLIB data using ``from_vrplib_folder``
+        wrapper.from_vrplib_folder(
+            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_2"),
+            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_2"),
+            ref=True,
+            overwrite=True,
+            normalize=True
+        )
+        
+        # 2.2 Using HGSSolver to solve
+        solver = HGSSolver()
+        wrapper.solve(solver=solver, show_time=True)
+        
+        # 2.3 Evaluate the solution under the normalized data
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"VRPLIB (A) for CVRP (normalize=True): {eval_result}")
+        
+        # 2.4 Using ``overwrite`` to evaluate solution under the original data
+        wrapper.from_vrplib_folder(
+            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_2"),
+            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_2"),
+            ref=True,
+            overwrite=False,
+            normalize=False
+        )
+        eval_result = wrapper.evaluate_w_gap()
+        print(f"VRPLIB (A) for CVRP (normalize=False): {eval_result}")
+        
+        ###############################################################
+        #    Test-3: Transfer data in TXT format to VRPLIB format     #
+        ###############################################################
+        
+        # 3.1 Read pickle data and transfer it to VRPLIB format
         txt_path = pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.txt")
         pkl_path = pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.pkl")
         wrapper.from_pickle(pkl_path)
@@ -86,7 +121,7 @@ class CVRPWrapperTester(WrapperTesterBase):
             sol_folder_path=tmp_sol_folder_path,
         )
         
-        # Step3: Read VRPLIB data and transfer it to pickle format to check the correctness
+        # 3.2 Verify conversion consistency
         wrapper.from_vrplib_folder(
             vrp_folder_path=tmp_vrp_folder_path,
             sol_folder_path=tmp_sol_folder_path,
@@ -98,7 +133,7 @@ class CVRPWrapperTester(WrapperTesterBase):
         if get_md5(txt_path) != get_md5(tmp_txt_path):
             raise ValueError("Inconsistent txt data.")
         
-        # Clean up
+        # 3.3 Clean up
         shutil.rmtree(tmp_vrp_folder_path)
         shutil.rmtree(tmp_sol_folder_path)
         os.remove(tmp_txt_path)
