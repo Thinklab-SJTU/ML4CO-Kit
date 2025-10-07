@@ -197,20 +197,33 @@ class TSPWrapper(WrapperBase):
         self, 
         tsp_folder_path: pathlib.Path = None, 
         tour_folder_path: pathlib.Path = None, 
-        show_time: bool = False
+        show_time: bool = False,
+        sequential_orderd: bool = True
     ):
         # Write problem of task data (.tsp)
         if tsp_folder_path is not None:
             os.makedirs(tsp_folder_path, exist_ok=True)
             write_msg = f"Writing data to {tsp_folder_path} and {tour_folder_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                tsp_file_path = os.path.join(tsp_folder_path, f"{task.name}.tsp")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    tsp_file_path = os.path.join(tsp_folder_path, f"{idx_str}.tsp")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    tsp_file_path = os.path.join(tsp_folder_path, f"{task.name}.tsp")
                 task.to_tsplib(tsp_file_path=tsp_file_path)
         
         # Write solution of task data (.tour)
         if tour_folder_path is not None:
             os.makedirs(tour_folder_path, exist_ok=True)
             write_msg = f"Writing solution to {tour_folder_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                tour_file_path = os.path.join(tour_folder_path, f"{task.name}.tour")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    tour_file_path = os.path.join(tour_folder_path, f"{idx_str}.tour")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    tour_file_path = os.path.join(tour_folder_path, f"{task.name}.tour")
                 task.to_tsplib(tour_file_path=tour_file_path)

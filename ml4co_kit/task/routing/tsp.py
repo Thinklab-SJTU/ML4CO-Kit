@@ -200,7 +200,7 @@ class TSPTask(RoutingTaskBase):
                 f.write(f"DIMENSION: {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{sol[i]}\n")
+                    f.write(f"{sol[i] + 1}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 

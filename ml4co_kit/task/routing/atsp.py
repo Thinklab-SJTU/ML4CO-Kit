@@ -35,7 +35,7 @@ class ATSPTask(RoutingTaskBase):
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
         precision: Union[np.float32, np.float64] = np.float32
     ):
-        super().__init__(
+        super(ATSPTask, self).__init__(
             task_type=TASK_TYPE.ATSP, 
             minimize=True,
             distance_type=distance_type,
@@ -188,7 +188,7 @@ class ATSPTask(RoutingTaskBase):
                 f.write(f"DIMENSION : {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{sol[i]}\n")
+                    f.write(f"{sol[i] + 1}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 

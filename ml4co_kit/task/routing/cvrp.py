@@ -33,7 +33,8 @@ class CVRPTask(RoutingTaskBase):
         self, 
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D, 
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
-        precision: Union[np.float32, np.float64] = np.float32
+        precision: Union[np.float32, np.float64] = np.float32,
+        threshold: float = 1e-5
     ):
         # Super Initialization
         super().__init__(
@@ -53,7 +54,8 @@ class CVRPTask(RoutingTaskBase):
         self.norm_demands = None           # Normalized demands of points
         self.capacity = None               # Capacity of vehicles
         self.dists = None                  # Distance matrix
-        
+        self.threshold = threshold         # Threshold for floating point precision
+  
     def _normalize_depots_and_points(self):
         """Normalize depots and points to [0, 1] range."""
         depots = self.depots
@@ -245,22 +247,23 @@ class CVRPTask(RoutingTaskBase):
                     tour = [0]
                     for line in file:
                         if line.startswith("Route"):
-                            split_line = line.replace("\n", "").split(":")[1][1:].split(" ")
+                            split_line = line.split(" ")[2:]
                             for node in split_line:
-                                tour.append(int(node))
+                                if node != "\n":
+                                    tour.append(int(node))
                             tour.append(0)
             elif route_flag == False:
                 with open(sol_file_path, "r") as file:
                     line_idx = 0
-                    tour = [0]
+                    tour = list()
                     for line in file:
                         line_idx += 1
                         if line_idx < 5:
                             continue
-                        split_line = line.split(" ")[7:-1]
+                        split_line = line.split(" ")[7:-1][1:]
                         for node in split_line:
                             tour.append(int(node))
-                        tour.append(0)
+                    tour.append(0)
             else:
                 raise ValueError(
                     f"Unable to read route information from {sol_file_path}."
@@ -357,7 +360,7 @@ class CVRPTask(RoutingTaskBase):
         for split_idx in range(len(split_tours)):   
             split_tour = split_tours[split_idx][1:]
             split_demand_need = np.sum(demands[split_tour.astype(int) - 1], dtype=np.float32)
-            if split_demand_need > capacity + 1e-5:
+            if split_demand_need > capacity + self.threshold:
                 return False
         return True
         

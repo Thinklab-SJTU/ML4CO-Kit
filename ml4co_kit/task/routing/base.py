@@ -56,7 +56,7 @@ class DisntanceEvaluator(object):
         self,
         distance_type: DISTANCE_TYPE,
         round_type: ROUND_TYPE,
-        geo_radius: str = 6371.393
+        geo_radius: float = 6371.393
     ):
         # Initialize Attributes
         self.distance_type = distance_type
