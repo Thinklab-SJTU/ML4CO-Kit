@@ -35,7 +35,7 @@ class RLSAOptimizer(OptimizerBase):
         rlsa_alpha: float = 0.3,
         rlsa_beta: float = 1.02,
         rlsa_device: str = "cpu", 
-        seed: int = 1234
+        rlsa_seed: int = 1234
     ):
         # Super Initialization
         super(RLSAOptimizer, self).__init__(
@@ -52,7 +52,7 @@ class RLSAOptimizer(OptimizerBase):
         self.rlsa_alpha = rlsa_alpha
         self.rlsa_beta = rlsa_beta
         self.rlsa_device = rlsa_device
-        self.seed = seed
+        self.rlsa_seed = rlsa_seed
             
     def _optimize(self, task_data: TaskBase):
         """Optimize the task data using RLSA local search."""
@@ -68,7 +68,7 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_alpha=self.rlsa_alpha,
                 rlsa_beta=self.rlsa_beta,
                 rlsa_device=self.rlsa_device,
-                seed=self.seed
+                rlsa_seed=self.rlsa_seed
             )
         elif task_data.task_type == TASK_TYPE.MCUT:
             return mcut_rlsa_ls(
@@ -79,7 +79,7 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_k=self.rlsa_k,
                 rlsa_t=self.rlsa_t,
                 rlsa_device=self.rlsa_device,
-                seed=self.seed
+                rlsa_seed=self.rlsa_seed
             )
         elif task_data.task_type == TASK_TYPE.MIS:
             return mis_rlsa_ls(
@@ -93,7 +93,7 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_alpha=self.rlsa_alpha,
                 rlsa_beta=self.rlsa_beta,
                 rlsa_device=self.rlsa_device,
-                seed=self.seed
+                rlsa_seed=self.rlsa_seed
             )
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_rlsa_ls(
@@ -107,7 +107,7 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_alpha=self.rlsa_alpha,
                 rlsa_beta=self.rlsa_beta,
                 rlsa_device=self.rlsa_device,
-                seed=self.seed
+                rlsa_seed=self.rlsa_seed
             )
         else:
             raise ValueError(

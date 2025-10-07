@@ -147,7 +147,7 @@ class TSPWrapper(WrapperBase):
             num_instance = len(tsp_files_path)
         if tour_folder_path is not None:
             tour_files = os.listdir(tour_folder_path)
-            tsp_files.sort()
+            tour_files.sort()
             tour_files_path = [
                 os.path.join(tour_folder_path, file) 
                 for file in tour_files if file.endswith(".tour")
