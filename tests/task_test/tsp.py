@@ -15,7 +15,8 @@ TSP Task Tester.
 
 import os
 import pathlib
-from ml4co_kit import TSPTask
+import numpy as np
+from ml4co_kit import TSPTask, DISTANCE_TYPE
 from tests.task_test.base import TaskTesterBase
 
 
@@ -71,6 +72,97 @@ class TSPTaskTester(TaskTesterBase):
         # 1.5 Clean up
         os.remove(tmp_tsp_file_path)
         os.remove(tmp_tour_file_path)
+        
+        
+        ##################################################
+        #       Test-2: Validate various distances       #
+        ##################################################
+        
+        # 2.1 EUC_2D
+        print("Testing EUC_2D distance type...")
+        task_euc_2d = TSPTask(distance_type=DISTANCE_TYPE.EUC_2D)
+        # Generate random 2D points
+        points_2d = np.random.uniform(0, 1, size=(20, 2))
+        task_euc_2d.from_data(points=points_2d)
+        # Create a simple solution (just visit nodes in order)
+        sol_euc_2d = np.arange(20)
+        cost_euc_2d = task_euc_2d.evaluate(sol_euc_2d)
+        print(f"EUC_2D cost: {cost_euc_2d}")
+        
+        # 2.2 EUC_3D
+        print("Testing EUC_3D distance type...")
+        task_euc_3d = TSPTask(distance_type=DISTANCE_TYPE.EUC_3D)
+        # Generate random 3D points
+        points_3d = np.random.uniform(0, 1, size=(20, 3))
+        task_euc_3d.from_data(points=points_3d)
+        # Create a simple solution
+        sol_euc_3d = np.arange(20)
+        cost_euc_3d = task_euc_3d.evaluate(sol_euc_3d)
+        print(f"EUC_3D cost: {cost_euc_3d}")
+        
+        # 2.3 MAX_2D
+        print("Testing MAX_2D distance type...")
+        task_max_2d = TSPTask(distance_type=DISTANCE_TYPE.MAX_2D)
+        task_max_2d.from_data(points=points_2d)
+        sol_max_2d = np.arange(20)
+        cost_max_2d = task_max_2d.evaluate(sol_max_2d)
+        print(f"MAX_2D cost: {cost_max_2d}")
+        
+        # 2.4 MAX_3D
+        print("Testing MAX_3D distance type...")
+        task_max_3d = TSPTask(distance_type=DISTANCE_TYPE.MAX_3D)
+        task_max_3d.from_data(points=points_3d)
+        sol_max_3d = np.arange(20)
+        cost_max_3d = task_max_3d.evaluate(sol_max_3d)
+        print(f"MAX_3D cost: {cost_max_3d}")
+        
+        # 2.5 MAN_2D
+        print("Testing MAN_2D distance type...")
+        task_man_2d = TSPTask(distance_type=DISTANCE_TYPE.MAN_2D)
+        task_man_2d.from_data(points=points_2d)
+        sol_man_2d = np.arange(20)
+        cost_man_2d = task_man_2d.evaluate(sol_man_2d)
+        print(f"MAN_2D cost: {cost_man_2d}")
+        
+        # 2.6 MAN_3D
+        print("Testing MAN_3D distance type...")
+        task_man_3d = TSPTask(distance_type=DISTANCE_TYPE.MAN_3D)
+        task_man_3d.from_data(points=points_3d)
+        sol_man_3d = np.arange(20)
+        cost_man_3d = task_man_3d.evaluate(sol_man_3d)
+        print(f"MAN_3D cost: {cost_man_3d}")
+        
+        # 2.7 GEO
+        print("Testing GEO distance type...")
+        task_geo = TSPTask(distance_type=DISTANCE_TYPE.GEO)
+        # For GEO distance, we need geographical coordinates (latitude, longitude)
+        # Generate random coordinates in a reasonable geographical range
+        lat_coords = np.random.uniform(-90, 90, size=(20, 1))  # Latitude: -90 to 90
+        lon_coords = np.random.uniform(-180, 180, size=(20, 1))  # Longitude: -180 to 180
+        points_geo = np.hstack([lat_coords, lon_coords])
+        task_geo.from_data(points=points_geo)
+        sol_geo = np.arange(20)
+        cost_geo = task_geo.evaluate(sol_geo)
+        print(f"GEO cost: {cost_geo}")
+        
+        # 2.8 ATT
+        print("Testing ATT distance type...")
+        task_att = TSPTask(distance_type=DISTANCE_TYPE.ATT)
+        task_att.from_data(points=points_2d)
+        sol_att = np.arange(20)
+        cost_att = task_att.evaluate(sol_att)
+        print(f"ATT cost: {cost_att}")
+        
+        # 2.9 Summary
+        print("\nDistance type validation summary:")
+        print(f"EUC_2D: {cost_euc_2d}")
+        print(f"EUC_3D: {cost_euc_3d}")
+        print(f"MAX_2D: {cost_max_2d}")
+        print(f"MAX_3D: {cost_max_3d}")
+        print(f"MAN_2D: {cost_man_2d}")
+        print(f"MAN_3D: {cost_man_3d}")
+        print(f"GEO: {cost_geo}")
+        print(f"ATT: {cost_att}")
         
     def _test_render(self):
         # Read data

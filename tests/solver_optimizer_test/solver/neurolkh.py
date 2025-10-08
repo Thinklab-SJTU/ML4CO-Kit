@@ -33,4 +33,5 @@ class NeuroLKHSolverTester(SolverTesterBase):
         )
         
     def pre_test(self):
-        pass
+        solver = NeuroLKHSolver()
+        solver.install()

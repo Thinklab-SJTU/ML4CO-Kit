@@ -335,4 +335,6 @@ class GraphGeneratorBase(GeneratorBase):
     
     def _create_instance(self, nx_graph: nx.Graph) -> GraphTaskBase:
         """Create instance from nx.Graph."""
-        return GraphTaskBase(nx_graph)
+        raise NotImplementedError(
+            "Subclasses of GraphGeneratorBase must implement this method."
+        )
