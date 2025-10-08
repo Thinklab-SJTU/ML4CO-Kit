@@ -140,9 +140,10 @@ class TaskBase(object):
             str: MD5 hash of the task's data content
         """
         data_parts = []
+        ignore_list = ['dist_eval', 'name']
         
         # Get all attributes from __dict__ except dist_eval (which contains object references)
-        task_dict = {k: v for k, v in self.__dict__.items() if k != 'dist_eval'}
+        task_dict = {k: v for k, v in self.__dict__.items() if k not in ignore_list}
         
         # Sort keys for consistent ordering
         for key in sorted(task_dict.keys()):

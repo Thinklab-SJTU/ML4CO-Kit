@@ -1,5 +1,5 @@
 r"""
-Task Test Module.
+PCTSP Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,17 +13,22 @@ Task Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-# Base Class
-from .base import TaskTesterBase
+import pathlib
+from ml4co_kit import PCTSPTask
+from tests.task_test.base import TaskTesterBase
 
-# Routing Problems
-from .atsp import ATSPTaskTester
-from .cvrp import CVRPTaskTester
-from .tsp import TSPTaskTester
-from .pctsp import PCTSPTaskTester
 
-# Graph Problems
-from .mcl import MClTaskTester
-from .mcut import MCutTaskTester
-from .mis import MISTaskTester
-from .mvc import MVCTaskTester
+class PCTSPTaskTester(TaskTesterBase):
+    def __init__(self):
+        super(PCTSPTaskTester, self).__init__(
+            test_task_class=PCTSPTask,
+            pickle_files_list=[
+                pathlib.Path("test_dataset/pctsp/task/pctsp50_uniform_task.pkl")
+            ],
+        )
+        
+    def _test_other_rw_methods(self):
+        pass
+    
+    def _test_render(self):
+        pass

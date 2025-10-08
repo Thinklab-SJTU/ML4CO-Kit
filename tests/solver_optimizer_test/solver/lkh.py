@@ -32,4 +32,5 @@ class LKHSolverTester(SolverTesterBase):
         )
         
     def pre_test(self):
-        pass
+        solver = LKHSolver()
+        solver.install()
