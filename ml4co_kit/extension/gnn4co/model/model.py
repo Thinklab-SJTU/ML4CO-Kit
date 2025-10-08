@@ -307,4 +307,4 @@ class GNN4COModel(BaseModel):
         
         # download
         download_link = f"https://huggingface.co/ML4CO/ML4CO-Bench-101/resolve/main/gnn4co/{file_name}"
-        download(filename=weight_path, url=download_link)
+        download(file_path=weight_path, url=download_link)

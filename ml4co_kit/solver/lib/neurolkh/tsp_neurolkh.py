@@ -43,7 +43,7 @@ def batch_tsp_neurolkh(
     root_path = pathlib.Path(__file__).parent
     neurolkh_pretrained_path = root_path / "tsp_neurolkh.pt"
     download_link = f"https://huggingface.co/ML4CO/ML4CO-Kit/resolve/main/neurolkh/tsp_neurolkh.pt"
-    download(neurolkh_pretrained_path, url=download_link)
+    download(file_path=neurolkh_pretrained_path, url=download_link)
     
     # Load Model
     encoder = SparseGCNEncoder(sparse_factor=neurolkh_sparse_factor)

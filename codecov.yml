@@ -17,3 +17,4 @@ ignore:
  - ml4co_kit/extension/**
  - ml4co_kit/solver/gurobi.py
  - ml4co_kit/solver/lib/gurobi/**
+ - ml4co_kit/utils/env_utils.py
