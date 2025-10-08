@@ -23,8 +23,10 @@ sys.path.insert(0, root_folder)
 from tests.wrapper_test import (
     ATSPWrapperTester, 
     CVRPWrapperTester, 
-    TSPWrapperTester, 
-    PCTSPWrapperTester
+    OPWrapperTester,
+    PCTSPWrapperTester,
+    SPCTSPWrapperTester,
+    TSPWrapperTester
 )    
 
 
@@ -42,7 +44,9 @@ def test_wrapper():
     # Routing Problems
     ATSPWrapperTester().test()
     CVRPWrapperTester().test()
+    OPWrapperTester().test()
     PCTSPWrapperTester().test()
+    SPCTSPWrapperTester().test()
     TSPWrapperTester().test()
     
     # Graph Problems

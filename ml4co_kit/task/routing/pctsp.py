@@ -221,7 +221,7 @@ class PCTSPTask(RoutingTaskBase):
             return False
         
         # The total collected prize should be at least the required prize
-        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1]-1])
+        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1] - 1])
         if collected_norm_prizes < 1 - self.threshold: # for floating point precision
             return False
         return True

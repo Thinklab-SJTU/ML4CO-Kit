@@ -146,12 +146,12 @@ class SolverTesterBase(object):
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            atsp_test_files_list = [
                 pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/atsp/wrapper/atsp500_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in atsp_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = ATSPWrapper()
                     wrapper.from_pickle(test_file)
@@ -177,12 +177,12 @@ class SolverTesterBase(object):
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            cvrp_test_files_list = [
                 pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in cvrp_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = CVRPWrapper()
                     wrapper.from_pickle(test_file)
@@ -192,7 +192,31 @@ class SolverTesterBase(object):
     def _get_op_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
     ) -> List[OPTask]:
-        pass
+        # ``Solve`` mode
+        if mode == "solve":
+            op_test_files_list = [
+                pathlib.Path("test_dataset/op/task/op50_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in op_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = OPTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            op_test_files_list = [
+                pathlib.Path("test_dataset/op/wrapper/op50_uniform_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in op_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = OPWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
     
     def _get_pctsp_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
@@ -212,11 +236,11 @@ class SolverTesterBase(object):
 
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            pctsp_test_files_list = [
                 pathlib.Path("test_dataset/pctsp/wrapper/pctsp50_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in pctsp_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = PCTSPWrapper()
                     wrapper.from_pickle(test_file)
@@ -226,7 +250,31 @@ class SolverTesterBase(object):
     def _get_spctsp_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
     ) -> List[SPCTSPTask]:
-        pass
+        # ``Solve`` mode
+        if mode == "solve":
+            spctsp_test_files_list = [
+                pathlib.Path("test_dataset/spctsp/task/spctsp50_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in spctsp_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = SPCTSPTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            spctsp_test_files_list = [
+                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in spctsp_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = SPCTSPWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
     
     def _get_tsp_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
@@ -293,13 +341,13 @@ class SolverTesterBase(object):
 
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            mcl_test_files_list = [
                 pathlib.Path("test_dataset/mcl/task/mcl_rb-large_no-weighted_task.pkl"),
                 pathlib.Path("test_dataset/mcl/task/mcl_rb-small_no-weighted_task.pkl"),
                 pathlib.Path("test_dataset/mcl/task/mcl_rb-small_uniform-weighted_task.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in mcl_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MClWrapper()
                     wrapper.from_pickle(test_file)
@@ -326,13 +374,13 @@ class SolverTesterBase(object):
 
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            mcut_test_files_list = [
                 pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-large_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in mcut_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MCutWrapper()
                     wrapper.from_pickle(test_file)
@@ -360,14 +408,14 @@ class SolverTesterBase(object):
 
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            mis_test_files_list = [
                 pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mis/wrapper/mis_satlib_no-weighted_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in mis_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MISWrapper()
                     wrapper.from_pickle(test_file)
@@ -394,13 +442,13 @@ class SolverTesterBase(object):
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
-            tsp_test_files_list = [
+            mvc_test_files_list = [
                 pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-large_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_no-weighted_4ins.pkl"),
                 pathlib.Path("test_dataset/mvc/wrapper/mvc_rb-small_uniform-weighted_4ins.pkl"),
             ]
             bacth_task_list = list()
-            for test_file in tsp_test_files_list:
+            for test_file in mvc_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MVCWrapper()
                     wrapper.from_pickle(test_file)

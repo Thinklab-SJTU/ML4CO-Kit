@@ -23,7 +23,9 @@ class ORSolverTester(SolverTesterBase):
             mode_list=["solve"],
             test_solver_class=ORSolver,
             test_task_type_list=[
-                TASK_TYPE.ATSP, 
+                TASK_TYPE.ATSP,
+                TASK_TYPE.OP,
+                TASK_TYPE.PCTSP,
                 TASK_TYPE.TSP, 
                 TASK_TYPE.MCL, 
                 TASK_TYPE.MIS, 
@@ -31,10 +33,16 @@ class ORSolverTester(SolverTesterBase):
             ],
             test_args_list=[
                 {
-                    "ortools_time_limit": 1
+                    "ortools_time_limit": 3
                 },  # ATSP
                 {
-                    "ortools_time_limit": 1
+                    "ortools_time_limit": 3
+                },  # OP
+                {
+                    "ortools_time_limit": 3
+                },  # PCTSP
+                {
+                    "ortools_time_limit": 3
                 },  # TSP
                 {}, # MCl
                 {}, # MIS
@@ -42,6 +50,8 @@ class ORSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [], # ATSP
+                [], # OP
+                [], # PCTSP
                 [], # TSP
                 [], # MCl
                 [], # MIS

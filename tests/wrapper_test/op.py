@@ -1,5 +1,5 @@
 r"""
-SPCTSP Wrapper Tester.
+OP Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,21 +14,21 @@ SPCTSP Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import SPCTSPWrapper, SPCTSPGenerator, ILSSolver
+from ml4co_kit import OPWrapper, OPGenerator, ORSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class SPCTSPWrapperTester(WrapperTesterBase):
+class OPWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(SPCTSPWrapperTester, self).__init__(
-            test_wrapper_class=SPCTSPWrapper,
-            generator=SPCTSPGenerator(),
-            solver=ILSSolver(),
+        super(OPWrapperTester, self).__init__(
+            test_wrapper_class=OPWrapper,
+            generator=OPGenerator(),
+            solver=ORSolver(ortools_time_limit=2),
             pickle_files_list=[
-                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/op/wrapper/op50_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/op/wrapper/op50_uniform_4ins.txt"),
             ],
         )
         

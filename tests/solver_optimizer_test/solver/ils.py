@@ -22,9 +22,9 @@ class ILSSolverTester(SolverTesterBase):
         super(ILSSolverTester, self).__init__(
             mode_list=["solve"],
             test_solver_class=ILSSolver,
-            test_task_type_list=[TASK_TYPE.PCTSP],
-            test_args_list=[{}],
-            exclude_test_files_list=[[]]
+            test_task_type_list=[TASK_TYPE.PCTSP, TASK_TYPE.SPCTSP],
+            test_args_list=[{}, {}],
+            exclude_test_files_list=[[], []]
         )
         
     def pre_test(self):

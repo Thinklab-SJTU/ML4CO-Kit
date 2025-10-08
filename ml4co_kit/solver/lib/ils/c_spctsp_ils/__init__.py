@@ -1,5 +1,5 @@
 r"""
-Wrapper Test Module.
+C++ Solver for SPCTSP ILS
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,19 +13,18 @@ Wrapper Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-# Base Class
-from .base import WrapperTesterBase
+import os
+import pathlib
 
-# Routing Problems
-from .atsp import ATSPWrapperTester
-from .cvrp import CVRPWrapperTester
-from .op import OPWrapperTester
-from .pctsp import PCTSPWrapperTester
-from .spctsp import SPCTSPWrapperTester
-from .tsp import TSPWrapperTester
 
-# Graph Problems
-from .mcl import MClWrapperTester
-from .mis import MISWrapperTester
-from .mvc import MVCWrapperTester
-from .mcut import MCutWrapperTester
+# C++ PCTSP ILS Solver Path
+BASE_PATH = pathlib.Path(__file__).parent
+C_SPCTSP_ILS_SOLVER_PATH = pathlib.Path(__file__).parent / "spctsp_ils"
+
+
+# Determining whether the solvers have been built
+if not os.path.exists(C_SPCTSP_ILS_SOLVER_PATH):
+    ori_dir = os.getcwd()
+    os.chdir(BASE_PATH)
+    os.system("make")
+    os.chdir(ori_dir)

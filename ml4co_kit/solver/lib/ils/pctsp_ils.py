@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for TSP
+ILS for PCTSP
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

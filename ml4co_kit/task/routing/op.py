@@ -46,6 +46,7 @@ class OPTask(RoutingTaskBase):
         self.coords = None                 # All coordinates (including depots and points)
         self.prizes = None                 # Prize values for each node
         self.max_length = None             # Maximum length of the path
+        self.dists = None                  # Distance matrix
     
     def _normalize_depots_and_points(self):
         """Normalize depots and points to [0, 1] range."""
@@ -115,6 +116,17 @@ class OPTask(RoutingTaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _get_dists(self) -> np.ndarray:
+        """Get distance matrix."""
+        if self.dists is None:
+            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
+            for i in range(self.nodes_num + 1):
+                for j in range(i + 1, self.nodes_num + 1):
+                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
+                    dists[j, i] = dists[i, j]
+            self.dists = dists.astype(self.precision)
+        return self.dists
+
     def from_data(
         self,
         depots: np.ndarray = None,
@@ -176,7 +188,7 @@ class OPTask(RoutingTaskBase):
         total_distance = 0
         for i in range(len(sol) - 1):
             total_distance += self.dist_eval.cal_distance(
-                self.points[sol[i]], self.points[sol[i + 1]]
+                self.coords[sol[i]], self.coords[sol[i + 1]]
             )
         if total_distance > self.max_length:
             return False

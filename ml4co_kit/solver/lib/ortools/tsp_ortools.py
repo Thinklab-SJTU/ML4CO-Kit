@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for TSP
+OR-Tools Solver for TSP
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

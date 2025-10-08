@@ -23,7 +23,6 @@ from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.generator.base import GeneratorBase
 from ml4co_kit.task.graph.base import GraphTaskBase
-from ml4co_kit.generator.graph.rb_graph import CSPInstance, independent_set_language
 
 
 class GRAPH_TYPE(str, Enum):
@@ -304,13 +303,13 @@ class GraphGeneratorBase(GeneratorBase):
             edges |= set(random.sample(tuple(all), k=min(rb_s, len(all))))
         nand_clauses += list(edges)
         clauses = {'NAND': nand_clauses}
-        instance = CSPInstance(
-            language=independent_set_language, n_variables=rb_v, clauses=clauses
-        )
+        
+        # Convert to numpy array
+        clauses = {relation: np.int32(clause_list) for relation, clause_list in clauses.items()}
         
         # Convert to nx.Graph
         nx_graph = nx.Graph()
-        nx_graph.add_edges_from(instance.clauses['NAND'])
+        nx_graph.add_edges_from(clauses['NAND'])
 
         # Add weights to nodes and edges if required
         nx_graph = self._if_need_weighted(nx_graph)

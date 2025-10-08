@@ -269,7 +269,7 @@ class SPCTSPTask(RoutingTaskBase):
         
         # Calculate total penalty for unvisited nodes
         mask = np.ones(self.nodes_num, dtype=np.bool_)
-        mask[sol[1:-1]] = False
+        mask[sol[1:-1] - 1] = False
         total_penalty = np.sum(self.penalties[mask])
         
         return total_distance + total_penalty
