@@ -50,7 +50,7 @@ def test_task():
     MCutTaskTester().test()
     MISTaskTester().test()
     MVCTaskTester().test()
-
+    
 
 # Main
 if __name__ == "__main__":
