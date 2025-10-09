@@ -9,6 +9,8 @@
 [![codecov](https://codecov.io/gh/Thinklab-SJTU/ML4CO-Kit/branch/main/graph/badge.svg?token=5GGETAYIFL)](https://codecov.io/gh/Thinklab-SJTU/ML4CO-Kit)
 [![GitHub stars](https://img.shields.io/github/stars/Thinklab-SJTU/ML4CO-Kit.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Thinklab-SJTU/ML4CO-Kit/stargazers/)
 
+## 📚 Introductions
+
 Combinatorial Optimization (CO) is a mathematical optimization area that involves finding the best solution from a large set of discrete possibilities, often under constraints. Widely applied in routing, logistics, hardware design, and biology, CO addresses NP-hard problems critical to computer science and industrial engineering.
 
 `ML4CO-Kit` aims to provide foundational support for machine learning practices on CO problems.
@@ -33,7 +35,7 @@ Additionally, for higher-level ML4CO (see [ML4CO-Bench-101](https://github.com/T
 ⭐ **Source Code**: https://github.com/Thinklab-SJTU/ML4CO-Kit
 
 
-## Installation
+## 🚀 Installation
 
 You can install the stable release on PyPI:
 
@@ -69,14 +71,30 @@ scikit-learn>=1.3.0
 matplotlib>=3.7.4
 ```
 
-To ensure you have access to all functions, such as visualization, you'll need to install the following packages using `pip`:
+To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
 
+```python
+from ml4co_kit import EnvInstallHelper
+
+if __name__ == "__main__":
+    # Get pytorch version
+    python_version = sys.version.split()[0]
+    
+    # Get pytorch version
+    if version.parse(python_version) < version.parse("3.12"):
+        pytorch_version = "2.1.0"
+    elif version.parse(python_version) < version.parse("3.13"):
+        pytorch_version = "2.4.0"
+    else:
+        pytorch_version = "2.7.0"
+    
+    # Install pytorch environment
+    env_install_helper = EnvInstallHelper(pytorch_version=pytorch_version)
+    env_install_helper.install()
 ```
-pytorch_lightning
-```
 
 
-## **ML4CO-Kit Development status**
+## 📝 **ML4CO-Kit Development status**
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
@@ -147,6 +165,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MVC   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | GurobiSolver     | ATSP  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
 |                  | CVRP  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
+|                  | OP    | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
 |                  | TSP   | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit)  | ✔ |
 |                  | MCl   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MCut  | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
@@ -154,6 +173,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MVC   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 | HGSSolver        | CVRP  | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | ✔ |
 | ILSSolver        | PCTSP | Python | [PCTSP](https://github.com/jordanamecler/PCTSP) | [PCTSP](https://github.com/jordanamecler/PCTSP) | ✔ |
+|                  | SPCTSP| Python | [Attention](https://github.com/wouterkool/attention-learn-to-route) | [Attention](https://github.com/wouterkool/attention-learn-to-route) | ✔ |
 | InsertionSolver  | TSP   | Python | [GLOP](https://github.com/henry-yeh/GLOP) | [GLOP](https://github.com/henry-yeh/GLOP) | ✔ |
 | KaMISSolver      | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [MIS-Bench](https://github.com/MaxiBoether/mis-benchmark-framework) | ✔ |
 | LcDegreeSolver   | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -166,6 +186,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | MCTSSolver       | TSP   | Python | [Att-GCRN](https://github.com/Spider-scnu/TSP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | NeuroLKHSolver   | TSP   | Python | [NeuroLKH](https://github.com/liangxinedu/NeuroLKH) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | ORSolver         | ATSP  | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | OP    | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | PCTSP | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | TSP   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MCl   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -203,7 +224,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | (Graph)Wrapper [weighted]| "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
 
 
-## **Our Systematic Benchmark Works**
+## 📈 **Our Systematic Benchmark Works**
 
 We are systematically building a foundational framework for ML4CO with a collection of resources that complement each other in a cohesive manner.
 
@@ -217,7 +238,7 @@ We are systematically building a foundational framework for ML4CO with a collect
 
 * [PredictiveCO-Benchmark](https://github.com/Thinklab-SJTU/PredictiveCO-Benchmark): a benchmark for decision-focused learning (DFL) approaches on predictive combinatorial optimization problems.
 
-## Citation
+## ✨ Citation
 If you find our code helpful in your research, please cite
 ```
 @inproceedings{

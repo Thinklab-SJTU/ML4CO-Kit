@@ -140,8 +140,8 @@ from .wrapper import (
 
 
 ####################################################
-#                 Version & Author                 #
+#                Version and Author                #
 ####################################################
 
-__version__ = "1.0.0"
+__version__ = "0.4.0"
 __author__ = "SJTU-ReThinkLab"
