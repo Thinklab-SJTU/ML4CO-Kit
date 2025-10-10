@@ -15,6 +15,7 @@ Base class for all wrappers in the ML4CO kit.
 
 
 import os
+import random
 import pickle
 import pathlib
 import numpy as np
@@ -158,6 +159,9 @@ class WrapperBase(object):
         timer.show_time()
 
     def _generate(self, generator: GeneratorBase, solver: SolverBase) -> TaskBase:
+        seed = os.getpid() % 2**32          # Seed
+        random.seed(seed)                   # Set seed for random
+        np.random.seed(seed)                # Set seed for numpy
         task_data = generator.generate()    # Generate Task Data
         solver.solve(task_data)             # Solve Task Data
         return task_data

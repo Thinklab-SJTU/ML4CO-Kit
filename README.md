@@ -100,7 +100,8 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 **Graph: MCl & MCut & MIS & MVC; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
-### **Task (Level 1)**
+<details>
+<summary>Task (Level 1)</summary>
 
 | Task | Definition | Check Constraint | Evaluation | Render | Special R/O |
 | ---- | :--------: | :--------------: | :--------: | :----: | :---------: |
@@ -115,7 +116,12 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |  Maximum Independent Set (MIS)                | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
 |  Minimum Vertex Cover (MVC)                   | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
 
-### **Generator (Level 2)**
+</details>
+
+---
+
+<details>
+<summary>Generator (Level 2)</summary>
 
 | Task | Distribution | Brief Intro. | State |
 | :--: | :----------: | ------------ | :---: |
@@ -145,7 +151,12 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |         | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 |         | Binomial (weighted) | Weights with Binomial distribution | ✔ |
 
-### **Solver (Level 3)**
+</details>
+
+---
+
+<details>
+<summary>Solver (Level 3)</summary>
 
 | Solver | Support Task | Language | Source | Ref. / Implementation | State | 
 | :----: | :----------: |  ------- | :----: | :-------: | :---: |
@@ -197,7 +208,12 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
-### **Optimizer (Level 4)**
+</details>
+
+---
+
+<details>
+<summary>Optimizer (Level 4)</summary>
 
 | Optimizer | Support Task | Language | Source | Reference | State | 
 | :-------: | :----------: |  ------- | :----: | :-------: | :---: |
@@ -210,7 +226,12 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | TwoOptOptimizer     | ATSP   | C/C++  | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                     | TSP    | Python | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
-### **Wrapper (Level 5)**
+</details>
+
+---
+
+<details>
+<summary>Wrapper (Level 5)</summary>
 
 | Wrapper | TXT | Other R&W |
 | :-----: | --- | :-------: |
@@ -223,6 +244,70 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | (Graph)Wrapper | "[edge_index] label [sol]" | ``gpickle`` |
 | (Graph)Wrapper [weighted]| "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
 
+</details>
+
+
+## 🔎 **How to use ML4CO-Kit**
+
+<details>
+<summary>Case-01: How to use ML4CO-Kit to generate a dataset</summary>
+
+```python
+# We take the TSP as an example
+
+# Import the required classes.
+>>> import numpy as np                  # Numpy
+>>> from ml4co_kit import TSPWrapper    # The wrapper for TSP, used to manage data and parallel generation.
+>>> from ml4co_kit import TSPGenerator  # The generator for TSP, used to generate a single instance.
+>>> from ml4co_kit import TSP_TYPE      # The distribution types supported by the generator.
+>>> from ml4co_kit import LKHSolver     # We choose LKHSolver to solve TSP instances
+
+# Check which distributions are supported by the TSP types.
+>>> for type in TSP_TYPE:
+...    print(type)
+TSP_TYPE.UNIFORM
+TSP_TYPE.GAUSSIAN
+TSP_TYPE.CLUSTER
+
+# Set the generator parameters according to the requirements.
+>>> tsp_generator = TSPGenerator(
+...     distribution_type=TSP_TYPE.GAUSSIAN,   # Generate a TSP instance with a Gaussian distribution
+...     precision=np.float32,                  # Floating-point precision: 32-bit
+...     nodes_num=50,                          # Number of nodes in TSP instance
+...     gaussian_mean_x=0,                     # Mean of Gaussian for x coordinate
+...     gaussian_mean_y=0,                     # Mean of Gaussian for y coordinate
+...     gaussian_std=1,                        # Standard deviation of Gaussian
+... )
+
+# Set the LKH parameters.
+>>> tsp_solver = LKHSolver(
+...     lkh_scale=1e6,        # Scaling factor to convert floating-point numbers to integers
+...     lkh_max_trials=500,   # Maximum number of trials for the LKH algorithm
+...     lkh_path="LKH",       # Path to the LKH executable
+...     lkh_runs=1,           # Number of runs for the LKH algorithm
+...     lkh_seed=1234,        # Random seed for the LKH algorithm
+...     lkh_special=False,    # When set to True, disables 2-opt and 3-opt heuristics
+... )
+
+# Create the TSP wrapper
+>>> tsp_wrapper = TSPWrapper(precision=np.float32)
+
+# Use ``generate_w_to_txt`` to generate a dataset of TSP.
+>>> tsp_wrapper.generate_w_to_txt(
+...     file_path="tsp_gaussian_16ins.txt",  # Path to the output file where the generated TSP instances will be saved
+...     generator=tsp_generator,             # The TSP instance generator to use
+...     solver=tsp_solver,                   # The TSP solver to use
+...     num_samples=16,                      # Number of TSP instances to generate
+...     num_threads=4,                       # Number of CPU threads to use for parallelization; cannot both be non-1 with batch_size
+...     batch_size=1,                        # Batch size for parallel processing; cannot both be non-1 with num_threads
+...     write_per_iters=1,                   # Number of sub-generation steps after which data will be written to the file
+...     write_mode="a",                      # Write mode for the output file ("a" for append)
+...     show_time=True,                      # Whether to display the time taken for the generation process
+... )
+Generating TSP: 100%|██████████| 4/4 [00:00<00:00, 12.79it/s]
+```
+
+</details>
 
 ## 📈 **Our Systematic Benchmark Works**
 

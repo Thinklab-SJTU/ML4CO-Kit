@@ -123,7 +123,7 @@ class EnvInstallHelper(object):
         os.system(f"pip install --no-index torch-cluster -f {html_link}")
         
         # wandb
-        os.system(f"pip install wandb>=0.16.3")
+        os.system(f"pip install wandb>=0.20.0")
         
         # pytorch-lightning
         os.system(f"pip install pytorch-lightning=={self.pytorch_version}")
