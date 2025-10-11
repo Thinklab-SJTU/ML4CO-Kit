@@ -55,7 +55,7 @@ The following packages are required and shall be automatically installed by ``pi
 
 ```
 Python>=3.8
-numpy>=1.24.4
+numpy>=1.24.3
 networkx>=2.8.8
 tqdm>=4.66.3
 pulp>=2.8.0, 
@@ -264,7 +264,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 # Check which distributions are supported by the TSP types.
 >>> for type in TSP_TYPE:
-...    print(type)
+...     print(type)
 TSP_TYPE.UNIFORM
 TSP_TYPE.GAUSSIAN
 TSP_TYPE.CLUSTER
@@ -409,7 +409,7 @@ CVRPTask(2fb389cdafdb4e79a94572f01edf0b95)
 ---
 
 <details>
-<summary>Case-04: A simple ML4CO example. </summary>
+<summary>Case-04: A simple ML4CO example </summary>
 
 ```python
 # We take the MCut as an example
@@ -440,7 +440,7 @@ CVRPTask(2fb389cdafdb4e79a94572f01edf0b95)
 gnn4co/gnn4co_mcut_ba-large_sparse.pt: 100% ███████████████ 19.6M/19.6M [00:03<00:00, 6.18MB/s]
 
 # Set the RLSAOptimizer parameters.
-... mcut_optimizer = RLSAOptimizer(
+>>> mcut_optimizer = RLSAOptimizer(
 ...     rlsa_kth_dim="both",          # Which dimension to consider for the k-th value calculation.
 ...     rlsa_tau=0.01,                # The temperature parameter in the Simulated Annealing process.
 ...     rlsa_d=2,                     # Control the step size of each update.

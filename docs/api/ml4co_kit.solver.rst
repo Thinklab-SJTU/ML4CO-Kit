@@ -7,11 +7,20 @@ ml4co_kit.solver
    :toctree: _autosummary
    :recursive:
 
-   ml4co_kit.solver.atsp.base
-   ml4co_kit.solver.cvrp.base
-   ml4co_kit.solver.lp.base
-   ml4co_kit.solver.mcl.base
-   ml4co_kit.solver.mcut.base
-   ml4co_kit.solver.mis.base
-   ml4co_kit.solver.mvc.base
-   ml4co_kit.solver.tsp.base
+   ml4co_kit.solver.base
+   ml4co_kit.solver.beam
+   ml4co_kit.solver.concorde
+   ml4co_kit.solver.ga_eax
+   ml4co_kit.solver.gp_degree
+   ml4co_kit.solver.greedy
+   ml4co_kit.solver.gurobi
+   ml4co_kit.solver.hgs
+   ml4co_kit.solver.ils
+   ml4co_kit.solver.insertion
+   ml4co_kit.solver.kamis
+   ml4co_kit.solver.lc_degree
+   ml4co_kit.solver.lkh
+   ml4co_kit.solver.mcts
+   ml4co_kit.solver.neurolkh
+   ml4co_kit.solver.ortools
+   ml4co_kit.solver.rlsa
