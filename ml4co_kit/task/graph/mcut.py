@@ -59,7 +59,7 @@ class MCutTask(GraphTaskBase):
         src_index = sol[self.edge_index[0]] 
         dst_index = sol[self.edge_index[1]]
         mask = src_index != dst_index
-        return np.sum(self.edges_weight[mask])
+        return np.sum(self.edges_weight[mask]) / 2
 
     def render(
         self, 
