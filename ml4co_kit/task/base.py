@@ -161,4 +161,4 @@ class TaskBase(object):
         return hashlib.md5(combined_data).hexdigest()
     
     def __repr__(self):
-        return f"{self.task_type.value}Task"
+        return f"{self.task_type.value}Task({self.name})"

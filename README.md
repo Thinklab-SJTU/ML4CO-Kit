@@ -309,6 +309,105 @@ Generating TSP: 100%|██████████| 4/4 [00:00<00:00, 12.79it/s
 
 </details>
 
+---
+
+<details>
+<summary>Case-02: How to use ML4CO-Kit to load problems and solve them</summary>
+
+```python
+# We take the MIS as an example
+
+# Import the required classes.
+>>> import numpy as np                  # Numpy
+>>> from ml4co_kit import MISWrapper    # The wrapper for MIS, used to manage data and parallel solving.
+>>> from ml4co_kit import KaMISSolver   # We choose KaMISSolver to solve MIS instances
+
+# Set the KaMIS parameters.
+>>> mis_solver = KaMISSolver(
+...     kamis_time_limit=10.0,          # The maximum solution time for a single problem
+...     kamis_weighted_scale=1e5,       # Weight scaling factor, used when nodes have weights.
+... )
+
+# Create the MIS wrapper
+>>> mis_wrapper = MISWrapper(precision=np.float32)
+
+# Load the problems to be solved.
+# You can use the corresponding loading function based on the file type, 
+# such as ``from_txt`` for txt file and ``from_pickle`` for pickle file.
+>>> mis_wrapper.from_txt(
+...     file_path="test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt",
+...     ref=True,          # TXT file contains labels. Set ``ref=True`` to set them as reference.
+...     overwrite=True,    # Whether to overwrite the data. If not, only update according to the file data.
+...     show_time=True     # Whether to display the time taken for the loading process
+... )
+Loading data from test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt: 4it [00:00, 75.41it/s]
+
+# Use ``solve`` to call the KaMISSolver to perform the solution.
+>>> mis_wrapper.solve(
+...     solver=mis_solver,                   # The solver to use
+...     num_threads=2,                       # Number of CPU threads to use for parallelization; cannot both be non-1 with batch_size
+...     batch_size=1,                        # Batch size for parallel processing; cannot both be non-1 with num_threads
+...     show_time=True,                      # Whether to display the time taken for the generation process
+... )
+Solving MIS Using kamis: 100%|██████████| 2/2 [00:21<00:00, 10.97s/it]
+Using Time: 21.947036743164062
+
+# Use ``evaluate_w_gap`` to obtain the evaluation results.
+# Evaluation Results: average solution value, average reference value, gap (%), gap std.
+>>> eval_result = mis_wrapper.evaluate_w_gap()
+>>> print(eval_result)
+(14.827162742614746, 15.18349838256836, 2.5054726600646973, 2.5342845916748047)
+```
+
+</details>
+
+---
+
+<details>
+<summary>Case-03: How to use ML4CO-Kit to visualize the COPs </summary>
+
+```python
+# We take the CVRP as an example
+
+# Import the required classes.
+>>> import numpy as np                  # Numpy
+>>> from ml4co_kit import CVRPTask      # CVRP Task. 
+>>> from ml4co_kit import CVRPWrapper   # The wrapper for CVRP, used to manage data.
+
+# Case-1: multiple task data are saved in ``txt``, ``pickle``, etc. single task data is saved in pickle.
+>>> cvrp_wrapper = CVRPWrapper()
+>>> cvrp_wrapper.from_pickle("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.pkl")
+>>> cvrp_task = cvrp_wrapper.task_list[0]
+>>> print(cvrp_task)
+CVRPTask(2fb389cdafdb4e79a94572f01edf0b95)
+
+# Case-2: single task data is saved in pickle.
+>>> cvrp_task = CVRPTask()
+>>> cvrp_task.from_pickle("test_dataset/cvrp/task/cvrp50_uniform_task.pkl")
+>>> print(cvrp_task)
+CVRPTask(2fb389cdafdb4e79a94572f01edf0b95)
+
+# The loaded solution is usually a reference solution. 
+# When drawing the image, it is the ``sol`` that is being drawn. 
+# Therefore, it is necessary to assign ``ref_sol`` to ``sol``.
+>>> cvrp_task.sol = cvrp_task.ref_sol
+
+# Using ``render`` to get the visualization
+>>> cvrp_task.render(
+...     save_path="./docs/assets/cvrp_solution.png", # Path to save the rendered image
+...     with_sol=True,                               # Whether to draw the solution tour
+...     figsize=(10, 10),                             # Size of the image (width and height)
+...     node_color="darkblue",                        # Color of the nodes
+...     edge_color="darkblue",                        # Color of the edges
+...     node_size=50                                  # Size of the nodes
+... )
+```
+<img src="https://raw.githubusercontent.com/Thinklab-SJTU/ML4CO-Kit/main/docs/assets/cvrp_solution.png" alt="pip" width="300"/>
+
+</details>
+
+
+
 ## 📈 **Our Systematic Benchmark Works**
 
 We are systematically building a foundational framework for ML4CO with a collection of resources that complement each other in a cohesive manner.
