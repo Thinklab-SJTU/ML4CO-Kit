@@ -153,5 +153,5 @@ if env_checker.pytorch_lightning_support:
 #                Version and Author                #
 ####################################################
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __author__ = "SJTU-ReThinkLab"
