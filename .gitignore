@@ -51,8 +51,8 @@ docs/auto_examples/**
 docs/sg_execution_times.rst
 docs/auto_examples/**
 
-# data
-data/**
-
 # draft
 draft*.py
+
+# vscode
+.vscode/**

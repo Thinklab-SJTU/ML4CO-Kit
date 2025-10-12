@@ -22,7 +22,7 @@ from typing import Any
 from torch import Tensor, nn
 from typing import Union, Tuple, List
 from ml4co_kit.learning.model import BaseModel
-from ml4co_kit.utils.file_utils import download
+from ml4co_kit.utils.file_utils import pull_file_from_huggingface
 from ml4co_kit.utils.type_utils import to_numpy, to_tensor
 from ..env.env import GNN4COEnv
 from .encoder.gnn_encoder import GNNEncoder
@@ -37,7 +37,7 @@ SUPPORTS = [
     "gnn4co_mis_rb-large_sparse.pt",
     "gnn4co_mis_rb-small_sparse.pt",
     "gnn4co_mis_satlib_sparse.pt",
-    "gnn4co_mvc_rb-large_sparse.pt,"
+    "gnn4co_mvc_rb-large_sparse.pt",
     "gnn4co_mvc_rb-small_sparse.pt",
     "gnn4co_tsp1k_sparse.pt",
     "gnn4co_tsp10k_sparse.pt",
@@ -306,5 +306,9 @@ class GNN4COModel(BaseModel):
             raise ValueError(f"Unsupported weight file: {file_name}")
         
         # download
-        download_link = f"https://huggingface.co/ML4CO/ML4CO-Bench-101/resolve/main/gnn4co/{file_name}"
-        download(filename=weight_path, url=download_link)
+        pull_file_from_huggingface(
+            repo_id="ML4CO/ML4CO-Bench-101",
+            repo_type="model",
+            filename=f"gnn4co/{file_name}",
+            save_path=weight_path
+        )

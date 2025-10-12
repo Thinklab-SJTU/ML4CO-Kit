@@ -19,7 +19,9 @@ from .base import WrapperTesterBase
 # Routing Problems
 from .atsp import ATSPWrapperTester
 from .cvrp import CVRPWrapperTester
+from .op import OPWrapperTester
 from .pctsp import PCTSPWrapperTester
+from .spctsp import SPCTSPWrapperTester
 from .tsp import TSPWrapperTester
 
 # Graph Problems

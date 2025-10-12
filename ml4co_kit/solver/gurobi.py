@@ -14,18 +14,17 @@ Gurobi Solver.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit.utils.type_utils import to_numpy
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
-from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
+from ml4co_kit.solver.lib.gurobi.op_gurobi import op_gurobi
 from ml4co_kit.solver.lib.gurobi.tsp_gurobi import tsp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcl_gurobi import mcl_gurobi
 from ml4co_kit.solver.lib.gurobi.mis_gurobi import mis_gurobi
 from ml4co_kit.solver.lib.gurobi.mvc_gurobi import mvc_gurobi
+from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
+from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
-
 
 
 class GurobiSolver(SolverBase):
@@ -53,6 +52,11 @@ class GurobiSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.CVRP:
             return cvrp_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.OP:
+            return op_gurobi(
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )

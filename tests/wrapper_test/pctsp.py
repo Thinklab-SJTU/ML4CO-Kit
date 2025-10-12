@@ -1,5 +1,5 @@
 r"""
-TSP Wrapper Tester.
+PCTSP Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

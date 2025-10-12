@@ -1,5 +1,5 @@
 r"""
-TSP Wrapper Tester.
+SPCTSP Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,23 +14,21 @@ TSP Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import TSPWrapper, TSPGenerator, LKHSolver
+from ml4co_kit import SPCTSPWrapper, SPCTSPGenerator, ILSSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
 class SPCTSPWrapperTester(WrapperTesterBase):
     def __init__(self):
         super(SPCTSPWrapperTester, self).__init__(
-            test_wrapper_class=TSPWrapper,
-            generator=TSPGenerator(),
-            solver=LKHSolver(),
+            test_wrapper_class=SPCTSPWrapper,
+            generator=SPCTSPGenerator(),
+            solver=ILSSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.txt"),
-                pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.txt"),
             ],
         )
         

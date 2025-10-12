@@ -16,8 +16,15 @@ This module provides various optimization algorithms for combinatorial optimizat
 # See the Mulan PSL v2 for more details.
 
 
-from .base import OptimizerBase
-from .two_opt import TwoOptOptimizer
-from .mcts import MCTSOptimizer
+# Check if torch is supported
+from ml4co_kit.utils.env_utils import EnvChecker
+env_checker = EnvChecker()
+if env_checker.check_torch():
+    from .two_opt import TwoOptOptimizer
+    from .mcts import MCTSOptimizer
+    from .rlsa import RLSAOptimizer
+
+
+# Load other optimizers
+from .base import OptimizerBase, OPTIMIZER_TYPE
 from .cvrp_ls import CVRPLSOptimizer
-from .rlsa import RLSAOptimizer

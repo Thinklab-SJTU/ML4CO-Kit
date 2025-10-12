@@ -254,10 +254,10 @@ class SPCTSPTask(RoutingTaskBase):
             return False
         return True
     
-    def evaluate(self, sol: np.ndarray, use_actual_prizes: bool = False) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total cost of the SPCTSP solution."""
         # Check Constraints
-        if not self.check_constraints(sol, use_actual_prizes):
+        if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Calculate total travel distance
@@ -269,7 +269,7 @@ class SPCTSPTask(RoutingTaskBase):
         
         # Calculate total penalty for unvisited nodes
         mask = np.ones(self.nodes_num, dtype=np.bool_)
-        mask[sol[1:-1]] = False
+        mask[sol[1:-1] - 1] = False
         total_penalty = np.sum(self.penalties[mask])
         
         return total_distance + total_penalty

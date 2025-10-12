@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for PCTSP
+OR-Tools Solver for PCTSP
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

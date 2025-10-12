@@ -23,8 +23,10 @@ sys.path.insert(0, root_folder)
 from tests.wrapper_test import (
     ATSPWrapperTester, 
     CVRPWrapperTester, 
-    TSPWrapperTester, 
-    PCTSPWrapperTester
+    OPWrapperTester,
+    PCTSPWrapperTester,
+    SPCTSPWrapperTester,
+    TSPWrapperTester
 )    
 
 
@@ -37,15 +39,23 @@ from tests.wrapper_test import (
 )
 
 
-if __name__ == "__main__":
+# Test Wrapper
+def test_wrapper():
     # Routing Problems
-    # ATSPWrapperTester().test()
-    # CVRPWrapperTester().test()
+    ATSPWrapperTester().test()
+    CVRPWrapperTester().test()
+    OPWrapperTester().test()
     PCTSPWrapperTester().test()
-    # TSPWrapperTester().test()
+    SPCTSPWrapperTester().test()
+    TSPWrapperTester().test()
     
     # Graph Problems
-    # MClWrapperTester().test()
-    # MCutWrapperTester().test()
-    # MISWrapperTester().test()
-    # MVCWrapperTester().test()
+    MClWrapperTester().test()
+    MCutWrapperTester().test()
+    MISWrapperTester().test()
+    MVCWrapperTester().test()
+    
+
+# Main
+if __name__ == "__main__":
+    test_wrapper()
