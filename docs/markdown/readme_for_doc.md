@@ -74,7 +74,10 @@ matplotlib>=3.7.4
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
 
 ```python
+import sys
+from packaging import version
 from ml4co_kit import EnvInstallHelper
+
 
 if __name__ == "__main__":
     # Get pytorch version
