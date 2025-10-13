@@ -25,6 +25,7 @@ from ml4co_kit.solver.lib.gurobi.mvc_gurobi import mvc_gurobi
 from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
 from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
+from ml4co_kit.solver.lib.gurobi.sat_gurobi import sat_gurobi
 
 
 class GurobiSolver(SolverBase):
@@ -83,6 +84,11 @@ class GurobiSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.SAT:
+            return sat_gurobi(
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )
