@@ -74,7 +74,10 @@ matplotlib>=3.7.4
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
 
 ```python
+import sys
+from packaging import version
 from ml4co_kit import EnvInstallHelper
+
 
 if __name__ == "__main__":
     # Get pytorch version
@@ -91,6 +94,41 @@ if __name__ == "__main__":
     # Install pytorch environment
     env_install_helper = EnvInstallHelper(pytorch_version=pytorch_version)
     env_install_helper.install()
+```
+
+**2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
+
+```bash
+XXX with CUDA capability sm_120 is not compatible with the current PyTorch installation. 
+The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_70 sm_75 sm_80 sm_86 sm_90.
+```
+
+``` python
+import os
+
+# download torch==2.8.0+cu128 from pytorch.org
+os.system(f"pip install torch==2.8.0+cu128 --index-url https://download.pytorch.org/whl/cu128")
+
+# download torch-X (scatter, sparse, spline-conv, cluster)
+html_link = f"https://pytorch-geometric.com/whl/torch-2.8.0+cu128.html"
+os.system(f"pip install --no-index torch-scatter -f {html_link}")
+os.system(f"pip install --no-index torch-sparse -f {html_link}")
+os.system(f"pip install --no-index torch-spline-conv -f {html_link}")
+os.system(f"pip install --no-index torch-cluster -f {html_link}")
+
+# wandb
+os.system(f"pip install wandb>=0.20.0")
+
+# pytorch-lightning
+os.system(f"pip install pytorch-lightning==2.5.3")
+```
+
+After the environment is installed, run the following command to confirm that the PyTorch build supports ``sm_120``.
+
+```python
+>>> import torch
+>>> print(torch.cuda.get_arch_list())
+['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
 ```
 
 
