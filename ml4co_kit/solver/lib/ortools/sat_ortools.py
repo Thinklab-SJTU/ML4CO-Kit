@@ -159,7 +159,7 @@ def sat_ortools(
         ], dtype=np.int32)
         
         # Store solution in task data
-        task_data.from_data(sol=solution, ref=False)
+        task_data.sol = solution
         
         # Optional: verify solution correctness
         if hasattr(task_data, '_validate_solution'):
@@ -170,7 +170,7 @@ def sat_ortools(
     elif status == cp_model.INFEASIBLE:
         # Instance is unsatisfiable
         print(f"SAT instance is UNSATISFIABLE (OR-Tools)")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None
         
     elif status == cp_model.MODEL_INVALID:
         # Model formulation error
@@ -179,12 +179,12 @@ def sat_ortools(
     elif status == cp_model.UNKNOWN:
         # Time limit or other termination without definitive result
         print(f"OR-Tools solver terminated with UNKNOWN status")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None
         
     else:
         # Other status codes
         print(f"OR-Tools solver status: {solver.StatusName(status)}")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None
         
     # Optional: print solving statistics for debugging
     if hasattr(task_data, 'name') and task_data.name:

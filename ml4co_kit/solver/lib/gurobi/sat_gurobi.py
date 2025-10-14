@@ -178,7 +178,7 @@ def sat_gurobi(
     if model.Status == GRB.OPTIMAL:
         # Extract variable assignments from optimal solution
         solution = np.array([int(x[i].X) for i in range(n_vars)], dtype=np.int32)
-        task_data.from_data(sol=solution, ref=False)
+        task_data.sol = solution
         
         # Verify solution correctness (optional validation)
         if hasattr(task_data, '_validate_solution'):
@@ -189,14 +189,14 @@ def sat_gurobi(
     elif model.Status == GRB.INFEASIBLE:
         # No satisfying assignment exists (UNSAT)
         print(f"SAT instance {model_name} is UNSATISFIABLE")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None
         
     elif model.Status == GRB.TIME_LIMIT:
         # Time limit reached without conclusive result
         print(f"Time limit reached for SAT instance {model_name}")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None
         
     else:
         # Other status (numerical issues, user interruption, etc.)
         print(f"Gurobi solver status: {model.Status} for {model_name}")
-        task_data.from_data(sol=None, ref=False)
+        task_data.sol = None

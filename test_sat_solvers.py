@@ -17,7 +17,7 @@ import numpy as np
 from typing import List, Dict, Tuple, Optional
 
 # Add ML4CO-Kit to path
-sys.path.append('/root/ML4CO-Dev/ML4CO-Kit')
+sys.path.append('/mnt/nas-new/home/zhanghang/zhangxihe/ml4co_workspace/ML4CO-Kit')
 
 from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit.generator.logic.sat import SATGenerator
@@ -71,13 +71,13 @@ def create_test_instances() -> List[SATTask]:
     # Test case 4: Simple manually created instance
     print("  📝 Creating simple manual SAT instance...")
     manual_sat = SATTask()
-    manual_cnf = [
+    manual_clauses = [
         [1, 2, 3],      # (x1 ∨ x2 ∨ x3)
         [-1, 2],        # (¬x1 ∨ x2)  
         [-2, 3],        # (¬x2 ∨ x3)
         [-3, 1]         # (¬x3 ∨ x1)
     ]
-    manual_sat.from_data(cnf=manual_cnf, ref=False)
+    manual_sat.from_data(clauses=manual_clauses, num_vars=3)
     manual_sat.name = "manual_simple_sat"
     test_instances.append(manual_sat)
     
@@ -144,7 +144,7 @@ def test_gurobi_solver(instances: List[SATTask]) -> Dict:
         
         # Make a copy for solving (preserve original)
         test_instance = SATTask()
-        test_instance.from_data(cnf=instance.cnf, ref=False)
+        test_instance.from_data(clauses=instance.cnf, num_vars=instance.n_vars)
         test_instance.name = instance.name
         
         start_time = time.time()
@@ -197,7 +197,7 @@ def test_ortools_solver(instances: List[SATTask]) -> Dict:
         
         # Make a copy for solving
         test_instance = SATTask()
-        test_instance.from_data(cnf=instance.cnf, ref=False)
+        test_instance.from_data(clauses=instance.cnf, num_vars=instance.n_vars)
         test_instance.name = instance.name
         
         start_time = time.time()
@@ -251,7 +251,7 @@ def test_greedy_solver(instances: List[SATTask]) -> Dict:
         
         # Make a copy for solving
         test_instance = SATTask()
-        test_instance.from_data(cnf=instance.cnf, ref=False)
+        test_instance.from_data(clauses=instance.cnf, num_vars=instance.n_vars)
         test_instance.name = instance.name
         
         start_time = time.time()

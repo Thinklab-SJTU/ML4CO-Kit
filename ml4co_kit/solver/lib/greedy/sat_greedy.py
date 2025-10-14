@@ -230,7 +230,7 @@ def sat_greedy(task_data: SATTask, max_iterations: int = 1000) -> None:
         if not unit_propagation():
             # Conflict detected - instance likely unsatisfiable with current approach
             print("Greedy SAT solver detected conflict - instance may be unsatisfiable")
-            task_data.from_data(sol=None, ref=False)
+            task_data.sol = None
             return
         
         # Check if all clauses are satisfied
@@ -244,7 +244,7 @@ def sat_greedy(task_data: SATTask, max_iterations: int = 1000) -> None:
                     # Unassigned variables can be set arbitrarily
                     solution[var - 1] = 0
             
-            task_data.from_data(sol=solution, ref=False)
+            task_data.sol = solution
             return
         
         # Select next variable to assign
@@ -252,7 +252,7 @@ def sat_greedy(task_data: SATTask, max_iterations: int = 1000) -> None:
         if next_assignment is None:
             # No unassigned variables but not all clauses satisfied
             print("Greedy SAT solver: no unassigned variables but unsatisfied clauses remain")
-            task_data.from_data(sol=None, ref=False)
+            task_data.sol = None
             return
         
         var, polarity = next_assignment
@@ -263,4 +263,4 @@ def sat_greedy(task_data: SATTask, max_iterations: int = 1000) -> None:
     
     # Maximum iterations reached without solution
     print(f"Greedy SAT solver reached maximum iterations ({max_iterations})")
-    task_data.from_data(sol=None, ref=False)
+    task_data.sol = None

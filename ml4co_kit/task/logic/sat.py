@@ -43,6 +43,30 @@ class SATTask(LogicTaskBase):
         # SAT-specific attributes
         self.satisfied_clauses: Optional[np.ndarray] = None  # Which clauses are satisfied
         
+        # Initialize core attributes
+        self.clauses: List[List[int]] = []
+        self.num_vars: int = 0
+    
+    @property
+    def n_vars(self) -> int:
+        """Alias for num_vars to maintain compatibility with solvers."""
+        return self.num_vars
+    
+    @property
+    def cnf(self) -> List[List[int]]:
+        """Alias for clauses to maintain compatibility with solvers."""
+        return self.clauses
+    
+    @property
+    def solution(self) -> Optional[np.ndarray]:
+        """Alias for sol to maintain compatibility with test scripts."""
+        return self.sol
+    
+    @solution.setter
+    def solution(self, value: Optional[np.ndarray]):
+        """Setter for solution alias."""
+        self.sol = value
+        
     def from_data(
         self, 
         clauses: List[List[int]], 
