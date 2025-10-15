@@ -21,6 +21,7 @@ sys.path.append('/mnt/nas-new/home/zhanghang/zhangxihe/ml4co_workspace/ML4CO-Kit
 
 from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit.generator.logic.sat import SATGenerator
+from ml4co_kit.generator.logic.base import LOGIC_TYPE
 from ml4co_kit.solver.ortools import ORSolver
 
 
@@ -38,7 +39,12 @@ def instances() -> List[SATTask]:
     small_sat = generator.generate(
         num_vars=10, 
         num_clauses=30, 
-        distribution='RANDOM',
+        seed=42
+    )
+    generator.distribution_type = LOGIC_TYPE.RANDOM
+    small_sat = generator.generate(
+        num_vars=10, 
+        num_clauses=30, 
         seed=42
     )
     small_sat.name = "small_random_sat"
@@ -46,10 +52,10 @@ def instances() -> List[SATTask]:
     
     # Test case 2: Phase transition instance (potentially hard)
     print("  📝 Creating phase transition SAT instance...")
+    generator.distribution_type = LOGIC_TYPE.PHASE_TRANSITION
     phase_sat = generator.generate(
         num_vars=20, 
         num_clauses=85,  # ~4.25 ratio near phase transition
-        distribution='PHASE_TRANSITION',
         seed=123
     )
     phase_sat.name = "phase_transition_sat"
@@ -57,10 +63,10 @@ def instances() -> List[SATTask]:
     
     # Test case 3: Planted solution (guaranteed satisfiable)
     print("  📝 Creating planted solution SAT instance...")
+    generator.distribution_type = LOGIC_TYPE.PLANTED
     planted_sat = generator.generate(
         num_vars=15,
         num_clauses=50,
-        distribution='PLANTED',
         seed=456
     )
     planted_sat.name = "planted_solution_sat"
@@ -75,16 +81,16 @@ def instances() -> List[SATTask]:
         [-2, 3],        # (¬x2 ∨ x3)
         [-3, 1]         # (¬x3 ∨ x1)
     ]
-    manual_sat.from_data(cnf=manual_clauses)
+    manual_sat.from_data(clauses=manual_clauses)
     manual_sat.name = "manual_simple_sat"
     test_instances.append(manual_sat)
     
     # Test case 5: Likely unsatisfiable instance (high clause/variable ratio)
     print("  📝 Creating likely UNSAT instance...")
+    generator.distribution_type = LOGIC_TYPE.RANDOM
     unsat_candidate = generator.generate(
         num_vars=8,
         num_clauses=50,  # Very high ratio: 6.25
-        distribution='RANDOM',
         seed=789
     )
     unsat_candidate.name = "likely_unsat"

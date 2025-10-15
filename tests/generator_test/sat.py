@@ -20,7 +20,7 @@ sys.path.insert(0, root_folder)
 
 from .base import GenTesterBase
 from ml4co_kit.generator.logic.sat import SATGenerator
-from ml4co_kit.task.base import LOGIC_TYPE
+from ml4co_kit.generator.logic.base import LOGIC_TYPE
 
 
 class SATGenTester(GenTesterBase):

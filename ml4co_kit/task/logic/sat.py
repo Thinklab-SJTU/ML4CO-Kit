@@ -171,8 +171,17 @@ class SATTask(LogicTaskBase):
         Returns the number of satisfied clauses.
         For a satisfiable instance, this should equal the total number of clauses.
         """
-        if not self.check_constraints(sol):
-            raise ValueError("Invalid assignment!")
+        # Convert to numpy array if needed
+        if not isinstance(sol, np.ndarray):
+            sol = np.array(sol)
+            
+        # Basic validation
+        if len(sol) != self.num_vars:
+            raise ValueError(f"Assignment length {len(sol)} != num_vars {self.num_vars}")
+        
+        # Check if all values are 0 or 1
+        if not np.all((sol == 0) | (sol == 1)):
+            raise ValueError("Assignment must contain only 0s and 1s!")
         
         assignment = sol.astype(np.bool_)
         satisfied_count = 0

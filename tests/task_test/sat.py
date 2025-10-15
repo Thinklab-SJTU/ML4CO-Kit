@@ -46,7 +46,7 @@ class SATTaskTester(TaskTesterBase):
         ]
         
         task = SATTask()
-        task.from_data(cnf=clauses)
+        task.from_data(clauses=clauses)
         
         # Test satisfying assignment: x1=True, x2=False, x3=True
         satisfying_assignment = np.array([1, 0, 1])
@@ -77,7 +77,7 @@ class SATTaskTester(TaskTesterBase):
         
         # Test loading from DIMACS
         dimacs_task = SATTask()
-        dimacs_task.from_dimacs_file(tmp_dimacs_path)
+        dimacs_task.from_dimacs(pathlib.Path(tmp_dimacs_path))
         
         # Verify the loaded data
         assert dimacs_task.num_vars == 3
