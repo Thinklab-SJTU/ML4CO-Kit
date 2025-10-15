@@ -27,3 +27,6 @@ from .mcl import MClTaskTester
 from .mcut import MCutTaskTester
 from .mis import MISTaskTester
 from .mvc import MVCTaskTester
+
+# Logic Problems
+from .sat import SATTaskTester

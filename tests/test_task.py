@@ -36,6 +36,11 @@ from tests.task_test import (
     MCutTaskTester
 )
 
+# Logic Problems
+from tests.task_test import (
+    SATTaskTester
+)
+
 
 # Test Task
 def test_task():
@@ -50,6 +55,9 @@ def test_task():
     MCutTaskTester().test()
     MISTaskTester().test()
     MVCTaskTester().test()
+    
+    # Logic Problems
+    SATTaskTester().test()
     
 
 # Main

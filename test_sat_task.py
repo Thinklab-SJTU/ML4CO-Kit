@@ -56,7 +56,12 @@ def test_sat_task_basic():
     unsatisfied = sat_task.get_unsatisfied_clauses(assignment2)
     print(f"Unsatisfied clause indices: {unsatisfied}")
     
-    return True
+    # Assert key functionality works
+    assert sat_task.task_type == TASK_TYPE.SAT
+    assert sat_task.num_vars == 3
+    assert sat_task.get_num_clauses() == 3
+    assert sat_task.is_satisfiable(assignment1)
+    assert not sat_task.is_satisfiable(assignment2)
 
 
 def test_sat_task_dimacs():
@@ -96,11 +101,14 @@ p cnf 3 3
     sat_task.to_dimacs(output_file)
     print(f"Saved to {output_file}")
     
+    # Assert functionality works
+    assert sat_task.num_vars == 3
+    assert sat_task.get_num_clauses() == 3
+    assert satisfied >= 2  # Should satisfy most clauses
+    
     # Clean up
     test_file.unlink()
     output_file.unlink()
-    
-    return True
 
 
 def test_sat_task_evaluation():
@@ -121,6 +129,7 @@ def test_sat_task_evaluation():
     
     print(f"Testing complex SAT instance with {len(clauses)} clauses")
     
+    satisfying_assignments = 0
     # Test all possible assignments for 3 variables
     for i in range(8):  # 2^3 = 8 combinations
         assignment = np.array([
@@ -131,10 +140,15 @@ def test_sat_task_evaluation():
         
         satisfied = sat_task.evaluate(assignment)
         is_sat = sat_task.is_satisfiable(assignment)
+        if is_sat:
+            satisfying_assignments += 1
         
         print(f"Assignment {assignment}: {satisfied}/4 clauses satisfied, SAT: {is_sat}")
     
-    return True
+    # Assert that some assignments satisfy the formula
+    assert satisfying_assignments > 0, "No satisfying assignments found"
+    assert sat_task.num_vars == 3
+    assert sat_task.get_num_clauses() == 4
 
 
 def test_sat_task_copy():
@@ -160,7 +174,10 @@ def test_sat_task_copy():
     print(f"Original assignment: {original.assignment}")
     print(f"Copied assignment: {copied.assignment}")
     
-    return True
+    # Assert copy works correctly
+    assert original.clauses == copied.clauses
+    assert original.num_vars == copied.num_vars
+    assert not np.array_equal(original.assignment, copied.assignment)  # Should be different after modification
 
 
 if __name__ == "__main__":

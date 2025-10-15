@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-SAT Solver Testing Script for ML4CO-Kit
+SAT Solver Testing Script for ML4CO-Kit (No Gurobi version)
 
-This script comprehensively tests all implemented SAT solvers:
-1. Gurobi ILP Solver
-2. OR-Tools CP-SAT Solver  
-3. Greedy Heuristic Solver
+This script tests SAT solvers that don't require commercial licenses:
+1. OR-Tools CP-SAT Solver  
+2. Greedy Heuristic Solver
 
 Tests multiple instance types and validates correctness of solutions.
 """
@@ -14,7 +13,6 @@ import os
 import sys
 import time
 import numpy as np
-import pytest
 from typing import List, Dict, Tuple, Optional
 
 # Add ML4CO-Kit to path
@@ -22,16 +20,7 @@ sys.path.append('/mnt/nas-new/home/zhanghang/zhangxihe/ml4co_workspace/ML4CO-Kit
 
 from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit.generator.logic.sat import SATGenerator
-from ml4co_kit.solver.gurobi import GurobiSolver
 from ml4co_kit.solver.ortools import ORSolver
-from ml4co_kit.solver.greedy import GreedySolver
-from ml4co_kit.extension.gnn4co.model.model import GNN4COModel
-
-
-@pytest.fixture
-def instances() -> List[SATTask]:
-    """Pytest fixture to create test SAT instances."""
-    return create_test_instances()
 
 
 def create_test_instances() -> List[SATTask]:
@@ -136,63 +125,7 @@ def validate_sat_solution(task: SATTask, solution: Optional[np.ndarray]) -> Tupl
     return True, "All clauses satisfied"
 
 
-def test_gurobi_solver(instances: List[SATTask]) -> None:
-    """Test Gurobi ILP solver on all instances."""
-    
-    print("🔧 Testing Gurobi ILP Solver")
-    print("=" * 50)
-    
-    solver = GurobiSolver(gurobi_time_limit=30.0)
-    results = {"solver": "Gurobi ILP", "tests": []}
-    
-    for i, instance in enumerate(instances, 1):
-        print(f"  🧪 Test {i}: {instance.name}")
-        print(f"     Variables: {instance.n_vars}, Clauses: {len(instance.cnf)}")
-        
-        # Make a copy for solving (preserve original)
-        test_instance = SATTask()
-        test_instance.from_data(clauses=instance.cnf, num_vars=instance.n_vars)
-        test_instance.name = instance.name
-        
-        start_time = time.time()
-        try:
-            solver.solve(test_instance)
-            solve_time = time.time() - start_time
-            
-            # Validate solution
-            is_valid, message = validate_sat_solution(test_instance, test_instance.solution)
-            
-            result = {
-                "instance": instance.name,
-                "success": True,
-                "solve_time": solve_time,
-                "solution_found": test_instance.solution is not None,
-                "valid": is_valid,
-                "message": message
-            }
-            
-            print(f"     ⏱️  Solve time: {solve_time:.3f}s")
-            print(f"     📊 Solution: {'Found' if test_instance.solution is not None else 'None (UNSAT)'}")
-            print(f"     ✅ Valid: {is_valid} - {message}")
-            
-        except Exception as e:
-            result = {
-                "instance": instance.name,
-                "success": False,
-                "error": str(e)
-            }
-            print(f"     ❌ Error: {e}")
-        
-        results["tests"].append(result)
-        print()
-    
-    # Assert that we got some results
-    assert len(results["tests"]) > 0, "No test results generated"
-    successful_tests = sum(1 for t in results["tests"] if t.get("success", False))
-    print(f"Gurobi solver completed: {successful_tests}/{len(results['tests'])} tests successful")
-
-
-def test_ortools_solver(instances: List[SATTask]) -> None:
+def test_ortools_solver(instances: List[SATTask]) -> Dict:
     """Test OR-Tools CP-SAT solver on all instances."""
     
     print("🔧 Testing OR-Tools CP-SAT Solver")
@@ -242,20 +175,15 @@ def test_ortools_solver(instances: List[SATTask]) -> None:
         results["tests"].append(result)
         print()
     
-    # Assert that we got some results
-    assert len(results["tests"]) > 0, "No test results generated"
-    successful_tests = sum(1 for t in results["tests"] if t.get("success", False))
-    print(f"OR-Tools solver completed: {successful_tests}/{len(results['tests'])} tests successful")
+    return results
 
 
-def test_greedy_solver(instances: List[SATTask]) -> None:
+def test_greedy_solver(instances: List[SATTask]) -> Dict:
     """Test Greedy heuristic solver on all instances."""
     
     print("🔧 Testing Greedy Heuristic Solver")
     print("=" * 50)
     
-    # Note: Greedy solver doesn't require GNN model for SAT
-    # We'll create a dummy model to satisfy the interface
     results = {"solver": "Greedy Heuristic", "tests": []}
     
     for i, instance in enumerate(instances, 1):
@@ -301,10 +229,7 @@ def test_greedy_solver(instances: List[SATTask]) -> None:
         results["tests"].append(result)
         print()
     
-    # Assert that we got some results
-    assert len(results["tests"]) > 0, "No test results generated"
-    successful_tests = sum(1 for t in results["tests"] if t.get("success", False))
-    print(f"Greedy solver completed: {successful_tests}/{len(results['tests'])} tests successful")
+    return results
 
 
 def print_summary(all_results: List[Dict]) -> None:
@@ -328,13 +253,12 @@ def print_summary(all_results: List[Dict]) -> None:
         print(f"  📈 Success Rate: {successful_tests}/{total_tests} ({100*successful_tests/total_tests:.1f}%)")
         if successful_tests > 0:
             print(f"  🎯 Valid Solutions: {valid_solutions}/{successful_tests} ({100*valid_solutions/successful_tests:.1f}%)")
-        else:
-            print(f"  🎯 Valid Solutions: {valid_solutions}/0 (N/A)")
-        print(f"  🔍 Solutions Found: {solutions_found}/{successful_tests if successful_tests > 0 else total_tests}")
-        
-        if successful_tests > 0:
+            print(f"  🔍 Solutions Found: {solutions_found}/{successful_tests}")
             avg_time = np.mean([t.get("solve_time", 0) for t in tests if t.get("success", False)])
             print(f"  ⏱️  Average Time: {avg_time:.3f}s")
+        else:
+            print(f"  🎯 Valid Solutions: 0/{total_tests} (N/A)")
+            print(f"  🔍 Solutions Found: 0/{total_tests}")
         
         # Show individual results
         for test in tests:
@@ -353,10 +277,10 @@ def print_summary(all_results: List[Dict]) -> None:
 def main():
     """Main testing function."""
     
-    print("🚀 SAT Solver Comprehensive Testing")
+    print("🚀 SAT Solver Testing (Open Source)")
     print("=" * 60)
     print("Testing ML4CO-Kit SAT solver implementations")
-    print("Solvers: Gurobi ILP, OR-Tools CP-SAT, Greedy Heuristic")
+    print("Solvers: OR-Tools CP-SAT, Greedy Heuristic")
     print()
     
     # Generate test instances
@@ -365,21 +289,10 @@ def main():
     # Test all solvers
     all_results = []
     
-    # Test Gurobi solver
-    try:
-        gurobi_results = test_gurobi_solver(test_instances)
-        all_results.append(gurobi_results)
-    except ImportError as e:
-        print(f"⚠️  Skipping Gurobi tests: {e}")
-    except Exception as e:
-        print(f"❌ Gurobi testing failed: {e}")
-    
     # Test OR-Tools solver
     try:
         ortools_results = test_ortools_solver(test_instances)
         all_results.append(ortools_results)
-    except ImportError as e:
-        print(f"⚠️  Skipping OR-Tools tests: {e}")
     except Exception as e:
         print(f"❌ OR-Tools testing failed: {e}")
     
