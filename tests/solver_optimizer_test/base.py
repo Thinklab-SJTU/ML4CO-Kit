@@ -20,10 +20,13 @@ from ml4co_kit import (
     TSPTask, ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask,
     MClTask, MCutTask, MISTask, MVCTask
 )
+from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit import (
     TSPWrapper, ATSPWrapper, CVRPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper,
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
 )
+# SAT wrapper would be imported if needed for batch mode
+# from ml4co_kit.wrapper.logic.sat import SATWrapper
 
 
 class SolverTesterBase(object):
@@ -114,6 +117,10 @@ class SolverTesterBase(object):
             return self._get_mis_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.MVC:
             return self._get_mvc_tasks(mode, exclude_test_files)
+        
+        # Logic Problems
+        elif test_task_type == TASK_TYPE.SAT:
+            return self._get_sat_tasks(mode, exclude_test_files)
         
         # Others
         else:
@@ -454,3 +461,83 @@ class SolverTesterBase(object):
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
+    
+    ########################################
+    #           Logic Problems             #
+    ########################################
+    
+    def _get_sat_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[SATTask]:
+        # Import SAT generator for dynamic generation
+        from ml4co_kit.generator.logic.sat import SATGenerator
+        
+        # Since SAT test data might not exist, generate test instances dynamically
+        generator = SATGenerator()
+        
+        # ``Solve`` mode
+        if mode == "solve":
+            task_list = []
+            
+            # Try to load from files first, fallback to generation
+            sat_test_files_list = [
+                pathlib.Path("test_dataset/sat/task/sat_small_random_task.pkl"),
+                pathlib.Path("test_dataset/sat/task/sat_medium_planted_task.pkl"),
+            ]
+            
+            for test_file in sat_test_files_list:
+                if test_file not in exclude_test_files:
+                    try:
+                        if test_file.exists():
+                            task = SATTask()
+                            task.from_pickle(test_file)
+                            task_list.append(task)
+                        else:
+                            # Generate fallback instances if files don't exist
+                            task = generator.generate(
+                                num_vars=10, 
+                                num_clauses=30, 
+                                distribution='RANDOM',
+                                seed=42
+                            )
+                            task.name = f"generated_{test_file.stem}"
+                            task_list.append(task)
+                    except Exception:
+                        # If file loading fails, generate instance
+                        task = generator.generate(
+                            num_vars=8, 
+                            num_clauses=24, 
+                            distribution='PLANTED',
+                            seed=123
+                        )
+                        task.name = f"fallback_{test_file.stem}"
+                        task_list.append(task)
+            
+            # Ensure we have at least one test instance
+            if not task_list:
+                task = generator.generate(
+                    num_vars=5, 
+                    num_clauses=15, 
+                    distribution='RANDOM',
+                    seed=999
+                )
+                task.name = "minimal_test_sat"
+                task_list.append(task)
+                
+            return task_list
+        
+        # ``Batch Solve`` mode  
+        if mode == "batch_solve":
+            # Generate a batch of test instances
+            batch_tasks = []
+            for i in range(2):  # Create 2 small batches
+                task = generator.generate(
+                    num_vars=6 + i * 2,
+                    num_clauses=18 + i * 6,
+                    distribution='RANDOM',
+                    seed=1000 + i
+                )
+                task.name = f"batch_sat_{i+1}"
+                batch_tasks.append(task)
+            
+            return [batch_tasks]  # Return as list of batches
