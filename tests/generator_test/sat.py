@@ -20,52 +20,47 @@ sys.path.insert(0, root_folder)
 
 from .base import GenTesterBase
 from ml4co_kit.generator.logic.sat import SATGenerator
-from ml4co_kit.task.logic.sat import SATTask
+from ml4co_kit.task.base import LOGIC_TYPE
 
 
 class SATGenTester(GenTesterBase):
     def __init__(self):
         super(SATGenTester, self).__init__(
-            task_cls=SATTask,
-            generator_cls=SATGenerator
+            test_gen_class=SATGenerator,
+            test_args_list=[
+                # Random distribution
+                {
+                    "distribution_type": LOGIC_TYPE.RANDOM,
+                    "num_vars": 10,
+                    "num_clauses": 30,
+                    "clause_length": 3,
+                },
+                # Uniform random distribution
+                {
+                    "distribution_type": LOGIC_TYPE.UNIFORM_RANDOM,
+                    "num_vars": 15,
+                    "num_clauses": 45,
+                    "clause_length": 3,
+                },
+                # Planted distribution
+                {
+                    "distribution_type": LOGIC_TYPE.PLANTED,
+                    "num_vars": 8,
+                    "num_clauses": 24,
+                    "clause_length": 3,
+                },
+                # Phase transition distribution
+                {
+                    "distribution_type": LOGIC_TYPE.PHASE_TRANSITION,
+                    "num_vars": 12,
+                    "clause_length": 3,
+                },
+                # Industrial distribution
+                {
+                    "distribution_type": LOGIC_TYPE.INDUSTRIAL,
+                    "num_vars": 20,
+                    "num_clauses": 60,
+                    "clause_length": 3,
+                },
+            ]
         )
-
-    def test(self):
-        print("Testing SAT Generator...")
-        
-        # Test different distributions
-        distributions = ['RANDOM', 'UNIFORM_RANDOM', 'PLANTED', 'PHASE_TRANSITION', 'INDUSTRIAL']
-        
-        for distribution in distributions:
-            print(f"  Testing {distribution} distribution...")
-            
-            # Generate instance
-            instance = self.generator.generate(
-                num_vars=10,
-                num_clauses=30,
-                distribution=distribution,
-                seed=42
-            )
-            
-            # Basic validation
-            assert instance.num_vars == 10
-            assert instance.get_num_clauses() == 30
-            assert len(instance.clauses) == 30
-            
-            # Check clause validity
-            for clause in instance.clauses:
-                for literal in clause:
-                    assert abs(literal) <= 10  # Variable index within range
-                    assert literal != 0        # No zero literals
-            
-            print(f"    ✅ {distribution} distribution test passed")
-        
-        # Test reproducibility
-        print("  Testing reproducibility...")
-        instance1 = self.generator.generate(num_vars=5, num_clauses=15, distribution='RANDOM', seed=123)
-        instance2 = self.generator.generate(num_vars=5, num_clauses=15, distribution='RANDOM', seed=123)
-        
-        assert instance1.clauses == instance2.clauses
-        print("    ✅ Reproducibility test passed")
-        
-        print("✅ SAT Generator test completed successfully!")

@@ -12,6 +12,7 @@ Tests multiple instance types and validates correctness of solutions.
 import os
 import sys
 import time
+import pytest
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 
@@ -23,7 +24,8 @@ from ml4co_kit.generator.logic.sat import SATGenerator
 from ml4co_kit.solver.ortools import ORSolver
 
 
-def create_test_instances() -> List[SATTask]:
+@pytest.fixture
+def instances() -> List[SATTask]:
     """Create diverse SAT test instances for comprehensive testing."""
     
     print("🔄 Generating test SAT instances...")
@@ -73,7 +75,7 @@ def create_test_instances() -> List[SATTask]:
         [-2, 3],        # (¬x2 ∨ x3)
         [-3, 1]         # (¬x3 ∨ x1)
     ]
-    manual_sat.from_data(clauses=manual_clauses, num_vars=3)
+    manual_sat.from_data(cnf=manual_clauses)
     manual_sat.name = "manual_simple_sat"
     test_instances.append(manual_sat)
     
@@ -275,16 +277,16 @@ def print_summary(all_results: List[Dict]) -> None:
 
 
 def main():
-    """Main testing function."""
+    """Main testing function - for standalone execution."""
     
     print("🚀 SAT Solver Testing (Open Source)")
     print("=" * 60)
     print("Testing ML4CO-Kit SAT solver implementations")
     print("Solvers: OR-Tools CP-SAT, Greedy Heuristic")
     print()
-    
-    # Generate test instances
-    test_instances = create_test_instances()
+
+    # Create test instances using the fixture function directly
+    test_instances = instances()
     
     # Test all solvers
     all_results = []

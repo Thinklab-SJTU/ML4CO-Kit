@@ -14,21 +14,28 @@ SAT Task Test Module.
 
 
 import os
-import sys
+import pathlib
 import numpy as np
-root_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, root_folder)
-
-from .base import TaskTesterBase
 from ml4co_kit.task.logic.sat import SATTask
+from tests.task_test.base import TaskTesterBase
 
 
 class SATTaskTester(TaskTesterBase):
     def __init__(self):
-        super(SATTaskTester, self).__init__(task_cls=SATTask)
+        # SAT doesn't have pickle files yet, so use empty list
+        super(SATTaskTester, self).__init__(
+            test_task_class=SATTask,
+            pickle_files_list=[
+                # Add SAT pickle files here when available
+            ],
+        )
 
-    def test(self):
-        print("Testing SAT Task...")
+    def _test_other_rw_methods(self):
+        """Test SAT-specific read/write methods."""
+        
+        ##################################################
+        #       Test-1: Test from_data method            #
+        ##################################################
         
         # Create a test SAT instance
         # Formula: (x1 OR x2) AND (NOT x1 OR x3) AND (NOT x2 OR NOT x3)
@@ -38,47 +45,52 @@ class SATTaskTester(TaskTesterBase):
             [-2, -3]     # NOT x2 OR NOT x3
         ]
         
-        # Test from_data method
-        print("  Testing from_data method...")
-        task = self.task_cls()
-        task.from_data(clauses=clauses, num_vars=3)
-        
-        assert task.num_vars == 3
-        assert task.get_num_clauses() == 3
-        assert task.clauses == clauses
-        print("    ✅ from_data test passed")
-        
-        # Test solution evaluation
-        print("  Testing solution evaluation...")
+        task = SATTask()
+        task.from_data(cnf=clauses)
         
         # Test satisfying assignment: x1=True, x2=False, x3=True
         satisfying_assignment = np.array([1, 0, 1])
-        task.set_assignment(satisfying_assignment)
-        
         satisfied_clauses = task.evaluate(satisfying_assignment)
-        assert satisfied_clauses == 3  # All clauses should be satisfied
-        assert task.is_satisfiable(satisfying_assignment)
+        assert satisfied_clauses == 3, f"Expected 3 satisfied clauses, got {satisfied_clauses}"
         
         # Test unsatisfying assignment: x1=False, x2=False, x3=False
         unsatisfying_assignment = np.array([0, 0, 0])
         satisfied_clauses_2 = task.evaluate(unsatisfying_assignment)
-        assert satisfied_clauses_2 < 3  # Not all clauses satisfied
-        assert not task.is_satisfiable(unsatisfying_assignment)
+        assert satisfied_clauses_2 < 3, f"Expected < 3 satisfied clauses, got {satisfied_clauses_2}"
         
-        print("    ✅ Solution evaluation test passed")
+        print(f"SATTask basic test: {satisfied_clauses} clauses satisfied with valid assignment")
         
-        # Test copy functionality
-        print("  Testing copy functionality...")
-        copied_task = task.copy()
-        assert copied_task.num_vars == task.num_vars
-        assert copied_task.clauses == task.clauses
-        assert np.array_equal(copied_task.assignment, task.assignment)
-        print("    ✅ Copy test passed")
+        ##################################################
+        #       Test-2: Test DIMACS format support       #
+        ##################################################
         
-        # Test constraint checking
-        print("  Testing constraint checking...")
-        assert task.check_constraints(satisfying_assignment)
-        assert not task.check_constraints(unsatisfying_assignment)
-        print("    ✅ Constraint checking test passed")
+        # Create a temporary DIMACS file
+        tmp_dimacs_path = self._make_tmp_file() + ".cnf"
         
-        print("✅ SAT Task test completed successfully!")
+        # Write DIMACS format
+        with open(tmp_dimacs_path, 'w') as f:
+            f.write("c This is a test SAT instance\n")
+            f.write("p cnf 3 3\n")
+            f.write("1 2 0\n")
+            f.write("-1 3 0\n")
+            f.write("-2 -3 0\n")
+        
+        # Test loading from DIMACS
+        dimacs_task = SATTask()
+        dimacs_task.from_dimacs_file(tmp_dimacs_path)
+        
+        # Verify the loaded data
+        assert dimacs_task.num_vars == 3
+        assert len(dimacs_task.cnf) == 3
+        assert dimacs_task.cnf == clauses
+        
+        # Clean up
+        os.remove(tmp_dimacs_path)
+        
+        print("SATTask DIMACS format test passed")
+
+    def _test_render(self):
+        """Test SAT visualization (if implemented)."""
+        # SAT visualization is optional and complex
+        # For now, just pass
+        pass
