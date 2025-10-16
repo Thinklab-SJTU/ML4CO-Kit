@@ -14,6 +14,7 @@ The utilities used to install the environment.
 
 
 import os
+import platform
 import importlib.util
 import gurobipy as gp
 from packaging import version
@@ -21,6 +22,9 @@ from packaging import version
 
 class EnvChecker(object):
     def __init__(self):
+        # System
+        self.system = platform.system()
+
         # Basic (torch)
         self.torch_support = self._check_package("torch")
         
