@@ -46,11 +46,12 @@ basic_solver_class_list = [
     HGSSolverTester, 
     ILSSolverTester, 
     InsertionSolverTester, 
-    KaMISSolverTester,
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester
 ]
+if env_checker.system == "Linux":
+    basic_solver_class_list.append(KaMISSolverTester)
 
 
 # Gurobi
