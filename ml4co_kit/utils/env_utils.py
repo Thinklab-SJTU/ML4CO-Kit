@@ -101,7 +101,7 @@ class EnvInstallHelper(object):
         else:
             if version.parse(self.pytorch_version) < version.parse("2.4.0"):
                 os.system((
-                    f"pip install torch=={self.pytorch_version}+cpu "
+                    f"pip install torch=={self.pytorch_version} "
                     f"-f https://download.pytorch.org/whl/torch_stable.html"
                 ))
             else:
