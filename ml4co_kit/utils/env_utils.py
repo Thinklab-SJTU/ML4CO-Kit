@@ -91,26 +91,11 @@ class EnvInstallHelper(object):
         self.use_cuda = use_cuda
         self.cuda_version = cuda_version
     
-    def _install_numpy(self):
-        if version.parse(self.pytorch_version) < version.parse("2.4.0"):
-            os.system(f"pip install 'numpy<2'")
-    
-    def _install_torch(self):
-        if self.use_cuda:
-            os.system(f"pip install torch=={self.pytorch_version}")
-        else:
-            if version.parse(self.pytorch_version) < version.parse("2.4.0"):
-                os.system((
-                    f"pip install torch=={self.pytorch_version} "
-                    f"-f https://download.pytorch.org/whl/torch_stable.html"
-                ))
-            else:
-                os.system(f"pip install torch=={self.pytorch_version}")
-         
     def install(self):
         # numpy & torch
-        self._install_numpy()
-        self._install_torch()
+        if version.parse(self.pytorch_version) < version.parse("2.4.0"):
+            os.system(f"pip install 'numpy<2'")
+        os.system(f"pip install torch=={self.pytorch_version}")
             
         # scipy
         os.system(f"pip install 'scipy>=1.10.1'")
