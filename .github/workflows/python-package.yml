@@ -42,3 +42,28 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: Thinklab-SJTU/ML4CO-Kit
+        
+  macos:
+
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        python tests/install_torch_env.py
+    - name: Test using pytest
+      run: |
+        pip install pytest
+        python -m pip install pytest-cov
+        pytest --cov=ml4co_kit --cov-report=xml --cov-append
