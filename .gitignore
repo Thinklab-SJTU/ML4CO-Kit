@@ -66,3 +66,7 @@ ml4co_kit/solver/lib/concorde/pyconcorde/data/qsopt.h
 # ga_eax
 ml4co_kit/solver/lib/ga_eax/c_ga_eax_large/ga_eax_large_solver
 ml4co_kit/solver/lib/ga_eax/c_ga_eax_normal/ga_eax_normal_solver
+
+# ils
+ml4co_kit/solver/lib/ils/c_pctsp_ils/pctsp_ils
+ml4co_kit/solver/lib/ils/c_spctsp_ils/spctsp_ils
