@@ -77,3 +77,35 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_ML4CO_KIT }}
+
+  macos:
+    needs: deploy
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tests/requirements.txt
+          python tests/install_torch_env.py
+      - name: Build Wheel
+        run: |
+          python setup.py bdist_wheel
+      - name: Upload Wheel to PyPI
+        run: |
+          pip install twine==6.1.0
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_ML4CO_KIT }}
