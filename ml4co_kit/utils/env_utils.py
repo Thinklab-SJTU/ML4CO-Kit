@@ -109,7 +109,7 @@ class EnvInstallHelper(object):
         self._install_torch()
             
         # scipy
-        os.system(f"pip install scipy>=1.10.1")
+        os.system(f"pip install 'scipy>=1.10.1'")
         
         # torch-X (scatter, sparse, spline-conv, cluster)
         if self.use_cuda:
@@ -123,7 +123,7 @@ class EnvInstallHelper(object):
         os.system(f"pip install --no-index torch-cluster -f {html_link}")
         
         # wandb
-        os.system(f"pip install wandb>=0.20.0")
+        os.system(f"pip install 'wandb>=0.20.0'")
         
         # pytorch-lightning
         os.system(f"pip install pytorch-lightning=={self.pytorch_version}")

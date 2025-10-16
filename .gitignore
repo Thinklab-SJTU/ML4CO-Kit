@@ -56,3 +56,9 @@ draft*.py
 
 # vscode
 .vscode/**
+
+# concorde
+ml4co_kit/solver/lib/concorde/pyconcorde/data/concorde.a
+ml4co_kit/solver/lib/concorde/pyconcorde/data/concorde.h
+ml4co_kit/solver/lib/concorde/pyconcorde/data/qsopt.a
+ml4co_kit/solver/lib/concorde/pyconcorde/data/qsopt.h
