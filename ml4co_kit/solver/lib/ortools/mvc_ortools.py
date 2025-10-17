@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for MVC
+OR-Tools Solver for MVC
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

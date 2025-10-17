@@ -19,6 +19,7 @@ from ortools.constraint_solver.routing_enums_pb2 import LocalSearchMetaheuristic
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
+from ml4co_kit.solver.lib.ortools.op_ortools import op_ortools
 from ml4co_kit.solver.lib.ortools.tsp_ortools import tsp_ortools
 from ml4co_kit.solver.lib.ortools.mcl_ortools import mcl_ortools
 from ml4co_kit.solver.lib.ortools.mis_ortools import mis_ortools
@@ -72,6 +73,13 @@ class ORSolver(SolverBase):
         elif task_data.task_type == TASK_TYPE.PCTSP:
             self._set_search_parameters()
             return pctsp_ortools(
+                task_data=task_data,
+                ortools_scale=self.ortools_scale,
+                search_parameters=self.search_parameters
+            )
+        elif task_data.task_type == TASK_TYPE.OP:
+            self._set_search_parameters()
+            return op_ortools(
                 task_data=task_data,
                 ortools_scale=self.ortools_scale,
                 search_parameters=self.search_parameters

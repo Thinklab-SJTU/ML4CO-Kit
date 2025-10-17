@@ -24,6 +24,7 @@ class HGSSolver(SolverBase):
     def __init__(
         self, 
         hgs_scale: int = 2e4,
+        hgs_demands_scale: int = 1e5,
         hgs_time_limit: float = 1.0,
         hgs_show_info: bool = False,
         optimizer: OptimizerBase = None
@@ -34,6 +35,7 @@ class HGSSolver(SolverBase):
         
         # Set Attributes
         self.hgs_scale = hgs_scale
+        self.hgs_demands_scale = hgs_demands_scale
         self.hgs_time_limit = hgs_time_limit
         self.hgs_show_info = hgs_show_info
             
@@ -43,6 +45,7 @@ class HGSSolver(SolverBase):
             return cvrp_hgs(
                 task_data=task_data,
                 hgs_scale=self.hgs_scale,
+                hgs_demands_scale=self.hgs_demands_scale,
                 hgs_time_limit=self.hgs_time_limit,
                 hgs_show_info=self.hgs_show_info
             )

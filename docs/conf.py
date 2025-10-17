@@ -22,10 +22,10 @@ import sys
 import datetime
 sys.path.insert(0, os.path.abspath('..'))
 try:
-    from ml4co_kit import draw
-    print("Successfully imported ml4co_kit.draw")
+    from ml4co_kit import TSPWrapper, TSPGenerator, TSP_TYPE
+    print("Successfully imported ml4co_kit modules")
 except ImportError as e:
-    print("Failed to import ml4co_kit.draw:", e)
+    print("Failed to import ml4co_kit modules:", e)
 os.environ['SPHINX'] = '1'
 
 # -- General configuration ------------------------------------------------
@@ -46,7 +46,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.autosectionlabel',
     "sphinx_design",
-    'sphinx_gallery.gen_gallery',
     'm2r2']
 
 autodoc_mock_imports = ['scipy', 'matplotlib', 'torch_geometric', 'pynvml']
@@ -193,12 +192,6 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-sphinx_gallery_conf = {
-     'examples_dirs': '../examples',
-     'gallery_dirs': 'auto_examples',
-     'nested_sections': False,
-     'remove_config_comments': True,
-}
 
 autodoc_default_options = {
     'members': True,

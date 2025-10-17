@@ -14,19 +14,18 @@ Solver Module.
 
 
 # Check if torch is supported
-import importlib.util
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
+from ml4co_kit.utils.env_utils import EnvChecker
+env_checker = EnvChecker()
+if env_checker.check_gnn4co():
     from .beam import BeamSolver
     from .greedy import GreedySolver
     from .mcts import MCTSSolver
+if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
-else:
-    TORCH_SUPPORT = False
 
 
-# Load other solver testers   
+# Load other solvers
 from .base import SolverBase, SOLVER_TYPE
 from .concorde import ConcordeSolver
 from .ga_eax import GAEAXSolver

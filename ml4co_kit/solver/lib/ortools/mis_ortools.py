@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for MIS
+OR-Tools Solver for MIS
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

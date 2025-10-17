@@ -90,7 +90,7 @@ class NeuroLKHSolver(SolverBase):
     def install(self):
         """Install LKH solver."""
         lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-        download("LKH-3.0.13.tgz", url=lkh_url)
+        download(file_path="LKH-3.0.13.tgz", url=lkh_url)
         # tar .tgz file
         os.system("tar xvfz LKH-3.0.13.tgz")
         # build LKH

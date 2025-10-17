@@ -13,7 +13,27 @@ ML4CO-Kit Module.
 # See the Mulan PSL v2 for more details.
 
 
-import importlib.util
+####################################################
+#                  Utils Function                  #
+####################################################
+
+# Env Utils
+from .utils import EnvInstallHelper, EnvChecker
+env_checker = EnvChecker()
+
+# File Utils
+from .utils import (
+    download, pull_file_from_huggingface, get_md5,
+    compress_folder, extract_archive, check_file_path
+)
+
+# Time Utils
+from .utils import tqdm_by_time, Timer
+
+# Type Utils
+if env_checker.check_torch():
+    from .utils import to_numpy, to_tensor
+
 
 ###################################################
 #                      Task                       #
@@ -71,12 +91,32 @@ from .solver import (
 )
 
 # Solver (use torch backend)
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
+if env_checker.check_gnn4co():
     from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver
+        BeamSolver, GreedySolver, MCTSSolver
+    )
+if env_checker.check_torch():
+    from .solver import (
+        NeuroLKHSolver, RLSASolver
     )
 
+
+####################################################
+#                    Optimizer                     #
+####################################################
+
+# Base Optimizer
+from .optimizer import OptimizerBase, OPTIMIZER_TYPE
+
+# Optimizer (not use torch backend)
+from .optimizer import CVRPLSOptimizer
+
+# Optimizer (use torch backend)
+if env_checker.check_torch():
+    from .optimizer import (
+        TwoOptOptimizer, MCTSOptimizer, RLSAOptimizer
+    )
+    
 
 ####################################################
 #                     Wrapper                      #
@@ -100,26 +140,18 @@ from .wrapper import (
 
 
 ####################################################
-#                  Utils Function                  #
+#                    Learning                      #
 ####################################################
 
-# File Utils
-from .utils import (
-    download, pull_file_from_huggingface, get_md5,
-    compress_folder, extract_archive, check_file_path
-)
+if env_checker.pytorch_lightning_support:
+    from .learning import (
+        BaseEnv, BaseModel, Trainer, Checkpoint, Logger
+    )
+    
 
-# Time Utils
-from .utils import tqdm_by_time, Timer
+####################################################
+#                Version and Author                #
+####################################################
 
-# Type Utils
-from .utils import to_numpy, to_tensor
-
-# GNN4CO
-from .extension.gnn4co import (
-    GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
-)
-
-
-__version__ = "1.0.0"
+__version__ = "0.4.1"
 __author__ = "SJTU-ReThinkLab"

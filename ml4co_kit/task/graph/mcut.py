@@ -50,7 +50,7 @@ class MCutTask(GraphTaskBase):
         """Check if the solution is valid."""
         return True
         
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         # Check Constraints
         if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
@@ -59,7 +59,7 @@ class MCutTask(GraphTaskBase):
         src_index = sol[self.edge_index[0]] 
         dst_index = sol[self.edge_index[1]]
         mask = src_index != dst_index
-        return np.sum(self.edges_weight[mask])
+        return np.sum(self.edges_weight[mask]) / 2
 
     def render(
         self, 

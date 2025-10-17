@@ -13,8 +13,10 @@ MCl Wrapper Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import os
+import shutil
 import pathlib
-from ml4co_kit import MClWrapper, MClGenerator, LcDegreeSolver
+from ml4co_kit import MClWrapper, MClGenerator, LcDegreeSolver, get_md5
 from tests.wrapper_test.base import WrapperTesterBase
 
 
@@ -37,4 +39,34 @@ class MClWrapperTester(WrapperTesterBase):
         )
         
     def _test_other_rw_methods(self):
-        pass
+
+        ###############################################################
+        #     Test-1: Transfer TXT format to gpickle-result format     #
+        ###############################################################
+        
+        # 1.1 Read txt data and transfer it to gpickle-result format
+        txt_path = pathlib.Path("test_dataset/mcl/wrapper/mcl_rb-small_uniform-weighted_4ins.txt")
+        wrapper = MClWrapper()
+        wrapper.from_txt(file_path=txt_path)
+        wrapper.to_gpickle_result_folder(
+            graph_folder_path=pathlib.Path("tmp/tmp_mcl_instance"),
+            result_foler_path=pathlib.Path("tmp/tmp_mcl_solution"),
+        )
+        
+        # 3.2 Verify conversion consistency
+        wrapper = MClWrapper()
+        wrapper.from_gpickle_result_folder(
+            graph_folder_path=pathlib.Path("tmp/tmp_mcl_instance"),
+            result_foler_path=pathlib.Path("tmp/tmp_mcl_solution"),
+            ref=False,
+            overwrite=True,
+        )
+        tmp_txt_path = pathlib.Path("tmp/tmp_mcl.txt")
+        wrapper.to_txt(tmp_txt_path)
+        if get_md5(txt_path) != get_md5(tmp_txt_path):
+            raise ValueError("Inconsistent txt data.")
+        
+        # 3.3 Clean up
+        shutil.rmtree(pathlib.Path("tmp/tmp_mcl_instance"))
+        shutil.rmtree(pathlib.Path("tmp/tmp_mcl_solution"))
+        os.remove(tmp_txt_path)

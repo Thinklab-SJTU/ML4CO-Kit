@@ -22,15 +22,16 @@ from ml4co_kit.solver.lib.hgs.c_hgs import HGS_SOLVER_PATH
 
 def cvrp_hgs(
     task_data: CVRPTask,
-    hgs_scale: int = 1e6,
+    hgs_scale: int = 2e4,
+    hgs_demands_scale: int = 1e5,
     hgs_time_limit: float = 1.0,
     hgs_show_info: bool = False,
 ):
     # Preparation 
     depots = (task_data.depots * hgs_scale).astype(np.int32)
     points = (task_data.points * hgs_scale).astype(np.int32)
-    demands = (task_data.norm_demands * hgs_scale).astype(np.int64)
-    capacity = int(hgs_scale)
+    demands = (task_data.norm_demands * hgs_demands_scale).astype(np.int32)
+    capacity = int(hgs_demands_scale)
     vrp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     tour_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     pg_abs_path = tour_file.name + ".PG.csv"

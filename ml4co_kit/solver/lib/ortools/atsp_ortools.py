@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for ATSP
+OR-Tools Solver for ATSP
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

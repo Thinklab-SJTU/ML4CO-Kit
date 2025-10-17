@@ -20,7 +20,7 @@ sys.path.insert(0, root_folder)
 
 
 # Routing Problems
-from generator_test import (
+from tests.generator_test import (
     ATSPGenTester, 
     CVRPGenTester, 
     OPGenTester, 
@@ -30,7 +30,7 @@ from generator_test import (
 )
 
 # Graph Problems
-from generator_test import (
+from tests.generator_test import (
     MClGenTester, 
     MCutGenTester, 
     MISGenTester, 
@@ -38,7 +38,8 @@ from generator_test import (
 )
 
 
-if __name__ == "__main__":
+# Test Generator
+def test_generator():
     # Routing Problems
     ATSPGenTester().test()
     CVRPGenTester().test()
@@ -52,3 +53,8 @@ if __name__ == "__main__":
     MCutGenTester().test()
     MISGenTester().test()
     MVCGenTester().test()
+
+
+# Main
+if __name__ == "__main__":
+    test_generator()

@@ -74,7 +74,7 @@ class MCutGenTester(GenTesterBase):
                     "edge_weighted_gen": GraphWeightGenerator(
                         weighted_type=GRAPH_WEIGHT_TYPE.BINORMIAL),
                 },
-                # Uniform (w/o weighted)
+                # Watts-Strogatz (w/o weighted)
                 {
                     "distribution_type": GRAPH_TYPE.WS,
                     "edge_weighted": False,
@@ -87,6 +87,11 @@ class MCutGenTester(GenTesterBase):
                 # Holme-Kim (w/o weighted)
                 {
                     "distribution_type": GRAPH_TYPE.HK,
+                    "edge_weighted": False,
+                },
+                # RB (w/o weighted)
+                {
+                    "distribution_type": GRAPH_TYPE.RB,
                     "edge_weighted": False,
                 },
             ]

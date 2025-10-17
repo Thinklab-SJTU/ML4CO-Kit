@@ -237,21 +237,34 @@ class MClWrapper(WrapperBase):
         self, 
         graph_folder_path: pathlib.Path = None, 
         result_foler_path: pathlib.Path = None, 
-        show_time: bool = False
+        show_time: bool = False,
+        sequential_orderd: bool = True
     ):
         """Write task data to NetworkX format files"""
         # Write problem of task data (.gpickle)
         if graph_folder_path is not None:
             os.makedirs(graph_folder_path, exist_ok=True)
             write_msg = f"Writing data to {graph_folder_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                graph_file_path = os.path.join(graph_folder_path, f"{task.name}.gpickle")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    graph_file_path = os.path.join(graph_folder_path, f"{idx_str}.gpickle")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    graph_file_path = os.path.join(graph_folder_path, f"{task.name}.gpickle")
                 task.to_gpickle_result(gpickle_file_path=graph_file_path)
         
         # Write result of task data (.result)
         if result_foler_path is not None:
             os.makedirs(result_foler_path, exist_ok=True)
             write_msg = f"Writing result to {result_foler_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                result_file_path = os.path.join(result_foler_path, f"{task.name}.result")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    result_file_path = os.path.join(result_foler_path, f"{idx_str}.result")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    result_file_path = os.path.join(result_foler_path, f"{task.name}.result")
                 task.to_gpickle_result(result_file_path=result_file_path)

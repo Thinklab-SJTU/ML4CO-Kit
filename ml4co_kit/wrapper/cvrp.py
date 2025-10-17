@@ -236,20 +236,33 @@ class CVRPWrapper(WrapperBase):
         self, 
         vrp_folder_path: pathlib.Path = None, 
         sol_folder_path: pathlib.Path = None, 
-        show_time: bool = False
+        show_time: bool = False,
+        sequential_orderd: bool = True
     ):
         # Write problem of task data (.vrp)
         if vrp_folder_path is not None:
             os.makedirs(vrp_folder_path, exist_ok=True)
             write_msg = f"Writing data to {vrp_folder_path} and {sol_folder_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                vrp_file_path = os.path.join(vrp_folder_path, f"{task.name}.vrp")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    vrp_file_path = os.path.join(vrp_folder_path, f"{idx_str}.vrp")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    vrp_file_path = os.path.join(vrp_folder_path, f"{task.name}.vrp")
                 task.to_vrplib(vrp_file_path=vrp_file_path)
         
         # Write solution of task data (.sol)
         if sol_folder_path is not None:
             os.makedirs(sol_folder_path, exist_ok=True)
             write_msg = f"Writing solution to {sol_folder_path}"
+            idx = 1  # Initialize idx
             for task in tqdm_by_time(self.task_list, write_msg, show_time):
-                sol_file_path = os.path.join(sol_folder_path, f"{task.name}.sol")
+                if sequential_orderd:
+                    idx_str = f"{idx:08d}"
+                    sol_file_path = os.path.join(sol_folder_path, f"{idx_str}.sol")
+                    idx += 1  # Increment idx for the next task
+                else:
+                    sol_file_path = os.path.join(sol_folder_path, f"{task.name}.sol")
                 task.to_vrplib(sol_file_path=sol_file_path)

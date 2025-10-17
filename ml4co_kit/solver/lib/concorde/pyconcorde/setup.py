@@ -11,76 +11,40 @@ CONCORDE_DIR: contains concorde.a and concorde.h
 Note that for the build process to work correctly, you should either
 not set these variables (and rely on the downloaded Concorde) or set
 both of them. Setting only one will not work as intended.
-
 """
 
-from __future__ import print_function
 
 import os
-from os.path import exists, join as pjoin
-import platform
 import shutil
+import platform
 import subprocess
-
-try:
-    import urllib.request
-
-    urlretrieve = urllib.request.urlretrieve
-except ImportError:  # python 2
-    from urllib import urlretrieve
-
+import numpy as np
+from Cython.Build import cythonize
+from os.path import exists, join as pjoin
 from setuptools import find_packages, setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 
-from Cython.Build import cythonize
-
-import numpy as np
-
-QSOPT_LOCATION = {
-    "Darwin": {
-        "arm64": (
-            "https://www.math.uwaterloo.ca/~bico/qsopt/downloads/codes/m1/qsopt.a",
-            "https://www.math.uwaterloo.ca/~bico/qsopt/downloads/codes/m1/qsopt.h",
-        ),
-        "x86_64": (
-            "https://www.math.uwaterloo.ca/~bico/qsopt/downloads/codes/mac64/qsopt.a",
-            "https://www.math.uwaterloo.ca/~bico/qsopt/downloads/codes/mac64/qsopt.h",
-        ),
-    },
-    "Linux": {
-        "x86_64": (
-            "https://www.math.uwaterloo.ca/~bico/qsopt/beta/codes/PIC/qsopt.PIC.a",
-            "https://www.math.uwaterloo.ca/~bico/qsopt/beta/codes/PIC/qsopt.h",
-        ),
-    },
-}
-
-CONCORDE_SRC = "https://www.math.uwaterloo.ca/tsp/concorde/downloads/codes/src/co031219.tgz"  # noqa
-
-
-def _safe_makedirs(*paths):
-    for path in paths:
-        try:
-            os.makedirs(path)
-        except os.error:
-            pass
-
 
 def download_concorde_qsopt():
-    _safe_makedirs("data")
-    _safe_makedirs("build")
-    qsopt_a_path = pjoin("data", "qsopt.a")
-    qsopt_h_path = pjoin("data", "qsopt.h")
-    if not exists(qsopt_a_path) or not exists(qsopt_h_path):
-        print("qsopt is missing, downloading")
-        machine = platform.machine()
-        qsopt_a_url, qsopt_h_url = QSOPT_LOCATION[platform.system()][machine]
-        urlretrieve(qsopt_a_url, qsopt_a_path)
-        urlretrieve(qsopt_h_url, qsopt_h_path)
-    concorde_src_path = pjoin("build", "concorde.tgz")
-    if not exists(concorde_src_path):
-        print("concorde is missing, downloading")
-        urlretrieve(CONCORDE_SRC, concorde_src_path)
+    # Make sure the build directories exist
+    os.makedirs("build", exist_ok=True)
+
+    # Get system and machine type
+    system_name = platform.system()
+    machine_type = platform.machine()
+    
+    # copy QSOPT files from data/{system_name}_{machine_type} to data directory
+    qsopt_a_path = pjoin("data", f"{system_name}_{machine_type}", "qsopt.a")
+    qsopt_h_path = pjoin("data", f"{system_name}_{machine_type}", "qsopt.h")
+    if not os.path.exists(qsopt_a_path):
+        raise ValueError(f"QSOPT files for {system_name}_{machine_type} are missing")
+    shutil.copy(qsopt_a_path, pjoin("data", "qsopt.a"))
+    shutil.copy(qsopt_h_path, pjoin("data", "qsopt.h"))
+
+    # Copy concorde codes from src to build
+    concorde_src_path = "src"
+    concorde_build_path = pjoin("build", "concorde")
+    shutil.copytree(concorde_src_path, concorde_build_path)
 
 
 def _run(cmd, cwd):
@@ -90,7 +54,6 @@ def _run(cmd, cwd):
 def build_concorde():
     if not exists("data/concorde.h") or not exists("data/concorde.a"):
         print("building concorde")
-        _run("tar xzvf concorde.tgz", "build")
 
         cflags = "-fPIC -O2 -g"
 

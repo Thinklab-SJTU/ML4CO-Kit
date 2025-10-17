@@ -26,7 +26,7 @@ def atsp_2opt_ls(
 ):
     """Two-opt local search for ATSP problems."""
     # Get data from task data
-    init_tour = task_data.sol
+    init_tour = task_data.sol.astype(np.int16)
     dists = task_data.dists.astype(np.float32)
     nodes_num = dists.shape[-1]
     

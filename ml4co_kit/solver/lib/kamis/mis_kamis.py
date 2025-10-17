@@ -71,10 +71,11 @@ def mis_kamis(
         str(kamis_time_limit),
     ]
     message = (
-        "Please check KaMIS compilation. You can try ``self.install()" 
-        "If you are sure that the ``KaMIS`` is correct, please confirm"
-        "whether the Conda environment of the terminal is consistent"
-        "with the Python environment."
+        "[linux] Please check KaMIS compilation. You can try ``self.install() " 
+        "If you are sure that the ``KaMIS`` is correct, please confirm "
+        "whether the Conda environment of the terminal is consistent "
+        "with the Python environment. \n"
+        "[macos] Current version of ML4CO-Kit is not supported for KaMIS on macOS." 
     ) 
     try:
         subprocess.run(

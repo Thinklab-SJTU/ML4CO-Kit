@@ -214,14 +214,14 @@ class PCTSPTask(RoutingTaskBase):
         if name is not None:
             self.name = name
   
-    def check_constraints(self, sol: np.ndarray) -> bool:
+    def check_constraints(self, sol: np.ndarray) -> np.floating:
         """Check if the solution is valid."""
         # Every tour starts and ends with the depot
         if sol[0] != 0 or sol[-1] != 0:
             return False
         
         # The total collected prize should be at least the required prize
-        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1]-1])
+        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1] - 1])
         if collected_norm_prizes < 1 - self.threshold: # for floating point precision
             return False
         return True

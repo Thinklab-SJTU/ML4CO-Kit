@@ -15,10 +15,11 @@ Base class for all wrappers in the ML4CO kit.
 
 
 import os
+import random
 import pickle
 import pathlib
 import numpy as np
-from typing import Union, Type
+from typing import Sequence, Union, Type
 from multiprocessing import Pool
 from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.utils.time_utils import Timer
@@ -158,6 +159,9 @@ class WrapperBase(object):
         timer.show_time()
 
     def _generate(self, generator: GeneratorBase, solver: SolverBase) -> TaskBase:
+        seed = os.getpid() % 2**32          # Seed
+        random.seed(seed)                   # Set seed for random
+        np.random.seed(seed)                # Set seed for numpy
         task_data = generator.generate()    # Generate Task Data
         solver.solve(task_data)             # Solve Task Data
         return task_data
@@ -280,15 +284,15 @@ class WrapperBase(object):
         timer.end()
         timer.show_time()
     
-    def evaluate(self):
+    def evaluate(self) -> float:
         """Evaluate the task list."""
         sol_costs_list = list()
         for task_data in self.task_list:
             sol_cost = task_data.evaluate(task_data.sol)
             sol_costs_list.append(sol_cost)
-        return np.mean(sol_costs_list)
+        return float(np.mean(sol_costs_list))
     
-    def evaluate_w_gap(self):
+    def evaluate_w_gap(self) -> Sequence[float]:
         """Evaluate the task list."""
         # Initialize lists
         sol_costs_list = list()
@@ -303,8 +307,12 @@ class WrapperBase(object):
             gaps_list.append(gap)
         
         # Calculate the average solution cost, reference cost, and gap
-        avg_sol_cost = np.mean(sol_costs_list)
-        avg_ref_cost = np.mean(ref_costs_list)
-        avg_gap = np.mean(gaps_list)
-        gap_std = np.std(gaps_list)
+        avg_sol_cost = float(np.mean(sol_costs_list))
+        avg_ref_cost = float(np.mean(ref_costs_list))
+        if None not in gaps_list:
+            avg_gap = float(np.mean(gaps_list))
+            gap_std = float(np.std(gaps_list))
+        else:
+            avg_gap = None
+            gap_std = None
         return avg_sol_cost, avg_ref_cost, avg_gap, gap_std
