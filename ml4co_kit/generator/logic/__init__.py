@@ -1,5 +1,5 @@
 r"""
-Task Test Module.
+Logic Generator Module.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -12,21 +12,5 @@ Task Test Module.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-
-# Base Class
-from .base import TaskTesterBase
-
-# Routing Problems
-from .atsp import ATSPTaskTester
-from .cvrp import CVRPTaskTester
-from .tsp import TSPTaskTester
-from .pctsp import PCTSPTaskTester
-
-# Graph Problems
-from .mcl import MClTaskTester
-from .mcut import MCutTaskTester
-from .mis import MISTaskTester
-from .mvc import MVCTaskTester
-
-# Logic Problems
-from .sat import SATTaskTester
+from .base import LogicGeneratorBase, LOGIC_TYPE
+from .sat import SATGenerator
