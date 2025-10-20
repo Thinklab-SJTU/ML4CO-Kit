@@ -12,7 +12,7 @@ Gurobi Solver for MOPO
 
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.portfolio.mo_po import MOPOTask
+from ml4co_kit.task.portfolio.mopo import MOPOTask
 
 
 def mopo_gurobi(

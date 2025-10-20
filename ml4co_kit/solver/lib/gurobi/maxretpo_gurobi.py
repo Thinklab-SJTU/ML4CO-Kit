@@ -12,7 +12,7 @@ Gurobi Solver for MaxRetPO
 
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.portfolio.maxret_po import MaxRetPOTask
+from ml4co_kit.task.portfolio.maxretpo import MaxRetPOTask
 
 
 def maxretpo_gurobi(

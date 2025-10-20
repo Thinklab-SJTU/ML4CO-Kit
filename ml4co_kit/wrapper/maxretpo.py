@@ -1,5 +1,5 @@
 r"""
-MinVarPO Wrapper.
+MaxRetPO Wrapper.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -15,20 +15,20 @@ import pathlib
 import numpy as np
 from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.portfolio.minvar_po import MinVarPOTask
+from ml4co_kit.task.portfolio.maxretpo import MaxRetPOTask
 from ml4co_kit.wrapper.base import WrapperBase
 from ml4co_kit.utils.time_utils import tqdm_by_time
 from ml4co_kit.utils.file_utils import check_file_path
 
 
-class MinVarPOWrapper(WrapperBase):
+class MaxRetPOWrapper(WrapperBase):
     def __init__(
         self, precision: Union[np.float32, np.float64] = np.float32
     ):
-        super(MinVarPOWrapper, self).__init__(
-            task_type=TASK_TYPE.MINVARPO, precision=precision
+        super(MaxRetPOWrapper, self).__init__(
+            task_type=TASK_TYPE.MAXRETPO, precision=precision
         )
-        self.task_list: List[MinVarPOTask] = list()
+        self.task_list: List[MaxRetPOTask] = list()
         
     def from_txt(
         self, 
@@ -40,7 +40,7 @@ class MinVarPOWrapper(WrapperBase):
         """Read task data from ``.txt`` file"""
         # Overwrite task list if overwrite is True
         if overwrite:
-            self.task_list: List[MinVarPOTask] = list()
+            self.task_list: List[MaxRetPOTask] = list()
         
         with open(file_path, "r") as file:
             load_msg = f"Loading data from {file_path}"
@@ -55,13 +55,13 @@ class MinVarPOWrapper(WrapperBase):
                 data_part = split_line[0]
                 sol_part = split_line[1]
                 
-                # Parse data: returns, cov_matrix, required_returns
-                data_parts = data_part.split(" required_returns ")
+                # Parse data: returns, cov_matrix, max_var
+                data_parts = data_part.split(" max_var ")
                 if len(data_parts) != 2:
                     raise ValueError(f"Invalid data format in line {idx + 1}: {data_part}")
                 
                 matrix_part = data_parts[0]
-                required_returns = float(data_parts[1])
+                max_var = float(data_parts[1])
                 
                 # Parse matrix part: returns and covariance matrix
                 matrix_parts = matrix_part.split(" cov ")
@@ -90,20 +90,20 @@ class MinVarPOWrapper(WrapperBase):
                 
                 # Create task
                 if overwrite:
-                    minvar_po_task = MinVarPOTask(precision=self.precision)
+                    maxret_po_task = MaxRetPOTask(precision=self.precision)
                 else:
-                    minvar_po_task = self.task_list[idx]
+                    maxret_po_task = self.task_list[idx]
                 
-                minvar_po_task.from_data(
+                maxret_po_task.from_data(
                     returns=returns, 
                     cov=cov, 
-                    required_returns=required_returns,
+                    max_var=max_var,
                     sol=sol, 
                     ref=ref
                 )
                 
                 if overwrite:
-                    self.task_list.append(minvar_po_task)
+                    self.task_list.append(maxret_po_task)
     
     def to_txt(
         self, file_path: pathlib.Path, show_time: bool = False, mode: str = "w"
@@ -123,16 +123,16 @@ class MinVarPOWrapper(WrapperBase):
                 
                 returns = task.returns
                 cov = task.cov
-                required_returns = task.required_returns
+                max_var = task.max_var
                 sol = task.sol
                 
                 # Write data to ``.txt`` file
-                # Format: returns cov required_returns output solution
+                # Format: returns cov max_var output solution
                 f.write(" ".join(str(x) for x in returns))
                 f.write(" cov ")
                 f.write(" ".join(str(x) for x in cov.flatten()))
-                f.write(" required_returns ")
-                f.write(str(required_returns))
+                f.write(" max_var ")
+                f.write(str(max_var))
                 f.write(" output ")
                 f.write(" ".join(str(x) for x in sol))
                 f.write("\n")

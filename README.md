@@ -131,7 +131,7 @@ After the environment is installed, run the following command to confirm that th
 ['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
 ```
 
-⚠️ **2025-10-21** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9
+⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9
 
 
 ## 📝 **ML4CO-Kit Development status**
@@ -239,6 +239,9 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MCut  | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MIS   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MVC   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
+|                  | MaxRetPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | HGSSolver        | CVRP  | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | ✔ |
 | ILSSolver        | PCTSP | Python | [PCTSP](https://github.com/jordanamecler/PCTSP) | [PCTSP](https://github.com/jordanamecler/PCTSP) | ✔ |
 |                  | SPCTSP| Python | [Attention](https://github.com/wouterkool/attention-learn-to-route) | [Attention](https://github.com/wouterkool/attention-learn-to-route) | ✔ |
@@ -264,7 +267,9 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
-
+| SCIPSolver       | MaxRetPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 </details>
 
 ---
@@ -292,14 +297,17 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 | Wrapper | TXT | Other R&W |
 | :-----: | --- | :-------: |
-| ATSPWrapper | "[dists] output [sol]" | ``tsplib`` |
-| CVRPWrapper | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
-| ORWrapper | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
-| PCTSPWrapper | "depots [depots] points [points] penalties [penalties] prizes [prizes] required_prize [required_prize] output [sol]" | |
-| SPCTSPWrapper | "depots [depots] points [points] penalties [penalties] expected_prizes [expected_prizes] actual_prizes [actual_prizes] required_prize [required_prize] output [sol]" | |
-| TSPWrapper | "[points] output [sol]" | ``tsplib`` |
-| (Graph)Wrapper | "[edge_index] label [sol]" | ``gpickle`` |
-| (Graph)Wrapper [weighted]| "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
+| ATSPWrapper               | "[dists] output [sol]" | ``tsplib`` |
+| CVRPWrapper               | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
+| ORWrapper                 | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
+| PCTSPWrapper              | "depots [depots] points [points] penalties [penalties] prizes [prizes] required_prize [required_prize] output [sol]" | |
+| SPCTSPWrapper             | "depots [depots] points [points] penalties [penalties] expected_prizes [expected_prizes] actual_prizes [actual_prizes] required_prize [required_prize] output [sol]" | |
+| TSPWrapper                | "[points] output [sol]" | ``tsplib`` |
+| (Graph)Wrapper            | "[edge_index] label [sol]" | ``gpickle`` |
+| (Graph)Wrapper [weighted] | "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
+| MaxRetPOWrapper           | "[returns] cov [cov] max_var [max_var] output [sol]" | |
+| MinVarPOWrapper           | "[returns] cov [cov] required_returns [required_returns] output [sol]" | |
+| MOPOWrapper               | "[returns] cov [cov] var_factor [var_factor] output [sol]" | |
 
 </details>
 

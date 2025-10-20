@@ -15,7 +15,7 @@ Multi-Objective Portfolio Optimization (MOPO)
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.portfolio.mo_po import MOPOTask
+from ml4co_kit.task.portfolio.mopo import MOPOTask
 from ml4co_kit.generator.portfolio.base import (
     PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
 )

@@ -15,7 +15,7 @@ import pathlib
 import numpy as np
 from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.portfolio.mo_po import MOPOTask
+from ml4co_kit.task.portfolio.mopo import MOPOTask
 from ml4co_kit.wrapper.base import WrapperBase
 from ml4co_kit.utils.time_utils import tqdm_by_time
 from ml4co_kit.utils.file_utils import check_file_path

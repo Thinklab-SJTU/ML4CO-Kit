@@ -16,7 +16,7 @@ Minimum Variance Portfolio Optimization (MinVarPO)
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.portfolio.minvar_po import MinVarPOTask
+from ml4co_kit.task.portfolio.minvarpo import MinVarPOTask
 from ml4co_kit.generator.portfolio.base import (
     PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
 )

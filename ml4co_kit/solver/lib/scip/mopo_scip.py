@@ -14,7 +14,7 @@ SCIP Solver for MOPO
 
 import numpy as np
 from pyscipopt import Model, quicksum
-from ml4co_kit.task.portfolio.mo_po import MOPOTask
+from ml4co_kit.task.portfolio.mopo import MOPOTask
 
 
 def mopo_scip(

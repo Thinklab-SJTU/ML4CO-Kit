@@ -12,7 +12,7 @@ Gurobi Solver for MinVarPO
 
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.portfolio.minvar_po import MinVarPOTask
+from ml4co_kit.task.portfolio.minvarpo import MinVarPOTask
 
 
 def minvarpo_gurobi(

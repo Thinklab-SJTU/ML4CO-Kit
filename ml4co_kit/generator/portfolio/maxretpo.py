@@ -16,7 +16,7 @@ Maximum Return Portfolio Optimization (MaxRetPO)
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.portfolio.maxret_po import MaxRetPOTask
+from ml4co_kit.task.portfolio.maxretpo import MaxRetPOTask
 from ml4co_kit.generator.portfolio.base import (
     PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
 )

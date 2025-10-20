@@ -14,7 +14,7 @@ SCIP Solver for MaxRetPO
 
 import numpy as np
 from pyscipopt import Model, quicksum
-from ml4co_kit.task.portfolio.maxret_po import MaxRetPOTask
+from ml4co_kit.task.portfolio.maxretpo import MaxRetPOTask
 
 
 def maxretpo_scip(

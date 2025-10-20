@@ -15,7 +15,7 @@ Base Class for Portfolio Optimization Generators.
 
 import numpy as np
 from enum import Enum
-from typing import Union
+from typing import Union, List
 from ml4co_kit.task.portfolio.base import PortfolioTaskBase
 from ml4co_kit.generator.base import GeneratorBase, TASK_TYPE
 
@@ -66,8 +66,8 @@ class PortfolioDistributionArgs(object):
         # regime
         regime_num: int = 2,
         regime_trans_prob: float = 0.05,
-        regime_mu_list: list[float] = [0.02, -0.02],
-        regime_sigma_list: list[float] = [0.01, 0.03],
+        regime_mu_list: List[float] = [0.02, -0.02],
+        regime_sigma_list: List[float] = [0.01, 0.03],
     ):
         # Special Args for GBM
         self.gbm_mu_ann = gbm_mu_ann                 # Annualized mean return

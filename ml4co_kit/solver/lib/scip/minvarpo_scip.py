@@ -14,7 +14,7 @@ SCIP Solver for MinVarPO
 
 import numpy as np
 from pyscipopt import Model, quicksum
-from ml4co_kit.task.portfolio.minvar_po import MinVarPOTask
+from ml4co_kit.task.portfolio.minvarpo import MinVarPOTask
 
 
 def minvarpo_scip(
