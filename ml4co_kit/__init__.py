@@ -65,8 +65,12 @@ from .generator import (
 )
 from .generator import MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
 
+# Portfolio Generator
+from .generator import PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
+from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
+
 # Routing Generator
-from .generator import RoutingGenerator
+from .generator import RoutingGeneratorBase
 from .generator import (
     ATSP_TYPE, CVRP_TYPE, OP_TYPE, 
     PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE

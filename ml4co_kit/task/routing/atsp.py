@@ -211,14 +211,6 @@ class ATSPTask(RoutingTaskBase):
             total_distance += self.dists[sol[i]][sol[i + 1]]
         return total_distance
 
-    def render(
-        self, 
-        save_path: pathlib.Path, 
-        with_sol: bool = True,
-        figsize: tuple = (5, 5),
-        node_color: str = "darkblue",
-        edge_color: str = "darkblue",
-        node_size: int = 50,
-    ):
+    def render(self):
         """Render the ATSP problem instance with or without solution."""
         raise NotImplementedError("Render is not implemented for ATSP.")

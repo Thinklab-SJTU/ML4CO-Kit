@@ -19,7 +19,7 @@ from enum import Enum
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.routing.atsp import ATSPTask
-from ml4co_kit.generator.routing.base import RoutingGenerator
+from ml4co_kit.generator.routing.base import RoutingGeneratorBase
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -30,7 +30,7 @@ class ATSP_TYPE(str, Enum):
     HCP = "hcp" # HCP, transfer HCP to ATSP
 
 
-class ATSPGenerator(RoutingGenerator):
+class ATSPGenerator(RoutingGeneratorBase):
     """Generator for ATSP instances."""
     
     def __init__(
@@ -43,7 +43,7 @@ class ATSPGenerator(RoutingGenerator):
         sat_clauses_nums: int = 6,
     ):
         # Super Initialization
-        super().__init__(
+        super(ATSPGenerator, self).__init__(
             task_type=TASK_TYPE.ATSP, 
             distribution_type=distribution_type, 
             precision=precision

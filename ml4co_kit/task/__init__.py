@@ -12,6 +12,12 @@ from .graph.mcut import MCutTask
 from .graph.mis import MISTask
 from .graph.mvc import MVCTask
 
+# Portfolio Task
+from .portfolio.base import PortfolioTaskBase
+from .portfolio.minvar_po import MinVarPOTask
+from .portfolio.maxret_po import MaxRetPOTask
+from .portfolio.mo_po import MOPOTask
+
 # Routing Task
 from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .routing.atsp import ATSPTask

@@ -136,24 +136,31 @@ After the environment is installed, run the following command to confirm that th
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**Graph: MCl & MCut & MIS & MVC; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
+**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO**
+
+**✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
 <details>
 <summary>Task (Level 1)</summary>
 
 | Task | Definition | Check Constraint | Evaluation | Render | Special R/O |
 | ---- | :--------: | :--------------: | :--------: | :----: | :---------: |
-|  Asymmetric TSP (ATSP)                        | ✔ | ✔ | ✔ | 📆 | ``tsplib`` |
-|  Capacitated Vehicle Routing Problem (CVRP)   | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
-|  Orienteering Problem (OP)                    | ✔ | ✔ | ✔ | 📆 |   |
-|  Prize Collection TSP (PCTSP)                 | ✔ | ✔ | ✔ | 📆 |   |
-|  Stochastic PCTSP (SPCTSP)                    | ✔ | ✔ | ✔ | 📆 |   |
-|  Traveling Salesman Problem (TSP)             | ✔ | ✔ | ✔ | ✔  | ``tsplib`` |
-|  Maximum Clique (MCl)                         | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Maximum Cut (MCut)                           | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Maximum Independent Set (MIS)                | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Minimum Vertex Cover (MVC)                   | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-
+| **Routing Tasks** |
+|  Asymmetric TSP (ATSP)                              | ✔ | ✔ | ✔ | 📆 | ``tsplib`` |
+|  Capacitated Vehicle Routing Problem (CVRP)         | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
+|  Orienteering Problem (OP)                          | ✔ | ✔ | ✔ | 📆 |   |
+|  Prize Collection TSP (PCTSP)                       | ✔ | ✔ | ✔ | 📆 |   |
+|  Stochastic PCTSP (SPCTSP)                          | ✔ | ✔ | ✔ | 📆 |   |
+|  Traveling Salesman Problem (TSP)                   | ✔ | ✔ | ✔ | ✔  | ``tsplib`` |
+| **Graph Tasks** |
+|  Maximum Clique (MCl)                               | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Maximum Cut (MCut)                                 | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Maximum Independent Set (MIS)                      | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Minimum Vertex Cover (MVC)                         | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+| **Portfolio Tasks** |
+|  Maximum Return Portfolio Optimization (MaxRetPO)   | ✔ | ✔ | ✔ | 📆  |  |
+|  Minimum Variance Portfolio Optimization (MinVarPO) | ✔ | ✔ | ✔ | 📆  |  |
+|  Multi-Objective Portfolio Optimization (MOPO)      | ✔ | ✔ | ✔ | 📆  |  |
 </details>
 
 ---
@@ -163,6 +170,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 | Task | Distribution | Brief Intro. | State |
 | :--: | :----------: | ------------ | :---: |
+| **Routing Tasks** |
 | ATSP    | Uniform | Random distance matrix with triangle inequality | ✔ |
 |         | SAT | SAT problem transformed to ATSP | ✔ |
 |         | HCP | Hamiltonian Cycle Problem transformed to ATSP | ✔ |
@@ -176,6 +184,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | TSP     | Uniform | Random coordinates with uniform distribution | ✔ |
 |         | Gaussian | Random coordinates with Gaussian distribution | ✔ |
 |         | Cluster | Coordinates clustered around random centers | ✔ |
+| **Graph Tasks** |
 | (Graph) | ER (structure) | Erdos-Renyi random graph | ✔ |
 |         | BA (structure) | Barabasi-Albert scale-free graph | ✔ |
 |         | HK (structure) | Holme-Kim small-world graph | ✔ |
@@ -188,6 +197,14 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |         | Lognormal (weighted) | Weights with Lognormal distribution | ✔ |
 |         | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 |         | Binomial (weighted) | Weights with Binomial distribution | ✔ |
+| **Portfolio Tasks** |
+| (Portfolio) | GBM | Geometric Brownian Motion model | ✔ |
+|          | Factor | Factor model with k factors and idiosyncratic noise | ✔ |
+|          | VAR(1) | Vector Autoregressive model of order 1 | ✔ |
+|          | MVT | Multivariate T distribution model | ✔ |
+|          | GRACH | GARCH model for volatility clustering | ✔ |
+|          | Jump | Merton Jump-Diffusion model | ✔ |
+|          | Regime | Regime-Switching model with multiple states | ✔ |
 
 </details>
 

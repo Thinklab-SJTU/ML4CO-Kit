@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Union, Tuple
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.routing.cvrp import CVRPTask
-from ml4co_kit.generator.routing.base import RoutingGenerator
+from ml4co_kit.generator.routing.base import RoutingGeneratorBase
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -28,7 +28,7 @@ class CVRP_TYPE(str, Enum):
     GAUSSIAN = "gaussian" # Gaussian coords
 
 
-class CVRPGenerator(RoutingGenerator):
+class CVRPGenerator(RoutingGeneratorBase):
     """Generator for Traveling Salesman Problem (CVRP) instances."""
     
     def __init__(
@@ -47,7 +47,7 @@ class CVRPGenerator(RoutingGenerator):
         gaussian_std: float = 1.0,
     ):
         # Super Initialization
-        super().__init__(
+        super(CVRPGenerator, self).__init__(
             task_type=TASK_TYPE.CVRP, 
             distribution_type=distribution_type, 
             precision=precision

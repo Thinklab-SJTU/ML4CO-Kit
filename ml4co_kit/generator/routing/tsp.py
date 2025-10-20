@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.routing.tsp import TSPTask
-from ml4co_kit.generator.routing.base import RoutingGenerator
+from ml4co_kit.generator.routing.base import RoutingGeneratorBase
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -29,7 +29,7 @@ class TSP_TYPE(str, Enum):
     CLUSTER = "cluster" # Cluster coords
     
 
-class TSPGenerator(RoutingGenerator):
+class TSPGenerator(RoutingGeneratorBase):
     """Generator for Traveling Salesman Problem (TSP) instances."""
     
     def __init__(

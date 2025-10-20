@@ -47,6 +47,11 @@ class TASK_TYPE(str, Enum):
     # Linear Programming Problems
     LP = "LP" # Linear Program
 
+    # Portfolio Optimization Problems
+    MAXRETPO = "MaxRetPO" # Maximum Return Portfolio Optimization
+    MINVARPO = "MinVarPO" # Minimum Variance Portfolio Optimization
+    MOPO = "MOPO" # Multi-Objective Portfolio Optimization
+
 
 class TaskBase(object):
     """Base class for all tasks in the ML4CO kit."""

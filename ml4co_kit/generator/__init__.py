@@ -25,8 +25,16 @@ from .graph.mcut import MCutGenerator
 from .graph.mis import MISGenerator
 from .graph.mvc import MVCGenerator
 
+# Portfolio Generator
+from .portfolio.base import (
+    PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
+)
+from .portfolio.minvar_po import MinVarPOGenerator
+from .portfolio.maxret_po import MaxRetPOGenerator
+from .portfolio.mo_po import MOPOGenerator
+
 # Routing Generator
-from .routing.base import RoutingGenerator
+from .routing.base import RoutingGeneratorBase
 from .routing.atsp import ATSPGenerator, ATSP_TYPE
 from .routing.cvrp import CVRPGenerator, CVRP_TYPE
 from .routing.op import OPGenerator, OP_TYPE
