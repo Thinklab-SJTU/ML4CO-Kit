@@ -98,10 +98,10 @@ class PortfolioTaskBase(TaskBase):
         
         if sol is not None:
             if ref:
-                self.ref_sol = sol
+                self.ref_sol = sol.astype(self.precision)
                 self._check_ref_sol_dim()
             else:
-                self.sol = sol
+                self.sol = sol.astype(self.precision)
                 self._check_sol_dim()
 
         # Set Number of Assets if Provided
