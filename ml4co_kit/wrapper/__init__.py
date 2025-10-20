@@ -17,3 +17,8 @@ from .mcl import MClWrapper
 from .mcut import MCutWrapper
 from .mis import MISWrapper
 from .mvc import MVCWrapper
+
+# Portfolio Optimization Problems
+from .maxret_po import MaxRetPOWrapper
+from .minvar_po import MinVarPOWrapper
+from .mo_po import MOPOWrapper

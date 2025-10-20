@@ -68,7 +68,7 @@ class MaxRetPOTask(PortfolioTaskBase):
 
         # Constraint-02: Maximum variance
         variance = np.dot(sol, self.cov @ sol)
-        if variance > self.max_var - self.threshold:
+        if variance > self.max_var + self.threshold:
             return False
 
         return True

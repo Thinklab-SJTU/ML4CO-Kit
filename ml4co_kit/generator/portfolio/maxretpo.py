@@ -13,7 +13,6 @@ Maximum Return Portfolio Optimization (MaxRetPO)
 # See the Mulan PSL v2 for more details.
 
 
-import cvxpy as cp
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE

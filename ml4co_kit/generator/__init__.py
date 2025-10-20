@@ -29,9 +29,9 @@ from .graph.mvc import MVCGenerator
 from .portfolio.base import (
     PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
 )
-from .portfolio.minvar_po import MinVarPOGenerator
-from .portfolio.maxret_po import MaxRetPOGenerator
-from .portfolio.mo_po import MOPOGenerator
+from .portfolio.minvarpo import MinVarPOGenerator
+from .portfolio.maxretpo import MaxRetPOGenerator
+from .portfolio.mopo import MOPOGenerator
 
 # Routing Generator
 from .routing.base import RoutingGeneratorBase

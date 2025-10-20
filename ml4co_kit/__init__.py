@@ -50,6 +50,10 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 
+# Portfolio Task
+from .task import PortfolioTaskBase
+from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
+
 
 ###################################################
 #                    Generator                    #
@@ -140,6 +144,11 @@ from .wrapper import (
 # Graph Problems
 from .wrapper import (
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
+)
+
+# Portfolio Problems
+from .wrapper import (
+    MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
 )
 
 
