@@ -43,7 +43,8 @@ REQUIRED = [
     "scikit-learn>=1.3.0",
     "ortools>=9.12.4544",
     "huggingface_hub>=0.32.0",
-    "setuptools>=75.0.0"
+    "setuptools>=75.0.0",
+    "PySCIPOpt>=5.6.0"
 ]
 
 EXTRAS = {}

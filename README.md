@@ -58,17 +58,20 @@ Python>=3.8
 numpy>=1.24.3
 networkx>=2.8.8
 tqdm>=4.66.3
+cython>=3.0.8
 pulp>=2.8.0, 
-pandas>=2.0.0,
 scipy>=1.10.1
 aiohttp>=3.10.11
 requests>=2.32.0
+matplotlib>=3.7.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
-cython>=3.0.8
 gurobipy>=11.0.3
 scikit-learn>=1.3.0
-matplotlib>=3.7.4
+ortools>=9.12.4544
+huggingface_hub>=0.32.0
+setuptools>=75.0.0
+PySCIPOpt>=5.6.0
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
