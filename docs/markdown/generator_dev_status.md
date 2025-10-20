@@ -4,7 +4,6 @@
 
 | Task | Distribution | Brief Intro. | State |
 | :--: | :----------: | ------------ | :---: |
-| **Routing Tasks** |
 | ATSP    | Uniform | Random distance matrix with triangle inequality | ✔ |
 |         | SAT | SAT problem transformed to ATSP | ✔ |
 |         | HCP | Hamiltonian Cycle Problem transformed to ATSP | ✔ |
@@ -18,7 +17,6 @@
 | TSP     | Uniform | Random coordinates with uniform distribution | ✔ |
 |         | Gaussian | Random coordinates with Gaussian distribution | ✔ |
 |         | Cluster | Coordinates clustered around random centers | ✔ |
-| **Graph Tasks** |
 | (Graph) | ER (structure) | Erdos-Renyi random graph | ✔ |
 |         | BA (structure) | Barabasi-Albert scale-free graph | ✔ |
 |         | HK (structure) | Holme-Kim small-world graph | ✔ |
@@ -31,7 +29,6 @@
 |         | Lognormal (weighted) | Weights with Lognormal distribution | ✔ |
 |         | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 |         | Binomial (weighted) | Weights with Binomial distribution | ✔ |
-| **Portfolio Tasks** |
 | (Portfolio) | GBM | Geometric Brownian Motion model | ✔ |
 |          | Factor | Factor model with k factors and idiosyncratic noise | ✔ |
 |          | VAR(1) | Vector Autoregressive model of order 1 | ✔ |

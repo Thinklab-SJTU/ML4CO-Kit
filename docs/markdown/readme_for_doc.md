@@ -134,7 +134,7 @@ After the environment is installed, run the following command to confirm that th
 ['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
 ```
 
-⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9
+⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9.
 ```
 
 
