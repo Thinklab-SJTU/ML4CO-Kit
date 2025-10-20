@@ -25,9 +25,9 @@ from ml4co_kit.solver.lib.gurobi.mvc_gurobi import mvc_gurobi
 from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
 from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
+from ml4co_kit.solver.lib.gurobi.mopo_gurobi import mopo_gurobi
 from ml4co_kit.solver.lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
 from ml4co_kit.solver.lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
-from ml4co_kit.solver.lib.gurobi.mopo_gurobi import mopo_gurobi
 
 
 class GurobiSolver(SolverBase):

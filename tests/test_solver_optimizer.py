@@ -37,7 +37,8 @@ from tests.solver_optimizer_test import (
     KaMISSolverTester, 
     LcDegreeSolverTester,
     LKHSolverTester,
-    ORSolverTester
+    ORSolverTester,
+    SCIPSolverTester
 )
 basic_solver_class_list = [
     ConcordeSolverTester, 
@@ -48,7 +49,8 @@ basic_solver_class_list = [
     InsertionSolverTester, 
     LcDegreeSolverTester,
     LKHSolverTester,
-    ORSolverTester
+    ORSolverTester,
+    SCIPSolverTester
 ]
 if env_checker.system == "Linux":
     basic_solver_class_list.append(KaMISSolverTester)

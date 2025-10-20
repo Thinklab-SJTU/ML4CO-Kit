@@ -14,16 +14,16 @@ MinVarPO Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import MinVarPOWrapper, MinVarPOGenerator, GurobiSolver
+from ml4co_kit import MinVarPOWrapper, MinVarPOGenerator, SCIPSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class MOPOWrapperTester(WrapperTesterBase):
+class MinVarPOWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(MOPOWrapperTester, self).__init__(
+        super(MinVarPOWrapperTester, self).__init__(
             test_wrapper_class=MinVarPOWrapper,
             generator=MinVarPOGenerator(),
-            solver=GurobiSolver(),
+            solver=SCIPSolver(scip_time_limit=2.0),
             pickle_files_list=[
                 pathlib.Path("test_dataset/minvarpo/wrapper/minvarpo_gbm_4ins.pkl"),
             ],

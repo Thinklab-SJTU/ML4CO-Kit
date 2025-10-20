@@ -14,6 +14,7 @@ Base class for solver testers.
 
 
 import pathlib
+import re
 from typing import Type, List
 from ml4co_kit import SolverBase, TaskBase, TASK_TYPE
 from ml4co_kit import (
@@ -477,6 +478,13 @@ class SolverTesterBase(object):
             minvarpo_test_files_list = [
                 pathlib.Path("test_dataset/minvarpo/task/minvarpo_gbm_task.pkl"),
             ]
+            task_list = list()
+            for test_file in minvarpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MinVarPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
@@ -499,6 +507,13 @@ class SolverTesterBase(object):
             maxretpo_test_files_list = [
                 pathlib.Path("test_dataset/maxretpo/task/maxretpo_gbm_task.pkl"),
             ]
+            task_list = list()
+            for test_file in maxretpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MaxRetPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
@@ -521,6 +536,13 @@ class SolverTesterBase(object):
             mopo_test_files_list = [
                 pathlib.Path("test_dataset/mopo/task/mopo_gbm_task.pkl"),
             ]
+            task_list = list()
+            for test_file in mopo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MOPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":

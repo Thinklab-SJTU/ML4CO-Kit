@@ -41,3 +41,4 @@ from .solver.kamis import KaMISSolverTester
 from .solver.lc_degree import LcDegreeSolverTester
 from .solver.lkh import LKHSolverTester
 from .solver.ortools import ORSolverTester
+from .solver.scip import SCIPSolverTester

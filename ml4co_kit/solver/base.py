@@ -22,32 +22,30 @@ from ml4co_kit.optimizer.base import OptimizerBase
 
 class SOLVER_TYPE(str, Enum):
     """Define the solver types as an enumeration."""
-    
-    # Simple Heuristic Algorithms
-    GREEDY = "greedy"
-    BEAM = "beam"
-    GP_DEGREE = "gp_degree"
-    LC_DEGREE = "lc_degree"
-    INSERTION = "insertion"
-    
-    # Traditional Algorithms
+    # Does not need any dependencies
     CONCORDE = "concorde"
     GA_EAX = "ga_eax"
-    GUROBI = "gurobi"
-    LKH = "lkh"
+    GP_DEGREE = "gp_degree"
     HGS = "hgs"
+    ILS = "ils"
+    INSERTION = "insertion"
+    KAMIS = "kamis"
+    LC_DEGREE = "lc_degree"
+    LKH = "lkh"
     ORTOOLS = "ortools"
     PYVRP = "pyvrp"
-    KAMIS = "kamis"
-    ILS = "ils"
-    
-    # Sampling-Based Algorithms
-    ISCO = "isco"
-    RLSA = "rlsa"
+    SCIP = "scip"
 
-    # ML4CO
-    NEUROLKH = "neurolkh"
+    # Need Gurobi License
+    GUROBI = "gurobi"
+
+    # Need Torch
+    BEAM = "beam"
+    GREEDY = "greedy"
+    ISCO = "isco"
     MCTS = "mcts"
+    NEUROLKH = "neurolkh"
+    RLSA = "rlsa"
 
 
 class SolverBase(object):

@@ -14,16 +14,16 @@ MaxRetPO Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import MaxRetPOWrapper, MaxRetPOGenerator, GurobiSolver
+from ml4co_kit import MaxRetPOWrapper, MaxRetPOGenerator, SCIPSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class MOPOWrapperTester(WrapperTesterBase):
+class MaxRetPOWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(MOPOWrapperTester, self).__init__(
+        super(MaxRetPOWrapperTester, self).__init__(
             test_wrapper_class=MaxRetPOWrapper,
             generator=MaxRetPOGenerator(),
-            solver=GurobiSolver(),
+            solver=SCIPSolver(scip_time_limit=2.0),
             pickle_files_list=[
                 pathlib.Path("test_dataset/maxretpo/wrapper/maxretpo_gbm_4ins.pkl"),
             ],

@@ -1,5 +1,5 @@
 r"""
-MOPO Wrapper Tester.
+MaxRetPO Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,23 +14,21 @@ MOPO Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import MOPOWrapper, MOPOGenerator, SCIPSolver
-from tests.wrapper_test.base import WrapperTesterBase
+from ml4co_kit import MaxRetPOTask
+from tests.task_test.base import TaskTesterBase
 
 
-class MOPOWrapperTester(WrapperTesterBase):
+class MaxRetPOTaskTester(TaskTesterBase):
     def __init__(self):
-        super(MOPOWrapperTester, self).__init__(
-            test_wrapper_class=MOPOWrapper,
-            generator=MOPOGenerator(),
-            solver=SCIPSolver(scip_time_limit=2.0),
+        super(MaxRetPOTaskTester, self).__init__(
+            test_task_class=MaxRetPOTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mopo/wrapper/mopo_gbm_4ins.pkl"),
-            ],
-            txt_files_list=[
-                pathlib.Path("test_dataset/mopo/wrapper/mopo_gbm_4ins.txt"),
+                pathlib.Path("test_dataset/maxretpo/task/maxretpo_gbm_task.pkl"),
             ],
         )
         
     def _test_other_rw_methods(self):
+        pass
+    
+    def _test_render(self):
         pass

@@ -36,6 +36,13 @@ from tests.task_test import (
     MCutTaskTester
 )
 
+# Portfolio Problems
+from tests.task_test import (
+    MaxRetPOTaskTester,
+    MinVarPOTaskTester,
+    MOPOTaskTester
+)
+
 
 # Test Task
 def test_task():
@@ -50,6 +57,11 @@ def test_task():
     MCutTaskTester().test()
     MISTaskTester().test()
     MVCTaskTester().test()
+
+    # Portfolio Problems
+    MaxRetPOTaskTester().test()
+    MinVarPOTaskTester().test()
+    MOPOTaskTester().test()
     
 
 # Main

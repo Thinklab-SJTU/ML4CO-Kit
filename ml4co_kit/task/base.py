@@ -118,7 +118,7 @@ class TaskBase(object):
         ref_cost = self.evaluate(self.ref_sol)
 
         # Calculate the gap
-        if ref_cost < 1e-6:
+        if abs(ref_cost) < 1e-8:
             gap = None
         else:
             if self.minimize:

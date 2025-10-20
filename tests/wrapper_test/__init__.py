@@ -29,3 +29,8 @@ from .mcl import MClWrapperTester
 from .mis import MISWrapperTester
 from .mvc import MVCWrapperTester
 from .mcut import MCutWrapperTester
+
+# Portfolio Problems
+from .maxretpo import MaxRetPOWrapperTester
+from .minvarpo import MinVarPOWrapperTester
+from .mopo import MOPOWrapperTester

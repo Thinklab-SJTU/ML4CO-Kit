@@ -27,3 +27,8 @@ from .mcl import MClTaskTester
 from .mcut import MCutTaskTester
 from .mis import MISTaskTester
 from .mvc import MVCTaskTester
+
+# Portfolio Problems
+from .maxretpo import MaxRetPOTaskTester
+from .minvarpo import MinVarPOTaskTester
+from .mopo import MOPOTaskTester

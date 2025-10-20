@@ -96,7 +96,7 @@ if __name__ == "__main__":
     env_install_helper.install()
 ```
 
-**2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
+⚠️ **2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
 
 ```bash
 XXX with CUDA capability sm_120 is not compatible with the current PyTorch installation. 
@@ -130,6 +130,8 @@ After the environment is installed, run the following command to confirm that th
 >>> print(torch.cuda.get_arch_list())
 ['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
 ```
+
+⚠️ **2025-10-21** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9
 
 
 ## 📝 **ML4CO-Kit Development status**

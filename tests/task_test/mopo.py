@@ -1,5 +1,5 @@
 r"""
-MOPO Wrapper Tester.
+MOPO Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,23 +14,21 @@ MOPO Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import MOPOWrapper, MOPOGenerator, SCIPSolver
-from tests.wrapper_test.base import WrapperTesterBase
+from ml4co_kit import MOPOTask
+from tests.task_test.base import TaskTesterBase
 
 
-class MOPOWrapperTester(WrapperTesterBase):
+class MOPOTaskTester(TaskTesterBase):
     def __init__(self):
-        super(MOPOWrapperTester, self).__init__(
-            test_wrapper_class=MOPOWrapper,
-            generator=MOPOGenerator(),
-            solver=SCIPSolver(scip_time_limit=2.0),
+        super(MOPOTaskTester, self).__init__(
+            test_task_class=MOPOTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mopo/wrapper/mopo_gbm_4ins.pkl"),
-            ],
-            txt_files_list=[
-                pathlib.Path("test_dataset/mopo/wrapper/mopo_gbm_4ins.txt"),
+                pathlib.Path("test_dataset/mopo/task/mopo_gbm_task.pkl"),
             ],
         )
         
     def _test_other_rw_methods(self):
+        pass
+    
+    def _test_render(self):
         pass

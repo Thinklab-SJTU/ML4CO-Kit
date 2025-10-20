@@ -16,6 +16,14 @@ Generator Test Module.
 # Base Class
 from .base import GenTesterBase
 
+# Routing Problems
+from .atsp import ATSPGenTester
+from .cvrp import CVRPGenTester
+from .op import OPGenTester
+from .pctsp import PCTSPGenTester
+from .spctsp import SPCTSPGenTester
+from .tsp import TSPGenTester
+
 # Graph Problems
 from .mcut import MCutGenTester
 from .mcl import MClGenTester
@@ -26,11 +34,3 @@ from .mvc import MVCGenTester
 from .minvar_po import MinVarPOGenTester
 from .maxret_po import MaxRetPOGenTester
 from .mo_po import MOPOGenTester
-
-# Routing Problems
-from .atsp import ATSPGenTester
-from .cvrp import CVRPGenTester
-from .op import OPGenTester
-from .pctsp import PCTSPGenTester
-from .spctsp import SPCTSPGenTester
-from .tsp import TSPGenTester
