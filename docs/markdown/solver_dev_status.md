@@ -25,6 +25,9 @@
 |                  | MCut  | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MIS   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MVC   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
+|                  | MaxRetPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | HGSSolver        | CVRP  | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | ✔ |
 | ILSSolver        | PCTSP | Python | [PCTSP](https://github.com/jordanamecler/PCTSP) | [PCTSP](https://github.com/jordanamecler/PCTSP) | ✔ |
 |                  | SPCTSP| Python | [Attention](https://github.com/wouterkool/attention-learn-to-route) | [Attention](https://github.com/wouterkool/attention-learn-to-route) | ✔ |
@@ -50,3 +53,6 @@
 |                  | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| SCIPSolver       | MaxRetPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
