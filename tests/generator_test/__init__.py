@@ -31,6 +31,6 @@ from .mis import MISGenTester
 from .mvc import MVCGenTester
 
 # Portfolio Problems
-from .minvar_po import MinVarPOGenTester
-from .maxret_po import MaxRetPOGenTester
-from .mo_po import MOPOGenTester
+from .minvarpo import MinVarPOGenTester
+from .maxretpo import MaxRetPOGenTester
+from .mopo import MOPOGenTester
