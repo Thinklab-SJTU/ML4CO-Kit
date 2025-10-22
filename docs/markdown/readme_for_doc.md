@@ -58,17 +58,20 @@ Python>=3.8
 numpy>=1.24.3
 networkx>=2.8.8
 tqdm>=4.66.3
+cython>=3.0.8
 pulp>=2.8.0, 
-pandas>=2.0.0,
 scipy>=1.10.1
 aiohttp>=3.10.11
 requests>=2.32.0
+matplotlib>=3.7.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
-cython>=3.0.8
 gurobipy>=11.0.3
 scikit-learn>=1.3.0
-matplotlib>=3.7.4
+ortools>=9.12.4544
+huggingface_hub>=0.32.0
+setuptools>=75.0.0
+PySCIPOpt>=5.6.0
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
@@ -96,7 +99,7 @@ if __name__ == "__main__":
     env_install_helper.install()
 ```
 
-**2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
+⚠️ **2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
 
 ```bash
 XXX with CUDA capability sm_120 is not compatible with the current PyTorch installation. 
@@ -129,6 +132,9 @@ After the environment is installed, run the following command to confirm that th
 >>> import torch
 >>> print(torch.cuda.get_arch_list())
 ['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
+```
+
+⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9.
 ```
 
 

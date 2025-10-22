@@ -29,12 +29,20 @@ from tests.generator_test import (
     TSPGenTester
 )
 
+
 # Graph Problems
 from tests.generator_test import (
     MClGenTester, 
     MCutGenTester, 
     MISGenTester, 
     MVCGenTester
+)
+
+# Portfolio Problems
+from tests.generator_test import (
+    MinVarPOGenTester, 
+    MaxRetPOGenTester, 
+    MOPOGenTester
 )
 
 # Logic Problems
@@ -61,6 +69,11 @@ def test_generator():
     
     # Logic Problems
     SATGenTester().test()
+
+    # Portfolio Problems
+    MinVarPOGenTester().test()
+    MaxRetPOGenTester().test()
+    MOPOGenTester().test()
 
 
 # Main

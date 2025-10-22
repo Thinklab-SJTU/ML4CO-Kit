@@ -38,3 +38,4 @@ from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
+from .scip import SCIPSolver

@@ -30,5 +30,11 @@ from .mcl import MClGenTester
 from .mis import MISGenTester
 from .mvc import MVCGenTester
 
+# Portfolio Problems
+from .minvarpo import MinVarPOGenTester
+from .maxretpo import MaxRetPOGenTester
+from .mopo import MOPOGenTester
+
+
 # Logic Problems
 from .sat import SATGenTester

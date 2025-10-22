@@ -50,6 +50,10 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 
+# Portfolio Task
+from .task import PortfolioTaskBase
+from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
+
 # Logic Task
 from .task import LogicTaskBase
 from .task import SATTask
@@ -69,8 +73,12 @@ from .generator import (
 )
 from .generator import MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
 
+# Portfolio Generator
+from .generator import PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
+from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
+
 # Routing Generator
-from .generator import RoutingGenerator
+from .generator import RoutingGeneratorBase
 from .generator import (
     ATSP_TYPE, CVRP_TYPE, OP_TYPE, 
     PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE
@@ -95,7 +103,7 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
     HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver
+    LcDegreeSolver, LKHSolver, ORSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
@@ -146,6 +154,11 @@ from .wrapper import (
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
 )
 
+# Portfolio Problems
+from .wrapper import (
+    MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
+)
+
 
 ####################################################
 #                    Learning                      #
@@ -161,5 +174,5 @@ if env_checker.pytorch_lightning_support:
 #                Version and Author                #
 ####################################################
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 __author__ = "SJTU-ReThinkLab"

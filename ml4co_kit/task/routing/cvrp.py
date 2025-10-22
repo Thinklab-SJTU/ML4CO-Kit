@@ -17,7 +17,6 @@ with limited capacity to deliver goods to a set of customers while minimizing co
 # See the Mulan PSL v2 for more details.
 
 
-import sys
 import vrplib
 import pathlib
 import numpy as np

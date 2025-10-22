@@ -31,6 +31,9 @@ class GurobiSolverTester(SolverTesterBase):
                 TASK_TYPE.MCUT, 
                 TASK_TYPE.MIS, 
                 TASK_TYPE.MVC,
+                TASK_TYPE.MINVARPO,
+                TASK_TYPE.MAXRETPO,
+                TASK_TYPE.MOPO,
             ],
             test_args_list=[
                 {}, # ATSP
@@ -40,6 +43,9 @@ class GurobiSolverTester(SolverTesterBase):
                 {}, # MCut
                 {}, # MIS
                 {}, # MVC
+                {}, # MinVarPO
+                {}, # MaxRetPO
+                {}, # MOPO
             ],
             exclude_test_files_list=[
                 [
@@ -55,6 +61,9 @@ class GurobiSolverTester(SolverTesterBase):
                 [], # MCut
                 [], # MIS
                 [], # MVC
+                [], # MinVarPO
+                [], # MaxRetPO
+                [], # MOPO
             ]
         )
         

@@ -58,17 +58,20 @@ Python>=3.8
 numpy>=1.24.3
 networkx>=2.8.8
 tqdm>=4.66.3
+cython>=3.0.8
 pulp>=2.8.0, 
-pandas>=2.0.0,
 scipy>=1.10.1
 aiohttp>=3.10.11
 requests>=2.32.0
+matplotlib>=3.7.0
 async_timeout>=4.0.3
 pyvrp>=0.6.3
-cython>=3.0.8
 gurobipy>=11.0.3
 scikit-learn>=1.3.0
-matplotlib>=3.7.4
+ortools>=9.12.4544
+huggingface_hub>=0.32.0
+setuptools>=75.0.0
+PySCIPOpt>=5.6.0
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
@@ -96,7 +99,7 @@ if __name__ == "__main__":
     env_install_helper.install()
 ```
 
-**2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
+⚠️ **2025-10-14:** While testing the NVIDIA GeForce RTX 50-series GPUs, we have encountered the following error. To fix this issue, we recommend that you upgrade your driver to version ``12.8`` or later and download the corresponding PyTorch build from the official PyTorch website.
 
 ```bash
 XXX with CUDA capability sm_120 is not compatible with the current PyTorch installation. 
@@ -131,29 +134,38 @@ After the environment is installed, run the following command to confirm that th
 ['sm_70', 'sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
 ```
 
+⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9.
+
 
 ## 📝 **ML4CO-Kit Development status**
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**Graph: MCl & MCut & MIS & MVC; ✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
+**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO**
+
+**✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
 <details>
 <summary>Task (Level 1)</summary>
 
 | Task | Definition | Check Constraint | Evaluation | Render | Special R/O |
 | ---- | :--------: | :--------------: | :--------: | :----: | :---------: |
-|  Asymmetric TSP (ATSP)                        | ✔ | ✔ | ✔ | 📆 | ``tsplib`` |
-|  Capacitated Vehicle Routing Problem (CVRP)   | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
-|  Orienteering Problem (OP)                    | ✔ | ✔ | ✔ | 📆 |   |
-|  Prize Collection TSP (PCTSP)                 | ✔ | ✔ | ✔ | 📆 |   |
-|  Stochastic PCTSP (SPCTSP)                    | ✔ | ✔ | ✔ | 📆 |   |
-|  Traveling Salesman Problem (TSP)             | ✔ | ✔ | ✔ | ✔  | ``tsplib`` |
-|  Maximum Clique (MCl)                         | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Maximum Cut (MCut)                           | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Maximum Independent Set (MIS)                | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-|  Minimum Vertex Cover (MVC)                   | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
-
+| **Routing Tasks** |
+|  Asymmetric TSP (ATSP)                              | ✔ | ✔ | ✔ | 📆 | ``tsplib`` |
+|  Capacitated Vehicle Routing Problem (CVRP)         | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
+|  Orienteering Problem (OP)                          | ✔ | ✔ | ✔ | 📆 |   |
+|  Prize Collection TSP (PCTSP)                       | ✔ | ✔ | ✔ | 📆 |   |
+|  Stochastic PCTSP (SPCTSP)                          | ✔ | ✔ | ✔ | 📆 |   |
+|  Traveling Salesman Problem (TSP)                   | ✔ | ✔ | ✔ | ✔  | ``tsplib`` |
+| **Graph Tasks** |
+|  Maximum Clique (MCl)                               | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Maximum Cut (MCut)                                 | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Maximum Independent Set (MIS)                      | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+|  Minimum Vertex Cover (MVC)                         | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+| **Portfolio Tasks** |
+|  Maximum Return Portfolio Optimization (MaxRetPO)   | ✔ | ✔ | ✔ | 📆  |  |
+|  Minimum Variance Portfolio Optimization (MinVarPO) | ✔ | ✔ | ✔ | 📆  |  |
+|  Multi-Objective Portfolio Optimization (MOPO)      | ✔ | ✔ | ✔ | 📆  |  |
 </details>
 
 ---
@@ -163,6 +175,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 | Task | Distribution | Brief Intro. | State |
 | :--: | :----------: | ------------ | :---: |
+| **Routing Tasks** |
 | ATSP    | Uniform | Random distance matrix with triangle inequality | ✔ |
 |         | SAT | SAT problem transformed to ATSP | ✔ |
 |         | HCP | Hamiltonian Cycle Problem transformed to ATSP | ✔ |
@@ -176,6 +189,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | TSP     | Uniform | Random coordinates with uniform distribution | ✔ |
 |         | Gaussian | Random coordinates with Gaussian distribution | ✔ |
 |         | Cluster | Coordinates clustered around random centers | ✔ |
+| **Graph Tasks** |
 | (Graph) | ER (structure) | Erdos-Renyi random graph | ✔ |
 |         | BA (structure) | Barabasi-Albert scale-free graph | ✔ |
 |         | HK (structure) | Holme-Kim small-world graph | ✔ |
@@ -188,6 +202,14 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |         | Lognormal (weighted) | Weights with Lognormal distribution | ✔ |
 |         | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 |         | Binomial (weighted) | Weights with Binomial distribution | ✔ |
+| **Portfolio Tasks** |
+| (Portfolio) | GBM | Geometric Brownian Motion model | ✔ |
+|          | Factor | Factor model with k factors and idiosyncratic noise | ✔ |
+|          | VAR(1) | Vector Autoregressive model of order 1 | ✔ |
+|          | MVT | Multivariate T distribution model | ✔ |
+|          | GRACH | GARCH model for volatility clustering | ✔ |
+|          | Jump | Merton Jump-Diffusion model | ✔ |
+|          | Regime | Regime-Switching model with multiple states | ✔ |
 
 </details>
 
@@ -220,6 +242,9 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MCut  | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MIS   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
 |                  | MVC   | C/C++  | [Gurobi](https://www.gurobi.com/) | [DIffUCO](https://github.com/ml-jku/DIffUCO) | ✔ |
+|                  | MaxRetPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [Gurobi](https://www.gurobi.com/) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | HGSSolver        | CVRP  | C/C++  | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | ✔ |
 | ILSSolver        | PCTSP | Python | [PCTSP](https://github.com/jordanamecler/PCTSP) | [PCTSP](https://github.com/jordanamecler/PCTSP) | ✔ |
 |                  | SPCTSP| Python | [Attention](https://github.com/wouterkool/attention-learn-to-route) | [Attention](https://github.com/wouterkool/attention-learn-to-route) | ✔ |
@@ -245,7 +270,9 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                  | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                  | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
-
+| SCIPSolver       | MaxRetPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MinVarPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                  | MOPO  | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 </details>
 
 ---
@@ -273,14 +300,20 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 
 | Wrapper | TXT | Other R&W |
 | :-----: | --- | :-------: |
-| ATSPWrapper | "[dists] output [sol]" | ``tsplib`` |
-| CVRPWrapper | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
-| ORWrapper | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
-| PCTSPWrapper | "depots [depots] points [points] penalties [penalties] prizes [prizes] required_prize [required_prize] output [sol]" | |
-| SPCTSPWrapper | "depots [depots] points [points] penalties [penalties] expected_prizes [expected_prizes] actual_prizes [actual_prizes] required_prize [required_prize] output [sol]" | |
-| TSPWrapper | "[points] output [sol]" | ``tsplib`` |
-| (Graph)Wrapper | "[edge_index] label [sol]" | ``gpickle`` |
-| (Graph)Wrapper [weighted]| "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
+| **Routing Tasks** |
+| ATSPWrapper               | "[dists] output [sol]" | ``tsplib`` |
+| CVRPWrapper               | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
+| ORWrapper                 | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
+| PCTSPWrapper              | "depots [depots] points [points] penalties [penalties] prizes [prizes] required_prize [required_prize] output [sol]" | |
+| SPCTSPWrapper             | "depots [depots] points [points] penalties [penalties] expected_prizes [expected_prizes] actual_prizes [actual_prizes] required_prize [required_prize] output [sol]" | |
+| TSPWrapper                | "[points] output [sol]" | ``tsplib`` |
+| **Graph Tasks** |
+| (Graph)Wrapper            | "[edge_index] label [sol]" | ``gpickle`` |
+| (Graph)Wrapper [weighted] | "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
+| **Portfolio Tasks** |
+| MaxRetPOWrapper           | "[returns] cov [cov] max_var [max_var] output [sol]" | |
+| MinVarPOWrapper           | "[returns] cov [cov] required_returns [required_returns] output [sol]" | |
+| MOPOWrapper               | "[returns] cov [cov] var_factor [var_factor] output [sol]" | |
 
 </details>
 

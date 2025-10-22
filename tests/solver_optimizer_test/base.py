@@ -14,16 +14,19 @@ Base class for solver testers.
 
 
 import pathlib
+import re
 from typing import Type, List
 from ml4co_kit import SolverBase, TaskBase, TASK_TYPE
 from ml4co_kit import (
     TSPTask, ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask,
-    MClTask, MCutTask, MISTask, MVCTask
+    MClTask, MCutTask, MISTask, MVCTask,
+    MinVarPOTask, MaxRetPOTask, MOPOTask
 )
 from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit import (
     TSPWrapper, ATSPWrapper, CVRPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper,
-    MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
+    MClWrapper, MCutWrapper, MISWrapper, MVCWrapper,
+    MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
 )
 # SAT wrapper would be imported if needed for batch mode
 # from ml4co_kit.wrapper.logic.sat import SATWrapper
@@ -118,6 +121,14 @@ class SolverTesterBase(object):
         elif test_task_type == TASK_TYPE.MVC:
             return self._get_mvc_tasks(mode, exclude_test_files)
         
+        # Portfolio Problems
+        elif test_task_type == TASK_TYPE.MINVARPO:
+            return self._get_minvarpo_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.MAXRETPO:
+            return self._get_maxretpo_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.MOPO:
+            return self._get_mopo_tasks(mode, exclude_test_files)
+
         # Logic Problems
         elif test_task_type == TASK_TYPE.SAT:
             return self._get_sat_tasks(mode, exclude_test_files)
@@ -458,6 +469,97 @@ class SolverTesterBase(object):
             for test_file in mvc_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MVCWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    ########################################
+    #         Portfolio Problems           #
+    ########################################
+    
+    def _get_minvarpo_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[MinVarPOTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            minvarpo_test_files_list = [
+                pathlib.Path("test_dataset/minvarpo/task/minvarpo_gbm_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in minvarpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MinVarPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            minvarpo_test_files_list = [
+                pathlib.Path("test_dataset/minvarpo/wrapper/minvarpo_gbm_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in minvarpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = MinVarPOWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_maxretpo_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[MaxRetPOTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            maxretpo_test_files_list = [
+                pathlib.Path("test_dataset/maxretpo/task/maxretpo_gbm_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in maxretpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MaxRetPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            maxretpo_test_files_list = [
+                pathlib.Path("test_dataset/maxretpo/wrapper/maxretpo_gbm_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in maxretpo_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = MaxRetPOWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_mopo_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[MOPOTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            mopo_test_files_list = [
+                pathlib.Path("test_dataset/mopo/task/mopo_gbm_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in mopo_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MOPOTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            mopo_test_files_list = [
+                pathlib.Path("test_dataset/mopo/wrapper/mopo_gbm_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in mopo_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = MOPOWrapper()
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list

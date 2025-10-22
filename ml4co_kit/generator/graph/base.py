@@ -225,7 +225,7 @@ class GraphGeneratorBase(GeneratorBase):
             GRAPH_TYPE.WS: self._generate_watts_strogatz,
         }
     
-    def _generate_barabasi_albert(self):
+    def _generate_barabasi_albert(self) -> GraphTaskBase:
         # Generate Barabasi-Albert graph
         nx_graph: nx.Graph = nx.barabasi_albert_graph(
             n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
@@ -237,7 +237,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
 
-    def _generate_erdos_renyi(self):
+    def _generate_erdos_renyi(self) -> GraphTaskBase:
         # Generate Erdos-Renyi graph
         nx_graph: nx.Graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
         
@@ -247,7 +247,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_holme_kim(self):
+    def _generate_holme_kim(self) -> GraphTaskBase:
         # Generate Holme-Kim graph
         nx_graph: nx.Graph = nx.powerlaw_cluster_graph(
             n=self.nodes_num, 
@@ -261,7 +261,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_watts_strogatz(self):
+    def _generate_watts_strogatz(self) -> GraphTaskBase:
         # Generate Watts-Strogatz graph
         nx_graph: nx.Graph = nx.watts_strogatz_graph(
             n=self.nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
@@ -273,7 +273,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_rb(self):
+    def _generate_rb(self) -> GraphTaskBase:
         # Get params for RB model (n, k, a)
         while True:
             rb_n = np.random.randint(self.rb_n_min, self.rb_n_max)

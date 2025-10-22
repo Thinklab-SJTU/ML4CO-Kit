@@ -43,7 +43,8 @@ REQUIRED = [
     "scikit-learn>=1.3.0",
     "ortools>=9.12.4544",
     "huggingface_hub>=0.32.0",
-    "setuptools>=75.0.0"
+    "setuptools>=75.0.0",
+    "PySCIPOpt>=5.6.0"
 ]
 
 EXTRAS = {}
@@ -117,7 +118,9 @@ setup(
         "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Operating System :: POSIX",
         "Operating System :: Unix",
+        "Operating System :: MacOS",
         "Environment :: Console",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Image Recognition",

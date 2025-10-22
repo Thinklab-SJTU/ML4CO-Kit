@@ -38,6 +38,13 @@ from tests.wrapper_test import (
     MCutWrapperTester
 )
 
+# Portfolio Problems
+from tests.wrapper_test import (
+    MaxRetPOWrapperTester,
+    MinVarPOWrapperTester,
+    MOPOWrapperTester
+)
+
 
 # Test Wrapper
 def test_wrapper():
@@ -54,7 +61,12 @@ def test_wrapper():
     MCutWrapperTester().test()
     MISWrapperTester().test()
     MVCWrapperTester().test()
-    
+
+    # Portfolio Problems
+    MaxRetPOWrapperTester().test()
+    MinVarPOWrapperTester().test()
+    MOPOWrapperTester().test()
+
 
 # Main
 if __name__ == "__main__":
