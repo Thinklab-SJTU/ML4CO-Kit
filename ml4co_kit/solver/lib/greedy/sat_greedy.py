@@ -1,66 +1,8 @@
 r"""
-Greedy Solver for SAT (Boolean Satisfiability Problem)
+Greedy Solver for SAT (Boolean Satisfiability Problem).
 
-This module implements a simple greedy heuristic solver for the SAT problem.
-The greedy approach uses frequency-based variable selection and polarity heuristics.
-
-Research Background & References:
-================================
-
-1. Greedy Algorithms for SAT:
-   - Johnson, D. S. (1973). "Approximation algorithms for combinatorial problems". 
-     Journal of Computer and System Sciences, 9(3), 256-278.
-   - Early work on greedy approaches to NP-complete problems including satisfiability
-   - Theoretical analysis of approximation ratios for greedy algorithms
-
-2. Variable Ordering Heuristics:
-   - Freeman, J. W. (1995). "Improvements to propositional satisfiability search algorithms". 
-     PhD thesis, University of Pennsylvania.
-   - Jeroslow-Wang heuristic and other variable selection strategies
-   - Impact of variable ordering on SAT solver performance
-
-3. Unit Propagation:
-   - Davis, M., & Putnam, H. (1960). "A computing procedure for quantification theory". 
-     Journal of the ACM, 7(3), 201-215.
-   - Fundamental technique for Boolean constraint propagation
-   - Core component of modern SAT solvers (DPLL algorithm)
-
-4. Frequency-Based Heuristics:
-   - Hooker, J. N., & Vinay, V. (1995). "Branching rules for satisfiability". 
-     Journal of Automated Reasoning, 15(3), 359-383.
-   - Analysis of branching heuristics based on literal frequencies
-   - Comparison of different variable selection criteria
-
-5. Polarity Selection:
-   - Ruan, Y., Kautz, H., & Horvitz, E. (2004). "The backdoor key: A path to understanding 
-     problem hardness". Proceedings of AAAI, 2004.
-   - Impact of initial variable polarity on search efficiency
-   - Backdoor variables and problem structure analysis
-
-Mathematical Foundation:
-=======================
-
-Greedy SAT Algorithm:
-1. While unassigned variables exist:
-   2. Select variable with highest frequency in unsatisfied clauses
-   3. Choose polarity that satisfies most unsatisfied clauses
-   4. Apply unit propagation to infer forced assignments
-   5. Check for conflicts and backtrack if necessary
-
-Variable Selection Criteria:
-- Frequency heuristic: count occurrences in unsatisfied clauses
-- Jeroslow-Wang: Σ 2^(-|C|) for clauses C containing variable
-- VSIDS: Variable State Independent Decaying Sum (conflict-driven)
-
-Polarity Selection:
-- Positive bias: prefer positive assignments
-- Negative bias: prefer negative assignments  
-- Frequency-based: choose polarity appearing more often
-- Saved phase: use previous assignment (phase saving)
-
-Time Complexity: O(n·m) per decision (polynomial heuristic)
-Space Complexity: O(n + m) where n = variables, m = clauses
-Approximation: No theoretical guarantee (can fail on unsatisfiable instances)
+This module implements a greedy heuristic solver using frequency-based 
+variable selection and unit propagation.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

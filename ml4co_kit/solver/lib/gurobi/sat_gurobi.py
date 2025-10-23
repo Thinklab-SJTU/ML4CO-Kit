@@ -1,70 +1,7 @@
 r"""
-Gurobi Solver for SAT (Boolean Satisfiability Problem)
+Gurobi Solver for SAT (Boolean Satisfiability Problem).
 
-This module implements a Gurobi-based solver for the SAT problem using Integer Linear Programming (ILP) formulation.
-
-Research Background & References:
-================================
-
-1. Boolean Satisfiability (SAT) Problem:
-   - Original formulation: Cook, S. A. (1971). "The complexity of theorem-proving procedures". 
-     Proceedings of the third annual ACM symposium on Theory of computing. pp. 151–158.
-   - NP-completeness proof establishing SAT as the first known NP-complete problem
-   - Fundamental problem in computational complexity theory and automated reasoning
-
-2. ILP Formulation for SAT:
-   - Hooker, J. N. (1988). "A quantitative approach to logical inference". 
-     Decision Support Systems, 4(1), 45-69.
-   - Linear programming relaxations for satisfiability problems
-   - Integer programming approaches to Boolean satisfiability
-
-3. DIMACS CNF Format:
-   - Johnson, D. S., & Trick, M. A. (Eds.). (1996). "Cliques, coloring, and satisfiability: 
-     second DIMACS implementation challenge". American Mathematical Society.
-   - Standard format for representing SAT instances in Conjunctive Normal Form (CNF)
-   - Industry standard for SAT competitions and benchmarking
-
-4. Gurobi Optimization:
-   - Gurobi Optimization, LLC. (2023). "Gurobi Optimizer Reference Manual". 
-     https://www.gurobi.com/documentation/
-   - Commercial mixed-integer programming solver with advanced branch-and-bound algorithms
-   - State-of-the-art performance for integer programming problems
-
-5. SAT Solving Techniques:
-   - Biere, A., Heule, M., van Maaren, H., & Walsh, T. (Eds.). (2009). 
-     "Handbook of satisfiability". IOS Press.
-   - Comprehensive coverage of SAT solving algorithms including DPLL, CDCL, and modern techniques
-   - Theoretical foundations and practical implementations
-
-Mathematical Formulation:
-========================
-
-Given a SAT instance with n variables x₁, x₂, ..., xₙ and m clauses C₁, C₂, ..., Cₘ:
-
-Variables:
-- xᵢ ∈ {0, 1} for i = 1, ..., n (binary variables representing Boolean assignments)
-
-Constraints:
-For each clause Cⱼ = (l₁ ∨ l₂ ∨ ... ∨ lₖ) where lᵢ are literals:
-- If literal lᵢ = xᵤ (positive): coefficient +1 for xᵤ
-- If literal lᵢ = ¬xᵤ (negative): coefficient +1 for (1 - xᵤ)
-- Constraint: sum of satisfied literals in clause ≥ 1
-
-Objective:
-- Feasibility problem: find any solution satisfying all constraints
-- Optimization variant: maximize number of satisfied clauses (MAX-SAT)
-
-Algorithm Details:
-==================
-
-1. Parse CNF formula from DIMACS format
-2. Create binary variables for each Boolean variable
-3. Transform each clause into linear constraint
-4. Solve ILP using Gurobi's branch-and-bound algorithm
-5. Extract Boolean assignment from optimal solution
-
-Time Complexity: NP-complete (exponential worst-case)
-Space Complexity: O(n + m) where n = variables, m = clauses
+Implements ILP formulation for SAT using Gurobi optimizer.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
