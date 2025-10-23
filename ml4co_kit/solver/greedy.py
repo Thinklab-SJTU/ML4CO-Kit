@@ -27,6 +27,7 @@ from ml4co_kit.solver.lib.greedy.mvc_greedy import mvc_greedy
 from ml4co_kit.solver.lib.greedy.mcut_greedy import mcut_greedy
 from ml4co_kit.solver.lib.greedy.atsp_greedy import atsp_greedy
 from ml4co_kit.solver.lib.greedy.cvrp_greedy import cvrp_greedy
+from ml4co_kit.solver.lib.greedy.sat_greedy import sat_greedy
 
 
 class GreedySolver(SolverBase):
@@ -66,6 +67,9 @@ class GreedySolver(SolverBase):
                 with torch.no_grad():
                     heatmap = self.model.inference_edge_dense_process(*data)    
             task_data.cache["heatmap"] = to_numpy(heatmap[0])
+        elif task_data.task_type == TASK_TYPE.SAT:
+            # SAT uses greedy heuristic without neural network guidance
+            pass
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."
@@ -86,6 +90,8 @@ class GreedySolver(SolverBase):
             return mis_greedy(task_data=task_data)
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_greedy(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.SAT:
+            return sat_greedy(task_data=task_data)
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."

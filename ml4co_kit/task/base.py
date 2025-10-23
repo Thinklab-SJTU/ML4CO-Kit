@@ -52,6 +52,9 @@ class TASK_TYPE(str, Enum):
     MINVARPO = "MinVarPO" # Minimum Variance Portfolio Optimization
     MOPO = "MOPO" # Multi-Objective Portfolio Optimization
 
+    # Logic Problems
+    SAT = "SAT" # Boolean Satisfiability Problem
+
 
 class TaskBase(object):
     """Base class for all tasks in the ML4CO kit."""

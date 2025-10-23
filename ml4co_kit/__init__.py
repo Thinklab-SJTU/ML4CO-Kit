@@ -54,6 +54,10 @@ from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 from .task import PortfolioTaskBase
 from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
 
+# Logic Task
+from .task import LogicTaskBase
+from .task import SATTask
+
 
 ###################################################
 #                    Generator                    #
@@ -83,6 +87,10 @@ from .generator import (
     ATSPGenerator, CVRPGenerator, OPGenerator,  
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
+
+# Logic Generator
+from .generator import LogicGeneratorBase, LOGIC_TYPE
+from .generator import SATGenerator
 
 
 ####################################################

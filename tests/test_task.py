@@ -43,6 +43,11 @@ from tests.task_test import (
     MOPOTaskTester
 )
 
+# Logic Problems
+from tests.task_test import (
+    SATTaskTester
+)
+
 
 # Test Task
 def test_task():
@@ -62,6 +67,9 @@ def test_task():
     MaxRetPOTaskTester().test()
     MinVarPOTaskTester().test()
     MOPOTaskTester().test()
+    
+    # Logic Problems
+    SATTaskTester().test()
     
 
 # Main

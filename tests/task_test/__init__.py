@@ -32,3 +32,6 @@ from .mvc import MVCTaskTester
 from .maxretpo import MaxRetPOTaskTester
 from .minvarpo import MinVarPOTaskTester
 from .mopo import MOPOTaskTester
+
+# Logic Problems
+from .sat import SATTaskTester
