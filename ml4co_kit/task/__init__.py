@@ -6,11 +6,12 @@ Task Module.
 from .base import TaskBase, TASK_TYPE
 
 # Graph Task
-from .graph.base import GraphTaskBase
+from .graph.base import GraphTaskBase, Graph, GraphSetTaskBase
 from .graph.mcl import MClTask
 from .graph.mcut import MCutTask
 from .graph.mis import MISTask
 from .graph.mvc import MVCTask
+from .graph.gm import GMTask
 
 # Routing Task
 from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE

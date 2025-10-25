@@ -23,8 +23,8 @@ import importlib.util
 from .task import TaskBase, TASK_TYPE
 
 # Graph Task
-from .task import GraphTaskBase
-from .task import MClTask, MCutTask, MISTask, MVCTask
+from .task import GraphTaskBase, Graph, GraphSetTaskBase
+from .task import MClTask, MCutTask, MISTask, MVCTask, GMTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
