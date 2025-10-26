@@ -33,7 +33,7 @@ from ml4co_kit.solver.lib.greedy.sat_greedy import sat_greedy
 class GreedySolver(SolverBase):
     def __init__(
         self, 
-        model: GNN4COModel, 
+        model: GNN4COModel = None, 
         device: str = "cpu",
         optimizer: OptimizerBase = None
     ):
@@ -42,11 +42,26 @@ class GreedySolver(SolverBase):
         )
         self.device = device
         self.model = model
-        self.model.model.to(self.device)
-        self.model.env.change_device(self.device)
+        
+        # Only initialize model if provided
+        # SAT tasks don't need a model (use heuristic-based approach)
+        if self.model is not None:
+            self.model.model.to(self.device)
+            self.model.env.change_device(self.device)
 
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Greedy Solver."""
+        # SAT uses pure heuristic approach without neural network
+        if task_data.task_type == TASK_TYPE.SAT:
+            return sat_greedy(task_data=task_data)
+        
+        # Other task types require a model
+        if self.model is None:
+            raise ValueError(
+                f"Greedy solver requires a model for {task_data.task_type}. "
+                f"Only SAT tasks can be solved without a model (using heuristics)."
+            )
+        
         # Using ``data_process`` to process task data
         data = self.model.env.data_processor.data_process([task_data])
         
@@ -67,9 +82,6 @@ class GreedySolver(SolverBase):
                 with torch.no_grad():
                     heatmap = self.model.inference_edge_dense_process(*data)    
             task_data.cache["heatmap"] = to_numpy(heatmap[0])
-        elif task_data.task_type == TASK_TYPE.SAT:
-            # SAT uses greedy heuristic without neural network guidance
-            pass
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."
@@ -90,8 +102,6 @@ class GreedySolver(SolverBase):
             return mis_greedy(task_data=task_data)
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_greedy(task_data=task_data)
-        elif task_data.task_type == TASK_TYPE.SAT:
-            return sat_greedy(task_data=task_data)
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."

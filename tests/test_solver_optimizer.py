@@ -39,7 +39,8 @@ from tests.solver_optimizer_test import (
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester
+    SATORSolverTester,
+    SATGreedySolverTester  # SAT Greedy doesn't need GNN4CO (uses heuristics)
 )
 basic_solver_class_list = [
     ConcordeSolverTester, 
@@ -52,7 +53,8 @@ basic_solver_class_list = [
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester
+    SATORSolverTester,
+    SATGreedySolverTester  # SAT Greedy uses heuristic approach (no model needed)
 ]
 if env_checker.system == "Linux":
     basic_solver_class_list.append(KaMISSolverTester)
@@ -93,9 +95,8 @@ if env_checker.check_gnn4co():
         RLSAOptimizerTester,
         TwoOptOptimizerTester
     ]
-    # Note: SATGreedySolverTester is currently disabled because GNN4CO 
-    # doesn't have SAT embedder implemented yet. SAT greedy solving works
-    # but cannot be tested through the GreedySolver interface.
+    # Note: SATGreedySolverTester is in basic_solver_class_list because
+    # it doesn't require GNN4CO (uses heuristic approach without neural network)
     
 
 # Test Solver
