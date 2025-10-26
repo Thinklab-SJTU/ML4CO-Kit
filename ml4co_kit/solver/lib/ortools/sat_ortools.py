@@ -1,68 +1,5 @@
 r"""
 OR-Tools Solver for SAT (Boolean Satisfiability Problem)
-
-This module implements an OR-Tools CP-SAT based solver for the SAT problem using Constraint Programming.
-
-Research Background & References:
-================================
-
-1. Constraint Programming (CP) for SAT:
-   - Rossi, F., Van Beek, P., & Walsh, T. (Eds.). (2006). "Handbook of constraint programming". 
-     Elsevier. Chapter 26: "Satisfiability".
-   - CP approaches to Boolean satisfiability with constraint propagation and search
-   - Integration of SAT solving within constraint programming frameworks
-
-2. OR-Tools CP-SAT Solver:
-   - Perron, L., & Furnon, V. (2019). "OR-Tools". Google.
-     https://developers.google.com/optimization/
-   - Modern constraint programming solver with SAT-based backend
-   - Combines conflict-driven clause learning (CDCL) with constraint propagation
-
-3. CDCL (Conflict-Driven Clause Learning):
-   - Silva, J. P. M., & Sakallah, K. A. (1999). "GRASP: A search algorithm for propositional satisfiability". 
-     IEEE Transactions on Computers, 48(5), 506-521.
-   - Modern SAT solving algorithm with backjumping and clause learning
-   - Foundation for most competitive SAT solvers including CP-SAT backend
-
-4. SAT Competition and DIMACS:
-   - SAT Competition. (2023). "International SAT Competition". 
-     http://www.satcompetition.org/
-   - Annual competition driving SAT solver development and standardization
-   - DIMACS CNF format as de facto standard for SAT instances
-
-5. Boolean Constraint Satisfaction:
-   - Tsang, E. (1993). "Foundations of constraint satisfaction". 
-     Academic Press. Chapter 12.
-   - Theoretical foundations of Boolean constraint satisfaction problems
-   - Relationship between SAT and general constraint satisfaction
-
-Mathematical Formulation:
-========================
-
-Given a SAT instance in CNF with Boolean variables x₁, x₂, ..., xₙ and clauses C₁, C₂, ..., Cₘ:
-
-CP Variables:
-- xᵢ ∈ {False, True} for i = 1, ..., n (Boolean domain variables)
-
-CP Constraints:
-For each clause Cⱼ = (l₁ ∨ l₂ ∨ ... ∨ lₖ):
-- AddBoolOr([l₁, l₂, ..., lₖ]) where each lᵢ is either xᵤ or xᵤ.Not()
-
-Constraint Propagation:
-- Unit propagation: if clause has only one unassigned literal, assign it True
-- Pure literal elimination: if variable appears only positively/negatively, assign appropriately
-- Conflict analysis: when contradiction found, learn new clause to prevent same conflict
-
-Algorithm Details:
-==================
-
-1. Parse CNF formula and create Boolean variables
-2. Add BoolOr constraint for each clause
-3. Apply constraint propagation and search with CDCL
-4. Extract satisfying assignment or report UNSAT
-
-Time Complexity: NP-complete (exponential worst-case)
-Space Complexity: O(n + m + learned_clauses)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -84,32 +21,7 @@ from ml4co_kit.task.logic.sat import SATTask
 def sat_ortools(
     task_data: SATTask, 
     ortools_time_limit: int = 10
-):
-    """
-    Solve SAT problem using OR-Tools CP-SAT solver.
-    
-    This function uses Google's OR-Tools CP-SAT solver, which implements a modern
-    Conflict-Driven Clause Learning (CDCL) algorithm with constraint propagation.
-    The solver combines techniques from both SAT solving and constraint programming.
-    
-    Args:
-        task_data (SATTask): SAT instance containing CNF formula
-        ortools_time_limit (int): Maximum solving time in seconds (default: 10)
-    
-    Returns:
-        None: Solution is stored directly in task_data.solution
-        
-    CP Model:
-        Variables: xᵢ ∈ {False, True} for i = 1, ..., n_vars
-        Constraints: For each clause C = (l₁ ∨ l₂ ∨ ... ∨ lₖ):
-                    AddBoolOr([l₁, l₂, ..., lₖ])
-        
-    Example CNF to CP Transformation:
-        Clause (x₁ ∨ ¬x₂ ∨ x₃) becomes:
-        AddBoolOr([x[0], x[1].Not(), x[2]]) 
-        (using 0-based indexing)
-    """
-    
+):  
     # Extract problem data
     n_vars = task_data.n_vars
     clauses = task_data.cnf

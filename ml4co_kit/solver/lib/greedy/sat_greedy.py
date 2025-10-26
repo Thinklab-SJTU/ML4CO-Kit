@@ -22,28 +22,6 @@ from ml4co_kit.task.logic.sat import SATTask
 
 
 def sat_greedy(task_data: SATTask, max_iterations: int = 1000) -> None:
-    """
-    Solve SAT problem using greedy heuristic with frequency-based variable selection.
-    
-    This greedy solver uses a simple but effective strategy:
-    1. Select unassigned variable appearing most frequently in unsatisfied clauses
-    2. Choose polarity that satisfies the most currently unsatisfied clauses  
-    3. Apply unit propagation to infer additional assignments
-    4. Repeat until all clauses satisfied or conflict detected
-    
-    Args:
-        task_data (SATTask): SAT instance containing CNF formula
-        max_iterations (int): Maximum number of variable assignment iterations
-        
-    Returns:
-        None: Solution stored directly in task_data.solution
-        
-    Algorithm Details:
-        - Variable selection: frequency count in unsatisfied clauses
-        - Polarity selection: maximize newly satisfied clauses
-        - Propagation: unit clause detection and forced assignments
-        - Termination: all clauses satisfied or no progress possible
-    """
     
     # Extract problem data
     n_vars = task_data.n_vars
