@@ -70,8 +70,16 @@ class SolverTesterBase(object):
                         )
                         for test_task in test_task_list:
                             solver.solve(test_task)
-                            eval_results = test_task.evaluate_w_gap()
-                            print(f"{str(test_task)} Eval results: {eval_results}")
+                            # SAT tasks don't use evaluate_w_gap (no optimal reference)
+                            if test_task_type == TASK_TYPE.SAT:
+                                # Just check if solution was found
+                                if hasattr(test_task, 'solution') and test_task.solution is not None:
+                                    print(f"{str(test_task)} Solution found: True")
+                                else:
+                                    print(f"{str(test_task)} Solution found: False (may be UNSAT)")
+                            else:
+                                eval_results = test_task.evaluate_w_gap()
+                                print(f"{str(test_task)} Eval results: {eval_results}")
                     if mode == "batch_solve":
                         batch_test_task_list = self.get_task_list(
                             mode=mode, 
@@ -82,8 +90,15 @@ class SolverTesterBase(object):
                             solver.batch_solve(batch_test_task)
                             for test_task in batch_test_task:
                                 test_task: TaskBase
-                                eval_results = test_task.evaluate_w_gap()
-                                print(f"{str(test_task)} Eval results: {eval_results}")          
+                                # SAT tasks don't use evaluate_w_gap (no optimal reference)
+                                if test_task_type == TASK_TYPE.SAT:
+                                    if hasattr(test_task, 'solution') and test_task.solution is not None:
+                                        print(f"{str(test_task)} Solution found: True")
+                                    else:
+                                        print(f"{str(test_task)} Solution found: False (may be UNSAT)")
+                                else:
+                                    eval_results = test_task.evaluate_w_gap()
+                                    print(f"{str(test_task)} Eval results: {eval_results}")          
             except Exception as e:
                 raise ValueError(
                     f"Error ``{e}`` occurred when testing {self.test_solver_class.__name__}\n"
@@ -603,6 +618,9 @@ class SolverTesterBase(object):
                                 seed=42
                             )
                             task.name = f"generated_{test_file.stem}"
+                            # Set reference solution to None to skip evaluation
+                            # SAT tasks don't have optimal values to compare
+                            task.ref_sol = None
                             task_list.append(task)
                     except Exception:
                         # If file loading fails, generate instance
@@ -613,6 +631,7 @@ class SolverTesterBase(object):
                             seed=123
                         )
                         task.name = f"fallback_{test_file.stem}"
+                        task.ref_sol = None
                         task_list.append(task)
             
             # Ensure we have at least one test instance
@@ -624,6 +643,7 @@ class SolverTesterBase(object):
                     seed=999
                 )
                 task.name = "minimal_test_sat"
+                task.ref_sol = None
                 task_list.append(task)
                 
             return task_list
@@ -640,6 +660,7 @@ class SolverTesterBase(object):
                     seed=1000 + i
                 )
                 task.name = f"batch_sat_{i+1}"
+                task.ref_sol = None
                 batch_tasks.append(task)
             
             return [batch_tasks]  # Return as list of batches

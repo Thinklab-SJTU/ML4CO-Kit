@@ -1,5 +1,16 @@
 r"""
 SAT Greedy Solver Tester.
+
+Note: This tester is currently disabled because GNN4CO doesn't have SAT embedder 
+implemented yet. The file is preserved for future implementation.
+
+To enable this tester:
+1. Add SAT embedder to ml4co_kit/extension/gnn4co/model/embedder/
+2. Register it in the EMBEDDER_DICT
+3. Uncomment the implementation below
+4. Add it back to test_solver_optimizer.py
+
+See docs/SAT_Solver_Greedy_Status.md for detailed instructions.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -17,25 +28,31 @@ from ml4co_kit import TASK_TYPE
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
-class SATGreedySolverTester(SolverTesterBase): 
+class SATGreedySolverTester(SolverTesterBase):
+    """
+    SAT Greedy Solver Tester (Currently Disabled)
+    
+    This tester is preserved for future implementation when SAT embedder
+    is added to GNN4CO. The SAT greedy solver uses heuristic methods and
+    doesn't require neural networks, but the GreedySolver interface
+    requires a GNN4CO model parameter.
+    """
+    
     def __init__(self, device: str = "cpu"):
-        # This class is a placeholder for future implementation
-        # When SAT embedder is added to GNN4CO, uncomment and update the code below
         raise NotImplementedError(
-            "SATGreedySolverTester is not yet available because GNN4CO doesn't have "
-            "SAT embedder implemented. SAT greedy solving is available through the "
-            "standalone greedy implementation in ml4co_kit.solver.lib.greedy.sat_greedy, "
-            "but cannot be tested through the GreedySolver interface at this time."
+            "SATGreedySolverTester is currently disabled. "
+            "Reason: GNN4CO doesn't have SAT embedder implemented yet. "
+            "See docs/SAT_Solver_Greedy_Status.md for details."
         )
         
-        # Future implementation when SAT embedder is added:
+        # TODO: Uncomment when SAT embedder is available
         # from ml4co_kit import GreedySolver
         # from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, GNNEncoder
         # 
         # gnn4sat_model = GNN4COModel(
-        #     env=GNN4COEnv(task="SAT", mode="solve", sparse_factor=1, device="cpu"),
+        #     env=GNN4COEnv(task="SAT", mode="solve", sparse_factor=1, device=device),
         #     encoder=GNNEncoder(task="SAT", sparse=True, block_layers=[2,4,4,2]),
-        #     weight_path=None
+        #     weight_path=None  # Heuristic-based, no weights needed
         # )
         # 
         # super(SATGreedySolverTester, self).__init__(
@@ -47,4 +64,5 @@ class SATGreedySolverTester(SolverTesterBase):
         # )
         
     def pre_test(self):
+        """Pre-test setup (currently not used)."""
         pass
