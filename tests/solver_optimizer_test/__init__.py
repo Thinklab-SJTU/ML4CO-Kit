@@ -42,3 +42,6 @@ from .solver.lc_degree import LcDegreeSolverTester
 from .solver.lkh import LKHSolverTester
 from .solver.ortools import ORSolverTester
 from .solver.scip import SCIPSolverTester
+from .solver.sat_greedy import SATGreedySolverTester
+from .solver.sat_ortools import SATORSolverTester
+from .solver.sat_gurobi import SATGurobiSolverTester
