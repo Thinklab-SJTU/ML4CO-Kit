@@ -39,8 +39,7 @@ from tests.solver_optimizer_test import (
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester,
-    SATGreedySolverTester  # SAT Greedy doesn't need GNN4CO (uses heuristics)
+    SATORSolverTester
 )
 basic_solver_class_list = [
     ConcordeSolverTester, 
@@ -53,8 +52,7 @@ basic_solver_class_list = [
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester,
-    SATGreedySolverTester  # SAT Greedy uses heuristic approach (no model needed)
+    SATORSolverTester
 ]
 if env_checker.system == "Linux":
     basic_solver_class_list.append(KaMISSolverTester)
@@ -85,7 +83,8 @@ if env_checker.check_gnn4co():
         MCTSSolverTester,
         MCTSOptimizerTester,
         RLSAOptimizerTester,
-        TwoOptOptimizerTester
+        TwoOptOptimizerTester,
+        SATGreedySolverTester  # SAT Greedy requires GreedySolver (GNN4CO-based)
     )
     torch_solver_class_list += [
         BeamSolverTester, 
@@ -93,10 +92,9 @@ if env_checker.check_gnn4co():
         MCTSSolverTester,
         MCTSOptimizerTester,
         RLSAOptimizerTester,
-        TwoOptOptimizerTester
+        TwoOptOptimizerTester,
+        SATGreedySolverTester  # SAT uses GreedySolver without model
     ]
-    # Note: SATGreedySolverTester is in basic_solver_class_list because
-    # it doesn't require GNN4CO (uses heuristic approach without neural network)
     
 
 # Test Solver

@@ -16,7 +16,8 @@ SAT greedy solving doesn't require a GNN model (uses DPLL and unit propagation).
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit import TASK_TYPE, GreedySolver
+from ml4co_kit import TASK_TYPE
+from ml4co_kit.solver import GreedySolver
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
