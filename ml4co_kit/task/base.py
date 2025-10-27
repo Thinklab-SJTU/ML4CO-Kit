@@ -39,6 +39,8 @@ class TASK_TYPE(str, Enum):
     MCUT = "MCut" # Maximum Cut
     MIS = "MIS" # Maximum Independent Set
     MVC = "MVC" # Minimum Vertex Cover
+    
+    # Graph Set Problem
     GM = "GM" # Graph Matching
     
     # Knapsack Problems
