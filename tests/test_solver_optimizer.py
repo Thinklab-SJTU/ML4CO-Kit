@@ -38,7 +38,8 @@ from tests.solver_optimizer_test import (
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester,
-    SCIPSolverTester
+    SCIPSolverTester,
+    SATORSolverTester
 )
 basic_solver_class_list = [
     ConcordeSolverTester, 
@@ -50,7 +51,8 @@ basic_solver_class_list = [
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester,
-    SCIPSolverTester
+    SCIPSolverTester,
+    SATORSolverTester
 ]
 if env_checker.system == "Linux":
     basic_solver_class_list.append(KaMISSolverTester)
@@ -59,8 +61,9 @@ if env_checker.system == "Linux":
 # Gurobi
 env_checker.gurobi_support = False # Currently, Github Actions does not support Gurobi
 if env_checker.check_gurobi():
-    from tests.solver_optimizer_test import GurobiSolverTester
+    from tests.solver_optimizer_test import GurobiSolverTester, SATGurobiSolverTester
     basic_solver_class_list.append(GurobiSolverTester)
+    basic_solver_class_list.append(SATGurobiSolverTester)
    
     
 # Get solvers to be tested (torch used)
@@ -81,6 +84,7 @@ if env_checker.check_gnn4co():
         MCTSOptimizerTester,
         RLSAOptimizerTester,
         TwoOptOptimizerTester,
+        SATGreedySolverTester  # SAT Greedy requires GreedySolver (GNN4CO-based)
     )
     torch_solver_class_list += [
         BeamSolverTester, 
@@ -88,7 +92,8 @@ if env_checker.check_gnn4co():
         MCTSSolverTester,
         MCTSOptimizerTester,
         RLSAOptimizerTester,
-        TwoOptOptimizerTester
+        TwoOptOptimizerTester,
+        SATGreedySolverTester  # SAT uses GreedySolver without model
     ]
     
 

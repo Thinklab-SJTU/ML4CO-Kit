@@ -45,6 +45,11 @@ from tests.generator_test import (
     MOPOGenTester
 )
 
+# Logic Problems
+from tests.generator_test import (
+    SATGenTester
+)
+
 
 # Test Generator
 def test_generator():
@@ -61,6 +66,9 @@ def test_generator():
     MCutGenTester().test()
     MISGenTester().test()
     MVCGenTester().test()
+    
+    # Logic Problems
+    SATGenTester().test()
 
     # Portfolio Problems
     MinVarPOGenTester().test()

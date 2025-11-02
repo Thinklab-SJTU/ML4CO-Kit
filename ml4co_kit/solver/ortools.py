@@ -26,6 +26,7 @@ from ml4co_kit.solver.lib.ortools.mis_ortools import mis_ortools
 from ml4co_kit.solver.lib.ortools.mvc_ortools import mvc_ortools
 from ml4co_kit.solver.lib.ortools.atsp_ortools import atsp_ortools
 from ml4co_kit.solver.lib.ortools.pctsp_ortools import pctsp_ortools
+from ml4co_kit.solver.lib.ortools.sat_ortools import sat_ortools
 
 
 class ORSolver(SolverBase):
@@ -107,6 +108,11 @@ class ORSolver(SolverBase):
             return mvc_ortools(
                 task_data=task_data,
                 ortools_scale=self.ortools_scale,
+                ortools_time_limit=self.ortools_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.SAT:
+            return sat_ortools(
+                task_data=task_data,
                 ortools_time_limit=self.ortools_time_limit
             )
         else:

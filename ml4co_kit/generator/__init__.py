@@ -41,3 +41,8 @@ from .routing.op import OPGenerator, OP_TYPE
 from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
+
+
+# Logic Generator
+from .logic.base import LogicGeneratorBase, LOGIC_TYPE
+from .logic.sat import SATGenerator

@@ -26,3 +26,7 @@ from .routing.op import OPTask
 from .routing.pctsp import PCTSPTask
 from .routing.spctsp import SPCTSPTask
 from .routing.tsp import TSPTask
+
+# Logic Task
+from .logic.base import LogicTaskBase
+from .logic.sat import SATTask

@@ -28,6 +28,7 @@ from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
 from ml4co_kit.solver.lib.gurobi.mopo_gurobi import mopo_gurobi
 from ml4co_kit.solver.lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
 from ml4co_kit.solver.lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
+from ml4co_kit.solver.lib.gurobi.sat_gurobi import sat_gurobi
 
 
 class GurobiSolver(SolverBase):
@@ -101,6 +102,11 @@ class GurobiSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.MOPO:
             return mopo_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.SAT:
+            return sat_gurobi(
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )

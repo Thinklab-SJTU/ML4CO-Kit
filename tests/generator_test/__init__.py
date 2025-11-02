@@ -34,3 +34,7 @@ from .mvc import MVCGenTester
 from .minvarpo import MinVarPOGenTester
 from .maxretpo import MaxRetPOGenTester
 from .mopo import MOPOGenTester
+
+
+# Logic Problems
+from .sat import SATGenTester
