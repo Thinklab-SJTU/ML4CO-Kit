@@ -28,6 +28,8 @@ class GMTask(GraphSetTaskBase):
     def __init__(
         self,
         graphs: list[Graph] = None,
+        node_aff_fn = None,
+        edge_aff_fn = None,
         precision: Union[np.float32, np.float64] = np.float32
     ):
         # Check graphs num
@@ -42,7 +44,8 @@ class GMTask(GraphSetTaskBase):
             precision=precision
         )
         
-        
+        self.node_aff_fn = node_aff_fn
+        self.edge_aff_fn = edge_aff_fn
         self.aff_matrix: Optional[np.ndarray] = None
         
     def _deal_with_self_loop(self):
@@ -65,6 +68,103 @@ class GMTask(GraphSetTaskBase):
                 else:                    
                     is_valid = bool(np.all(col_sum == 1))
         return is_valid
+    
+    def inner_prod_aff_fn(self, feat1: np.ndarray, feat2: np.ndarray) -> np.ndarray:
+        """inner product affinity function"""
+        return np.matmul(feat1, feat2.T)
+    
+    def gaussian_aff_fn(self, feat1: np.ndarray, feat2: np.ndarray, sigma:np.floating = 1.0) -> np.ndarray:
+         """Gaussian affinity function"""
+         feat1 = np.expand_dims(feat1, axis=1)
+         feat2 = np.expand_dims(feat2, axis=0)
+         return np.exp(-((feat1-feat2)**2).sum(axis=-1)/sigma)
+    
+    def _aff_mat_from_node_edge_aff(self, node_aff: np.ndarray, edge_aff: np.ndarray, connectivity1: np.ndarray, connectivity2: np.ndarray,
+                                n1, n2, ne1, ne2):
+    
+        if edge_aff is not None:
+            dtype = edge_aff.dtype
+            if n1 is None:
+                n1 = np.amax(connectivity1).copy() + 1
+            if n2 is None:
+                n2 = np.amax(connectivity2).copy() + 1
+            if ne1 is None:
+                 ne1 = edge_aff.shape[0]
+            if ne2 is None:
+                ne2 = edge_aff.shape[1] 
+        else:
+            dtype = node_aff.dtype
+            if n1 is None:
+                n1 = node_aff.shape[0]
+            if n2 is None:
+                n2 = node_aff.shape[1]
+
+    
+        k = np.zeros((n2, n1, n2, n1), dtype=dtype)
+        # edge-wise affinity
+        if edge_aff is not None:
+            edge_indices = np.concatenate([connectivity1.repeat(ne2, axis=0), np.tile(connectivity2, (ne1, 1))], axis=1) # indices: start_g1, end_g1, start_g2, end_g2
+            edge_indices = (edge_indices[:, 2], edge_indices[:, 0], edge_indices[:, 3], edge_indices[:, 1]) # indices: start_g2, start_g1, end_g2, end_g1
+            k[edge_indices] = edge_aff[:ne1, :ne2].reshape(-1)
+        k = k.reshape((n2 * n1, n2 * n1))
+        # node-wise affinity
+        if node_aff is not None:
+            k[np.arange(n2 * n1), np.arange(n2 * n1)] = node_aff.T.reshape(-1)
+
+        return k
+    
+    def build_aff_mat(
+        self,
+        node_feat1: np.ndarray=None,
+        edge_feat1: np.ndarray=None, 
+        connectivity1: np.ndarray=None, 
+        node_feat2: np.ndarray=None, 
+        edge_feat2: np.ndarray=None, 
+        connectivity2: np.ndarray=None,
+        n1: int=None,
+        ne1: int=None, 
+        n2: int=None, 
+        ne2: int=None,
+        node_aff_fn=None, 
+        edge_aff_fn=None
+        ):
+        
+        if node_feat1 is None:
+            node_feat1 = self.graphs[0].nodes_feature
+            n1 = self.graphs[0].nodes_num
+        if node_feat2 is None:
+            node_feat2 = self.graphs[1].nodes_feature
+            n2 = self.graphs[1].nodes_num
+        if edge_feat1 is None:
+            edge_feat1 = self.graphs[0].edges_feature
+            ne1 = self.graphs[0].edges_num
+        if edge_feat2 is None:
+            edge_feat2 = self.graphs[1].edges_feature
+            ne2 = self.graphs[1].edges_num
+        if connectivity1 is None:
+            connectivity1 = self.graphs[0].edge_index.T
+        if connectivity2 is None:
+            connectivity2 = self.graphs[1].edge_index.T
+    
+      
+        assert node_feat1 is not None and node_feat2 is not None, \
+            'The following arguments must all be given if you want to compute node-wise affinity: ' \
+            'node_feat1, node_feat2'
+        assert edge_feat1 is not None and edge_feat2 is not None, \
+            'The following arguments must all be given if you want to compute edge-wise affinity: ' \
+            'edge_feat1, edge_feat2'
+        
+        if node_aff_fn is None:
+            node_aff_fn = self.inner_prod_aff_fn
+        if edge_aff_fn is None:
+            edge_aff_fn = self.inner_prod_aff_fn
+        
+        node_aff = node_aff_fn(node_feat1, node_feat2) if node_feat1 is not None else None
+        edge_aff = edge_aff_fn(edge_feat1, edge_feat2) if edge_feat1 is not None else None
+        
+        result = self._aff_mat_from_node_edge_aff(node_aff, edge_aff, connectivity1, connectivity2, n1, n2, ne1, ne2)
+        
+        return result 
     
     def from_data(
         self,
@@ -118,9 +218,9 @@ class GMTask(GraphSetTaskBase):
         
 
         for k in pos1:
-            pos1[k] = (pos1[k][0] - 1, pos1[k][1])
+            pos1[k] = (pos1[k][0] - 2, pos1[k][1])
         for k in pos2:
-            pos2[k] = (pos2[k][0] + 1, pos2[k][1])
+            pos2[k] = (pos2[k][0] + 2, pos2[k][1])
         
         graph1_num = self.graphs[0].nodes_num
         graph2_num = self.graphs[1].nodes_num
@@ -130,9 +230,12 @@ class GMTask(GraphSetTaskBase):
         pos = {**pos1, **{k + graph1_num: v for (k, v) in pos2.items()}}    
             
         plt.figure(figsize=figsize)
-        nx.draw(G, pos, node_color=node_color, node_size=node_size, alpha=edge_alpha)
+        nx.draw(G, pos, node_color=node_color, node_size=node_size, alpha=edge_alpha, width=edge_width)
         if with_sol:
-            X = self.sol.reshape(graph1_num, graph2_num)
+            if sol is None:
+                X = self.ref_sol.reshape(graph1_num, graph2_num)
+            else:
+                X = self.sol.reshape(graph1_num, graph2_num)
             matched = [(i, j + graph1_num) for i, j in zip(*np.where(X))]
             nx.draw_networkx_edges(
                 G, pos, edgelist=matched, edge_color=matched_color,
