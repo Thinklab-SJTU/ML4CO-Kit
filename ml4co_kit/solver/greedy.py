@@ -27,7 +27,6 @@ from ml4co_kit.solver.lib.greedy.mvc_greedy import mvc_greedy
 from ml4co_kit.solver.lib.greedy.mcut_greedy import mcut_greedy
 from ml4co_kit.solver.lib.greedy.atsp_greedy import atsp_greedy
 from ml4co_kit.solver.lib.greedy.cvrp_greedy import cvrp_greedy
-from ml4co_kit.solver.lib.greedy.sat_greedy import sat_greedy
 
 
 class GreedySolver(SolverBase):
@@ -51,41 +50,32 @@ class GreedySolver(SolverBase):
 
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Greedy Solver."""
-        # SAT uses pure heuristic approach without neural network
-        if task_data.task_type == TASK_TYPE.SAT:
-            return sat_greedy(task_data=task_data)
-        
-        # Other task types require a model
-        if self.model is None:
-            raise ValueError(
-                f"Greedy solver requires a model for {task_data.task_type}. "
-                f"Only SAT tasks can be solved without a model (using heuristics)."
-            )
-        
-        # Using ``data_process`` to process task data
-        data = self.model.env.data_processor.data_process([task_data])
-        
-        # Inference to get heatmap
-        if task_data.task_type in [
-            TASK_TYPE.MIS, TASK_TYPE.MCUT, TASK_TYPE.MCL, TASK_TYPE.MVC
-        ]:
-            with torch.no_grad():
-                heatmap = self.model.inference_node_sparse_process(*data)
-            task_data.cache["heatmap"] = to_numpy(heatmap)
-        elif task_data.task_type in [
-            TASK_TYPE.ATSP, TASK_TYPE.CVRP, TASK_TYPE.TSP
-        ]:
-            if self.model.env.sparse:
+        # Using GNN4CO Model to get heatmap
+        if self.model is not None:
+            # Using ``data_process`` to process task data
+            data = self.model.env.data_processor.data_process([task_data])
+            
+            # Inference to get heatmap
+            if task_data.task_type in [
+                TASK_TYPE.MIS, TASK_TYPE.MCUT, TASK_TYPE.MCL, TASK_TYPE.MVC
+            ]:
                 with torch.no_grad():
-                    heatmap = self.model.inference_edge_sparse_process(*data)
+                    heatmap = self.model.inference_node_sparse_process(*data)
+                task_data.cache["heatmap"] = to_numpy(heatmap)
+            elif task_data.task_type in [
+                TASK_TYPE.ATSP, TASK_TYPE.CVRP, TASK_TYPE.TSP
+            ]:
+                if self.model.env.sparse:
+                    with torch.no_grad():
+                        heatmap = self.model.inference_edge_sparse_process(*data)
+                else:
+                    with torch.no_grad():
+                        heatmap = self.model.inference_edge_dense_process(*data)    
+                task_data.cache["heatmap"] = to_numpy(heatmap[0])
             else:
-                with torch.no_grad():
-                    heatmap = self.model.inference_edge_dense_process(*data)    
-            task_data.cache["heatmap"] = to_numpy(heatmap[0])
-        else:
-            raise ValueError(
-                f"Solver {self.solver_type} is not supported for {task_data.task_type}."
-            )
+                raise ValueError(
+                    f"Solver {self.solver_type} is not supported for {task_data.task_type}."
+                )
                  
         # Solve task data
         if task_data.task_type == TASK_TYPE.ATSP:

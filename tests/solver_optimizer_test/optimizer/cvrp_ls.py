@@ -1,5 +1,5 @@
 r"""
-Gurobi Solver Tester.
+CVRP-LS Optimizer Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,8 +13,7 @@ Gurobi Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
-from ml4co_kit import TASK_TYPE, GurobiSolver, CVRPLSOptimizer
+from ml4co_kit import TASK_TYPE, HGSSolver, CVRPLSOptimizer
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
@@ -22,14 +21,10 @@ class CVRPLSOptimizerTester(SolverTesterBase):
     def __init__(self):
         super(CVRPLSOptimizerTester, self).__init__(
             mode_list=["solve"],
-            test_solver_class=GurobiSolver,
+            test_solver_class=HGSSolver,
             test_task_type_list=[TASK_TYPE.CVRP],
             test_args_list=[{"optimizer": CVRPLSOptimizer()}],
-            exclude_test_files_list=[
-                [
-                    pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl")
-                ],  # CVRP
-            ]
+            exclude_test_files_list=[[]]
         )
         
     def pre_test(self):

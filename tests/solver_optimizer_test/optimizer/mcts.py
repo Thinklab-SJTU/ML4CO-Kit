@@ -1,5 +1,5 @@
 r"""
-Greedy Solver Tester.
+MCTS Optimizer Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

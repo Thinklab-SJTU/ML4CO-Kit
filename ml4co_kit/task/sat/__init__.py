@@ -1,5 +1,5 @@
 r"""
-Logic Generator Module.
+SAT Task Module.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -12,5 +12,7 @@ Logic Generator Module.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-from .base import LogicGeneratorBase, LOGIC_TYPE
-from .sat import SATGenerator
+from .base import SATTaskBase
+from .satp import SATPTask
+from .sata import SATATask
+from .unsatc import USATCTask

@@ -26,7 +26,7 @@ class RLSASolverTester(SolverTesterBase):
                 TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC,
             ],
             test_args_list=[
-                # MCL
+                # MCl
                 {
                     "rlsa_kth_dim": "both",
                     "rlsa_d": 2,
@@ -37,7 +37,7 @@ class RLSASolverTester(SolverTesterBase):
                     "rlsa_device": device,
                     "rlsa_seed": 1234
                 }, 
-                # MCUT
+                # MCut
                 {
                     "rlsa_kth_dim": 0,
                     "rlsa_d": 2,

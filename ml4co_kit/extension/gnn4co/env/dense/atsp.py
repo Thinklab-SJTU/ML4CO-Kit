@@ -15,7 +15,6 @@ Dense Process for ATSP.
 
 
 import torch
-import numpy as np
 from torch import Tensor
 from typing import Sequence
 from ml4co_kit.task.routing.atsp import ATSPTask

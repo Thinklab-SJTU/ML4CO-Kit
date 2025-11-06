@@ -28,12 +28,11 @@ def mis_greedy(task_data: MISTask):
     # Greedy Algorithm for MIS
     for node in sorted_nodes:
         if not mask[node]:
-            if (adj_matrix[node][sol]).sum() == 0:
-                connect_nodes = np.where(adj_matrix[node] == 1)[0]
-                sol[connect_nodes] = False
-                sol[node] = True
-                mask[connect_nodes] = True
-                mask[node] = True
+            connect_nodes = np.where(adj_matrix[node] == 1)[0]
+            sol[connect_nodes] = False
+            sol[node] = True
+            mask[connect_nodes] = True
+            mask[node] = True
     sol = sol.astype(np.int32)
     
     # Store the solution in the task_data

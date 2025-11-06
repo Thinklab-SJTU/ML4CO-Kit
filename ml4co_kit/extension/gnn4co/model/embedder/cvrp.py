@@ -1,7 +1,7 @@
 from typing import Sequence
 from torch import Tensor, nn
-from ...model.embedder.base import GNN4COEmbedder
-from ...model.embedder.utils import (
+from .base import GNN4COEmbedder
+from .utils import (
     PositionEmbeddingSine, ScalarEmbeddingSine1D
 )
 

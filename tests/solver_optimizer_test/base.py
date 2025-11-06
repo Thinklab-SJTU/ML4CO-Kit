@@ -14,7 +14,6 @@ Base class for solver testers.
 
 
 import pathlib
-import re
 from typing import Type, List
 from ml4co_kit import SolverBase, TaskBase, TASK_TYPE
 from ml4co_kit import (
@@ -22,14 +21,11 @@ from ml4co_kit import (
     MClTask, MCutTask, MISTask, MVCTask,
     MinVarPOTask, MaxRetPOTask, MOPOTask
 )
-from ml4co_kit.task.logic.sat import SATTask
 from ml4co_kit import (
     TSPWrapper, ATSPWrapper, CVRPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper,
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper,
     MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
 )
-# SAT wrapper would be imported if needed for batch mode
-# from ml4co_kit.wrapper.logic.sat import SATWrapper
 
 
 class SolverTesterBase(object):
@@ -70,16 +66,8 @@ class SolverTesterBase(object):
                         )
                         for test_task in test_task_list:
                             solver.solve(test_task)
-                            # SAT tasks don't use evaluate_w_gap (no optimal reference)
-                            if test_task_type == TASK_TYPE.SAT:
-                                # Just check if solution was found
-                                if hasattr(test_task, 'solution') and test_task.solution is not None:
-                                    print(f"{str(test_task)} Solution found: True")
-                                else:
-                                    print(f"{str(test_task)} Solution found: False (may be UNSAT)")
-                            else:
-                                eval_results = test_task.evaluate_w_gap()
-                                print(f"{str(test_task)} Eval results: {eval_results}")
+                            eval_results = test_task.evaluate_w_gap()
+                            print(f"{str(test_task)} Eval results: {eval_results}")
                     if mode == "batch_solve":
                         batch_test_task_list = self.get_task_list(
                             mode=mode, 
@@ -90,15 +78,8 @@ class SolverTesterBase(object):
                             solver.batch_solve(batch_test_task)
                             for test_task in batch_test_task:
                                 test_task: TaskBase
-                                # SAT tasks don't use evaluate_w_gap (no optimal reference)
-                                if test_task_type == TASK_TYPE.SAT:
-                                    if hasattr(test_task, 'solution') and test_task.solution is not None:
-                                        print(f"{str(test_task)} Solution found: True")
-                                    else:
-                                        print(f"{str(test_task)} Solution found: False (may be UNSAT)")
-                                else:
-                                    eval_results = test_task.evaluate_w_gap()
-                                    print(f"{str(test_task)} Eval results: {eval_results}")          
+                                eval_results = test_task.evaluate_w_gap()
+                                print(f"{str(test_task)} Eval results: {eval_results}")          
             except Exception as e:
                 raise ValueError(
                     f"Error ``{e}`` occurred when testing {self.test_solver_class.__name__}\n"
@@ -144,10 +125,6 @@ class SolverTesterBase(object):
         elif test_task_type == TASK_TYPE.MOPO:
             return self._get_mopo_tasks(mode, exclude_test_files)
 
-        # Logic Problems
-        elif test_task_type == TASK_TYPE.SAT:
-            return self._get_sat_tasks(mode, exclude_test_files)
-        
         # Others
         else:
             raise ValueError(
@@ -578,89 +555,3 @@ class SolverTesterBase(object):
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
-    
-    ########################################
-    #           Logic Problems             #
-    ########################################
-    
-    def _get_sat_tasks(
-        self, mode: str, exclude_test_files: List[pathlib.Path]
-    ) -> List[SATTask]:
-        # Import SAT generator for dynamic generation
-        from ml4co_kit.generator.logic.sat import SATGenerator
-        
-        # Since SAT test data might not exist, generate test instances dynamically
-        generator = SATGenerator()
-        
-        # ``Solve`` mode
-        if mode == "solve":
-            task_list = []
-            
-            # Try to load from files first, fallback to generation
-            sat_test_files_list = [
-                pathlib.Path("test_dataset/sat/task/sat_small_random_task.pkl"),
-                pathlib.Path("test_dataset/sat/task/sat_medium_planted_task.pkl"),
-            ]
-            
-            for test_file in sat_test_files_list:
-                if test_file not in exclude_test_files:
-                    try:
-                        if test_file.exists():
-                            task = SATTask()
-                            task.from_pickle(test_file)
-                            task_list.append(task)
-                        else:
-                            # Generate fallback instances if files don't exist
-                            task = generator.generate(
-                                num_vars=10, 
-                                num_clauses=30, 
-                                distribution='RANDOM',
-                                seed=42
-                            )
-                            task.name = f"generated_{test_file.stem}"
-                            # Set reference solution to None to skip evaluation
-                            # SAT tasks don't have optimal values to compare
-                            task.ref_sol = None
-                            task_list.append(task)
-                    except Exception:
-                        # If file loading fails, generate instance
-                        task = generator.generate(
-                            num_vars=8, 
-                            num_clauses=24, 
-                            distribution='PLANTED',
-                            seed=123
-                        )
-                        task.name = f"fallback_{test_file.stem}"
-                        task.ref_sol = None
-                        task_list.append(task)
-            
-            # Ensure we have at least one test instance
-            if not task_list:
-                task = generator.generate(
-                    num_vars=5, 
-                    num_clauses=15, 
-                    distribution='RANDOM',
-                    seed=999
-                )
-                task.name = "minimal_test_sat"
-                task.ref_sol = None
-                task_list.append(task)
-                
-            return task_list
-        
-        # ``Batch Solve`` mode  
-        if mode == "batch_solve":
-            # Generate a batch of test instances
-            batch_tasks = []
-            for i in range(2):  # Create 2 small batches
-                task = generator.generate(
-                    num_vars=6 + i * 2,
-                    num_clauses=18 + i * 6,
-                    distribution='RANDOM',
-                    seed=1000 + i
-                )
-                task.name = f"batch_sat_{i+1}"
-                task.ref_sol = None
-                batch_tasks.append(task)
-            
-            return [batch_tasks]  # Return as list of batches

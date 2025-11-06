@@ -1,6 +1,6 @@
 from torch import Tensor, nn
-from ...model.embedder.base import GNN4COEmbedder
-from ...model.embedder.utils import ScalarEmbeddingSine1D, ScalarEmbeddingSine3D
+from .base import GNN4COEmbedder
+from .utils import ScalarEmbeddingSine1D, ScalarEmbeddingSine3D
 
 
 class ATSPEmbedder(GNN4COEmbedder):

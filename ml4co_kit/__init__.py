@@ -54,9 +54,9 @@ from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 from .task import PortfolioTaskBase
 from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
 
-# Logic Task
-from .task import LogicTaskBase
-from .task import SATTask
+# SAT Task
+from .task import SATTaskBase
+from .task import SATPTask, SATATask, USATCTask
 
 
 ###################################################
@@ -88,10 +88,6 @@ from .generator import (
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
 
-# Logic Generator
-from .generator import LogicGeneratorBase, LOGIC_TYPE
-from .generator import SATGenerator
-
 
 ####################################################
 #                      Solver                      #
@@ -102,7 +98,7 @@ from .solver import SolverBase, SOLVER_TYPE
 # Solver (not use torch backend)
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
-    HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
+    HGSSolver, ILSSolver, InsertionSolver, ISCOSolver, KaMISSolver, 
     LcDegreeSolver, LKHSolver, ORSolver, SCIPSolver
 )
 
@@ -125,7 +121,7 @@ if env_checker.check_torch():
 from .optimizer import OptimizerBase, OPTIMIZER_TYPE
 
 # Optimizer (not use torch backend)
-from .optimizer import CVRPLSOptimizer
+from .optimizer import CVRPLSOptimizer, ISCOOptimizer
 
 # Optimizer (use torch backend)
 if env_checker.check_torch():

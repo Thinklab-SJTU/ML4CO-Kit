@@ -22,9 +22,27 @@ class InsertionSolverTester(SolverTesterBase):
         super(InsertionSolverTester, self).__init__(
             mode_list=["solve"],
             test_solver_class=InsertionSolver,
-            test_task_type_list=[TASK_TYPE.TSP],
-            test_args_list=[{}],
-            exclude_test_files_list=[[]]
+            test_task_type_list=[
+                TASK_TYPE.TSP,
+                TASK_TYPE.MCL,
+                TASK_TYPE.MIS,
+                TASK_TYPE.MVC,
+                TASK_TYPE.MCUT,
+            ],
+            test_args_list=[
+                {},
+                {},
+                {},
+                {},
+                {},
+            ],
+            exclude_test_files_list=[
+                [],
+                [],
+                [],
+                [],
+                [],
+            ]
         )
         
     def pre_test(self):

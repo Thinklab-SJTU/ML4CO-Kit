@@ -37,6 +37,7 @@ from .solver.gp_degree import GpDegreeSolverTester
 from .solver.gurobi import GurobiSolverTester
 from .solver.hgs import HGSSolverTester
 from .solver.ils import ILSSolverTester
+from .solver.isco import ISCOSolverTester
 from .solver.insertion import InsertionSolverTester
 from .solver.kamis import KaMISSolverTester
 from .solver.lc_degree import LcDegreeSolverTester
@@ -45,3 +46,7 @@ from .solver.ortools import ORSolverTester
 from .solver.scip import SCIPSolverTester
 from .solver.sat_ortools import SATORSolverTester
 from .solver.sat_gurobi import SATGurobiSolverTester
+
+# Load other optimizer testers
+from .optimizer.cvrp_ls import CVRPLSOptimizerTester
+from .optimizer.isco import ISCOOptimizerTester

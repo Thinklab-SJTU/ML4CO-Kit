@@ -47,6 +47,11 @@ class SOLVER_TYPE(str, Enum):
     NEUROLKH = "neurolkh"
     RLSA = "rlsa"
 
+    # ML4CO
+    ML4CO = "ml4co"
+
+    # DIY
+    DIY = "diy"
 
 class SolverBase(object):
     """Base class for all solvers."""

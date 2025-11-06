@@ -17,9 +17,10 @@ RLSA local search algorithm for MCl.
 import torch
 import numpy as np
 from torch import Tensor
-from typing import Tuple, Union
+from typing import Union
 from ml4co_kit.task.graph.mcut import MCutTask
 from ml4co_kit.utils.type_utils import to_numpy, to_tensor
+from ml4co_kit.solver.lib.rlsa.mcut_rlsa import mcut_energy_func
 
 
 def mcut_rlsa_ls(
@@ -89,18 +90,3 @@ def mcut_rlsa_ls(
 
     # Store the solution in the task_data
     task_data.from_data(sol=to_numpy(best_sol[best_index]), ref=False)
-    
-    
-def mcut_energy_func(
-    edge_index: Tensor, x: Tensor, weights: Tensor, weights_graph: Tensor
-) -> Tuple[Tensor, Tensor]:
-    # x_i in {0,1} -> s_i in {-1, +1}
-    edge_index_0 = 2 * x[:, edge_index[0]] - 1
-    edge_index_1 = 2 * x[:, edge_index[1]] - 1
-    
-    # Energy
-    energy = torch.sum(edge_index_0 * edge_index_1 * weights, dim=1)
-    
-    # Gradient
-    grad = torch.matmul(2*x-1, weights_graph)
-    return energy, grad

@@ -50,6 +50,8 @@ class TSPTask(RoutingTaskBase):
     
     def _normalize_points(self):
         """Normalize points to [0, 1] range."""
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         points = self.points
         min_vals = np.min(points)
         max_vals = np.max(points)
@@ -84,11 +86,7 @@ class TSPTask(RoutingTaskBase):
     def _get_dists(self) -> np.ndarray:
         """Get distance matrix."""
         if self.dists is None:
-            dists = np.zeros((self.nodes_num, self.nodes_num))
-            for i in range(self.nodes_num):
-                for j in range(i + 1, self.nodes_num):
-                    dists[i, j] = self.dist_eval.cal_distance(self.points[i], self.points[j])
-                    dists[j, i] = dists[i, j]
+            dists = self.dist_eval.cal_dist_matrix(self.points)
             self.dists = dists.astype(self.precision)
         return self.dists
     

@@ -34,6 +34,7 @@ from .gurobi import GurobiSolver
 from .hgs import HGSSolver
 from .ils import ILSSolver
 from .insertion import InsertionSolver
+from .isco import ISCOSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver

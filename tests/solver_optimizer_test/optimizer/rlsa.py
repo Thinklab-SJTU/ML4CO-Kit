@@ -1,5 +1,5 @@
 r"""
-Greedy Solver Tester.
+RLSA Optimizer Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

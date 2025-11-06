@@ -29,12 +29,11 @@ def mcl_greedy(task_data: MClTask):
     # Greedy Algorithm for MCl
     for node in sorted_nodes:
         if not mask[node]:
-            if (adj_matrix[node][sol]).all():
-                unconnect_nodes = np.where(adj_matrix[node] == 0)[0]
-                sol[unconnect_nodes] = False
-                sol[node] = True
-                mask[unconnect_nodes] = True
-                mask[node] = True
+            unconnect_nodes = np.where(adj_matrix[node] == 0)[0]
+            sol[unconnect_nodes] = False
+            sol[node] = True
+            mask[unconnect_nodes] = True
+            mask[node] = True
     sol = sol.astype(np.int32)
     
     # Store the solution in the task_data

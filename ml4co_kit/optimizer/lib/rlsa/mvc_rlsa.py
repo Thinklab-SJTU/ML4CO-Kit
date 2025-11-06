@@ -17,9 +17,10 @@ RLSA local search algorithm for MVC.
 import torch
 import numpy as np
 from torch import Tensor
-from typing import Tuple, Union
+from typing import Union
 from ml4co_kit.task.graph.mvc import MVCTask
 from ml4co_kit.utils.type_utils import to_numpy, to_tensor
+from ml4co_kit.solver.lib.rlsa.mvc_rlsa import mvc_energy_func
 
 
 def mvc_rlsa_ls(
@@ -99,35 +100,3 @@ def mvc_rlsa_ls(
 
     # Store the solution in the task_data
     task_data.from_data(sol=to_numpy(best_sol[best_index]), ref=False)
-    
-    
-def mvc_energy_func(
-    graph: Tensor, x: Tensor, weights: Tensor, penalty_coeff: float
-) -> Tuple[Tensor, Tensor]:
-    # Pre-Process
-    minus_x = torch.ones_like(x) - x
-    minus_x_uq = minus_x.unsqueeze(1) 
-    
-    # Energy Term1: Weighted Cost
-    # contribution of selecting node i: w_i * x_i
-    energy_term1 = torch.matmul(x, weights)    # (B,)
-    
-    # Energy Term2: Penalty for uncovered edges
-    # If e_{i,j} = 1, while x_i = x_j = 0, incur penalty
-    energy_term2 = torch.sum((torch.matmul(minus_x_uq, graph) * minus_x_uq).squeeze(1), 1)
-    energy_term2 = penalty_coeff * energy_term2
-    
-    # Total Energy: minimize cost + minimize penalty 
-    energy = energy_term1 + energy_term2
-    
-    # Gradient Term 1: Weighted Cost
-    grad_term1 = weights.expand_as(x)
-    
-    # Gradient Term 2: Penalty for uncovered edges
-    grad_term2 = - torch.matmul(graph, minus_x.unsqueeze(-1)).squeeze(-1)
-    grad_term2 = penalty_coeff * grad_term2
-    
-    # Total Gradient: minimize cost + minimize penalty 
-    grad = grad_term1 + grad_term2
-    
-    return energy, grad
