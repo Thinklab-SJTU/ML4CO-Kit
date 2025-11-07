@@ -20,7 +20,6 @@ if env_checker.check_gnn4co():
     from .solver.beam import BeamSolverTester
     from .solver.greedy import GreedySolverTester
     from .solver.mcts import MCTSSolverTester
-    from .solver.sat_greedy import SATGreedySolverTester
     from .optimizer.two_opt import TwoOptOptimizerTester
     from .optimizer.mcts import MCTSOptimizerTester
     from .optimizer.rlsa import RLSAOptimizerTester
@@ -44,8 +43,7 @@ from .solver.lc_degree import LcDegreeSolverTester
 from .solver.lkh import LKHSolverTester
 from .solver.ortools import ORSolverTester
 from .solver.scip import SCIPSolverTester
-from .solver.sat_ortools import SATORSolverTester
-from .solver.sat_gurobi import SATGurobiSolverTester
+
 
 # Load other optimizer testers
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester
