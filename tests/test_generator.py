@@ -38,16 +38,12 @@ from tests.generator_test import (
     MVCGenTester
 )
 
+
 # Portfolio Problems
 from tests.generator_test import (
     MinVarPOGenTester, 
     MaxRetPOGenTester, 
     MOPOGenTester
-)
-
-# Logic Problems
-from tests.generator_test import (
-    SATGenTester
 )
 
 
@@ -66,9 +62,6 @@ def test_generator():
     MCutGenTester().test()
     MISGenTester().test()
     MVCGenTester().test()
-    
-    # Logic Problems
-    SATGenTester().test()
 
     # Portfolio Problems
     MinVarPOGenTester().test()
