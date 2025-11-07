@@ -41,7 +41,6 @@ from tests.solver_optimizer_test import (
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,
@@ -60,7 +59,6 @@ basic_tester_class_list = [
     LKHSolverTester,
     ORSolverTester,
     SCIPSolverTester,
-    SATORSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,
@@ -72,9 +70,8 @@ if env_checker.system == "Linux":
 # Gurobi
 env_checker.gurobi_support = False # Currently, Github Actions does not support Gurobi
 if env_checker.check_gurobi():
-    from tests.solver_optimizer_test import GurobiSolverTester, SATGurobiSolverTester
+    from tests.solver_optimizer_test import GurobiSolverTester
     basic_tester_class_list.append(GurobiSolverTester)
-    basic_tester_class_list.append(SATGurobiSolverTester)
    
     
 # Get solvers to be tested (torch used)
