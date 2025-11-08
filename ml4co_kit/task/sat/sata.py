@@ -27,7 +27,7 @@ class SATATask(SATTaskBase):
     ):
         # Super Initialization
         super(SATATask, self).__init__(
-            task_type=TASK_TYPE.SATP, 
+            task_type=TASK_TYPE.SATA, 
             minimize=False, 
             precision=precision
         )
