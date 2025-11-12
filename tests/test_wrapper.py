@@ -27,7 +27,6 @@ from tests.wrapper_test import (
     PCTSPWrapperTester
 )    
 
-
 # Graph Problems
 from tests.wrapper_test import (
     MClWrapperTester, 
@@ -36,16 +35,24 @@ from tests.wrapper_test import (
     MCutWrapperTester
 )
 
+# Graph Set Problems
+from tests.wrapper_test import (
+    GMWrapperTester
+)
+
 
 if __name__ == "__main__":
     # Routing Problems
-    # ATSPWrapperTester().test()
-    # CVRPWrapperTester().test()
+    ATSPWrapperTester().test()
+    CVRPWrapperTester().test()
     PCTSPWrapperTester().test()
-    # TSPWrapperTester().test()
+    TSPWrapperTester().test()
     
     # Graph Problems
-    # MClWrapperTester().test()
-    # MCutWrapperTester().test()
-    # MISWrapperTester().test()
-    # MVCWrapperTester().test()
+    MClWrapperTester().test()
+    MCutWrapperTester().test()
+    MISWrapperTester().test()
+    MVCWrapperTester().test()
+    
+    # Graph Set Problem
+    GMWrapperTester().test()

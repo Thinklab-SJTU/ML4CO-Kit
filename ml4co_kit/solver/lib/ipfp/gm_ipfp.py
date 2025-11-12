@@ -1,5 +1,5 @@
 r"""
-SM Algorithm for GM
+IPFP Algorithm for GM
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,14 +13,15 @@ SM Algorithm for GM
 # See the Mulan PSL v2 for more details.
 
 import numpy as np
-from ml4co_kit.task.graph.gm import GMTask
-from ml4co_kit.task.graph.base import hungarian
+from ml4co_kit.task.graphset.gm import GMTask
+from ml4co_kit.task.graphset.base import hungarian
 
 def gm_ipfp(task_data: GMTask, x0: np.ndarray = None, max_iter: int = 50) -> np.ndarray:
     """Single-graph version of IPFP algorithm"""
+    if task_data.aff_matrix is None:
+        task_data.build_aff_mat()
+     
     K = task_data.aff_matrix
-    if K is None:
-        raise ValueError("Affinity matrix need to be built.")
     n1 = task_data.graphs[0].nodes_num
     n2 = task_data.graphs[1].nodes_num
     n1, n2, n1n2, v0 = _check_and_init_gm(K, n1, n2, x0)
@@ -61,7 +62,9 @@ def gm_ipfp(task_data: GMTask, x0: np.ndarray = None, max_iter: int = 50) -> np.
         last_v = v
 
     pred_x = best_v.reshape((n2, n1)).T
-    return pred_x
+    pred_x = hungarian(pred_x)
+    task_data.from_data(sol=pred_x.reshape((n1n2,)), ref=False)
+
    
     
 def _check_and_init_gm(K: np.ndarray, n1: int = None, n2: int = None, x0: np.ndarray = None):

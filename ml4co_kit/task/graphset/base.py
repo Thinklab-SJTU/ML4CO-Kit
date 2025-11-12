@@ -238,8 +238,9 @@ class Graph:
         edge_index = np.array(edges, dtype=np.int32).T
         
         # change undirected graph to directed graph
-        reversed_edges = edge_index[[1, 0], :]
-        edge_index = np.concatenate([edge_index, reversed_edges], axis=1)
+        if edge_index.size != 0:
+            reversed_edges = edge_index[[1, 0], :]
+            edge_index = np.concatenate([edge_index, reversed_edges], axis=1)
 
         if edges_feature is not None:
             edges_feature = np.concatenate([edges_feature, edges_feature], axis=0)
@@ -394,11 +395,11 @@ class GraphSetTaskBase(TaskBase):
         sol: np.ndarray = None,
         ref: bool = False,
         ):
-        self.clear_graphs() 
-        self.graphs = graphs if graphs is not None else [] 
-        self.graphs_num = len(self.graphs)
-        
-        self._deal_with_self_loop()
+        if graphs is not None:
+            self.clear_graphs() 
+            self.graphs = graphs  
+            self.graphs_num = len(self.graphs)
+            self._deal_with_self_loop()
         
         if sol is not None:
             if ref:
@@ -407,8 +408,62 @@ class GraphSetTaskBase(TaskBase):
             else:
                 self.sol = sol
                 self._check_sol_dim()
-                
+          
+    def from_gpickle_result(
+        self, 
+        gpickle_file_path: pathlib.Path = None,
+        result_file_path: pathlib.Path = None, 
+        ref: bool = False,
+    ):
+        """Load graphs data from a gpickle file."""
+        # Read graph data from .gpickle
+        if gpickle_file_path is not None:
+            with open(gpickle_file_path, "rb") as f:
+                nx_graphs: list[nx.Graph] = pickle.load(f)
 
+            # Use ``from_nx_graph``
+            graphs_list = []
+            for nx_graph in nx_graphs:
+                g = Graph()
+                g.from_networkx(nx_graph)
+                graphs_list.append(g)
+            self.graphs = graphs_list
+            self.graphs_num = len(self.graphs)
+            
+        if result_file_path is not None:
+            with open(result_file_path, "r") as f:
+                sol = [int(_) for _ in f.read().splitlines()]
+                
+            # Use ``from_data``
+            self.from_data(sol=np.array(sol, dtype=np.int32), ref=ref)      
+
+    def to_gpickle_result(
+        self, 
+        gpickle_file_path: pathlib.Path = None,
+        result_file_path: pathlib.Path = None, 
+    ):
+        """Save graph data to a ``.gpickle`` or ``.result`` file."""
+        # Save graph data to a .gpickle file
+        if gpickle_file_path is not None:
+            # Check file path
+            check_file_path(gpickle_file_path)
+            
+            # Transfer to NetworkX graph list
+            nx_graphs = [g.to_networkx for g in self.graphs]
+            
+            # Save to .gpickle file
+            with open(gpickle_file_path, "wb") as f:
+                pickle.dump(nx_graphs, f, pickle.HIGHEST_PROTOCOL)
+        
+        # Save graph data to a .result file
+        if result_file_path is not None:
+            # Check file path
+            check_file_path(result_file_path)
+            
+            # Save to .result file
+            with open(result_file_path, "w") as f:
+                for node_label in self.sol:
+                    f.write(f"{node_label}\n")
 
 # NetworkX Layout
 SUPPORT_POS_TYPE_DICT = {
@@ -452,6 +507,7 @@ def get_pos_layer(pos_type: str):
         raise ValueError(f"unvalid pos type, only supports {SUPPORT_POS_TYPE}")
     return SUPPORT_POS_TYPE_DICT[pos_type]
 
+# Helper Function
 def sinkhorn(
         s: np.ndarray, 
         nrows: np.ndarray = None, 
@@ -554,3 +610,4 @@ def hungarian(s: np.ndarray, n1=None, n2=None, unmatch1=None, unmatch2=None):
         perm_mat[row, col] = 1
   
         return perm_mat
+

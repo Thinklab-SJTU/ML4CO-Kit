@@ -29,3 +29,6 @@ from .mcut import MCutGenTester
 from .mcl import MClGenTester
 from .mis import MISGenTester
 from .mvc import MVCGenTester
+
+# Graph Set Problem
+from .gm import GMGenTester

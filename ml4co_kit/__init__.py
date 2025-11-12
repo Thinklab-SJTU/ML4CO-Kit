@@ -23,8 +23,12 @@ import importlib.util
 from .task import TaskBase, TASK_TYPE
 
 # Graph Task
-from .task import GraphTaskBase, Graph, GraphSetTaskBase
-from .task import MClTask, MCutTask, MISTask, MVCTask, GMTask
+from .task import GraphTaskBase 
+from .task import MClTask, MCutTask, MISTask, MVCTask
+
+# Graph Set Task
+from .task import Graph, Graph, GraphSetTaskBase
+from .task import GMTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
@@ -44,6 +48,13 @@ from .generator import (
     GRAPH_TYPE, GRAPH_WEIGHT_TYPE, 
 )
 from .generator import MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
+
+# GraphSet Generator
+from .generator import (
+    GraphFeatureGenerator, GraphSetGeneratorBase, 
+    GRAPH_TYPE, GRAPH_FEATURE_TYPE, 
+)
+from .generator import GMGenerator
 
 # Routing Generator
 from .generator import RoutingGenerator
@@ -67,14 +78,16 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
     HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver
+    LcDegreeSolver, LKHSolver, ORSolver, 
+    SMSolver, IPFPSolver, RRWMSolver, AStarSolver
 )
 
 # Solver (use torch backend)
 found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
     from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver
+        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver,
+        NGMSolver, AStarSolver, GNN_AStarSolver
     )
 
 
@@ -98,6 +111,11 @@ from .wrapper import (
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
 )
 
+# Graph Set Problems
+from .wrapper import(
+    GMWrapper
+)
+
 
 ####################################################
 #                  Utils Function                  #
@@ -119,7 +137,6 @@ from .utils import to_numpy, to_tensor
 from .extension.gnn4co import (
     GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
 )
-
 
 __version__ = "1.0.0"
 __author__ = "SJTU-ReThinkLab"

@@ -31,7 +31,6 @@ else:
     TORCH_SUPPORT = False
     CUDA_SUPPORT = False
 
-
 # Check if gurobi is supported
 import gurobipy as gp
 try:
@@ -54,28 +53,33 @@ from tests.solver_test import (
     KaMISSolverTester, 
     LcDegreeSolverTester,
     LKHSolverTester,
-    ORSolverTester
+    ORSolverTester,
+    SMSolverTester,
+    IPFPSolverTester,
+    RRWMSolverTester
 )
 basic_solver_class_list = [
-    # ConcordeSolverTester, 
-    # GAEAXSolverTester,
-    # GpDegreeSolverTester, 
-    # HGSSolverTester, 
+    ConcordeSolverTester, 
+    GAEAXSolverTester,
+    GpDegreeSolverTester, 
+    HGSSolverTester, 
     ILSSolverTester, 
-    # InsertionSolverTester, 
-    # KaMISSolverTester,
-    # LcDegreeSolverTester,
-    # LKHSolverTester,
-    # ORSolverTester
+    InsertionSolverTester, 
+    KaMISSolverTester,
+    LcDegreeSolverTester,
+    LKHSolverTester,
+    ORSolverTester,
+    SMSolverTester,
+    IPFPSolverTester,
+    RRWMSolverTester
 ]
-
 
 # Gurobi
 if GUROBI_SUPPORT:
     from tests.solver_test import GurobiSolverTester
     basic_solver_class_list.append(GurobiSolverTester)
    
-    
+
 # Get solvers to be tested (torch used)
 if TORCH_SUPPORT:
     from tests.solver_test import (
@@ -83,14 +87,20 @@ if TORCH_SUPPORT:
         GreedySolverTester, 
         RLSASolverTester, 
         NeuroLKHSolverTester,
-        MCTSSolverTester
+        MCTSSolverTester,
+        AStarSolverTester,
+        GNN_AStarSolverTester,
+        NGMSolverTester
     )
     torch_solver_class_list = [
-        # BeamSolverTester, 
-        # GreedySolverTester, 
-        # RLSASolverTester,
+        BeamSolverTester, 
+        GreedySolverTester, 
+        RLSASolverTester,
         NeuroLKHSolverTester,
-        # MCTSSolverTester
+        MCTSSolverTester,
+        AStarSolverTester,
+        GNN_AStarSolverTester,
+        NGMSolverTester
     ]
 
 
@@ -99,7 +109,7 @@ if __name__ == "__main__":
     for solver_class in basic_solver_class_list:
         solver_class: Type[SolverTesterBase]
         solver_class().test()
-    
+
     # Torch Solvers
     for solver_class in torch_solver_class_list:
         solver_class: Type[SolverTesterBase]

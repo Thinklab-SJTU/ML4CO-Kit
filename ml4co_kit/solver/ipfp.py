@@ -20,8 +20,6 @@ from ml4co_kit.solver.lib.ipfp.gm_ipfp import gm_ipfp
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
-
-
 class IPFPSolver(SolverBase):
     def __init__(
         self,
@@ -38,7 +36,7 @@ class IPFPSolver(SolverBase):
         self.max_iter = max_iter
      
     def _solve(self, task_data: TaskBase):
-        """Solve the task data using RRWM solver."""
+        """Solve the task data using IPFP solver."""
         if task_data.task_type == TASK_TYPE.GM:
             return gm_ipfp(
                 task_data=task_data,

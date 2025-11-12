@@ -17,3 +17,6 @@ from .mcl import MClWrapper
 from .mcut import MCutWrapper
 from .mis import MISWrapper
 from .mvc import MVCWrapper
+
+# GraphSet problems
+from .gm import GMWrapper

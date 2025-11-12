@@ -16,6 +16,7 @@ Solver Test Module.
 # Check if torch is supported
 import importlib.util
 found_torch = importlib.util.find_spec("torch")
+
 if found_torch is not None:
     from .beam import BeamSolverTester
     from .greedy import GreedySolverTester
@@ -39,3 +40,9 @@ from .kamis import KaMISSolverTester
 from .lc_degree import LcDegreeSolverTester
 from .lkh import LKHSolverTester
 from .ortools import ORSolverTester
+from .sm import SMSolverTester
+from .rrwm import RRWMSolverTester
+from .ipfp import IPFPSolverTester
+from .astar import AStarSolverTester
+from .gnn_astar import GNN_AStarSolverTester
+from .ngm import NGMSolverTester

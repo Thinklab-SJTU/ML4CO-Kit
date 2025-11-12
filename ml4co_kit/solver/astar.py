@@ -1,5 +1,5 @@
 r"""
-SM(Spectral Matching) Solver.
+AStar Solver.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -16,31 +16,29 @@ SM(Spectral Matching) Solver.
 import numpy as np
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.lib.sm.gm_sm import gm_sm
+from ml4co_kit.solver.lib.astar.gm_classical_astar import gm_astar
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
-class SMSolver(SolverBase):
+class AStarSolver(SolverBase):
     def __init__(
         self,
-        x0: np.ndarray = None,
-        max_iter: int = 50,
+        beam_width: int = 0,
         optimizer: OptimizerBase = None
     ):
-        super(SMSolver, self).__init__(
-            solver_type=SOLVER_TYPE.SM, optimizer=optimizer
+        super(AStarSolver, self).__init__(
+            solver_type=SOLVER_TYPE.ASTAR, optimizer=optimizer
         )
         
         # Set Attributes
-        self.x0 = x0
-        self.max_iter = max_iter   
+        self.beam_width = beam_width   
     
-    def _solve(self, task_data: TaskBase):
-        """Solve the task data using SM solver."""
+    def _solve(self, task_data: TaskBase, beam_width: int = 0):
+        """Solve the task data using AStar solver."""
         if task_data.task_type == TASK_TYPE.GM:
-            return gm_sm(
+            return gm_astar(
                 task_data=task_data,
-                x0 = self.x0,
+                beam_width=self.beam_width,
             )
         else:
             raise ValueError(

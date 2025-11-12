@@ -40,6 +40,10 @@ class SOLVER_TYPE(str, Enum):
     PYVRP = "pyvrp"
     KAMIS = "kamis"
     ILS = "ils"
+    SM = 'sm'
+    IPFP = 'ipfp'
+    RRWM = 'rrwm'
+    ASTAR = 'astar'
     
     # Sampling-Based Algorithms
     ISCO = "isco"
@@ -48,7 +52,8 @@ class SOLVER_TYPE(str, Enum):
     # ML4CO
     NEUROLKH = "neurolkh"
     MCTS = "mcts"
-
+    NGM = 'ngm'
+    GNN_ASTAR = 'astar'
 
 class SolverBase(object):
     """Base class for all solvers."""

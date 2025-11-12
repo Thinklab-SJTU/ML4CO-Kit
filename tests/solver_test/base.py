@@ -12,17 +12,17 @@ Base class for solver testers.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-
+import os  #要删去
 import pathlib
 from typing import Type, List
 from ml4co_kit import SolverBase, TaskBase, TASK_TYPE
 from ml4co_kit import (
     TSPTask, ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask,
-    MClTask, MCutTask, MISTask, MVCTask
+    MClTask, MCutTask, MISTask, MVCTask, GMTask
 )
 from ml4co_kit import (
     TSPWrapper, ATSPWrapper, CVRPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper,
-    MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
+    MClWrapper, MCutWrapper, MISWrapper, MVCWrapper, GMWrapper
 )
 
 
@@ -114,6 +114,10 @@ class SolverTesterBase(object):
             return self._get_mis_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.MVC:
             return self._get_mvc_tasks(mode, exclude_test_files)
+        
+        # Graph Set Problems
+        elif test_task_type == TASK_TYPE.GM:
+            return self._get_gm_tasks(mode, exclude_test_files)
         
         # Others
         else:
@@ -403,6 +407,42 @@ class SolverTesterBase(object):
             for test_file in tsp_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = MVCWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+        
+    def _get_gm_tasks(
+        self, mode: str, exclude_test_files: list[pathlib.Path]
+    ) -> List[GMTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            print(os.getcwd())
+            gm_test_files_list = [
+                pathlib.Path("test_dataset/gm/task/gm_er_uniform_iso_task.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_iso_task.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_uniform_ind_task.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_ind_task.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_uniform_iso_task_astar.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_iso_task_astar.pkl")
+            ]
+            task_list = list()
+            for test_file in gm_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = GMTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            gm_test_files_list = [
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_uniform_iso_4ins.pkl"),
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_gaussian_iso_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in gm_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = GMWrapper()
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list

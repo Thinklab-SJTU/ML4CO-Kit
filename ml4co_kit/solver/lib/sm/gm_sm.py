@@ -13,7 +13,8 @@ SM Algorithm for GM
 # See the Mulan PSL v2 for more details.
 
 import numpy as np
-from ml4co_kit.task.graph.gm import GMTask
+from ml4co_kit.task.graphset.base import hungarian 
+from ml4co_kit.task.graphset.gm import GMTask
 
 
 def gm_sm(
@@ -21,27 +22,26 @@ def gm_sm(
     x0: np.ndarray,
     max_iter: int = 50,
 ):
+    if task_data.aff_matrix is None:
+        task_data.build_aff_mat()
+     
     K = task_data.aff_matrix
-    if K is None:
-        raise ValueError("Affinity matrix need to be built.")
     n1 = task_data.graphs[0].nodes_num
     n2 = task_data.graphs[1].nodes_num
     n1, n2, n1n2, v0 = _check_and_init_gm(K, n1, n2)
+    
     v = vlast = v0
     for i in range(max_iter):
         v = np.matmul(K, v)
         n = np.linalg.norm(v, ord=2)
         v = v / n
         if np.linalg.norm(v-vlast, ord='fro') < 1e-8:
-            print("这一轮已经收敛")
             break
         vlast = v
-        if i == max_iter-1:
-            print("这一轮未收敛")
     
     x = v.reshape((n2, n1)).T
-    
-    return x
+    x = hungarian(x)
+    task_data.from_data(sol=x.reshape((n1n2,)), ref=False)
    
     
 def _check_and_init_gm(K: np.ndarray, n1: int = None, n2: int = None, x0: np.ndarray = None):

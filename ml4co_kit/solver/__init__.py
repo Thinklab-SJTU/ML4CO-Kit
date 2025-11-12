@@ -16,15 +16,17 @@ Solver Module.
 # Check if torch is supported
 import importlib.util
 found_torch = importlib.util.find_spec("torch")
+
 if found_torch is not None:
     from .beam import BeamSolver
     from .greedy import GreedySolver
     from .mcts import MCTSSolver
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
+    from .ngm import NGMSolver
+    from .gnn_astar import GNN_AStarSolver 
 else:
     TORCH_SUPPORT = False
-
 
 # Load other solver testers   
 from .base import SolverBase, SOLVER_TYPE
@@ -39,3 +41,8 @@ from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
+from .astar import AStarSolver
+from .sm import SMSolver
+from .ipfp import IPFPSolver
+from .rrwm import RRWMSolver
+from .astar import AStarSolver

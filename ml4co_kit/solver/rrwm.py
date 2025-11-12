@@ -20,8 +20,6 @@ from ml4co_kit.solver.lib.rrwm.gm_rrwm import gm_rrwm
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
-
-
 class RRWMSolver(SolverBase):
     def __init__(
         self,
@@ -45,7 +43,7 @@ class RRWMSolver(SolverBase):
     
     def _solve(self, task_data: TaskBase):
         """Solve the task data using RRWM solver."""
-        if task_data.task_type == TASK_TYPE.GM:
+        if task_data.task_type == TASK_TYPE.GM: 
             return gm_rrwm(
                 task_data=task_data,
                 x0 = self.x0,

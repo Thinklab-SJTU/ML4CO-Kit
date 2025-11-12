@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.graphset.base import GraphSetTaskBase,Graph
-from ml4co_kit.task.graph.gm import GMTask
+from ml4co_kit.task.graphset.gm import GMTask
 from ml4co_kit.generator.graphset.base import GRAPH_TYPE
 from ml4co_kit.generator.graphset.base import (
     GraphSetGeneratorBase, GRAPH_FEATURE_TYPE, GraphFeatureGenerator
@@ -22,7 +22,7 @@ class GMGenerator(GraphSetGeneratorBase):
         self,
         distribution_type: GRAPH_TYPE = GRAPH_TYPE.ER,
         precision: Union[np.float32, np.float64] = np.float32,
-        nodes_num_scale: tuple = (200, 300),
+        nodes_num_scale: tuple = (50, 100),
         nodes_feat_dim_scal: tuple = (1, 10),
         edges_feat_dim_scal: tuple = (1, 10),
         graph_generate_rule: GRAPH_GENERATE_RULE =  GRAPH_GENERATE_RULE.ISOMORPHIC,
@@ -129,7 +129,7 @@ class GMGenerator(GraphSetGeneratorBase):
         
         return data
         
-    def _generate_task(self, graph_type: GRAPH_TYPE) -> GMTask:
+    def _generate_task(self) -> GMTask:
         nx_graph_base: nx.Graph = self._single_graph_generate[self.distribution_type]()
         
         # Generate a new graph with reference solution by rule

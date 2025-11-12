@@ -20,7 +20,7 @@ import numpy as np
 import networkx as nx
 from enum import Enum
 from typing import Union
-from ml4co_kit.task.base import TASK_TYPE
+from ml4co_kit.task.base import TASK_TYPE, TaskBase
 from ml4co_kit.generator.base import GeneratorBase
 from ml4co_kit.task.graphset.base import GraphSetTaskBase
 
@@ -128,7 +128,7 @@ class GraphFeatureGenerator(object):
         features += noise
         return features
     
-    def binormal_gen(self, size: int, dim: int) -> np.ndarray:
+    def binomal_gen(self, size: int, dim: int) -> np.ndarray:
         return np.random.binomial(
             n=self.binomial_n,
             p=self.binomial_p,
@@ -150,7 +150,7 @@ class GraphFeatureGenerator(object):
         elif self.feature_type == GRAPH_FEATURE_TYPE.POWERLAW:
             features = self.powerlaw_gen(size, dim)
         elif self.feature_type == GRAPH_FEATURE_TYPE.BINOMIAL:
-            features = self.binormal_gen(size, dim)
+            features = self.binomal_gen(size, dim)
         else:
             raise NotImplementedError(
                 f"The feature type {self.feature_type} is not supported."
@@ -165,7 +165,7 @@ class GraphSetGeneratorBase(GeneratorBase):
         task_type: TASK_TYPE, 
         distribution_type: GRAPH_TYPE = GRAPH_TYPE.ER,
         precision: Union[np.float32, np.float64] = np.float32,
-        nodes_num_scale: tuple = (200, 300),
+        nodes_num_scale: tuple = (50, 100),
         nodes_feat_dim_scal: tuple = (1, 10),
         edges_feat_dim_scal: tuple = (1, 10),
         # special args for different distributions (structural)
@@ -224,12 +224,13 @@ class GraphSetGeneratorBase(GeneratorBase):
             GRAPH_TYPE.RB: self._generate_rb_graph,
             GRAPH_TYPE.WS: self._generate_watts_strogatz_graph,
         }
-        
+        """
         # Generation Function Dictionary
         self.generate_func_dict = {
             graph_type: lambda gt=graph_type :self._generate_task(gt)
             for graph_type in [GRAPH_TYPE.ER, GRAPH_TYPE.BA, GRAPH_TYPE.HK, GRAPH_TYPE.WS, GRAPH_TYPE.RB]
         }
+        """
       
     def _generate_barabasi_albert_graph(self):
         # Generate Barabasi-Albert graph
@@ -419,13 +420,16 @@ class GraphSetGeneratorBase(GeneratorBase):
             nx_graph.edges[edge]['feature'] = edges_feature[i]
         return nx_graph
     
+    def generate(self) -> TaskBase:
+        return self._generate_task()
+    
     def _create_instance(self, nx_graphs: list[nx.Graph]) -> GraphSetTaskBase:
         """Create instance from list of nx.Graph."""
         raise NotImplementedError(
             "Subclasses of GraphGeneratorBase must implement this method."
         )
   
-    def _generate_task(self, graph_type: GRAPH_TYPE) -> GraphSetTaskBase:
+    def _generate_task(self) -> GraphSetTaskBase:
         """Create task by graph_type."""
         raise NotImplementedError(
             "Subclasses of GraphSetGeneratorBase must implement this method."
