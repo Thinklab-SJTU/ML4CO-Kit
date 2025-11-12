@@ -25,7 +25,7 @@ class GNN_AStarSolverTester(SolverTesterBase):
             test_task_type_list=[TASK_TYPE.GM],
             test_args_list=[
                 {
-                    "channel": None,
+                    "channel": 36,
                     "filters_1": 64,
                     "filters_2": 32,
                     "filters_3": 16,
