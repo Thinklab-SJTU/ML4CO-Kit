@@ -35,4 +35,4 @@ def unsatc_greedy(task_data: USATCTask):
     threshold = np.percentile(combined_score, 70)
     sol = (combined_score >= threshold).astype(bool)
     
-    task_data.from_data(sol=sol, ref=False)
+    task_data.sol = sol

@@ -43,4 +43,4 @@ def satp_gurobi(
     os.remove(f"SAT-P-{task_data.name}.lp")
     
     satisfiable = (model.status == gp.GRB.OPTIMAL)
-    task_data.from_data(sol=satisfiable, ref=False)
+    task_data.sol = satisfiable

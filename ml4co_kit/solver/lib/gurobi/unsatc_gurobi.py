@@ -63,4 +63,4 @@ def unsatc_gurobi(
     os.remove(f"UNSAT-C-{task_data.name}.lp")
     
     sol = np.array([int(var_involvement[i].X > 0.5) for i in range(task_data.vars_num)], dtype=bool)
-    task_data.from_data(sol=sol, ref=False)
+    task_data.sol = sol

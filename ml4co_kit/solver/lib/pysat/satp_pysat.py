@@ -26,4 +26,4 @@ def satp_pysat(task_data: SATPTask):
     satisfiable = solver.solve()
     solver.delete()
     
-    task_data.from_data(sol=satisfiable, ref=False)
+    task_data.sol = satisfiable

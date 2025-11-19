@@ -20,18 +20,17 @@ from ml4co_kit.task.sat.unsatc import USATCTask
 
 
 def unsatc_pysat(task_data: USATCTask):
-    cnf = CNF()
-    cnf.nv = task_data.vars_num
-    cnf.clauses = [list(clause) for clause in task_data.clauses]
+    cnf = CNF(from_clauses=task_data.clauses)
     
     musx = MUSX(cnf, verbosity=0)
     core = musx.compute()
     
     sol = np.zeros(task_data.vars_num, dtype=bool)
-    for lit in core:
-        var_idx = abs(lit) - 1
-        if var_idx < task_data.vars_num:
-            sol[var_idx] = True
+    if core:
+        for lit in core:
+            var_idx = abs(lit) - 1
+            if var_idx < task_data.vars_num:
+                sol[var_idx] = True
     
     musx.delete()
-    task_data.from_data(sol=sol, ref=False)
+    task_data.sol = sol
