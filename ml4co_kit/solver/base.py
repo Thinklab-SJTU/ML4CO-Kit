@@ -33,6 +33,7 @@ class SOLVER_TYPE(str, Enum):
     LC_DEGREE = "lc_degree"
     LKH = "lkh"
     ORTOOLS = "ortools"
+    PYSAT = "pysat"
     PYVRP = "pyvrp"
     SCIP = "scip"
 

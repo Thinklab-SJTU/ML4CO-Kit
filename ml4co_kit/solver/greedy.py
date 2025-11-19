@@ -27,6 +27,7 @@ from ml4co_kit.solver.lib.greedy.mvc_greedy import mvc_greedy
 from ml4co_kit.solver.lib.greedy.mcut_greedy import mcut_greedy
 from ml4co_kit.solver.lib.greedy.atsp_greedy import atsp_greedy
 from ml4co_kit.solver.lib.greedy.cvrp_greedy import cvrp_greedy
+from ml4co_kit.solver.lib.greedy.unsatc_greedy import unsatc_greedy
 
 
 class GreedySolver(SolverBase):
@@ -92,6 +93,8 @@ class GreedySolver(SolverBase):
             return mis_greedy(task_data=task_data)
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_greedy(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.USATC:
+            return unsatc_greedy(task_data=task_data)
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."
