@@ -23,19 +23,24 @@ class AStarSolverTester(SolverTesterBase):
             mode_list=["solve"],
             test_solver_class=AStarSolver,
             test_task_type_list=[
-                TASK_TYPE.GM
+                TASK_TYPE.GM,
+                TASK_TYPE.GED,
             ],
             test_args_list=[
                 {
                     "beam_width": 0
-                } 
+                }, # GM
+                {
+                     "beam_width": 0
+                } # GED
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/gm/task/gm_er_uniform_iso_task.pkl"),
-                    pathlib.Path("test_dataset/gm/task/gm_er_uniform_ind_task.pkl"),  
-                    pathlib.Path("test_dataset/gm/task/gm_er_gaussian_iso_task.pkl"),
-                    pathlib.Path("test_dataset/gm/task/gm_er_gaussian_ind_task.pkl"),
+                    pathlib.Path("test_dataset/gm/task/gm_er-large_iso_task.pkl"),
+                    pathlib.Path("test_dataset/gm/task/gm_er-small_ind_task.pkl"),
+                ],
+                [
+                    
                 ]
                 ]
         )

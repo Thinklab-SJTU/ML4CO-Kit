@@ -15,7 +15,7 @@ Wrapper Test Module.
 
 # Base Class
 from .base import WrapperTesterBase
-"""
+
 # Routing Problems
 from .atsp import ATSPWrapperTester
 from .cvrp import CVRPWrapperTester
@@ -27,6 +27,7 @@ from .mcl import MClWrapperTester
 from .mis import MISWrapperTester
 from .mvc import MVCWrapperTester
 from .mcut import MCutWrapperTester
-"""
+
 # Graph Set Problem
 from .gm import GMWrapperTester
+from .ged import GEDWrapperTester

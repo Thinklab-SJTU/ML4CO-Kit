@@ -1,5 +1,5 @@
 r"""
-GM Wrapper.
+GED Wrapper.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -19,14 +19,14 @@ import pathlib
 import numpy as np
 from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.graphset.gm import GMTask
+from ml4co_kit.task.graphset.ged import GEDTask
 from ml4co_kit.wrapper.base import WrapperBase
 from ml4co_kit.utils.time_utils import tqdm_by_time
 from ml4co_kit.utils.file_utils import check_file_path
 
 
 r"""
-GM Wrapper.
+GED Wrapper.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -47,20 +47,20 @@ import numpy as np
 from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.graphset.base import Graph
-from ml4co_kit.task.graphset.gm import GMTask
+from ml4co_kit.task.graphset.ged import GEDTask
 from ml4co_kit.wrapper.base import WrapperBase
 from ml4co_kit.utils.time_utils import tqdm_by_time
 from ml4co_kit.utils.file_utils import check_file_path
 
 
-class GMWrapper(WrapperBase):
+class GEDWrapper(WrapperBase):
     def __init__(
         self, precision: Union[np.float32, np.float64] = np.float32
     ):
-        super(GMWrapper, self).__init__(
-            task_type=TASK_TYPE.GM, precision=precision
+        super(GEDWrapper, self).__init__(
+            task_type=TASK_TYPE.GED, precision=precision
         )
-        self.task_list: List[GMTask] = list()
+        self.task_list: List[GEDTask] = list()
         
     def from_txt(
         self, 
@@ -72,7 +72,7 @@ class GMWrapper(WrapperBase):
         """Read task data from ``.txt`` file"""
         # Overwrite task list if overwrite is True
         if overwrite:
-            self.task_list: List[GMTask] = list()
+            self.task_list: List[GEDTask] = list()
         
         with open(file_path, "r") as file:
             load_msg = f"Loading data from {file_path}"
@@ -102,7 +102,7 @@ class GMWrapper(WrapperBase):
                 edge_feat1_str = split_line[0]    
                 tmp_line = split_line[1]
 
-                split_line = tmp_line.split(" association_match ")
+                split_line = tmp_line.split(" edit_path ")
                 edge_feat2_str = split_line[0] 
                 sol_str = split_line[1]   
                 
@@ -145,9 +145,9 @@ class GMWrapper(WrapperBase):
                 
                 sol = sol_str.split(" ")
                 sol = np.array(
-                    [float(association_match) for association_match in sol], 
+                    [float(edit_path) for edit_path in sol], 
                     dtype=self.precision
-                ).reshape(node_feat1.shape[0], node_feat2.shape[0])
+                ).reshape(node_feat1.shape[0]+1, node_feat2.shape[0]+1)
                 
                 graph1 = Graph(precision=self.precision)
                 graph2 = Graph(precision=self.precision)
@@ -156,15 +156,16 @@ class GMWrapper(WrapperBase):
                 graphs = [graph1, graph2]    
                 
                 if overwrite:
-                    gm_task = GMTask(precision=self.precision)
+                    ged_task = GEDTask(precision=self.precision)
                 else:
-                    gm_task = self.task_list[idx]
-                gm_task.from_data(graphs=graphs, sol=sol, ref=ref)
+                    ged_task = self.task_list[idx]
+                ged_task.from_data(graphs=graphs, sol=sol, ref=ref)
                 
                 # Add to task list
                 if overwrite:
-                    self.task_list.append(gm_task)
-                  
+                    self.task_list.append(ged_task)
+                
+    
     def to_txt(
         self, file_path: pathlib.Path, show_time: bool = False, mode: str = "w"
     ):
@@ -199,8 +200,8 @@ class GMWrapper(WrapperBase):
                 f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[0].edges_feature))
                 f.write(str(" ") + str("edge_feature_for_graph2") + str(" "))
                 f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[1].edges_feature))
-                f.write(str(" ") + str("association_match") + str(" "))
-                f.write(str(" ").join(str(association_match) for association_match in sol_rav))
+                f.write(str(" ") + str("edit_path") + str(" "))
+                f.write(str(" ").join(str(edit_path) for edit_path in sol_rav))
                 f.write("\n")
             f.close()
     
@@ -215,7 +216,7 @@ class GMWrapper(WrapperBase):
         """Read task data from folder (to support NetworkX format)"""
         # Overwrite task list if overwrite is True
         if overwrite:
-            self.task_list: List[GMTask] = list()
+            self.task_list: List[GEDTask] = list()
         
         # Check inconsistent file names between graph and result files
         if graph_folder_path is not None and result_foler_path is not None:
@@ -276,16 +277,16 @@ class GMWrapper(WrapperBase):
             enumerate(zip(graph_files_path, result_files_path)), load_msg, show_time
         ):
             if overwrite:
-                gm_task = GMTask(precision=self.precision)
+                ged_task = GEDTask(precision=self.precision)
             else:
-                gm_task = self.task_list[idx]
-            gm_task.from_gpickle_result(
+                ged_task = self.task_list[idx]
+            ged_task.from_gpickle_result(
                 gpickle_file_path=graph_file_path, 
                 result_file_path=result_file_path, 
                 ref=ref
             )
             if overwrite:
-                self.task_list.append(gm_task)
+                self.task_list.append(ged_task)
         
     def to_gpickle_result_folder(
         self, 

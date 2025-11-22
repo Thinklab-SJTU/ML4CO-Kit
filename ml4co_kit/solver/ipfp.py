@@ -24,7 +24,7 @@ class IPFPSolver(SolverBase):
     def __init__(
         self,
         x0: np.ndarray = None,
-        max_iter: int = 100,
+        max_iter: int = 50,
         optimizer: OptimizerBase = None
     ):
         super(IPFPSolver, self).__init__(

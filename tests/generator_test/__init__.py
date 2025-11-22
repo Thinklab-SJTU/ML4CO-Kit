@@ -32,3 +32,4 @@ from .mvc import MVCGenTester
 
 # Graph Set Problem
 from .gm import GMGenTester
+from .ged import GEDGenTester

@@ -20,3 +20,4 @@ from .mvc import MVCWrapper
 
 # GraphSet problems
 from .gm import GMWrapper
+from .ged import GEDWrapper

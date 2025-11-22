@@ -30,6 +30,7 @@ from .graphset.base import (
     GraphSetGeneratorBase, GRAPH_TYPE, GRAPH_FEATURE_TYPE, GraphFeatureGenerator
 )
 from .graphset.gm import GMGenerator
+from .graphset.ged import GEDGenerator
 
 # Routing Generator
 from .routing.base import RoutingGenerator

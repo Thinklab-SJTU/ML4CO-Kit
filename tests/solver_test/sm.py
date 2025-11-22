@@ -23,7 +23,7 @@ class SMSolverTester(SolverTesterBase):
             mode_list=["solve"],
             test_solver_class=SMSolver,
             test_task_type_list=[
-                TASK_TYPE.GM
+                TASK_TYPE.GM,
             ],
             test_args_list=[
                 {

@@ -26,10 +26,10 @@ def gm_rrwm(
     alpha: float = 0.2,
     beta: float = 30.0,
 ):
-    if task_data.aff_matrix is None:
-        task_data.build_aff_mat()
+    if task_data.aff_mat is None:
+        task_data.aff_mat = task_data.build_aff_mat()
      
-    K = task_data.aff_matrix
+    K = task_data.aff_mat
     n1 = task_data.graphs[0].nodes_num
     n2 = task_data.graphs[1].nodes_num
     n1, n2, n1n2, v0 = _check_and_init_gm(K, n1, n2)
@@ -55,11 +55,10 @@ def gm_rrwm(
         
         if np.linalg.norm(v - last_v) < 1e-5:
             break
-    
-    v = v.reshape((n2, n1)).transpose((1, 0))
-    v = hungarian(v)
-    task_data.from_data(sol=v.reshape((n1n2,)), ref=False)
-    return v
+            
+    pred_x = v.reshape((n2, n1)).T
+    pred_x = hungarian(pred_x)
+    task_data.from_data(sol=pred_x, ref=False)
 
 def _check_and_init_gm(K: np.ndarray, n1: int = None, n2: int = None, x0: np.ndarray = None):
     n1n2 = K.shape[0]

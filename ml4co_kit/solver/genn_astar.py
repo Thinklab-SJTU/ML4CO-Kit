@@ -1,5 +1,5 @@
 r"""
-GNN_AStar Solver.
+GENN_AStar Solver.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -16,11 +16,12 @@ GNN_AStar Solver.
 import torch.nn as nn
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.lib.astar.gm_gnn_astar import gm_gnn_astar
+from ml4co_kit.solver.lib.astar.gm_genn_astar import gm_genn_astar
+from ml4co_kit.solver.lib.astar.ged_genn_astar import ged_genn_astar
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
-class GNN_AStarSolver(SolverBase):
+class GENN_AStarSolver(SolverBase):
     def __init__(
         self,
         channel: int = None,
@@ -36,8 +37,8 @@ class GNN_AStarSolver(SolverBase):
         device: str = "cpu",
         optimizer: OptimizerBase = None
     ):
-        super(GNN_AStarSolver, self).__init__(
-            solver_type=SOLVER_TYPE.GNN_ASTAR, optimizer=optimizer
+        super(GENN_AStarSolver, self).__init__(
+            solver_type=SOLVER_TYPE.GENN_ASTAR, optimizer=optimizer
         )
         
         # Set Attributes
@@ -56,7 +57,22 @@ class GNN_AStarSolver(SolverBase):
     def _batch_solve(self, task_data: list[TaskBase]):
         """Solve the task data using GNN_AStar solver."""
         if task_data[0].task_type == TASK_TYPE.GM:
-            return gm_gnn_astar(
+            return gm_genn_astar(
+                task_data=task_data,
+                channel=self.channel,
+                filters_1=self.filters_1,
+                filters_2=self.filters_2,
+                filters_3=self.filters_3,
+                tensor_neurons=self.tensor_neurons,
+                beam_width=self.beam_width,
+                trust_fact=self.trust_fact,  
+                no_pred_size=self.no_pred_size,
+                network=self.network,
+                pretrain=self.pretrain,
+                device = self.device
+            )
+        elif task_data[0].task_type == TASK_TYPE.GED:
+            return ged_genn_astar(
                 task_data=task_data,
                 channel=self.channel,
                 filters_1=self.filters_1,

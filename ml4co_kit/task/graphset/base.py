@@ -365,8 +365,9 @@ class GraphSetTaskBase(TaskBase):
         del self.graphs[idx] 
         self.graphs_num = len(self.graphs) 
         
-    def clear_graphs(self): 
-        self.graphs.clear() 
+    def clear_graphs(self):
+        if self.graphs is not None: 
+           self.graphs.clear() 
         self.graphs_num = 0 
         self.ref_sol = None
         self.sol = None
@@ -380,15 +381,11 @@ class GraphSetTaskBase(TaskBase):
         raise NotImplementedError("Subclasses should implement this method.")
     
     def _check_sol_dim(self):
-        """Ensure solution is a 1D array."""
-        if self.sol.ndim != 1:
-            raise ValueError("Solution should be a 1D array.")
+        raise NotImplementedError("Subclasses should implement this method.")
         
     def _check_ref_sol_dim(self):
-        """Ensure reference solution is a 1D array."""
-        if self.ref_sol.ndim != 1:
-            raise ValueError("Reference solution should be a 1D array.")
-        
+       raise NotImplementedError("Subclasses should implement this method.")        
+   
     def from_data( 
         self,
         graphs: list[Graph] = None,

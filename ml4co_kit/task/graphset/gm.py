@@ -46,22 +46,36 @@ class GMTask(GraphSetTaskBase):
         
         self.node_aff_fn = node_aff_fn
         self.edge_aff_fn = edge_aff_fn
-        self.aff_matrix: Optional[np.ndarray] = None
+        self.aff_mat: Optional[np.ndarray] = None
         
     def _deal_with_self_loop(self):
         if self.graphs is not None:
             for graph in self.graphs:
                 graph.remove_self_loop()
                 graph.self_loop = False
-                
+    
+    def _check_sol_dim(self):
+        """Ensure solution is a 2D array."""
+        if self.sol.ndim != 2:
+            raise ValueError("Solution should be a 2D array.")
+            
+    def _check_ref_sol_dim(self):
+        """Ensure reference solution is a 2D array."""
+        if self.ref_sol.ndim != 2:
+            raise ValueError("Reference solution should be a 2D array.") 
+    
     def check_constraints(self, sol: np.ndarray) -> bool:
         """Check if the solution is valid."""
-        n1, n2 = self.graphs[0].nodes_num, self.graphs[1].nodes_num
-        X = sol.reshape(n1, n2)
         is_valid: bool = False
-        if np.array_equal(X, X.astype(bool)):
-            row_sum = X.sum(axis=1)   
-            col_sum = X.sum(axis=0) 
+        n1 = self.graphs[0].nodes_num
+        n2 = self.graphs[1].nodes_num
+        
+        if sol.shape != (n1, n2):
+            return False
+        
+        if np.array_equal(sol, sol.astype(bool)):
+            row_sum = sol.sum(axis=1)   
+            col_sum = sol.sum(axis=0) 
             if (row_sum <= 1).all() or (col_sum <= 1).all(): 
                 if n1 <= n2:            
                     is_valid = bool(np.all(row_sum==1))
@@ -185,14 +199,11 @@ class GMTask(GraphSetTaskBase):
         
         # Evaluate
         if self.ref_sol is not None:
-            mask = self.ref_sol == 1
-            if not mask.any():
-                return 0.0
-            right = (sol[mask] == 1).sum()
-            return float(right / mask.sum())
+            return (((self.ref_sol == 1) & (sol == 1)).sum() / (self.ref_sol == 1).sum()).astype(self.precision)
         else:
-            if self.aff_matrix is not None:
-                return float(sol.T @ self.aff_matrix @ sol.T)
+            if self.aff_mat is not None:
+                res = sol.T.ravel()
+                return (res @ self.aff_mat @ res.T).astype(self.precision)
             else:
                 raise ValueError("Without ground-truth matching and affinity matrix")
     
@@ -209,7 +220,6 @@ class GMTask(GraphSetTaskBase):
         edge_width: float = 1.0,
     ):
         check_file_path(save_path)
-        sol = self.sol
         G1 = self.graphs[0].to_networkx()
         G2 = self.graphs[1].to_networkx()
         
@@ -223,7 +233,6 @@ class GMTask(GraphSetTaskBase):
             pos2[k] = (pos2[k][0] + 2, pos2[k][1])
         
         graph1_num = self.graphs[0].nodes_num
-        graph2_num = self.graphs[1].nodes_num
             
         G2_shifted = nx.relabel_nodes(G2, lambda x: x + graph1_num)
         G = nx.compose(G1, G2_shifted)
@@ -232,10 +241,7 @@ class GMTask(GraphSetTaskBase):
         plt.figure(figsize=figsize)
         nx.draw(G, pos, node_color=node_color, node_size=node_size, alpha=edge_alpha, width=edge_width)
         if with_sol:
-            if sol is None:
-                X = self.ref_sol.reshape(graph1_num, graph2_num)
-            else:
-                X = self.sol.reshape(graph1_num, graph2_num)
+            X = self.sol if self.sol is not None else self.ref_sol
             matched = [(i, j + graph1_num) for i, j in zip(*np.where(X))]
             nx.draw_networkx_edges(
                 G, pos, edgelist=matched, edge_color=matched_color,

@@ -28,7 +28,7 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 
 # Graph Set Task
 from .task import Graph, Graph, GraphSetTaskBase
-from .task import GMTask
+from .task import GMTask, GEDTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
@@ -55,6 +55,7 @@ from .generator import (
     GRAPH_TYPE, GRAPH_FEATURE_TYPE, 
 )
 from .generator import GMGenerator
+from .generator import GEDGenerator
 
 # Routing Generator
 from .generator import RoutingGenerator
@@ -87,7 +88,7 @@ found_torch = importlib.util.find_spec("torch")
 if found_torch is not None:
     from .solver import (
         BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver,
-        NGMSolver, AStarSolver, GNN_AStarSolver
+        NGMSolver, AStarSolver, GENN_AStarSolver
     )
 
 
@@ -113,7 +114,7 @@ from .wrapper import (
 
 # Graph Set Problems
 from .wrapper import(
-    GMWrapper
+    GMWrapper, GEDWrapper
 )
 
 

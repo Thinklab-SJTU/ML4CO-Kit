@@ -42,6 +42,7 @@ class TASK_TYPE(str, Enum):
     
     # Graph Set Problem
     GM = "GM" # Graph Matching
+    GED = "GED" # Graph Edit Distance
     
     # Knapsack Problems
     KP = "KP" # Knapsack Problem

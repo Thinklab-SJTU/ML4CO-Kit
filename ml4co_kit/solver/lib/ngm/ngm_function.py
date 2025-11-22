@@ -40,9 +40,9 @@ def ngm(
     Ks, n1s, n2s = [], [], [] 
     n1max, n2max = 0, 0
     for task_data in batch_task_data:
-        if task_data.aff_matrix is None:
-            task_data.aff_matrix = task_data.build_aff_mat()
-        K = task_data.aff_matrix
+        if task_data.aff_mat is None:
+            task_data.aff_mat = task_data.build_aff_mat()
+        K = task_data.aff_mat
         n1 = task_data.graphs[0].nodes_num
         n2 = task_data.graphs[1].nodes_num
         Ks.append(K)
@@ -83,6 +83,6 @@ def ngm(
     
     batch = X_soft.shape[0]
     for i in range(batch):
-        X = hungarian(X_soft[i][:n1s[i], :n2s[i]]).ravel()
+        X = hungarian(X_soft[i][:n1s[i], :n2s[i]])
         batch_task_data[i].from_data(sol=X, ref=False)
     

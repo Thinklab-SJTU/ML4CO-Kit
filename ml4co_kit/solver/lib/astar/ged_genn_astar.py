@@ -1,5 +1,5 @@
 r"""
-AStar Solver.
+GENN AStar Solver.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -19,11 +19,11 @@ import numpy as np
 from ml4co_kit.task.graphset.base import hungarian
 from ml4co_kit.task.graphset.gm import GMTask
 from ml4co_kit.utils import download
-from .modules import default_parameter, GraphPair, GENN, check_layer_parameter, _load_model, astar_pretrain_path, genn_astar_kernel
+from .modules import hungarian_ged, default_parameter, GraphPair, GENN, check_layer_parameter, _load_model, astar_pretrain_path, genn_astar_kernel
 
 
 
-def gm_gnn_astar(
+def ged_genn_astar(
     task_data: list[GMTask],
     channel: int = None, 
     filters_1: int = 64, 
@@ -70,10 +70,10 @@ def gm_gnn_astar(
         A1.append(A1_pad)
         A2.append(A2_pad)
         
-    feat1_batch = torch.tensor(feat1, dtype=precision, device=device)
-    feat2_batch = torch.tensor(feat2, dtype=precision, device=device)
-    A1_batch = torch.tensor(A1, dtype=precision, device=device)
-    A2_batch = torch.tensor(A2, dtype=precision, device=device)
+    feat1_batch = torch.tensor(np.stack(feat1), dtype=precision, device=device)
+    feat2_batch = torch.tensor(np.stack(feat2), dtype=precision, device=device)
+    A1_batch = torch.tensor(np.stack(A1), dtype=precision, device=device)
+    A2_batch = torch.tensor(np.stack(A2), dtype=precision, device=device)
     n1_torch = torch.tensor(n1, dtype=int, device=device)
     n2_torch = torch.tensor(n2, dtype=int, device=device)
     
@@ -99,7 +99,8 @@ def gm_gnn_astar(
     
     batch_size = len(task_data)
     for i in range(batch_size):
-        X = batch_X[i][:n1[i], :n2[i]].detach().cpu().numpy()
-        X = hungarian(X)
-        task_data[i].from_data(sol=X.ravel(), ref=False)
+        X = batch_X[i][:(n1[i] + 1), :(n2[i] + 1)]
+        X, _ = hungarian_ged(-X, n1[i], n2[i])
+        X = X.detach().cpu().numpy()
+        task_data[i].from_data(sol=X, ref=False)
   

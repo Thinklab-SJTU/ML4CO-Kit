@@ -39,6 +39,7 @@ from generator_test import (
 # Graph Set Problem
 from generator_test import(
     GMGenTester,
+    GEDGenTester
 )
 
 
@@ -58,4 +59,5 @@ if __name__ == "__main__":
     
     # Graph Set Problem 
     GMGenTester().test()
+    GEDGenTester().test()
     

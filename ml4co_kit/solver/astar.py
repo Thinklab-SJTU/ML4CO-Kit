@@ -17,6 +17,7 @@ import numpy as np
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.lib.astar.gm_classical_astar import gm_astar
+from ml4co_kit.solver.lib.astar.ged_classical_astar import ged_astar
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
@@ -37,6 +38,11 @@ class AStarSolver(SolverBase):
         """Solve the task data using AStar solver."""
         if task_data.task_type == TASK_TYPE.GM:
             return gm_astar(
+                task_data=task_data,
+                beam_width=self.beam_width,
+            )
+        elif task_data.task_type == TASK_TYPE.GED:
+            return ged_astar(
                 task_data=task_data,
                 beam_width=self.beam_width,
             )

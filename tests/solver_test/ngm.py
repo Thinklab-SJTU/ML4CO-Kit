@@ -18,7 +18,7 @@ from tests.solver_test.base import SolverTesterBase
 
 
 class NGMSolverTester(SolverTesterBase):
-    def __init__(self):
+    def __init__(self, device: str = "cpu"):
         super(NGMSolverTester, self).__init__(
             mode_list=["batch_solve"],
             test_solver_class=NGMSolver,
@@ -30,7 +30,7 @@ class NGMSolverTester(SolverTesterBase):
                     "sk_max_iter": 50,
                     "pretrain" : 'voc',
                     "network": None,
-                    "device": 'cpu',
+                    "device": device,
                 },  # GM
             ],
             exclude_test_files_list=[

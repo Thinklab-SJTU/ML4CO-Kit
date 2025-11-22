@@ -26,10 +26,10 @@ def gm_astar(
     """
     Pytorch implementation of ASTAR algorithm (for solving QAP)
     """
-    if task_data.aff_matrix is None:
+    if task_data.aff_mat is None:
         task_data.build_aff_mat()
      
-    K = task_data.aff_matrix
+    K = task_data.aff_mat
     K = torch.from_numpy(K)
     n1 = task_data.graphs[0].nodes_num
     n2 = task_data.graphs[1].nodes_num
@@ -69,6 +69,6 @@ def gm_astar(
         no_pred_size=0,
     )
     # Remove the padded dimension
-    x_pred[:n1, :n2] = x_pred_b[:n1, :n2]
-    x_sol = hungarian(x_pred)
-    task_data.from_data(sol=x_sol.ravel(), ref=False)
+    x_pred[:, :] = x_pred_b[:n1, :n2]
+    X = x_pred.detach().cpu().numpy()
+    task_data.from_data(sol=X, ref=False)

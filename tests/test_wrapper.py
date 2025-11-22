@@ -37,7 +37,8 @@ from tests.wrapper_test import (
 
 # Graph Set Problems
 from tests.wrapper_test import (
-    GMWrapperTester
+    GMWrapperTester,
+    GEDWrapperTester
 )
 
 
@@ -56,3 +57,4 @@ if __name__ == "__main__":
     
     # Graph Set Problem
     GMWrapperTester().test()
+    GEDWrapperTester().test()

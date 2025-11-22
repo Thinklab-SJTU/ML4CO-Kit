@@ -1,5 +1,5 @@
 r"""
-GM Wrapper Tester.
+GED Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,23 +14,23 @@ GM Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import GMWrapper, GMGenerator, RRWMSolver
+from ml4co_kit import GEDWrapper, GEDGenerator, AStarSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class GMWrapperTester(WrapperTesterBase):
+class GEDWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(GMWrapperTester, self).__init__(
-            test_wrapper_class=GMWrapper,
-            generator=GMGenerator(),
-            solver=RRWMSolver(),
+        super(GEDWrapperTester, self).__init__(
+            test_wrapper_class=GEDWrapper,
+            generator=GEDGenerator(),
+            solver=AStarSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_iso_4ins.pkl"),
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_ind_4ins.pkl"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_iso_4ins.pkl"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_gaussian_iso_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_iso_4ins.txt"),
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_ind_4ins.txt"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_iso_4ins.txt"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_gaussian_iso_4ins.txt"),
             ],
         )
         
