@@ -107,18 +107,17 @@ if env_checker.check_gnn4co():
 
 # Test Solver
 def test_solver_optimizer():
-    # # Basic Solvers
-    # for tester_class in basic_tester_class_list:
-    #     tester_class: Type[SolverTesterBase]
-    #     tester_class().test()
+    # Basic Solvers
+    for tester_class in basic_tester_class_list:
+        tester_class: Type[SolverTesterBase]
+        tester_class().test()
     
-    # # Torch Solvers
-    # for tester_class in torch_tester_class_list:
-    #     tester_class: Type[SolverTesterBase]
-    #     tester_class(device="cpu").test()
-    #     if env_checker.check_cuda():
-    #         tester_class(device="cuda").test()
-    RandomSolverTester().test()
+    # Torch Solvers
+    for tester_class in torch_tester_class_list:
+        tester_class: Type[SolverTesterBase]
+        tester_class(device="cpu").test()
+        if env_checker.check_cuda():
+            tester_class(device="cuda").test()
 
 
 # Main
