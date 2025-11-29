@@ -93,6 +93,7 @@ class WrapperBase(object):
         num_samples: int = 1280,
         num_threads: int = 1,
         batch_size: int = 1,
+        optimizer_parallel: bool = False,
         show_time: bool = True
     ):
         # Initialize Timer
@@ -144,7 +145,7 @@ class WrapperBase(object):
                 show_time=show_time
             ):
                 batch_task_data = [generator.generate() for _ in range(batch_size)]
-                solver.batch_solve(batch_task_data)
+                solver.batch_solve(batch_task_data, optimizer_parallel)
                 self.task_list.extend(batch_task_data)
                 
         # Case 4: Multi Thread and Batch Size is not 1
@@ -218,6 +219,7 @@ class WrapperBase(object):
         solver: SolverBase, 
         num_threads: int = 1, 
         batch_size: int = 1,
+        optimizer_parallel: bool = False,
         show_time: bool = False
     ):
         # Initialize Timer
@@ -271,7 +273,7 @@ class WrapperBase(object):
                 show_time=show_time
             ):
                 batch_task_data = [self.task_list[idx*batch_size+i] for i in range(batch_size)]
-                solver.batch_solve(batch_task_data)
+                solver.batch_solve(batch_task_data, optimizer_parallel)
                 
         # Case 4: Multi Thread and Batch Size is not 1
         else:

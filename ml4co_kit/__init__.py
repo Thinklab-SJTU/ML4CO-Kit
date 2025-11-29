@@ -27,6 +27,9 @@ from .utils import (
     compress_folder, extract_archive, check_file_path
 )
 
+# Impl Utils
+from .utils import IMPL_TYPE
+
 # Time Utils
 from .utils import tqdm_by_time, Timer
 
@@ -99,18 +102,14 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
     HGSSolver, ILSSolver, InsertionSolver, ISCOSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, SCIPSolver
+    LcDegreeSolver, LKHSolver, ORSolver, RandomSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
-    from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver
-    )
+    from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import (
-        NeuroLKHSolver, RLSASolver
-    )
+    from .solver import NeuroLKHSolver, RLSASolver
 
 
 ####################################################

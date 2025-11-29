@@ -17,9 +17,7 @@ Solver Module.
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_gnn4co():
-    from .beam import BeamSolver
-    from .greedy import GreedySolver
-    from .mcts import MCTSSolver
+    from .gnn4co import GNN4COSolver
 if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
@@ -39,4 +37,5 @@ from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
+from .random import RandomSolver
 from .scip import SCIPSolver

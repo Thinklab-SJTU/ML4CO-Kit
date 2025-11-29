@@ -21,9 +21,8 @@ from ml4co_kit.solver.lib.insertion.c_tsp_insertion import c_insertion
 
 def tsp_insertion(task_data: TSPTask):
     # Preparation 
-    points = task_data.points
-    nodes_num = points.shape[0]
-    _points = points.reshape(-1)
+    nodes_num: int = task_data.nodes_num
+    points = task_data.points.astype(np.float32).reshape(-1)
     
     # Random index
     index = np.arange(1, nodes_num)
@@ -34,7 +33,7 @@ def tsp_insertion(task_data: TSPTask):
     # Call ``c_insertion`` to get the tour
     insertion_tour = c_insertion(
         random_index.ctypes.data_as(ctypes.POINTER(ctypes.c_short)),  
-        _points.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+        points.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
         nodes_num
     )
     tour = np.ctypeslib.as_array(insertion_tour, shape=(nodes_num+1,))

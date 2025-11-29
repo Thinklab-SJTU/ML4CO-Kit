@@ -1,3 +1,19 @@
+r"""
+TSP GNN Encoder.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+#
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import torch
 from typing import Sequence
 from torch import nn, Tensor
@@ -58,7 +74,7 @@ class TSPGNNEncoder(nn.Module):
         ])
     
     def forward(
-        self, task: str, x: Tensor, e: Tensor, edge_index: Tensor
+        self, x: Tensor, e: Tensor, edge_index: Tensor
     ) -> Sequence[Tensor]:
         # dense
         if self.sparse:
@@ -67,7 +83,7 @@ class TSPGNNEncoder(nn.Module):
             x = self.node_embed(x.squeeze(0)) # (V, H)
             
             # edge embedder
-            e: Tensor = self.edge_pos_embed(e.expand(1, 1, -1)) # (1, E, H)
+            e: Tensor = self.edge_pos_embed(e.reshape(1, -1, 1)) # (1, E, H)
             e = self.edge_embed(e.squeeze()) # (E, H)
 
             # gnn layer

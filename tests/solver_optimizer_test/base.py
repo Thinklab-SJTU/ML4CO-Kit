@@ -15,6 +15,8 @@ Base class for solver testers.
 
 import pathlib
 from typing import Type, List
+
+from torch._C import NoneType
 from ml4co_kit import SolverBase, TaskBase, TASK_TYPE
 from ml4co_kit import (
     TSPTask, ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask,
@@ -35,8 +37,10 @@ class SolverTesterBase(object):
         test_solver_class: Type[SolverBase],
         test_task_type_list: List[TASK_TYPE],
         test_args_list: List[dict],
-        exclude_test_files_list: List[List[pathlib.Path]]
+        exclude_test_files_list: List[List[pathlib.Path]],
+        info: str = NoneType
     ):
+        self.info = info
         self.mode_list = mode_list
         self.test_solver_class = test_solver_class
         self.test_task_type_list = test_task_type_list
@@ -50,14 +54,28 @@ class SolverTesterBase(object):
         # Things to do before test
         self.pre_test()
         
+        # Print test information
+        print(f"\n--------------------------------------------------")
+        if self.info is not None:
+            print(f"Testing {str(self.test_solver_class.__name__)} ({self.info})")
+        else:
+            print(f"Testing {str(self.test_solver_class.__name__)}")
+
         # Test for each distribution type
-        print(f"\nTesting {str(self.test_solver_class.__name__)}")
         for test_task_type, test_args, exclude_test_files in zip(
             self.test_task_type_list, self.test_args_list, self.exclude_test_files_list
         ):
+            # Print test task type
+            print(f"\nTest task type: {test_task_type}")
+
+            # Test for each mode
             try:
                 for mode in self.mode_list:
+                    # Initialize solver
                     solver = self.test_solver_class(**test_args)
+                    print(f"Mode = {mode}")
+                    
+                    # Solve mode
                     if mode == "solve":
                         test_task_list = self.get_task_list(
                             mode=mode, 
@@ -68,18 +86,24 @@ class SolverTesterBase(object):
                             solver.solve(test_task)
                             eval_results = test_task.evaluate_w_gap()
                             print(f"{str(test_task)} Eval results: {eval_results}")
-                    if mode == "batch_solve":
+                        del test_task_list
+
+                    # Batch solve mode
+                    if "batch_solve" in mode:
                         batch_test_task_list = self.get_task_list(
-                            mode=mode, 
+                            mode="batch_solve", 
                             test_task_type=test_task_type, 
                             exclude_test_files=exclude_test_files
                         )
+                        optimizer_parallel = True if "parallel" in mode else False
                         for batch_test_task in batch_test_task_list:
-                            solver.batch_solve(batch_test_task)
+                            solver.batch_solve(batch_test_task, optimizer_parallel=optimizer_parallel)
                             for test_task in batch_test_task:
                                 test_task: TaskBase
                                 eval_results = test_task.evaluate_w_gap()
-                                print(f"{str(test_task)} Eval results: {eval_results}")          
+                                print(f"{str(test_task)} Eval results: {eval_results}")
+                            del batch_test_task
+
             except Exception as e:
                 raise ValueError(
                     f"Error ``{e}`` occurred when testing {self.test_solver_class.__name__}\n"
@@ -352,9 +376,9 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             mcl_test_files_list = [
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-large_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-small_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-small_uniform-weighted_task.pkl"),
+                pathlib.Path("test_dataset/mcl/wrapper/mcl_rb-large_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mcl/wrapper/mcl_rb-small_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/mcl/wrapper/mcl_rb-small_uniform-weighted_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in mcl_test_files_list:

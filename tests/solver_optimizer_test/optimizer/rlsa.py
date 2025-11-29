@@ -13,48 +13,94 @@ RLSA Optimizer Tester.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit import TASK_TYPE, GreedySolver, RLSAOptimizer
-from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, GNNEncoder
+from ml4co_kit import *
+from ml4co_kit.extension.gnn4co import (
+    GNN4COModel, GNN4COEnv, GNNEncoder, GNN4COGreedyDecoder
+)
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 # Test on MCl (sparse)
 gnn4mcl_model = GNN4COModel(
-    env=GNN4COEnv(task="MCl", mode="solve", sparse_factor=1, device="cpu"),
-    encoder=GNNEncoder(task="MCl", sparse=True, block_layers=[2,4,4,2]),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.MCL, 
+        wrapper=MClWrapper(), 
+        mode="solve", 
+        sparse_factor=1, 
+        device="cpu"
+    ),
+    encoder=GNNEncoder(
+        task_type=TASK_TYPE.MCL, 
+        sparse=True, 
+        block_layers=[2,4,4,2]
+    ),
+    decoder=GNN4COGreedyDecoder(sparse_factor=1),
     weight_path="weights/gnn4co_mcl_rb-small_sparse.pt"
 )
 
 # Test on MCut (sparse)
 gnn4mcut_model = GNN4COModel(
-    env=GNN4COEnv(task="MCut", mode="solve", sparse_factor=1, device="cpu"),
-    encoder=GNNEncoder(task="MCut", sparse=True, block_layers=[2,4,4,2]),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.MCUT, 
+        wrapper=MCutWrapper(), 
+        mode="solve", 
+        sparse_factor=1, 
+        device="cpu"
+    ),
+    encoder=GNNEncoder(
+        task_type=TASK_TYPE.MCUT, 
+        sparse=True, 
+        block_layers=[2,4,4,2]
+    ),
+    decoder=GNN4COGreedyDecoder(sparse_factor=1),
     weight_path="weights/gnn4co_mcut_ba-small_sparse.pt"
 )
 
 # Test on MIS (sparse)
 gnn4mis_model = GNN4COModel(
-    env=GNN4COEnv(task="MIS", mode="solve", sparse_factor=1, device="cpu"),
-    encoder=GNNEncoder(task="MIS", sparse=True, block_layers=[2,4,4,2]),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.MIS, 
+        wrapper=MISWrapper(), 
+        mode="solve", 
+        sparse_factor=1, 
+        device="cpu"
+    ),
+    encoder=GNNEncoder(
+        task_type=TASK_TYPE.MIS, 
+        sparse=True, 
+        block_layers=[2,4,4,2]
+    ),
+    decoder=GNN4COGreedyDecoder(sparse_factor=1),
     weight_path="weights/gnn4co_mis_satlib_sparse.pt"
 )
 
 # Test on MVC (sparse)
 gnn4mvc_model = GNN4COModel(
-    env=GNN4COEnv(task="MVC", mode="solve", sparse_factor=1, device="cpu"),
-    encoder=GNNEncoder(task="MVC", sparse=True, block_layers=[2,4,4,2]),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.MVC, 
+        wrapper=MVCWrapper(), 
+        mode="solve", 
+        sparse_factor=1, 
+        device="cpu"
+    ),
+    encoder=GNNEncoder(
+        task_type=TASK_TYPE.MVC, 
+        sparse=True, 
+        block_layers=[2,4,4,2]
+    ),
+    decoder=GNN4COGreedyDecoder(sparse_factor=1),
     weight_path="weights/gnn4co_mvc_rb-small_sparse.pt"
 )
 
-# Optimizer
-optimizer = RLSAOptimizer()
+# Optimizers
+optimizer_torch = RLSAOptimizer(impl_type=IMPL_TYPE.TORCH)
 
 
 class RLSAOptimizerTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(RLSAOptimizerTester, self).__init__(
             mode_list=["solve"],
-            test_solver_class=GreedySolver,
+            test_solver_class=GNN4COSolver,
             test_task_type_list=[
                 TASK_TYPE.MCL, 
                 TASK_TYPE.MCUT, 
@@ -63,20 +109,21 @@ class RLSAOptimizerTester(SolverTesterBase):
             ],
             test_args_list=[
                 # MCl (sparse)
-                {"model": gnn4mcl_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4mcl_model, "device": device, "optimizer": optimizer_torch},
                 # MCut (sparse)
-                {"model": gnn4mcut_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4mcut_model, "device": device, "optimizer": optimizer_torch},
                 # MIS (sparse)
-                {"model": gnn4mis_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4mis_model, "device": device, "optimizer": optimizer_torch},
                 # MVC (sparse)
-                {"model": gnn4mvc_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4mvc_model, "device": device, "optimizer": optimizer_torch},
             ],
             exclude_test_files_list=[
                 [], # MCl (sparse)
                 [], # MCut (sparse)
                 [], # MIS (sparse)
                 [], # MVC (sparse)
-            ]
+            ],
+            info="RLSA Optimizer"
         )
         
     def pre_test(self):

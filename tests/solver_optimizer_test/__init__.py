@@ -17,9 +17,9 @@ Solver Test Module.
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_gnn4co():
-    from .solver.beam import BeamSolverTester
-    from .solver.greedy import GreedySolverTester
-    from .solver.mcts import MCTSSolverTester
+    from .solver.gnn4co_beam import GNN4COBeamSolverTester
+    from .solver.gnn4co_greedy import GNN4COGreedySolverTester
+    from .solver.gnn4co_mcts import GNN4COMCTSSolverTester
     from .optimizer.two_opt import TwoOptOptimizerTester
     from .optimizer.mcts import MCTSOptimizerTester
     from .optimizer.rlsa import RLSAOptimizerTester
@@ -42,6 +42,7 @@ from .solver.kamis import KaMISSolverTester
 from .solver.lc_degree import LcDegreeSolverTester
 from .solver.lkh import LKHSolverTester
 from .solver.ortools import ORSolverTester
+from .solver.random import RandomSolverTester
 from .solver.scip import SCIPSolverTester
 
 

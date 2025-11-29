@@ -17,10 +17,10 @@ import numpy as np
 from ml4co_kit.task.graph.mcl import MClTask
 
 
-def mcl_greedy(task_data: MClTask):
-    # Preparation for decoding
-    heatmap: np.ndarray = task_data.cache["heatmap"]
-    adj_matrix = task_data.to_adj_matrix()
+def _mcl_greedy(
+    heatmap: np.ndarray, adj_matrix: np.ndarray
+) -> np.ndarray:
+    # Preparation
     np.fill_diagonal(adj_matrix, 1)
     sol = np.zeros_like(heatmap).astype(np.bool_)
     mask = np.zeros_like(heatmap).astype(np.bool_)
@@ -35,6 +35,15 @@ def mcl_greedy(task_data: MClTask):
             mask[unconnect_nodes] = True
             mask[node] = True
     sol = sol.astype(np.int32)
+    return sol
+
+
+def mcl_greedy(task_data: MClTask):
+    # Call ``_mcl_greedy`` to get the solution
+    sol = _mcl_greedy(
+        heatmap=task_data.cache["heatmap"],
+        adj_matrix=task_data.to_adj_matrix()
+    )
     
     # Store the solution in the task_data
     task_data.from_data(sol=sol, ref=False)

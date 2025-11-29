@@ -17,10 +17,11 @@ import numpy as np
 from ml4co_kit.task.graph.mis import MISTask
 
 
-def mis_greedy(task_data: MISTask):
-    # Preparation for decoding
-    heatmap: np.ndarray = task_data.cache["heatmap"]
-    adj_matrix = task_data.to_adj_matrix()
+def _mis_greedy(
+    heatmap: np.ndarray, adj_matrix: np.ndarray
+) -> np.ndarray:
+    # Preparation
+    np.fill_diagonal(adj_matrix, 0)
     sol = np.zeros_like(heatmap).astype(np.bool_)
     mask = np.zeros_like(heatmap).astype(np.bool_)
     sorted_nodes = np.argsort(-heatmap)
@@ -34,6 +35,15 @@ def mis_greedy(task_data: MISTask):
             mask[connect_nodes] = True
             mask[node] = True
     sol = sol.astype(np.int32)
+    return sol
+
+
+def mis_greedy(task_data: MISTask):
+    # Call ``_mis_greedy`` to get the solution
+    sol = _mis_greedy(
+        heatmap=task_data.cache["heatmap"],
+        adj_matrix=task_data.to_adj_matrix()
+    )
     
     # Store the solution in the task_data
     task_data.from_data(sol=sol, ref=False)

@@ -1,5 +1,5 @@
 r"""
-Two-opt local search algorithm for TSP.
+Two-opt local search algorithm for ATSP using CTypes.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -17,21 +17,21 @@ Two-opt local search algorithm for TSP.
 import ctypes
 import numpy as np
 from ml4co_kit.task.routing.atsp import ATSPTask
-from ml4co_kit.optimizer.lib.two_opt.c_atsp_2opt import c_atsp_2opt_local_search
+from .ctypes_impl import ctypes_atsp_2opt_ls_impl
 
 
-def atsp_2opt_ls(
-    task_data: ATSPTask, 
-    max_iters: int = 5000,
-):
-    """Two-opt local search for ATSP problems."""
-    # Get data from task data
-    init_tour = task_data.sol.astype(np.int16)
-    dists = task_data.dists.astype(np.float32)
+def _ctypes_atsp_2opt_ls(
+    init_tour: np.ndarray,
+    dists: np.ndarray,
+    max_iters: int,
+) -> np.ndarray:
+    # Preparation
+    init_tour = init_tour.astype(np.int16)
+    dists = dists.astype(np.float32)
     nodes_num = dists.shape[-1]
     
     # Perform local search
-    ls_tour = c_atsp_2opt_local_search(
+    ls_tour = ctypes_atsp_2opt_ls_impl(
         init_tour.ctypes.data_as(ctypes.POINTER(ctypes.c_short)),  
         dists.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), 
         nodes_num,
@@ -39,6 +39,20 @@ def atsp_2opt_ls(
     )
     ls_tour = np.ctypeslib.as_array(ls_tour, shape=(nodes_num,))
     ls_tour = np.append(ls_tour, 0)
-    
+    return ls_tour
+
+
+def ctypes_atsp_2opt_ls(
+    task_data: ATSPTask, 
+    max_iters: int = 5000,
+):
+    """Two-opt local search for ATSP problems."""
+    # Perform local search
+    ls_tour = _ctypes_atsp_2opt_ls(
+        init_tour=task_data.sol,
+        dists=task_data.dists,
+        max_iters=max_iters,
+    )
+
     # Store the optimized tour in the task data
     task_data.from_data(sol=ls_tour, ref=False)

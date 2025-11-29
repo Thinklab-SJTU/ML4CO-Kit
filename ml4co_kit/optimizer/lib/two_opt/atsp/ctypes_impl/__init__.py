@@ -18,11 +18,11 @@ else:
         os.system("make")
         os.chdir(ori_dir)
         lib = ctypes.CDLL(c_atsp_2opt_so_path)
-    c_atsp_2opt_local_search = lib.atsp_2opt_local_search
-    c_atsp_2opt_local_search.argtypes = [
+    ctypes_atsp_2opt_ls_impl = lib.atsp_2opt_local_search
+    ctypes_atsp_2opt_ls_impl.argtypes = [
         ctypes.POINTER(ctypes.c_short), # tour
         ctypes.POINTER(ctypes.c_float), # dists
         ctypes.c_int,                   # nodes_num
         ctypes.c_int,                   # max_iterations_2opt
     ]
-    c_atsp_2opt_local_search.restype = ctypes.POINTER(ctypes.c_int)
+    ctypes_atsp_2opt_ls_impl.restype = ctypes.POINTER(ctypes.c_int)

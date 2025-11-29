@@ -13,12 +13,12 @@ ISCO Optimizer Tester.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit import TASK_TYPE, LcDegreeSolver, ISCOOptimizer
+from ml4co_kit import TASK_TYPE, LcDegreeSolver, ISCOOptimizer, IMPL_TYPE
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
-# Optimizer
-optimizer = ISCOOptimizer()
+# Optimizers
+optimizer_numpy = ISCOOptimizer(impl_type=IMPL_TYPE.NUMPY)
 
 
 class ISCOOptimizerTester(SolverTesterBase):
@@ -33,10 +33,10 @@ class ISCOOptimizerTester(SolverTesterBase):
                 TASK_TYPE.MVC, 
             ],
             test_args_list=[
-                {"optimizer": optimizer}, # MCl
-                {"optimizer": optimizer}, # MCut
-                {"optimizer": optimizer}, # MIS
-                {"optimizer": optimizer}, # MVC
+                {"optimizer": optimizer_numpy}, # MCl
+                {"optimizer": optimizer_numpy}, # MCut
+                {"optimizer": optimizer_numpy}, # MIS
+                {"optimizer": optimizer_numpy}, # MVC
             ],
             exclude_test_files_list=[
                 [],
