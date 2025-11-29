@@ -72,6 +72,7 @@ ortools>=9.12.4544
 huggingface_hub>=0.32.0
 setuptools>=75.0.0
 PySCIPOpt>=5.6.0
+pybind11>=3.0.11
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
@@ -288,7 +289,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 <details>
 <summary>Optimizer (Level 4)</summary>
 
-|   Optimizer   | Support Task |   IMPL   | Source | Reference | State | 
+|   Optimizer   | Support Task |   IMPL   | Source | Ref. / Implementation | State | 
 | :-----------: | :----------: | :------: | :----: | :-------: | :---: |
 | CVRPLSOptimizer     | CVRP   | Ctypes   | [HGS-CVRP](https://github.com/vidalt/HGS-CVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | ISCOOptimizer       | MCl    | Numpy    | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
@@ -302,7 +303,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                     | MVC    | Torch    | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | TwoOptOptimizer     | ATSP   | Ctypes   | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                     | TSP    | Torch    | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
-|                     | TSP    | Pybind11 | [GenSCO](https://github.com/Thinklab-SJTU/GenSCO) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                     | TSP    | Pybind11 | [GenSCO](https://github.com/Thinklab-SJTU/GenSCO) | [GenSCO](https://github.com/Thinklab-SJTU/GenSCO) | ✔ |
 
 </details>
 

@@ -72,6 +72,7 @@ ortools>=9.12.4544
 huggingface_hub>=0.32.0
 setuptools>=75.0.0
 PySCIPOpt>=5.6.0
+pybind11>=3.0.11
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
