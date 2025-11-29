@@ -124,6 +124,9 @@ os.system(f"pip install wandb>=0.20.0")
 
 # pytorch-lightning
 os.system(f"pip install pytorch-lightning==2.5.3")
+
+# torch_geometric
+os.system(f"pip install torch_geometric==2.7.0")
 ```
 
 After the environment is installed, run the following command to confirm that the PyTorch build supports ``sm_120``.
