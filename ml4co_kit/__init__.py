@@ -91,6 +91,10 @@ from .generator import (
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
 
+# SAT Generator
+from .generator import SATGeneratorBase, SAT_DISTRIBUTION
+from .generator import SATPGenerator, SATAGenerator, USATCGenerator
+
 
 ####################################################
 #                      Solver                      #
