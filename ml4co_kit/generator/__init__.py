@@ -41,3 +41,6 @@ from .routing.op import OPGenerator, OP_TYPE
 from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
+
+#bpp
+from .bpp.bpp_generator import BPPGenerator, BPP_TYPE
