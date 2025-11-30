@@ -44,6 +44,9 @@ class TASK_TYPE(str, Enum):
     # Knapsack Problems
     KP = "KP" # Knapsack Problem
 
+    # Packing Problems
+    BPP = "BPP" # 1D Variable Sized Bin Packing
+
     # Linear Programming Problems
     LP = "LP" # Linear Program
 
