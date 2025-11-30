@@ -1,5 +1,5 @@
 r"""
-Greedy Solver Tester.
+MCTS Optimizer Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,54 +14,73 @@ Greedy Solver Tester.
 
 
 import pathlib
-from ml4co_kit import TASK_TYPE, GreedySolver, MCTSOptimizer
-from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, TSPGNNEncoder
+from ml4co_kit import *
+from ml4co_kit.extension.gnn4co import (
+    GNN4COModel, GNN4COEnv, TSPGNNEncoder, GNN4COGreedyDecoder
+)
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 # Test on TSP-50 (dense)
 gnn4tsp50_model = GNN4COModel(
-    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=0, device="cpu"),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.TSP, 
+        wrapper=TSPWrapper(), 
+        mode="solve", 
+        sparse_factor=-1, 
+        device="cpu"
+    ),
     encoder=TSPGNNEncoder(sparse=False),
+    decoder=GNN4COGreedyDecoder(sparse_factor=-1),
     weight_path="weights/gnn4co_tsp50_dense.pt"
 )
 
 # Test on TSP-500 (sparse)
 gnn4tsp500_model = GNN4COModel(
-    env=GNN4COEnv(task="TSP", mode="solve", sparse_factor=50, device="cpu"),
+    env=GNN4COEnv(
+        task_type=TASK_TYPE.TSP, 
+        wrapper=TSPWrapper(), 
+        mode="solve", 
+        sparse_factor=50, 
+        device="cpu"
+    ),
     encoder=TSPGNNEncoder(sparse=True),
+    decoder=GNN4COGreedyDecoder(sparse_factor=50),
     weight_path="weights/gnn4co_tsp500_sparse.pt"
 )
 
-# Optimizer
-optimizer = MCTSOptimizer()
+# Optimizers
+optimizer_ctypes = MCTSOptimizer(impl_type=IMPL_TYPE.CTYPES)
 
 
 class MCTSOptimizerTester(SolverTesterBase):
     def __init__(self, device: str = "cpu"):
         super(MCTSOptimizerTester, self).__init__(
-            mode_list=["solve"],
-            test_solver_class=GreedySolver,
+            mode_list=["solve", "batch_solve_parallel"],
+            test_solver_class=GNN4COSolver,
             test_task_type_list=[
                 TASK_TYPE.TSP, 
                 TASK_TYPE.TSP, 
             ],
             test_args_list=[
                 # TSP-50 (dense)
-                {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer_ctypes},
                 # TSP-500 (sparse)
-                {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer},
+                {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer_ctypes},
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.pkl"), 
                 ],  # TSP-50 (dense)
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
                 ],  # TSP-500 (sparse)
-            ]
+            ],
+            info="MCTS Optimizer"
         )
         
     def pre_test(self):

@@ -52,12 +52,8 @@ class BaseModel(pl.LightningModule):
     def test_dataloader(self):
         return self.env.test_dataloader()
 
-    def get_net(self, network_type: str):
-        self.network_type = network_type
-        return NotImplementedError
-
     def configure_optimizers(self):
-        """ """
+        """Configure optimizers and learning rate schedulers."""
         rank_zero_info(
             "Parameters: %d" % sum([p.numel() for p in self.model.parameters()])
         )
@@ -126,13 +122,6 @@ class BaseModel(pl.LightningModule):
 
     def test_step(self, batch: Any, batch_idx: int):
         return self.shared_step(batch, batch_idx, phase="test")
-
-    def forward(self, *args, **kwargs) -> torch.Tensor:
-        return self.model(*args, **kwargs)
-
-    def solve(self, data: Any, batch_size: int = 16, device="cpu"):
-        """solve function, return heatmap"""
-        raise NotImplementedError("solve is required to implemented in subclasses.")
 
     def load_weights(self):
         """load state dict from checkpoint"""

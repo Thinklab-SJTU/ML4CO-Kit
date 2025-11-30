@@ -27,6 +27,9 @@ from .utils import (
     compress_folder, extract_archive, check_file_path
 )
 
+# Impl Utils
+from .utils import IMPL_TYPE
+
 # Time Utils
 from .utils import tqdm_by_time, Timer
 
@@ -53,6 +56,10 @@ from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask, HC
 # Portfolio Task
 from .task import PortfolioTaskBase
 from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
+
+# SAT Task
+from .task import SATTaskBase
+from .task import SATPTask, SATATask, USATCTask
 
 
 ###################################################
@@ -94,19 +101,15 @@ from .solver import SolverBase, SOLVER_TYPE
 # Solver (not use torch backend)
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
-    HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, SCIPSolver
+    HGSSolver, ILSSolver, InsertionSolver, ISCOSolver, KaMISSolver, 
+    LcDegreeSolver, LKHSolver, ORSolver, RandomSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
-    from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver
-    )
+    from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import (
-        NeuroLKHSolver, RLSASolver
-    )
+    from .solver import NeuroLKHSolver, RLSASolver
 
 
 ####################################################
@@ -117,7 +120,7 @@ if env_checker.check_torch():
 from .optimizer import OptimizerBase, OPTIMIZER_TYPE
 
 # Optimizer (not use torch backend)
-from .optimizer import CVRPLSOptimizer
+from .optimizer import CVRPLSOptimizer, ISCOOptimizer
 
 # Optimizer (use torch backend)
 if env_checker.check_torch():

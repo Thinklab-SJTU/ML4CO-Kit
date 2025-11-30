@@ -72,6 +72,7 @@ ortools>=9.12.4544
 huggingface_hub>=0.32.0
 setuptools>=75.0.0
 PySCIPOpt>=5.6.0
+pybind11>=3.0.1
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
@@ -124,6 +125,9 @@ os.system(f"pip install wandb>=0.20.0")
 
 # pytorch-lightning
 os.system(f"pip install pytorch-lightning==2.5.3")
+
+# torch_geometric
+os.system(f"pip install torch_geometric==2.7.0")
 ```
 
 After the environment is installed, run the following command to confirm that the PyTorch build supports ``sm_120``.

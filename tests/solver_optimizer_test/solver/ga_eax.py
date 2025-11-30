@@ -36,12 +36,12 @@ class GAEAXSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"), 
                 ],
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_single.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_single.pkl"), 
+                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"), 
                 ], 
             ]
         )

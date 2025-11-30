@@ -29,11 +29,13 @@ class SOLVER_TYPE(str, Enum):
     HGS = "hgs"
     ILS = "ils"
     INSERTION = "insertion"
+    ISCO = "isco"
     KAMIS = "kamis"
     LC_DEGREE = "lc_degree"
     LKH = "lkh"
     ORTOOLS = "ortools"
     PYVRP = "pyvrp"
+    RANDOM = "random"
     SCIP = "scip"
 
     # Need Gurobi License
@@ -41,11 +43,16 @@ class SOLVER_TYPE(str, Enum):
 
     # Need Torch
     BEAM = "beam"
-    GREEDY = "greedy"
-    ISCO = "isco"
+    GNN4CO = "gnn4co"
     MCTS = "mcts"
     NEUROLKH = "neurolkh"
     RLSA = "rlsa"
+
+    # ML4CO
+    ML4CO = "ml4co"
+
+    # DIY
+    DIY = "diy"
 
 
 class SolverBase(object):
@@ -71,11 +78,18 @@ class SolverBase(object):
             "The ``solve`` function is required to implemented in subclasses."
         )
     
-    def batch_solve(self, batch_task_data: List[TaskBase]) -> List[TaskBase]:
+    def batch_solve(
+        self, 
+        batch_task_data: List[TaskBase], 
+        optimizer_parallel: bool = False
+    ) -> List[TaskBase]:
         self._batch_solve(batch_task_data)
         if self.optimizer is not None:
-            for task_data in batch_task_data:
-                self.optimizer.optimize(task_data)
+            if optimizer_parallel:
+                self.optimizer.batch_optimize(batch_task_data)
+            else:
+                for task_data in batch_task_data:
+                    self.optimizer.optimize(task_data)
         return batch_task_data
     
     def _batch_solve(self, batch_task_data: List[TaskBase]):

@@ -15,20 +15,16 @@ GNN4CO Environment.
 
 
 import os
+import copy
 import torch
 import numpy as np
-from typing import Any
+from typing import Union, Tuple, List
 from torch.utils.data import DataLoader, Dataset
 from ml4co_kit.learning.env import BaseEnv
-from ml4co_kit.wrapper.mcl import MClWrapper
-from ml4co_kit.wrapper.mis import MISWrapper
-from ml4co_kit.wrapper.mvc import MVCWrapper
-from ml4co_kit.wrapper.tsp import TSPWrapper
-from ml4co_kit.wrapper.mcut import MCutWrapper
-from ml4co_kit.wrapper.atsp import ATSPWrapper
-from ml4co_kit.wrapper.cvrp import CVRPWrapper
-from .denser import GNN4CODenser
-from .sparser import GNN4COSparser
+from ml4co_kit.wrapper.base import WrapperBase
+from ml4co_kit.task.base import TaskBase, TASK_TYPE
+from .denser import GNN4CODenser, DenseDataBatch
+from .sparser import GNN4COSparser, SparseDataBatch
 
 
 class FakeDataset(Dataset):
@@ -45,7 +41,8 @@ class FakeDataset(Dataset):
 class GNN4COEnv(BaseEnv):
     def __init__(
         self,
-        task: str = None,
+        task_type: TASK_TYPE,
+        wrapper: WrapperBase,
         mode: str = None,
         train_data_size: int = 128000,
         val_data_size: int = 128,
@@ -58,7 +55,7 @@ class GNN4COEnv(BaseEnv):
         val_path: str = None,
         store_data: bool = True,
     ):
-        super().__init__(
+        super(GNN4COEnv, self).__init__(
             name="GNN4COEnv",
             mode=mode,
             train_batch_size=train_batch_size,
@@ -67,56 +64,37 @@ class GNN4COEnv(BaseEnv):
             device=device
         )
         
-        # basic
-        self.task = task
+        # Basic info
+        self.task_type = task_type
+        self.val_wrapper = copy.deepcopy(wrapper)
+        self.train_wrapper = copy.deepcopy(wrapper)
         self.sparse = sparse_factor > 0
         self.sparse_factor = sparse_factor
-        
-        # train data folder and val path
-        self.train_folder = train_folder
-        self.val_path = val_path
-        
-        # ml4co-kit wrapper
-        self.atsp_wrapper = ATSPWrapper()
-        self.cvrp_wrapper = CVRPWrapper()
-        self.mcl_wrapper = MClWrapper()
-        self.mcut_wrapper = MCutWrapper()
-        self.mis_wrapper = MISWrapper()
-        self.mvc_wrapper = MVCWrapper()
-        self.tsp_wrapper = TSPWrapper()
-        
-        # dataset (Fake)
-        self.store_data = store_data
-        self.train_dataset = FakeDataset(train_data_size)
-        self.val_dataset = FakeDataset(val_data_size)
-          
-        # data_processor (sparser and denser)
-        if self.sparse:
-            self.data_processor = GNN4COSparser(self.sparse_factor, self.device)
-        else:
-            self.data_processor = GNN4CODenser(self.device)
-        
-        # load data
-        if self.mode is not None:
-            self.load_data()
 
-    def change_device(self, device: str):
-        self.device = device
-        self.data_processor.device = device
-    
-    def load_data(self):
+        # Val dataset related 
+        self.val_path = val_path
+        self.val_data_cache = None
+        self.val_dataset = FakeDataset(val_data_size)
+
+        # Train dataset related 
+        self.store_data = store_data
+        self.train_data_cache = None
+        self.train_folder = train_folder
+        self.train_data_historty_cache = dict()
+        self.train_dataset = FakeDataset(train_data_size)
         if self.mode == "train":
             self.train_sub_files = [
                 os.path.join(self.train_folder, train_files) \
                     for train_files in os.listdir(self.train_folder) 
             ]
             self.train_sub_files_num = len(self.train_sub_files)
-            self.train_data_historty_cache = dict()
-            self.train_data_cache = None
-            self.val_data_cache = None
             self.train_data_cache_idx = 0
+
+        # Data processor (sparser and denser)
+        if self.sparse:
+            self.data_processor = GNN4COSparser(self.sparse_factor, self.device)
         else:
-            pass
+            self.data_processor = GNN4CODenser(self.device)
         
     def train_dataloader(self):
         train_dataloader=DataLoader(
@@ -146,339 +124,66 @@ class GNN4COEnv(BaseEnv):
         )
         return test_dataloader
 
-    #################################
-    #       Generate Val Data       #           
-    #################################
-
-    def generate_val_data(self, val_idx: int) -> Any:
+    def generate_val_data(
+        self, val_idx: int
+    ) -> Tuple[List[TaskBase], Union[SparseDataBatch, DenseDataBatch]]:
+        # Get batch index
         begin_idx = val_idx * self.val_batch_size
         end_idx = begin_idx + self.val_batch_size
-        if self.task == "ATSP":
-            return self.generate_val_data_atsp(begin_idx, end_idx)
-        elif self.task == "CVRP":
-            return self.generate_val_data_cvrp(begin_idx, end_idx)
-        elif self.task == "MCl":
-            return self.generate_val_data_mcl(begin_idx, end_idx)
-        elif self.task == "MCut":
-            return self.generate_val_data_mcut(begin_idx, end_idx)
-        elif self.task == "MIS":
-            return self.generate_val_data_mis(begin_idx, end_idx)
-        elif self.task == "MVC":
-            return self.generate_val_data_mvc(begin_idx, end_idx)
-        elif self.task == "TSP":
-            return self.generate_val_data_tsp(begin_idx, end_idx) 
-
-    def generate_val_data_atsp(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.atsp_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.atsp_wrapper.task_list
-        return self.data_processor.atsp_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-    
-    def generate_val_data_cvrp(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.cvrp_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.cvrp_wrapper.task_list
-              
-        return self.data_processor.cvrp_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-
-    def generate_val_data_mcl(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.mcl_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.mcl_wrapper.task_list
-        return self.data_processor.mcl_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-
-    def generate_val_data_mcut(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.mcut_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.mcut_wrapper.task_list
-        return self.data_processor.mcut_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-    
-    def generate_val_data_mis(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.mis_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.mis_wrapper.task_list
-        return self.data_processor.mis_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-    
-    def generate_val_data_mvc(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.mvc_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.mvc_wrapper.task_list
-        return self.data_processor.mvc_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )
-
-    def generate_val_data_tsp(self, begin_idx: int, end_idx: int) -> Any:
-        if self.val_data_cache is None:
-            self.tsp_wrapper.from_txt(self.val_path, ref=True)
-            self.val_data_cache = self.tsp_wrapper.task_list
-        return self.data_processor.tsp_batch_data_process(
-            task_data = self.val_data_cache[begin_idx:end_idx]
-        )   
         
-    #################################
-    #      Generate Train Data      #
-    #################################
-    
-    def generate_train_data(self, batch_size: int) -> Any:
-        if self.task == "ATSP":
-            return self.generate_train_data_atsp(batch_size)
-        elif self.task == "CVRP":
-            return self.generate_train_data_cvrp(batch_size)
-        elif self.task == "MCl":
-            return self.generate_train_data_mcl(batch_size)
-        elif self.task == "MCut":
-            return self.generate_train_data_mcut(batch_size)
-        elif self.task == "MIS":
-            return self.generate_train_data_mis(batch_size)
-        elif self.task == "MVC":
-            return self.generate_train_data_mvc(batch_size)
-        elif self.task == "TSP":
-            return self.generate_train_data_tsp(batch_size) 
-
-    def generate_train_data_atsp(self, batch_size: int)  -> Any:
-        # check data cache
+        # Check cache
+        if self.val_data_cache is None:
+            if self.val_path.endswith(".txt"):
+                self.val_wrapper.from_txt(self.val_path, ref=True, show_time=True)
+            elif self.val_path.endswith(".pkl"):
+                self.val_wrapper.from_pickle(self.val_path, show_time=True)
+            else:
+                raise ValueError(f"Unsupported file extension: {self.val_path}")
+            self.val_data_cache = self.val_wrapper.task_list
+        
+        # Get batch_task_data
+        batch_task_data = self.val_data_cache[begin_idx:end_idx]
+        batch_processed_data = self.data_processor.batch_data_process(batch_task_data)
+        return batch_task_data, batch_processed_data
+        
+    def generate_train_data(
+        self, batch_size: int
+    ) -> Tuple[List[TaskBase], Union[SparseDataBatch, DenseDataBatch]]:
+        # Get batch index
         begin_idx = self.train_data_cache_idx
         end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
+        
+        # Check cache
+        if self.train_data_cache is None or end_idx > len(self.train_data_cache):
+            # Select one train file randomly
             sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
+            sel_train_sub_file_path: str = self.train_sub_files[sel_idx]
             
-            # check if the data is in the cache when store_data is True
+            # Check if the data is in the cache when store_data is True
             if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
+                # Using data cache if the data is in the cache
+                print(f"\nUsing data cache ({sel_train_sub_file_path})")
                 self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
             else:  
-                # load data from the train file
-                print(f"\nload atsp train data from {sel_train_sub_file_path}")
-                self.atsp_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.atsp_wrapper.task_list
+                # Load data from the train file
+                print(f"\nLoad train data from {sel_train_sub_file_path}")
+                if sel_train_sub_file_path.endswith(".txt"):
+                    self.train_wrapper.from_txt(sel_train_sub_file_path, ref=True, show_time=True)
+                elif sel_train_sub_file_path.endswith(".pkl"):
+                    self.train_wrapper.from_pickle(sel_train_sub_file_path, show_time=True)
+                else:
+                    raise ValueError(f"Unsupported file extension: {sel_train_sub_file_path}")
+                self.train_data_cache = self.train_wrapper.task_list
                 if self.store_data:
                     self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
                 
-            # update cache and index
+            # Update cache and index
             self.train_data_cache_idx = 0
             begin_idx = self.train_data_cache_idx
             end_idx = begin_idx + batch_size
         
-        # retrieve a portion of data from the cache
+        # Get batch task data & Data process
         batch_task_data = self.train_data_cache[begin_idx:end_idx]
         self.train_data_cache_idx = end_idx
-        
-        # data process
-        return self.data_processor.atsp_batch_data_process(batch_task_data)
-    
-    def generate_train_data_cvrp(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-            
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else:
-                # load data from the train file
-                print(f"\nload cvrp train data from {sel_train_sub_file_path}")
-                self.cvrp_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.cvrp_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-                
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-        
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-        
-        # data process
-        return self.data_processor.cvrp_batch_data_process(batch_task_data)
-
-    def generate_train_data_mcl(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else:
-                # load data from the train file
-                print(f"\nload mcl train data from {sel_train_sub_file_path}")
-                self.mcl_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.mcl_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-                
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-        
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-        
-        # data process
-        return self.data_processor.mcl_batch_data_process(batch_task_data)
-
-    def generate_train_data_mcut(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else:
-                # load data from the train file
-                print(f"\nload mcut train data from {sel_train_sub_file_path}")
-                self.mcut_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.mcut_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-                
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-        
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-            
-        # sparse process
-        return self.data_processor.mcut_batch_data_process(batch_task_data)
-
-    def generate_train_data_mis(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-            
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else:
-                # load data from the train file
-                print(f"\nload mis train data from {sel_train_sub_file_path}")
-                self.mis_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.mis_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-            
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-        
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-        
-        # data process
-        return self.data_processor.mis_batch_data_process(batch_task_data)
-
-    def generate_train_data_mvc(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else: 
-                # load data from the train file
-                print(f"\nload mvc train data from {sel_train_sub_file_path}")
-                self.mvc_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.mvc_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-            
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-        
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-        
-        # data process
-        return self.data_processor.mvc_batch_data_process(batch_task_data)
-     
-    def generate_train_data_tsp(self, batch_size: int) -> Any:
-        # check data cache
-        begin_idx = self.train_data_cache_idx
-        end_idx = begin_idx + batch_size
-        if self.train_data_cache is None or end_idx > self.train_data_cache["data_size"]:
-            # select one train file randomly
-            sel_idx = np.random.randint(low=0, high=self.train_sub_files_num, size=(1,))[0]
-            sel_train_sub_file_path = self.train_sub_files[sel_idx]
-
-            # check if the data is in the cache when store_data is True
-            if self.store_data and sel_train_sub_file_path in self.train_data_historty_cache.keys():
-                # using data cache if the data is in the cache
-                print(f"\nusing data cache ({sel_train_sub_file_path})")
-                self.train_data_cache = self.train_data_historty_cache[sel_train_sub_file_path]
-            else: 
-                # load data from the train file
-                print(f"\nload tsp train data from {sel_train_sub_file_path}")
-                self.tsp_wrapper.from_txt(sel_train_sub_file_path, show_time=True, ref=True)
-                self.train_data_cache = self.tsp_wrapper.task_list
-                if self.store_data:
-                    self.train_data_historty_cache[sel_train_sub_file_path] = self.train_data_cache
-            
-            # update cache and index
-            self.train_data_cache_idx = 0
-            begin_idx = self.train_data_cache_idx
-            end_idx = begin_idx + batch_size
-    
-        # retrieve a portion of data from the cache
-        batch_task_data = self.train_data_cache[begin_idx:end_idx]
-        self.train_data_cache_idx = end_idx
-            
-        # data process
-        return self.data_processor.tsp_batch_data_process(batch_task_data)
+        batch_processed_data = self.data_processor.batch_data_process(batch_task_data)
+        return batch_task_data, batch_processed_data

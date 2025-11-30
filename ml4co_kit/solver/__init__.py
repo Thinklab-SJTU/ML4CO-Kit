@@ -17,10 +17,14 @@ Solver Module.
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_gnn4co():
+<<<<<<< HEAD
     from .beam import BeamSolver
     from .greedy import GreedySolver
     from .mcts import MCTSSolver
     from .hcp import HCPSolver
+=======
+    from .gnn4co import GNN4COSolver
+>>>>>>> upstream/main
 if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
@@ -35,8 +39,10 @@ from .gurobi import GurobiSolver
 from .hgs import HGSSolver
 from .ils import ILSSolver
 from .insertion import InsertionSolver
+from .isco import ISCOSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
+from .random import RandomSolver
 from .scip import SCIPSolver

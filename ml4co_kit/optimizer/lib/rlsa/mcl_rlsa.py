@@ -17,9 +17,10 @@ RLSA local search algorithm for MCl.
 import torch
 import numpy as np
 from torch import Tensor
-from typing import Tuple, Union
+from typing import Union
 from ml4co_kit.task.graph.mcl import MClTask
 from ml4co_kit.utils.type_utils import to_numpy, to_tensor
+from ml4co_kit.solver.lib.rlsa.mcl_rlsa import mcl_energy_func
 
 
 def mcl_rlsa_ls(
@@ -97,35 +98,3 @@ def mcl_rlsa_ls(
 
     # Store the solution in the task_data
     task_data.from_data(sol=to_numpy(best_sol[best_index]), ref=False)
-    
-    
-def mcl_energy_func(
-    graph: Tensor, x: Tensor, weights: Tensor, penalty_coeff: float
-) -> Tuple[Tensor, Tensor]:
-    # Pre-Process
-    x_uq = x.unsqueeze(1)
-    comp_graph = torch.ones_like(graph) - graph
-    
-    # Energy Term1: Weighted Reward
-    # Contribution of selecting node i: weight[i] * x[i]
-    energy_term1 = torch.matmul(x, weights)
-    
-    # Energy Term2: Penalty for selecting nodes that are not fully connected
-    # If x_i = x_j = 1, while e_{i,j} = 0, incur penalty
-    energy_term2 = torch.sum((torch.matmul(x_uq, comp_graph) * x_uq).squeeze(1), 1)
-    energy_term2 = penalty_coeff * energy_term2
-    
-    # Total Energy: maximize reward + minimize penalty 
-    energy = -energy_term1 + energy_term2
-    
-    # Gradient Term 1: Weighted Reward
-    grad_term1 = weights.expand_as(x)
-    
-    # Gradient Term2: Penalty for selecting nodes that are not fully connected
-    grad_term2 = torch.matmul(comp_graph, x.unsqueeze(-1)).squeeze(-1)
-    grad_term2 = penalty_coeff * grad_term2
-    
-    # Total Gradient: maximize reward + minimize penalty 
-    grad = -grad_term1 + grad_term2
-    
-    return energy, grad

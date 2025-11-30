@@ -15,214 +15,169 @@ GNN4CO Sparser.
 
 
 import torch
-from typing import List, Any
-from ml4co_kit.task.graph.mcl import MClTask
-from ml4co_kit.task.graph.mis import MISTask
-from ml4co_kit.task.graph.mvc import MVCTask
+import numpy as np
+from torch import Tensor
+from typing import List, Optional
+from sklearn.neighbors import KDTree
+from torch_geometric.data import Data, Batch
 from ml4co_kit.task.routing.tsp import TSPTask
-from ml4co_kit.task.graph.mcut import MCutTask
-from ml4co_kit.task.routing.atsp import ATSPTask
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.utils.type_utils import to_tensor
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from .sparse import (
-    atsp_sparse_process, mcl_sparse_process, mcut_sparse_process, 
-    mis_sparse_process, mvc_sparse_process, tsp_sparse_process
-)
+from ml4co_kit.task.graph.base import GraphTaskBase
+
+
+class SparseData(Data):
+    def __init__(
+        self, 
+        node_feature: Tensor, 
+        edge_feature: Tensor, 
+        edge_index: Tensor,
+        ground_truth: Tensor
+    ):
+        """
+        Args:
+            node_feature: Node features (V, D_v)
+                - The feature of each node
+            edge_feature: Edge features (E, D_e)
+                - The feature of each edge
+            edge_index: Edge indices (2, E)
+                - The indices of the start and end nodes of each edge
+            ground_truth: Ground truth (V) or (E)
+                - The ground truth of the graph
+        """
+        super(SparseData, self).__init__()
+        self.node_feature = node_feature
+        self.edge_feature = edge_feature
+        self.edge_index = edge_index
+        self.ground_truth = ground_truth
+
+
+class SparseDataBatch(Batch):
+    """
+    Custom Batch class that inherits from torch_geometric.data.Batch.
+    This class explicitly declares attributes for better IDE support and type hints.
+    """
+    # Declare attributes for IDE autocomplete and type hints
+    node_feature: Tensor     # Node features (V, D_v)
+    edge_feature: Tensor     # Edge features (E, D_e)
+    edge_index: Tensor       # Edge indices (2, E)
+    ground_truth: Tensor     # Ground truth (V) or (E)
+    batch: Tensor            # inherited from Batch, indicates which graph each node belongs to
+    ptr: Optional[Tensor]    # inherited from Batch, pointer to the start of each graph
+
+    def __init__(self, **kwargs):
+        super(SparseDataBatch, self).__init__(**kwargs)
+
+    def to_cuda(self):
+        self.node_feature = self.node_feature.cuda()
+        self.edge_feature = self.edge_feature.cuda()
+        self.edge_index = self.edge_index.cuda()
+        self.ground_truth = self.ground_truth.cuda()
 
 
 class GNN4COSparser(object):
     def __init__(self, sparse_factor: int, device: str) -> None:
         self.sparse_factor = sparse_factor
         self.device = device
+        self.sparse_process_func_dict = {
+            TASK_TYPE.MCL: self.graph_sparse_process,
+            TASK_TYPE.MCUT: self.graph_sparse_process,
+            TASK_TYPE.MIS: self.graph_sparse_process,
+            TASK_TYPE.MVC: self.graph_sparse_process,
+            TASK_TYPE.TSP: self.tsp_sparse_process
+        }
     
-    def initial_lists(self):
-        self.x_list = list()
-        self.e_list = list()
-        self.edge_index_list = list()
-        self.graph_list = list()
-        self.ground_truth_list = list()
-        self.nodes_num_list = list()
-        self.edges_num_list = list()
-        
-    def update_lists(self, sparse_data: Any):
-        self.x_list.append(sparse_data[0])
-        self.e_list.append(sparse_data[1])
-        self.edge_index_list.append(sparse_data[2])
-        self.graph_list.append(sparse_data[3])
-        self.ground_truth_list.append(sparse_data[4])
-        self.nodes_num_list.append(sparse_data[5])
-        self.edges_num_list.append(sparse_data[6])
-    
-    def merge_process(self, task: str, with_gt: bool) -> Any:
-        # nodes feature
-        if self.x_list[0] is not None:
-            x = torch.cat(self.x_list, 0).to(self.device) # (V, C) or (V,)
-        else:
-            x = None
-            
-        # edges feature
-        if self.e_list[0] is not None:
-            e = torch.cat(self.e_list, 0).to(self.device) # (V, C) or (E,)
-        else:
-            e = None
-
-        # edge index
-        add_index = 0
-        edge_index_list = list()
-        for idx, edge_index in enumerate(self.edge_index_list):
-            edge_index_list.append(edge_index + add_index)
-            add_index += self.nodes_num_list[idx]
-        edge_index = torch.cat(edge_index_list, 1).to(self.device) # (2, E)
-
-        # ground truth
-        if with_gt:
-            ground_truth = torch.cat(self.ground_truth_list, 0).to(self.device) # (E,) or (V,)
-        else:
-            ground_truth = None
-            
-        return (
-            task, x, e, edge_index, self.graph_list, 
-            ground_truth, self.nodes_num_list, self.edges_num_list
-        )
-    
-    def data_process(
+    def batch_data_process(
         self, batch_task_data: List[TaskBase], sampling_num: int = 1
-    ) -> Any:
-        task_data = batch_task_data[0]
-        if task_data.task_type == TASK_TYPE.ATSP:
-            return self.atsp_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.CVRP:
-            return self.cvrp_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.TSP:
-            return self.tsp_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.MCL:
-            return self.mcl_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.MCUT:
-            return self.mcut_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.MIS:
-            return self.mis_batch_data_process(batch_task_data, sampling_num)
-        elif task_data.task_type == TASK_TYPE.MVC:
-            return self.mvc_batch_data_process(batch_task_data, sampling_num)
-        else:
-            raise NotImplementedError("Task type is not supported currently.")
-    
-    def atsp_batch_data_process(
-        self, batch_task_data: List[ATSPTask], sampling_num: int = 1
-    ) -> Any:        
-        # initialize lists
-        self.initial_lists()
-        
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
-        
-        # sparse process
-        for idx in range(len(batch_task_data)):
-            sparse_data = atsp_sparse_process(
-                task_data=batch_task_data[idx], 
-                sparse_factor=self.sparse_factor
-            )
+    ) -> SparseDataBatch:
+        # Preparation
+        self.sparse_data_list = list()
+        task_type = batch_task_data[0].task_type
+        sparse_process_func = self.sparse_process_func_dict[task_type]
+
+        # Sparse process
+        for task_data in batch_task_data:
+            sparse_data = sparse_process_func(task_data)
             for _ in range(sampling_num):
-                self.update_lists(sparse_data)
+                self.sparse_data_list.append(sparse_data)
             
-        # merge
-        return self.merge_process(task="ATSP", with_gt=with_gt)
-           
-    def cvrp_batch_data_process(
-        self, batch_task_data: List[CVRPTask], sampling_num: int = 1
-    ) -> Any:
-        raise NotImplementedError(
-            "CVRP is not supported currently."
+        # Merge
+        batch_sparse_data = SparseDataBatch.from_data_list(self.sparse_data_list)
+        if self.device == "cuda":
+            batch_sparse_data.to_cuda()
+        return batch_sparse_data
+
+    def graph_sparse_process(self, task_data: GraphTaskBase) -> SparseData:
+        # Nodes feature (V, 1)
+        nodes_feature = to_tensor(task_data.nodes_weight).reshape(-1, 1)
+        
+        # Edges feature (E, 1)
+        edges_feature = to_tensor(task_data.edges_weight).reshape(-1, 1) # (E, 1)
+        
+        # Edge index (2, E)
+        edge_index = to_tensor(task_data.edge_index).float() # (2, E)
+        
+        # Ground Truth (V,)
+        if task_data.ref_sol is not None:
+            ground_truth = to_tensor(task_data.ref_sol)
+        else:
+            ground_truth = torch.zeros(size=(task_data.nodes_num,))
+        
+        # Return SparseData
+        sparse_data = SparseData(
+            node_feature=nodes_feature.float(),
+            edge_feature=edges_feature.float(),
+            edge_index=edge_index.long(),
+            ground_truth=ground_truth.long()
         )
-    
-    def mcl_batch_data_process(
-        self, batch_task_data: List[MClTask], sampling_num: int = 1
-    ) -> Any:
-        # initialize lists
-        self.initial_lists()
+        return sparse_data
 
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
+    def tsp_sparse_process(self, task_data: TSPTask) -> SparseData:
+        # Nodes feature (V, 2)
+        nodes_num: int = task_data.nodes_num
+        points = task_data.points
+        nodes_feature = to_tensor(points)
+
+        # Edges feature (E, 1)       
+        kdt = KDTree(points, leaf_size=30, metric='euclidean')
+        dists_knn, idx_knn = kdt.query(points, k=self.sparse_factor, return_distance=True)
+        edges_feature = to_tensor(dists_knn).reshape(-1, 1)
         
-        # sparse process
-        for graph in batch_task_data:
-            sparse_data = mcl_sparse_process(graph)
-            for _ in range(sampling_num):
-                self.update_lists(sparse_data)
+        # Edge_index (2, E)
+        edge_index_0 = torch.arange(nodes_num).reshape((-1, 1))
+        edge_index_0 = edge_index_0.repeat(1, self.sparse_factor).reshape(-1)
+        edge_index_1 = torch.from_numpy(idx_knn.reshape(-1))
+        edge_index = torch.stack([edge_index_0, edge_index_1], dim=0)
 
-        # merge
-        return self.merge_process(task="MCl", with_gt=with_gt)
-    
-    def mcut_batch_data_process(
-        self, batch_task_data: List[MCutTask], sampling_num: int = 1
-    ) -> Any:
-        # initialize lists
-        self.initial_lists()
+        # Ground Truth (E,)
+        if task_data.ref_sol is not None:
+            # Reference tour
+            ref_tour = task_data.ref_sol
 
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
+            # Tour edges
+            tour_edges = np.zeros(nodes_num, dtype=np.int64)
+            tour_edges[ref_tour[:-1]] = ref_tour[1:]
+            tour_edges = torch.from_numpy(tour_edges)
+            tour_edges = tour_edges.reshape((-1, 1)).repeat(1, self.sparse_factor).reshape(-1)
+            tour_edges = torch.eq(edge_index_1, tour_edges).reshape(-1, 1)
+            
+            # Tour edges reverse
+            tour_edges_rv = np.zeros(nodes_num, dtype=np.int64)
+            tour_edges_rv[ref_tour[1:]] = ref_tour[0:-1]
+            tour_edges_rv = torch.from_numpy(tour_edges_rv)
+            tour_edges_rv = tour_edges_rv.reshape((-1, 1)).repeat(1, self.sparse_factor).reshape(-1)
+            tour_edges_rv = torch.eq(edge_index_1, tour_edges_rv).reshape(-1, 1)
+            
+            # Ground truth
+            ground_truth = (tour_edges + tour_edges_rv).reshape(-1).long()
+        else:
+            ground_truth = torch.zeros(size=(nodes_num*self.sparse_factor,))
         
-        # sparse process
-        for graph in batch_task_data:
-            sparse_data = mcut_sparse_process(graph)
-            for _ in range(sampling_num):
-                self.update_lists(sparse_data)
-
-        # merge
-        return self.merge_process(task="MCut", with_gt=with_gt)
-
-    def mis_batch_data_process(
-        self, batch_task_data: List[MISTask], sampling_num: int = 1
-    ) -> Any:
-        # initialize lists
-        self.initial_lists()
-
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
-        
-        # sparse process
-        for graph in batch_task_data:
-            sparse_data = mis_sparse_process(graph)
-            for _ in range(sampling_num):
-                self.update_lists(sparse_data)
-
-        # merge
-        return self.merge_process(task="MIS", with_gt=with_gt)
-
-    def mvc_batch_data_process(
-        self, batch_task_data: List[MVCTask], sampling_num: int = 1
-    ) -> Any:
-        # initialize lists
-        self.initial_lists()
-
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
-        
-        # sparse process
-        for graph in batch_task_data:
-            sparse_data = mvc_sparse_process(graph)
-            for _ in range(sampling_num):
-                self.update_lists(sparse_data)
-
-        # merge
-        return self.merge_process(task="MVC", with_gt=with_gt)
-    
-    def tsp_batch_data_process(
-        self, batch_task_data: List[TSPTask], sampling_num: int = 1
-    ) -> Any:
-        # initialize lists
-        self.initial_lists()
-
-        # with_gt
-        with_gt = True if batch_task_data[0].ref_sol is not None else False
-        
-        # sparse process
-        for idx in range(len(batch_task_data)):
-            sparse_data = tsp_sparse_process(
-                task_data=batch_task_data[idx], 
-                sparse_factor=self.sparse_factor
-            )
-            for _ in range(sampling_num):
-                self.update_lists(sparse_data)
-        
-        # merge
-        return self.merge_process(task="TSP", with_gt=with_gt)
+        # Return SparseData
+        sparse_data = SparseData(
+            node_feature=nodes_feature.float(),
+            edge_feature=edges_feature.float(),
+            edge_index=edge_index.long(),
+            ground_truth=ground_truth.long()
+        )
+        return sparse_data

@@ -28,3 +28,4 @@ if env_checker.check_torch():
 # Load other optimizers
 from .base import OptimizerBase, OPTIMIZER_TYPE
 from .cvrp_ls import CVRPLSOptimizer
+from .isco import ISCOOptimizer

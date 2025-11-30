@@ -18,12 +18,9 @@ from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.solver.lib.greedy.cython_tsp_greedy import cython_tsp_greedy
 
 
-def tsp_greedy(task_data: TSPTask):
-    # Preparation for decoding
-    heatmap: np.ndarray = task_data.cache["heatmap"]
-    heatmap = heatmap.astype("double")
-    
+def _tsp_greedy(heatmap: np.ndarray) -> np.ndarray:
     # Call cython_tsp_greedy to get the adjacency matrix
+    heatmap = heatmap.astype("double")
     adj_mat = cython_tsp_greedy(heatmap)[0]
     adj_mat = np.asarray(adj_mat)
     
@@ -40,6 +37,12 @@ def tsp_greedy(task_data: TSPTask):
             cur_node = cur_node[1] if cur_node[0] == tour[-2] else cur_node[0]
         tour.append(cur_node)
     tour = np.array(tour)
+    return tour
+
+
+def tsp_greedy(task_data: TSPTask):
+    # Call ``_tsp_greedy`` to get the tour
+    tour = _tsp_greedy(heatmap=task_data.cache["heatmap"])
     
     # Store the tour in the task_data
     task_data.from_data(sol=tour, ref=False)

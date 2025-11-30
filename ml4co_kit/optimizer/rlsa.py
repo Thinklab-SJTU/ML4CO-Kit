@@ -20,12 +20,13 @@ from ml4co_kit.optimizer.lib.rlsa.mcl_rlsa import mcl_rlsa_ls
 from ml4co_kit.optimizer.lib.rlsa.mis_rlsa import mis_rlsa_ls
 from ml4co_kit.optimizer.lib.rlsa.mvc_rlsa import mvc_rlsa_ls
 from ml4co_kit.optimizer.lib.rlsa.mcut_rlsa import mcut_rlsa_ls
-from ml4co_kit.optimizer.base import OptimizerBase, OPTIMIZER_TYPE
+from ml4co_kit.optimizer.base import OptimizerBase, OPTIMIZER_TYPE, IMPL_TYPE
 
 
 class RLSAOptimizer(OptimizerBase):
     def __init__(
         self,
+        impl_type: IMPL_TYPE = IMPL_TYPE.AUTO,
         rlsa_init_type: str = "uniform",
         rlsa_kth_dim: Union[str, int] = "both",
         rlsa_tau: float = 0.01, 
@@ -39,7 +40,8 @@ class RLSAOptimizer(OptimizerBase):
     ):
         # Super Initialization
         super(RLSAOptimizer, self).__init__(
-            optimizer_type=OPTIMIZER_TYPE.RLSA
+            optimizer_type=OPTIMIZER_TYPE.RLSA,
+            impl_type=impl_type
         )
         
         # Set Attributes
@@ -53,11 +55,16 @@ class RLSAOptimizer(OptimizerBase):
         self.rlsa_beta = rlsa_beta
         self.rlsa_device = rlsa_device
         self.rlsa_seed = rlsa_seed
-            
-    def _optimize(self, task_data: TaskBase):
+    
+    def _auto_optimize(self, task_data: TaskBase, return_sol: bool = False):
+        return self._torch_optimize(task_data, return_sol)
+
+    def _torch_optimize(self, task_data: TaskBase, return_sol: bool = False):
         """Optimize the task data using RLSA local search."""
-        if task_data.task_type == TASK_TYPE.MCL:
-            return mcl_rlsa_ls(
+        # Optimize
+        task_type = task_data.task_type
+        if task_type == TASK_TYPE.MCL:
+            mcl_rlsa_ls(
                 task_data=task_data,
                 rlsa_init_type=self.rlsa_init_type,
                 rlsa_kth_dim=self.rlsa_kth_dim,
@@ -70,8 +77,8 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_device=self.rlsa_device,
                 rlsa_seed=self.rlsa_seed
             )
-        elif task_data.task_type == TASK_TYPE.MCUT:
-            return mcut_rlsa_ls(
+        elif task_type == TASK_TYPE.MCUT:
+            mcut_rlsa_ls(
                 task_data=task_data,
                 rlsa_kth_dim=self.rlsa_kth_dim,
                 rlsa_tau=self.rlsa_tau,
@@ -81,8 +88,8 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_device=self.rlsa_device,
                 rlsa_seed=self.rlsa_seed
             )
-        elif task_data.task_type == TASK_TYPE.MIS:
-            return mis_rlsa_ls(
+        elif task_type == TASK_TYPE.MIS:
+            mis_rlsa_ls(
                 task_data=task_data,
                 rlsa_init_type=self.rlsa_init_type,
                 rlsa_kth_dim=self.rlsa_kth_dim,
@@ -95,8 +102,8 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_device=self.rlsa_device,
                 rlsa_seed=self.rlsa_seed
             )
-        elif task_data.task_type == TASK_TYPE.MVC:
-            return mvc_rlsa_ls(
+        elif task_type == TASK_TYPE.MVC:
+            mvc_rlsa_ls(
                 task_data=task_data,
                 rlsa_init_type=self.rlsa_init_type,
                 rlsa_kth_dim=self.rlsa_kth_dim,
@@ -110,7 +117,8 @@ class RLSAOptimizer(OptimizerBase):
                 rlsa_seed=self.rlsa_seed
             )
         else:
-            raise ValueError(
-                f"Optimizer {self.optimizer_type} "
-                f"is not supported for {task_data.task_type}."
-            )
+            raise self._get_not_implemented_error(task_type, False)
+
+        # Return the solution if needed
+        if return_sol:
+            return task_data.sol

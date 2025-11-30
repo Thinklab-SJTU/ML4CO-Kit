@@ -165,28 +165,31 @@ Case-04: A simple ML4CO example
 
     # Import the required classes.
     >>> import numpy as np                   # Numpy
+    >>> from ml4co_kit import TASK_TYPE      # The task type.
     >>> from ml4co_kit import MCutWrapper    # The wrapper for MCutWrapper, used to manage data.
-    >>> from ml4co_kit import GreedySolver   # GreedySolver, based on GNN4CO.
+    >>> from ml4co_kit import GNN4COSolver   # GNN4COSolver.
     >>> from ml4co_kit import RLSAOptimizer  # Using RLSA to perform local search.
-    >>> from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, GNNEncoder
+    >>> from ml4co_kit.extension.gnn4co import GNN4COModel, GNN4COEnv, GNNEncoder, GNN4COGreedyDecoder
 
     # Set the GNN4COModel parameters. ``weight_path``: Pretrain weight path. 
     # If it is not available locally, it will be automatically downloaded from Hugging Face.
     >>> gnn4mcut_model = GNN4COModel(
     ...     env=GNN4COEnv(
-    ...         task="MCut",              # Task name: MCut.                                 
-    ...         mode="solve",             # Mode: solving mode.
-    ...         sparse_factor=1,          # Sparse factor: Controls the sparsity of the graph.
-    ...         device="cuda"             # Device: 'cuda' or 'cpu'
+    ...         task_type=TASK_TYPE.MCUT,    # Task type: MCut. 
+    ...         wrapper=MCutWrapper(),       # The wrapper for MCutWrapper, used to manage data.
+    ...         mode="solve",                # Mode: solving mode.
+    ...         sparse_factor=1,             # Sparse factor: Controls the sparsity of the graph.
+    ...         device="cuda"                # Device: 'cuda' or 'cpu'
     ...     ),
     ...     encoder=GNNEncoder(
-    ...         task="MCut",              # Task name: MCut.
-    ...         sparse=True,              # Graph data should set ``sparse`` to True.
-    ...         block_layers=[2,4,4,2]    # Block layers: the number of layers in each block of the encoder.
+    ...         task_type=TASK_TYPE.MCUT,    # Task type: MCut.
+    ...         sparse=True,                 # Graph data should set ``sparse`` to True.
+    ...         block_layers=[2,4,4,2]       # Block layers: the number of layers in each block of the encoder.
     ...     ),
+    ...     decoder=GNN4COGreedyDecoder(sparse_factor=1),
     ...     weight_path="weights/gnn4co_mcut_ba-large_sparse.pt"   
     ... )
-    gnn4co/gnn4co_mcut_ba-large_sparse.pt: 100% |..........| 19.6M/19.6M [00:03<00:00, 6.18MB/s]
+    gnn4co/gnn4co_mcut_ba-large_sparse.pt: 100% ███████████████ 19.6M/19.6M [00:03<00:00, 6.18MB/s]
 
     # Set the RLSAOptimizer parameters.
     >>> mcut_optimizer = RLSAOptimizer(
@@ -199,13 +202,13 @@ Case-04: A simple ML4CO example
     ...     rlsa_seed=1234                # The random seed for reproducibility.
     ... )
 
-    # Set the GreedySolver parameters.
-    >>> mcut_solver_wo_opt = GreedySolver(
+    # Set the GNN4COSolver parameters.
+    >>> mcut_solver_wo_opt = GNN4COSolver(
     ...     model=gnn4mcut_model,         # GNN4CO model for MCut
     ...     device="cuda",                # Device: 'cuda' or 'cpu'.
     ...     optimizer=None                # The optimizer to perform local search.
     ... )
-    >>> mcut_solver_w_opt = GreedySolver(
+    >>> mcut_solver_w_opt = GNN4COSolver(
     ...     model=gnn4mcut_model,         # GNN4CO model for MCut
     ...     device="cuda",                # Device: 'cuda' or 'cpu'.
     ...     optimizer=mcut_optimizer      # The optimizer to perform local search.
@@ -232,7 +235,7 @@ Case-04: A simple ML4CO example
     ...     batch_size=1,                 # Batch size for parallel processing; cannot both be non-1 with num_threads
     ...     show_time=True,               # Whether to display the time taken for the generation process
     ... )
-    Solving MCut Using greedy: 100%|..........| 4/4 [00:00<00:00, 12.34it/s]
+    Solving MCut Using greedy: 100%|██████████| 4/4 [00:00<00:00, 12.34it/s]
     Using Time: 0.3261079788208008
 
     # Use ``evaluate_w_gap`` to obtain the evaluation results.
@@ -248,7 +251,7 @@ Case-04: A simple ML4CO example
     ...     batch_size=1,                 # Batch size for parallel processing; cannot both be non-1 with num_threads
     ...     show_time=True,               # Whether to display the time taken for the generation process
     ... )
-    Solving MCut Using greedy: 100%|..........| 4/4 [00:02<00:00,  1.46it/s]
+    Solving MCut Using greedy: 100%|██████████| 4/4 [00:02<00:00,  1.46it/s]
     Using Time: 2.738525867462158
 
     # Use ``evaluate_w_gap`` to obtain the evaluation results.

@@ -17,15 +17,15 @@ import numpy as np
 from ml4co_kit.task.graph.mvc import MVCTask
 
 
-def mvc_greedy(task_data: MVCTask):
-    # Preparation for decoding
-    heatmap: np.ndarray = task_data.cache["heatmap"]
-    adj_matrix = task_data.to_adj_matrix()
+def _mvc_greedy(
+    heatmap: np.ndarray, adj_matrix: np.ndarray
+) -> np.ndarray:
+    # Preparation
     np.fill_diagonal(adj_matrix, 0)
     sol = np.zeros_like(heatmap).astype(np.bool_)
     mask = np.zeros_like(heatmap).astype(np.bool_)
     sorted_nodes = np.argsort(heatmap)
-    
+
     # Greedy Algorithm for MVC
     for node in sorted_nodes:
         if not mask[node]:
@@ -35,7 +35,15 @@ def mvc_greedy(task_data: MVCTask):
             mask[connect_nodes] = True
             mask[node] = True
     sol = sol.astype(np.int32)
+    return sol
     
-    # Store the tour in the task_data
+
+def mvc_greedy(task_data: MVCTask):
+    # Call ``_mvc_greedy`` to get the solution
+    sol = _mvc_greedy(
+        heatmap=task_data.cache["heatmap"],
+        adj_matrix=task_data.to_adj_matrix()
+    )
+    
+    # Store the solution in the task_data
     task_data.from_data(sol=sol, ref=False)
-    return task_data

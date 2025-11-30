@@ -89,18 +89,23 @@ class NeuroLKHSolver(SolverBase):
 
     def install(self):
         """Install LKH solver."""
+        # Step1: Download LKH
         lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
         download(file_path="LKH-3.0.13.tgz", url=lkh_url)
-        # tar .tgz file
+        
+        # Step2: tar .tgz file
         os.system("tar xvfz LKH-3.0.13.tgz")
-        # build LKH
+        
+        # Step3: build LKH
         ori_dir = os.getcwd()
         os.chdir("LKH-3.0.13")
         os.system("make")
-        # move LKH to the bin dir
-        target_dir = os.path.join(sys.prefix, "bin")
-        os.system(f"cp LKH {target_dir}")
+
+        # Step4: move LKH to the bin dir
+        os.system(f"cp LKH {self.lkh_store_path}")
         os.chdir(ori_dir)
-        # delete .tgz file
+
+        # Step5: clean up
         os.remove("LKH-3.0.13.tgz")
         shutil.rmtree("LKH-3.0.13")
+        print(f"LKH Solver installed successfully at {self.lkh_bin_path}.")

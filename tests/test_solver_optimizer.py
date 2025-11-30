@@ -28,39 +28,52 @@ env_checker = EnvChecker()
 # Get solvers to be tested (no torch used)
 from tests.solver_optimizer_test import SolverTesterBase
 from tests.solver_optimizer_test import (
+    # solver testers
     ConcordeSolverTester,
     GAEAXSolverTester,
     GpDegreeSolverTester, 
     HGSSolverTester, 
     ILSSolverTester, 
     InsertionSolverTester, 
+    ISCOSolverTester,
     KaMISSolverTester, 
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester,
-    SCIPSolverTester
+    RandomSolverTester,
+    SCIPSolverTester,
+    # optimizer testers
+    CVRPLSOptimizerTester,
+    ISCOOptimizerTester,
 )
-basic_solver_class_list = [
+
+basic_tester_class_list = [
+    # solver testers
     ConcordeSolverTester, 
     GAEAXSolverTester,
     GpDegreeSolverTester, 
     HGSSolverTester, 
     ILSSolverTester, 
     InsertionSolverTester, 
+    ISCOSolverTester,
     LcDegreeSolverTester,
     LKHSolverTester,
     ORSolverTester,
-    SCIPSolverTester
+    RandomSolverTester,
+    SCIPSolverTester,
+    # optimizer testers
+    CVRPLSOptimizerTester,
+    ISCOOptimizerTester,
 ]
 if env_checker.system == "Linux":
-    basic_solver_class_list.append(KaMISSolverTester)
+    basic_tester_class_list.append(KaMISSolverTester)
 
 
 # Gurobi
 env_checker.gurobi_support = False # Currently, Github Actions does not support Gurobi
 if env_checker.check_gurobi():
     from tests.solver_optimizer_test import GurobiSolverTester
-    basic_solver_class_list.append(GurobiSolverTester)
+    basic_tester_class_list.append(GurobiSolverTester)
    
     
 # Get solvers to be tested (torch used)
@@ -69,44 +82,44 @@ if env_checker.check_torch():
         RLSASolverTester, 
         NeuroLKHSolverTester
     )
-    torch_solver_class_list = [
+    torch_tester_class_list = [
         RLSASolverTester,
         NeuroLKHSolverTester,
     ]
 if env_checker.check_gnn4co():
     from tests.solver_optimizer_test import (
-        BeamSolverTester, 
-        GreedySolverTester,
-        MCTSSolverTester,
+        GNN4COBeamSolverTester, 
+        GNN4COGreedySolverTester,
+        GNN4COMCTSSolverTester,
         MCTSOptimizerTester,
         RLSAOptimizerTester,
         TwoOptOptimizerTester,
     )
-    torch_solver_class_list += [
-        BeamSolverTester, 
-        GreedySolverTester,
-        MCTSSolverTester,
+    torch_tester_class_list += [
+        GNN4COBeamSolverTester, 
+        GNN4COGreedySolverTester,
+        GNN4COMCTSSolverTester,
         MCTSOptimizerTester,
         RLSAOptimizerTester,
-        TwoOptOptimizerTester
+        TwoOptOptimizerTester,
     ]
     
 
 # Test Solver
-def test_solver():
+def test_solver_optimizer():
     # Basic Solvers
-    for solver_class in basic_solver_class_list:
-        solver_class: Type[SolverTesterBase]
-        solver_class().test()
+    for tester_class in basic_tester_class_list:
+        tester_class: Type[SolverTesterBase]
+        tester_class().test()
     
     # Torch Solvers
-    for solver_class in torch_solver_class_list:
-        solver_class: Type[SolverTesterBase]
-        solver_class(device="cpu").test()
+    for tester_class in torch_tester_class_list:
+        tester_class: Type[SolverTesterBase]
+        tester_class(device="cpu").test()
         if env_checker.check_cuda():
-            solver_class(device="cuda").test()
+            tester_class(device="cuda").test()
 
 
 # Main
 if __name__ == "__main__":
-    test_solver()
+    test_solver_optimizer()

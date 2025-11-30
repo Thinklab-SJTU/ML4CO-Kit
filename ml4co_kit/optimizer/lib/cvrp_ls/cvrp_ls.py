@@ -28,15 +28,17 @@ def cvrp_ls(
     """Classic local search for CVRP problems using C implementation."""
     # Preparation
     init_tour = task_data.sol.astype(np.int16)
-    coords = task_data.coords.astype(np.float32).reshape(-1)
-    norm_demands = task_data.norm_demands.astype(np.float32).reshape(-1)
-    nodes_num = coords.shape[0]
-    
+    coords = task_data.coords.astype(np.float32)
+    nodes_num = coords.shape[0]  # Get number of nodes before reshaping
+    coords = coords.reshape(-1)
+    demands: np.ndarray = np.insert(task_data.norm_demands, 0, 0)
+    demands = demands.astype(np.float32).reshape(-1)
+
     # Perform local search
     ls_tour = c_cvrp_local_search(
         init_tour.ctypes.data_as(ctypes.POINTER(ctypes.c_short)),  
         coords.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),  
-        norm_demands.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), 
+        demands.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), 
         nodes_num,
         len(init_tour),
         coords_scale,

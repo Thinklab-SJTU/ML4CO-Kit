@@ -50,6 +50,8 @@ class OPTask(RoutingTaskBase):
     
     def _normalize_depots_and_points(self):
         """Normalize depots and points to [0, 1] range."""
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         depots = self.depots
         points = self.points
         min_vals = min(np.min(points), np.min(self.depots))
@@ -119,11 +121,7 @@ class OPTask(RoutingTaskBase):
     def _get_dists(self) -> np.ndarray:
         """Get distance matrix."""
         if self.dists is None:
-            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
-            for i in range(self.nodes_num + 1):
-                for j in range(i + 1, self.nodes_num + 1):
-                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
-                    dists[j, i] = dists[i, j]
+            dists = self.dist_eval.cal_dist_matrix(self.coords)
             self.dists = dists.astype(self.precision)
         return self.dists
 

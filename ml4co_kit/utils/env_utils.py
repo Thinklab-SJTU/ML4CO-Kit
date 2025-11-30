@@ -36,6 +36,7 @@ class EnvChecker(object):
         self.torch_cluster_support = self._check_package("torch_cluster")
         self.wandb_support = self._check_package("wandb")
         self.pytorch_lightning_support = self._check_package("pytorch_lightning")
+        self.pyg_support = self._check_package("torch_geometric")
         
         # Gurobi
         try:
@@ -60,7 +61,8 @@ class EnvChecker(object):
             self.torch_spline_conv_support,
             self.torch_cluster_support,
             self.wandb_support,
-            self.pytorch_lightning_support
+            self.pytorch_lightning_support,
+            self.pyg_support
         ]
         return all(check_list)
     
@@ -116,3 +118,6 @@ class EnvInstallHelper(object):
         
         # pytorch-lightning
         os.system(f"pip install pytorch-lightning=={self.pytorch_version}")
+
+        # pytorch-geometric
+        os.system(f"pip install 'torch_geometric=={self.pytorch_version}'")
