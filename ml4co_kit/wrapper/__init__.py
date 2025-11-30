@@ -22,3 +22,6 @@ from .mvc import MVCWrapper
 from .maxretpo import MaxRetPOWrapper
 from .minvarpo import MinVarPOWrapper
 from .mopo import MOPOWrapper
+
+#bpp
+from .bpp_wrapper import BPPWrapper
