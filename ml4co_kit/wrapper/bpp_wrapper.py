@@ -30,7 +30,7 @@ class BPPWrapper(WrapperBase):
 
     其中：
     - items 后面是所有 item 尺寸
-    - bins 后面是所有候选 bin 类型容量
+    - bins 后面是这一实例中给定的一批箱子容量（每个箱子最多使用一次）
     - output 部分：
         - a_i 是第 i 个 item 分配到的 bin 索引（0-based）
         - '|' 右侧 t_k 是第 k 个 bin 的类型索引（0-based）
@@ -163,3 +163,4 @@ class BPPWrapper(WrapperBase):
 
                 f.write("\n")
             f.close()
+
