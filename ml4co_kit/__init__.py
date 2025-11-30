@@ -51,7 +51,7 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
-from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
+from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask, HCPTask
 
 # Portfolio Task
 from .task import PortfolioTaskBase

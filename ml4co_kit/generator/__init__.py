@@ -40,4 +40,9 @@ from .routing.cvrp import CVRPGenerator, CVRP_TYPE
 from .routing.op import OPGenerator, OP_TYPE
 from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
+<<<<<<< HEAD
 from .routing.tsp import TSPGenerator, TSP_TYPE
+from .routing.hcp import HCPGenerator, HCP_TYPE
+=======
+from .routing.tsp import TSPGenerator, TSP_TYPE
+>>>>>>> upstream/main

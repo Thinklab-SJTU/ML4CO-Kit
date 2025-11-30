@@ -34,6 +34,7 @@ class TASK_TYPE(str, Enum):
     PCTSP = "PCTSP" # Prize Collection Traveling Salesman Problem
     SPCTSP = "SPCTSP" # Stochastic Prize Collection Traveling Salesman Problem
     TSP = "TSP" # Traveling Salesman Problem
+    HCP = "HCP" # Hamiltonian Cycle Problem
 
     # Graph Problems
     MCL = "MCl" # Maximum Clique

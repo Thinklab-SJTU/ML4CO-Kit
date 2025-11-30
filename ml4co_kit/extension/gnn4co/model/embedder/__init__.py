@@ -21,12 +21,21 @@ from ml4co_kit.task.base import TASK_TYPE
 
 
 EMBEDDER_DICT = {
+<<<<<<< HEAD
+    "ATSP": ATSPEmbedder,
+    "MCl": MClEmbedder,
+    "MIS": MISEmbedder,
+    "MCut": MCutEmbedder,
+    "MVC": MVCEmbedder,
+    "TSP": TSPEmbedder,
+=======
     TASK_TYPE.ATSP: ATSPEmbedder,
     TASK_TYPE.TSP: TSPEmbedder,
     TASK_TYPE.MCL: GraphEmbedder,
     TASK_TYPE.MIS: GraphEmbedder,
     TASK_TYPE.MCUT: GraphEmbedder,
     TASK_TYPE.MVC: GraphEmbedder,
+>>>>>>> upstream/main
 }
 
 

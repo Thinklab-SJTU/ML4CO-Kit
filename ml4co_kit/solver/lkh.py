@@ -23,6 +23,7 @@ from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.lib.lkh.tsp_lkh import tsp_lkh
 from ml4co_kit.solver.lib.lkh.atsp_lkh import atsp_lkh
 from ml4co_kit.solver.lib.lkh.cvrp_lkh import cvrp_lkh
+from ml4co_kit.solver.lib.lkh.hcp_lkh import hcp_lkh
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
@@ -76,6 +77,16 @@ class LKHSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.CVRP:
             return cvrp_lkh(
+                task_data=task_data,
+                lkh_scale=self.lkh_scale,
+                lkh_max_trials=self.lkh_max_trials,
+                lkh_path=self.lkh_bin_path,
+                lkh_runs=self.lkh_runs,
+                lkh_seed=self.lkh_seed,
+                lkh_special=self.lkh_special
+            )
+        elif task_data.task_type == TASK_TYPE.HCP:
+            return hcp_lkh(
                 task_data=task_data,
                 lkh_scale=self.lkh_scale,
                 lkh_max_trials=self.lkh_max_trials,

@@ -26,9 +26,13 @@ from .routing.op import OPTask
 from .routing.pctsp import PCTSPTask
 from .routing.spctsp import SPCTSPTask
 from .routing.tsp import TSPTask
+<<<<<<< HEAD
+from .routing.hcp import HCPTask
+=======
 
 # SAT Task
 from .sat.base import SATTaskBase
 from .sat.satp import SATPTask
 from .sat.sata import SATATask
 from .sat.unsatc import USATCTask
+>>>>>>> upstream/main
