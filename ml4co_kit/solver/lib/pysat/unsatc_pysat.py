@@ -20,7 +20,9 @@ from ml4co_kit.task.sat.unsatc import USATCTask
 
 
 def unsatc_pysat(task_data: USATCTask):
-    cnf = CNF(from_clauses=task_data.clauses)
+    cnf = CNF()
+    cnf.clauses = task_data.clauses
+    cnf.nv = task_data.vars_num
     
     musx = MUSX(cnf, verbosity=0)
     core = musx.compute()
