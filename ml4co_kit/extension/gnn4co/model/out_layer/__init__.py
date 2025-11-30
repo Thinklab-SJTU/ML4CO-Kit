@@ -10,7 +10,7 @@ OUTLAYER_DICT = {
     "MIS": NodeOutLayer,
     "MCut": NodeOutLayer,
     "MVC": NodeOutLayer,
-    "TSP": EdgeOutLayer
+    "TSP": EdgeOutLayer,
 }
 
 def get_out_layer_by_task(task: str):

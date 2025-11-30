@@ -22,6 +22,7 @@ from ml4co_kit.solver.lib.gurobi.tsp_gurobi import tsp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcl_gurobi import mcl_gurobi
 from ml4co_kit.solver.lib.gurobi.mis_gurobi import mis_gurobi
 from ml4co_kit.solver.lib.gurobi.mvc_gurobi import mvc_gurobi
+from ml4co_kit.solver.lib.gurobi.hcp_gurobi import hcp_gurobi
 from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
 from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
@@ -45,6 +46,7 @@ class GurobiSolver(SolverBase):
         # Set Attributes
         self.gurobi_time_limit = gurobi_time_limit
         self.gurobi_tsp_use_mtz_or_lazy = gurobi_tsp_use_mtz_or_lazy
+        self.gurobi_hcp_use_mtz_or_lazy = gurobi_hcp_use_mtz_or_lazy
 
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Gurobi Solver."""
@@ -68,6 +70,12 @@ class GurobiSolver(SolverBase):
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit,
                 gurobi_tsp_use_mtz_or_lazy=self.gurobi_tsp_use_mtz_or_lazy
+            )
+        elif task_data.task_type == TASK_TYPE.HCP:
+            return hcp_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit,
+                gurobi_hcp_use_mtz_or_lazy=self.gurobi_hcp_use_mtz_or_lazy
             )
         elif task_data.task_type == TASK_TYPE.MCL:
             return mcl_gurobi(

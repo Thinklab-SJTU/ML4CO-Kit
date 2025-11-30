@@ -26,3 +26,4 @@ from .routing.op import OPTask
 from .routing.pctsp import PCTSPTask
 from .routing.spctsp import SPCTSPTask
 from .routing.tsp import TSPTask
+from .routing.hcp import HCPTask

@@ -20,6 +20,7 @@ if env_checker.check_gnn4co():
     from .beam import BeamSolver
     from .greedy import GreedySolver
     from .mcts import MCTSSolver
+    from .hcp import HCPSolver
 if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver

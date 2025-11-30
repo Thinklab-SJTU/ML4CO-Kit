@@ -13,7 +13,7 @@ EMBEDDER_DICT = {
     "MIS": MISEmbedder,
     "MCut": MCutEmbedder,
     "MVC": MVCEmbedder,
-    "TSP": TSPEmbedder
+    "TSP": TSPEmbedder,
 }
 
 def get_embedder_by_task(task: str):
