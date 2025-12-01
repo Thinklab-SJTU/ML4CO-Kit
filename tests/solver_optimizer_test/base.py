@@ -12,7 +12,7 @@ Base class for solver testers.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import os  #要删去
+import os 
 import pathlib
 from typing import Type, List
 
@@ -500,25 +500,23 @@ class SolverTesterBase(object):
     ) -> List[GMTask]:
         # ``Solve`` mode
         if mode == "solve":
-            print(os.getcwd())
             gm_test_files_list = [
-                pathlib.Path("test_dataset/gm/task/gm_er_uniform_iso_task.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_iso_task.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_uniform_ind_task.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_ind_task.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_uniform_iso_task_astar.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_gaussian_iso_task_astar.pkl")
+                pathlib.Path("test_dataset/gm/task/gm_er_large_uniform_task.pkl"),
+                pathlib.Path("test_dataset/gm/task/gm_er_small_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in gm_test_files_list:
                 if test_file not in exclude_test_files:
                     task = GMTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
         
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             gm_test_files_list = [
-                    pathlib.Path("test_dataset/gm/wrapper/gm_er_uniform_iso_4ins.pkl"),
-                    pathlib.Path("test_dataset/gm/wrapper/gm_er_gaussian_iso_4ins.pkl"),
+                    pathlib.Path("test_dataset/gm/wrapper/gm_er_large_uniform_4ins.pkl"),
+                    pathlib.Path("test_dataset/gm/wrapper/gm_er_small_uniform_4ins.pkl"),
                 ]
             batch_task_list = list()
             for test_file in gm_test_files_list:

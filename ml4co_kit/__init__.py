@@ -125,7 +125,7 @@ from .solver import (
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, AStarSolver, GENN_AStarSolver
+    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, AStarSolver, GennAStarSolver
 
 
 ####################################################

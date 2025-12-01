@@ -12,18 +12,15 @@ NGM Algorithm for GM
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import os
-import pathlib
+
 import torch
 import numpy as np
 from torch import nn
 from typing import Tuple
-from ml4co_kit.task.graphset.base import hungarian
 from ml4co_kit.task.graphset.gm import GMTask
-from ml4co_kit.utils import download
-from ml4co_kit.solver.lib.ngm.ngm_torch.utils import _load_model
-from ml4co_kit.solver.lib.ngm.ngm_torch.model import NGM_Net
+from ml4co_kit.solver.lib.utils_gm import hungarian
 from ml4co_kit.solver.lib.ngm.ngm_torch.func_torch import ngm_torch
+
 
 def ngm(
     batch_task_data: list[GMTask],

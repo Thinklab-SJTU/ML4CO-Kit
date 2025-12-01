@@ -192,14 +192,14 @@ class GEDWrapper(WrapperBase):
                 f.write(" ".join(str(src) + str(" ") + str(tgt) for src, tgt in edge_index2))
             
                 f.write(str(" ") + str("node_feature_for_graph1") + str(" "))
-                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[0].nodes_feature))
+                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[0].node_feature))
                 f.write(str(" ") + str("node_feature_for_graph2") + str(" "))
-                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[1].nodes_feature))
+                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[1].node_feature))
                 
                 f.write(str(" ") + str("edge_feature_for_graph1") + str(" "))
-                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[0].edges_feature))
+                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[0].edge_feature))
                 f.write(str(" ") + str("edge_feature_for_graph2") + str(" "))
-                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[1].edges_feature))
+                f.write(";".join(" ".join(str(v) for v in feat) for feat in task.graphs[1].edge_feature))
                 f.write(str(" ") + str("edit_path") + str(" "))
                 f.write(str(" ").join(str(edit_path) for edit_path in sol_rav))
                 f.write("\n")

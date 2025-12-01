@@ -14,7 +14,7 @@ AStar Solver Tester.
 
 import pathlib
 from ml4co_kit import TASK_TYPE, AStarSolver
-from tests.solver_test.base import SolverTesterBase
+from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 class AStarSolverTester(SolverTesterBase):
@@ -36,11 +36,9 @@ class AStarSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/gm/task/gm_er-large_iso_task.pkl"),
-                    pathlib.Path("test_dataset/gm/task/gm_er-small_ind_task.pkl"),
+                    pathlib.Path("test_dataset/gm/task/gm_er_large_uniform_task.pkl"),
                 ],
                 [
-                    
                 ]
                 ]
         )

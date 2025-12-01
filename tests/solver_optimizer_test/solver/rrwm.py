@@ -14,7 +14,7 @@ RRWM Solver Tester.
 
 
 from ml4co_kit import TASK_TYPE, RRWMSolver
-from tests.solver_test.base import SolverTesterBase
+from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 class RRWMSolverTester(SolverTesterBase):

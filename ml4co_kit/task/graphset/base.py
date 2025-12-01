@@ -18,7 +18,7 @@ import pathlib
 import numpy as np
 import scipy.sparse
 import networkx as nx
-from typing import Union, Tuple
+from typing import Union
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 
@@ -28,10 +28,10 @@ class Graph:
         self,
         nodes_num: int = None,
         edges_num: int = None, 
-        nodes_feature: np.ndarray = None,
-        nodes_feat_dim: int = None,
-        edges_feature: np.ndarray = None,
-        edges_feat_dim: int = None,
+        node_feature: np.ndarray = None,
+        node_feat_dim: int = None,
+        edge_feature: np.ndarray = None,
+        edge_feat_dim: int = None,
         edge_index: np.ndarray = None,
         precision: Union[np.float32, np.float64] = np.float32
     ):
@@ -39,10 +39,10 @@ class Graph:
         # Initialize Attributes (basic)   
         self.nodes_num = nodes_num
         self.edges_num = edges_num
-        self.nodes_feature = nodes_feature
-        self.nodes_feat_dim =  nodes_feat_dim
-        self.edges_feature = edges_feature
-        self.edges_feat_dim =  edges_feat_dim
+        self.node_feature = node_feature
+        self.node_feat_dim =  node_feat_dim
+        self.edge_feature = edge_feature
+        self.edge_feat_dim =  edge_feat_dim
         self.edge_index =  edge_index                # [Method 1] Edge Index in shape (2, num_edges)
         self.precision = precision
             
@@ -60,18 +60,18 @@ class Graph:
         
     def _check_nodes_feature(self):
         """Ensure node feature is a 2D array with correct feature dimension."""
-        if self.nodes_feature.ndim != 2:
+        if self.node_feature.ndim != 2:
             raise ValueError("Node feature should be a 2D array with shape (num_nodes,).")
         
-        if self.nodes_feat_dim is not None and self.nodes_feature.shape[1] != self.nodes_feat_dim:
+        if self.node_feat_dim is not None and self.node_feature.shape[1] != self.node_feat_dim:
             raise ValueError("Node feature dimension mismatch") 
     
     def _check_edges_feature(self):
         """Ensure edge feature is a 2D array with correct feature dimension ."""
-        if self.edges_feature.ndim != 2:
+        if self.edge_feature.ndim != 2:
             raise ValueError("Edge feature should be a 2D array with shape (num_edges,).")   
         
-        if self.edges_feat_dim is not None and self.edges_feature.shape[1] != self.edges_feat_dim:
+        if self.edge_feat_dim is not None and self.edge_feature.shape[1] != self.edge_feat_dim:
             raise ValueError("Edge feature dimension mismatch")         
             
     def _check_edges_index_dim(self):
@@ -96,23 +96,23 @@ class Graph:
     def from_data(
         self,
         edge_index: np.ndarray = None,
-        nodes_feature: np.ndarray = None,
-        edges_feature: np.ndarray = None,
+        node_feature: np.ndarray = None,
+        edge_feature: np.ndarray = None,
         self_loop: bool = False,
     ):      
                 
-        if nodes_feature is not None:
-            self.nodes_feature = nodes_feature.astype(self.precision)
+        if node_feature is not None:
+            self.node_feature = node_feature.astype(self.precision)
             self._check_nodes_feature()
-            self.nodes_feat_dim = self.nodes_feature.shape[1]
-            self.nodes_num = int(nodes_feature.shape[0])
+            self.node_feat_dim = self.node_feature.shape[1]
+            self.nodes_num = int(node_feature.shape[0])
                              
               
-        if edges_feature is not None:
-            self.edges_feature = edges_feature.astype(self.precision)
+        if edge_feature is not None:
+            self.edge_feature = edge_feature.astype(self.precision)
             self._check_edges_feature()
-            self.edges_feat_dim = self.edges_feature.shape[1]
-            self.edges_num = int(edges_feature.shape[0])      
+            self.edge_feat_dim = self.edge_feature.shape[1]
+            self.edges_num = int(edge_feature.shape[0])      
             
         if edge_index is not None:
             self.edge_index = edge_index
@@ -125,25 +125,28 @@ class Graph:
                self.edges_num = int(edge_index.shape[1])
                
         # Default Initialization if not provided
-        if self.nodes_feature is None and self.nodes_num is not None:
-            if self.nodes_feat_dim is None:
+        if self.node_feature is None and self.nodes_num is not None:
+            if self.node_feat_dim is None:
                 raise ValueError("Both node feature and its dimension are not provided")
-            self.nodes_feature = np.ones((self.nodes_num, self.nodes_feat_dim), dtype=self.precision)
+            self.node_feature = np.ones((self.nodes_num, self.node_feat_dim), dtype=self.precision)
         
-        if self.edges_feature is None and self.edges_num is not None:
-            if self.edges_feat_dim is None:
+        if self.edge_feature is None and self.edges_num is not None:
+            if self.edge_feat_dim is None:
                 raise ValueError("Both edge feature and its dimension are not provided")
-            self.edges_feature = np.ones((self.edges_num, self.edges_feat_dim), dtype=self.precision)
+            self.edge_feature = np.ones((self.edges_num, self.edge_feat_dim), dtype=self.precision)
+         
+        self.self_loop = self_loop   
                     
         # Make the graph symmetric
         if self.already_symmetric == False:
             self.make_symmetric()
+            
                          
     def from_adj_matrix(
         self, 
         adj_matrix: np.ndarray, 
-        nodes_feature: np.ndarray = None,
-        edges_feature: np.ndarray = None,
+        node_feature: np.ndarray = None,
+        edge_feature: np.ndarray = None,
     ):
         """Load graph data from an adjacency matrix."""
         # Check if the adjacency matrix is square
@@ -161,32 +164,32 @@ class Graph:
         # Use ``from_data``
         self.from_data(
             edge_index=edge_index,
-            node_feature=nodes_feature,
-            edge_feature=edges_feature
+            node_feature=node_feature,
+            edge_feature=edge_feature
         )
                   
     def from_featured_adj_matrix(
         self, 
         featured_adj_matrix: np.ndarray, 
-        nodes_feature: np.ndarray = None,
+        node_feature: np.ndarray = None,
     ):
         """Load graph data from an adjacency matrix."""
         # Check if the adjacency matrix is square
         if featured_adj_matrix.ndim != 3:
             raise ValueError("Adjacency matrix should be a 3D array.")
         
-        # Convert adjacency matrix to edge_index and edges_feature
+        # Convert adjacency matrix to edge_index and edge_feature
         adj_matrix = np.any(featured_adj_matrix != 0, axis =2)
         coo = scipy.sparse.coo_matrix(adj_matrix)
         edge_index = np.vstack((coo.row, coo.col)).astype(np.int32)
         
-        edges_feature =featured_adj_matrix[coo.row, coo.col] 
+        edge_feature =featured_adj_matrix[coo.row, coo.col] 
             
         # Use ``from_data``
         self.from_data(
             edge_index=edge_index,
-            nodes_feature=nodes_feature,
-            edges_feature=edges_feature
+            node_feature=node_feature,
+            edge_feature=edge_feature
         )
     
     def to_adj_matrix(self, with_edge_features: bool = False) -> np.ndarray:
@@ -214,42 +217,45 @@ class Graph:
         self.edges_num = int(nx_graph.number_of_edges())
         
         # Extract node feature if available
-        nodes_feature = None
-        if  all("feature" in nx_graph.nodes[n] for n in nx_graph.nodes):
-            nodes_feature = np.array(
+        node_feature = None
+        if  nx_graph.number_of_nodes() > 0 and all("feature" in nx_graph.nodes[n] for n in nx_graph.nodes):
+            node_feature = np.array(
                 [nx_graph.nodes[n]["feature"] for n in nx_graph.nodes], 
                 dtype=self.precision
             )
         else:
-            nodes_feature = None
+            node_feature = None
         
         # Extract edge feature if available
-        edges_feature = None
-        if  all("feature" in nx_graph.edges[e] for e in nx_graph.edges):
-            edges_feature = np.array(
+        edge_feature = None
+        if  nx_graph.number_of_edges() > 0 and all("feature" in nx_graph.edges[e] for e in nx_graph.edges):
+            edge_feature = np.array(
                 [nx_graph.edges[e]["feature"] for e in nx_graph.edges], 
                 dtype=self.precision
             )
         else:
-            edges_feature = None
+            edge_feature = None
         
         # Extract edge index
-        edges = list(nx_graph.edges)
-        edge_index = np.array(edges, dtype=np.int32).T
+        edge_index = None
+        if nx_graph.number_of_edges() > 0:
+            edges = list(nx_graph.edges)
+            edge_index = np.array(edges, dtype=np.int32).T
+        else:
+            edge_index = None
         
         # change undirected graph to directed graph
-        if edge_index.size != 0:
+        if edge_index is not None and edge_index.size != 0:
             reversed_edges = edge_index[[1, 0], :]
             edge_index = np.concatenate([edge_index, reversed_edges], axis=1)
 
-        if edges_feature is not None:
-            edges_feature = np.concatenate([edges_feature, edges_feature], axis=0)
-
+        if edge_feature is not None and edge_feature.size != 0:
+            edge_feature = np.concatenate([edge_feature, edge_feature], axis=0)
         # Use ``from_data``
         self.from_data(
             edge_index=edge_index,
-            nodes_feature=nodes_feature,
-            edges_feature=edges_feature
+            node_feature=node_feature,
+            edge_feature=edge_feature
         )        
         
     def to_networkx(self) -> nx.Graph:
@@ -257,24 +263,24 @@ class Graph:
         nx_graph = nx.Graph()
         
         # Add nodes with feature
-        if self.nodes_feature is not None:
+        if self.node_feature is not None:
             for i in range(self.nodes_num):
-                nx_graph.add_node(i, feature=self.nodes_feature[i])
+                nx_graph.add_node(i, feature=self.node_feature[i])
         else:
             for i in range(self.nodes_num):
-                nx_graph.add_node(i, feature=np.ones(self.nodes_feat_dim, dtype=self.precision))
+                nx_graph.add_node(i, feature=np.ones(self.node_feat_dim, dtype=self.precision))
         
         # Add edges with feature 
-        if self.edges_feature is not None:
+        if self.edge_feature is not None:
             for i in range(self.edges_num):
                 u = self.edge_index[0, i]
                 v = self.edge_index[1, i]
-                nx_graph.add_edge(u, v, feature=self.edges_feature[i])
+                nx_graph.add_edge(u, v, feature=self.edge_feature[i])
         else:
             for i in range(self.edges_num):
                 u = self.edge_index[0, i]
                 v = self.edge_index[1, i]
-                nx_graph.add_edge(u, v, feature=np.ones(self.edges_feat_dim, dtype=self.precision))
+                nx_graph.add_edge(u, v, feature=np.ones(self.edge_feat_dim, dtype=self.precision))
         
         return nx_graph
     
@@ -282,11 +288,11 @@ class Graph:
         """Convert the graph to its symmetric."""
         # Step 1: construct feature matrix
         n = self.nodes_num
-        edges_feat_dim = self.edges_feature.shape[1]
+        edge_feat_dim = self.edge_feature.shape[1]
         
-        adj_matrix = np.zeros((n, n, edges_feat_dim), dtype=self.precision)
+        adj_matrix = np.zeros((n, n, edge_feat_dim), dtype=self.precision)
         rows, cols = self.edge_index
-        adj_matrix[rows, cols, :] = self.edges_feature
+        adj_matrix[rows, cols, :] = self.edge_feature
         
         # Step 2: Check for conflicting edges (both (i,j) and (j,i) exist)
         # Check if there are asymmetric edges where both directions exist
@@ -308,32 +314,32 @@ class Graph:
         # Convert symmetric adjacency matrix back to edge_index and edges_weight
         row_idx, col_idx = np.nonzero(np.any(adj_matrix != 0, axis=2))
         edge_index = np.vstack((row_idx, col_idx)).astype(np.int32)
-        edges_feature = adj_matrix[row_idx, col_idx, :]
+        edge_feature = adj_matrix[row_idx, col_idx, :]
         
         # Invalidate cached structures
         self.edges_num = None
-        self.edges_feature = None
+        self.edge_feature = None
         self._invalidate_cached_structures()
         
         # Using ``from_data``
         self.already_symmetric = True
-        self.from_data(edge_index=edge_index, edges_feature=edges_feature)
+        self.from_data(edge_index=edge_index, edge_feature=edge_feature)
         
     def remove_self_loop(self):
         mask = self.edge_index[0] != self.edge_index[1]
         self.edge_index = self.edge_index[:, mask]
         self.edges_num = int(self.edge_index.shape[1])
-        self.edges_feature = self.edges_feature[mask]
+        self.edge_feature = self.edge_feature[mask]
         self._invalidate_cached_structures()
                 
     def add_self_loop(self):
         self.remove_self_loop()
         self_loops = np.arange(self.nodes_num, dtype=np.int32)
         self_loop_edges = np.vstack((self_loops, self_loops))
-        self_loop_edges_feature = np.ones((self.nodes_num, self.edges_feature.shape[1]), dtype = self.precision)
+        self_loop_edges_feature = np.ones((self.nodes_num, self.edge_feature.shape[1]), dtype = self.precision)
                 
         self.edge_index = np.hstack((self.edge_index, self_loop_edges))
-        self.edges_feature = np.vstack((self.edges_feature, self_loop_edges_feature))
+        self.edge_feature = np.vstack((self.edge_feature, self_loop_edges_feature))
         self.edges_num = int(self.edge_index.shape[1])
         self._invalidate_cached_structures()
        
@@ -503,108 +509,3 @@ def get_pos_layer(pos_type: str):
     if pos_type not in SUPPORT_POS_TYPE:
         raise ValueError(f"unvalid pos type, only supports {SUPPORT_POS_TYPE}")
     return SUPPORT_POS_TYPE_DICT[pos_type]
-
-# Helper Function
-def sinkhorn(
-        s: np.ndarray, 
-        nrows: np.ndarray = None, 
-        ncols: np.ndarray = None,
-        unmatchrows: np.ndarray = None, 
-        unmatchcols: np.ndarray = None,
-        dummy_row: bool = False, 
-        max_iter: int = 10, 
-        tau: float = 1.
-    ) -> np.ndarray:
-        """Sinkhorn Algorithm"""
-        transposed = False
-        if s.shape[0] > s.shape[1]:
-            s = s.T
-            transposed = True
-            nrows, ncols = ncols, nrows
-            unmatchrows, unmatchcols = unmatchcols, unmatchrows
-
-        nrows = s.shape[0] if nrows is None else nrows
-        ncols = s.shape[1] if ncols is None else ncols
-
-        # operations are performed on log_s
-        log_s = s / tau
-        if unmatchrows is not None:
-            unmatchrows = unmatchrows / tau
-        if unmatchcols is not None:
-            unmatchcols = unmatchcols / tau
-
-        if dummy_row and nrows < ncols:
-            dummy_count = ncols - nrows
-            log_s = np.vstack([log_s, np.full((dummy_count, ncols), -100.)])
-            if unmatchrows is not None:
-                unmatchrows = np.concatenate([unmatchrows, np.full(dummy_count, -100.)])
-            nrows = ncols
-
-        # assign the unmatch weights
-        if unmatchrows is not None and unmatchcols is not None:
-            log_s = np.pad(log_s, ((0,1),(0,1)), constant_values=-np.inf)
-            log_s[:nrows, ncols] = unmatchrows[:nrows]
-            log_s[nrows, :ncols] = unmatchcols[:ncols]
-            nrows += 1
-            ncols += 1
-
-        row_mask = np.zeros((log_s.shape[0],1), dtype=bool)
-        col_mask = np.zeros((1,log_s.shape[1]), dtype=bool)
-        row_mask[:nrows,0] = True
-        col_mask[0,:ncols] = True
-
-        for i in range(max_iter):
-            if i % 2 == 0:
-                log_sum = scipy.special.logsumexp(log_s, axis=1, keepdims=True)
-                log_s = log_s - log_sum * row_mask
-            else:
-                log_sum = scipy.special.logsumexp(log_s, axis=0, keepdims=True)
-                log_s = log_s - log_sum * col_mask
-
-        if unmatchrows is not None and unmatchcols is not None:
-            log_s = log_s[:-1,:-1]
-
-        if dummy_row and 'dummy_count' in locals() and dummy_count > 0:
-            log_s = log_s[:-dummy_count, :]
-
-        if transposed:
-            log_s = log_s.T
-
-        return np.exp(log_s)
-
-def hungarian(s: np.ndarray, n1=None, n2=None, unmatch1=None, unmatch2=None):
-        """
-        Hungarian kernel function by calling the linear sum assignment solver from Scipy.
-        """
-        s = -s
-        if unmatch1 is not None:
-            unmatch1 = -unmatch1
-        if unmatch2 is not None:
-            unmatch2 = -unmatch2
-            
-        if n1 is None:
-            n1 = s.shape[0]
-        if n2 is None:
-            n2 = s.shape[1]
-        if unmatch1 is not None and unmatch2 is not None:
-            upper_left = s[:n1, :n2]
-            upper_right = np.full((n1, n1), float('inf'))
-            np.fill_diagonal(upper_right, unmatch1[:n1])
-            lower_left = np.full((n2, n2), float('inf'))
-            np.fill_diagonal(lower_left, unmatch2[:n2])
-            lower_right = np.zeros((n2, n1))
-
-            large_cost_mat = np.concatenate((np.concatenate((upper_left, upper_right), axis=1),
-                                         np.concatenate((lower_left, lower_right), axis=1)), axis=0)
-
-            row, col = scipy.optimize.linear_sum_assignment(large_cost_mat)
-            valid_idx = np.logical_and(row < n1, col < n2)
-            row = row[valid_idx]
-            col = col[valid_idx]
-        else:
-            row, col = scipy.optimize.linear_sum_assignment(s[:n1, :n2])
-        perm_mat = np.zeros_like(s)
-        perm_mat[row, col] = 1
-  
-        return perm_mat
-

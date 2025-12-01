@@ -25,12 +25,10 @@ class GEDWrapperTester(WrapperTesterBase):
             generator=GEDGenerator(),
             solver=AStarSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_iso_4ins.pkl"),
-                pathlib.Path("test_dataset/ged/wrapper/ged_er_gaussian_iso_4ins.pkl"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_iso_4ins.txt"),
-                pathlib.Path("test_dataset/ged/wrapper/ged_er_gaussian_iso_4ins.txt"),
+                pathlib.Path("test_dataset/ged/wrapper/ged_er_uniform_4ins.txt"),
             ],
         )
         

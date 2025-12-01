@@ -12,11 +12,9 @@ RRWM Algorithm for GM
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import os
-import tempfile
 import numpy as np
 from ml4co_kit.task.graphset.gm import GMTask
-from ml4co_kit.task.graphset.base import sinkhorn, hungarian
+from ml4co_kit.solver.lib.utils_gm import _check_and_init, hungarian, sinkhorn
 
 def gm_rrwm(
     task_data: GMTask,
@@ -32,7 +30,7 @@ def gm_rrwm(
     K = task_data.aff_mat
     n1 = task_data.graphs[0].nodes_num
     n2 = task_data.graphs[1].nodes_num
-    n1, n2, n1n2, v0 = _check_and_init_gm(K, n1, n2)
+    n1, n2, n1n2, v0 = _check_and_init(K, n1, n2, x0)
     
     d = K.sum(axis=1, keepdims=True)
     dmax = d.max(axis=0, keepdims=True)
@@ -60,28 +58,3 @@ def gm_rrwm(
     pred_x = hungarian(pred_x)
     task_data.from_data(sol=pred_x, ref=False)
 
-def _check_and_init_gm(K: np.ndarray, n1: int = None, n2: int = None, x0: np.ndarray = None):
-    n1n2 = K.shape[0]
- 
-    if n1 is None and n2 is None:
-        raise ValueError('Neither n1 or n2 is given.')
-    if n1 is None:
-        if n1n2 % n2 == 0:
-            n1 = n1n2 / n2
-        else:
-            raise ValueError("The input size of K does not match with n2!")
-    if n2 is None:
-        if n1n2 % n1 == 0:
-            n2 = n1n2 / n1
-        else:
-            raise ValueError("The input size of K does not match with n1!")
-    if not n1 * n2 == n1n2:
-        raise ValueError('the input size of K does not match with n1 * n2!')
-
-    # initialize x0 (also v0)
-    if x0 is None:
-        x0 = np.zeros((n1, n2), dtype=K.dtype)
-        x0[:] = 1. / (n1 * n2)
-    v0 = x0.transpose((1, 0)).reshape((n1n2, 1))
-
-    return n1, n2, n1n2, v0

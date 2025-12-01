@@ -29,14 +29,8 @@ class GEDTask(GraphSetTaskBase):
     def __init__(
         self,
         graphs: list[Graph] = None,
-        node_match = None,
-        node_subst_cost = None,
-        node_del_cost = None,
-        node_ins_cost = None,
-        edge_match = None,
-        edge_subst_cost = None,
-        edge_del_cost = None,
-        edge_ins_cost = None,
+        node_mapping: np.array = None, # substitution_with_same_label, substitution_with_diff_label, insert, delete cost
+        edge_mapping: np.array = None, # substitution, insert, delete cost
         precision: Union[np.float32, np.float64] = np.float32
     ):
         # Check graphs num
@@ -52,14 +46,8 @@ class GEDTask(GraphSetTaskBase):
         )
         
         self.graphs = graphs
-        self.node_math = node_match
-        self.node_subst_cost = node_subst_cost
-        self.node_ins_cost = node_ins_cost
-        self.node_del_cost = node_del_cost
-        self.edge_match = edge_match
-        self.edge_subst_cost = edge_subst_cost
-        self.edge_ins_cost = edge_ins_cost
-        self.edge_del_cost = edge_del_cost
+        self.node_mapping = node_mapping
+        self.edge_mapping = edge_mapping
         self.cost_mat: Optional[np.ndarray] = None # ((n1+1)*(n2+1), (n1+1)*(n2+1))
         
     def _deal_with_self_loop(self):
@@ -92,178 +80,85 @@ class GEDTask(GraphSetTaskBase):
             col_sum = sol[:, :n2].sum(axis=0) 
             is_valid = bool((row_sum == 1).all() and (col_sum == 1).all())
         return is_valid
-    
-    def inner_prod_cost_fn(
-        self, 
-        feat1: np.ndarray, 
-        feat2: np.ndarray, 
-        ) -> np.ndarray:
-        """inner product affinity function"""
-        return -np.matmul(feat1, feat2.T)
-    
-    def gaussian_cost_fn(self, feat1: np.ndarray, feat2: np.ndarray, sigma:np.floating = 1.0) -> np.ndarray:
-         """Gaussian affinity function"""
-         feat1 = np.expand_dims(feat1, axis=1)
-         feat2 = np.expand_dims(feat2, axis=0)
-         return (1-np.exp(-((feat1-feat2)**2).sum(axis=-1)/sigma))
-    
-    def _cost_mat_from_node_edge_cost(self, node_cost: np.ndarray, edge_cost: np.ndarray, connectivity1: np.ndarray, connectivity2: np.ndarray,
-                                n1, n2, ne1, ne2):
-    
-        if edge_cost is not None:
-            dtype = edge_cost.dtype
-            if n1 is None:
-                n1 = np.amax(connectivity1).copy() + 1
-            if n2 is None:
-                n2 = np.amax(connectivity2).copy() + 1
-            if ne1 is None:
-                 ne1 = edge_cost.shape[0] - 1
-            if ne2 is None:
-                ne2 = edge_cost.shape[1] - 1 
+ 
+    def _node_cost_fn(self, dummy_node1: np.ndarray, dummy_node2: np.ndarray, mapping: np.array = None, threshold: float = 0.1) -> np.ndarray:
+        if mapping is not None:
+            if len(mapping) != 4:
+                raise ValueError("Node mapping must have four elements.")
         else:
-            dtype = node_cost.dtype
-            if n1 is None:
-                n1 = node_cost.shape[0] - 1
-            if n2 is None:
-                n2 = node_cost.shape[1] - 1
-
-    
-        k = np.zeros((n2+1, n1+1, n2+1, n1+1), dtype=dtype)
-        N = (n1 +1)* (n2 + 1)
-        # edge-wise cost
-        if edge_cost is not None:
-            edge_indices = np.concatenate([connectivity1.repeat(ne2, axis=0), np.tile(connectivity2, (ne1, 1))], axis=1) # indices: start_g1, end_g1, start_g2, end_g2
-            edge_indices = (edge_indices[:, 2], edge_indices[:, 0], edge_indices[:, 3], edge_indices[:, 1]) # indices: start_g2, start_g1, end_g2, end_g1
-            k[edge_indices] = edge_cost[:ne1, :ne2].reshape(-1)
-            # delect edge
-            for i in range(ne1):
-                k[n2, connectivity1[i][0], :, connectivity1[i][1]] = edge_cost[i, ne2]
-                k[:, connectivity1[i][0], n2, connectivity1[i][1]] = edge_cost[i, ne2]
-            # insert edge
-            for i in range(ne2):
-                k[connectivity2[i][0], :, connectivity2[i][1], n1] = edge_cost[ne1, i]
-                k[connectivity2[i][0], n1, connectivity2[i][1], :] = edge_cost[ne1, i]
-        k = k.reshape(N, N)
-        # node-wise cost
-        if node_cost is not None:
-            k[np.arange(N), np.arange(N)] = node_cost.T.reshape(-1)
-        return k
-    
-    def build_cost_mat(
-        self,
-        node_feat1: np.ndarray=None,
-        edge_feat1: np.ndarray=None, 
-        connectivity1: np.ndarray=None, 
-        node_feat2: np.ndarray=None, 
-        edge_feat2: np.ndarray=None, 
-        connectivity2: np.ndarray=None,
-        n1: int=None,
-        ne1: int=None, 
-        n2: int=None, 
-        ne2: int=None,
-        node_match = None,
-        node_subst_cost = None,
-        node_del_cost = None,
-        node_ins_cost = None,
-        edge_match = None,
-        edge_subst_cost = None,
-        edge_del_cost = None,
-        edge_ins_cost = None
-        ):
-        
-        if node_feat1 is None:
-            node_feat1 = self.graphs[0].nodes_feature
-            n1 = self.graphs[0].nodes_num
-        if node_feat2 is None:
-            node_feat2 = self.graphs[1].nodes_feature
-            n2 = self.graphs[1].nodes_num
-        if edge_feat1 is None:
-            edge_feat1 = self.graphs[0].edges_feature
-            ne1 = self.graphs[0].edges_num
-        if edge_feat2 is None:
-            edge_feat2 = self.graphs[1].edges_feature
-            ne2 = self.graphs[1].edges_num
-        if connectivity1 is None:
-            connectivity1 = self.graphs[0].edge_index.T
-        if connectivity2 is None:
-            connectivity2 = self.graphs[1].edge_index.T
-    
-      
-        assert node_feat1 is not None and node_feat2 is not None, \
-            'The following arguments must all be given if you want to compute node-wise cost: ' \
-            'node_feat1, node_feat2'
-        assert edge_feat1 is not None and edge_feat2 is not None, \
-            'The following arguments must all be given if you want to compute edge-wise affinity: ' \
-            'edge_feat1, edge_feat2'
-        
-        if node_subst_cost is None:
-            node_subst_cost = self.gaussian_cost_fn
-        if edge_subst_cost is None:
-            edge_subst_cost = self.gaussian_cost_fn
+            mapping = np.array([0, 1, 1, 1])
             
-        # Node cost 
-        node_subst_cost_mat = node_subst_cost(node_feat1, node_feat2)
-
-        if node_match is not None:
-            node_subst_cost_mat = node_subst_cost_mat * node_match(node_feat1, node_feat2)
-        if node_ins_cost is not None:
-            node_ins_cost_vec = node_ins_cost(node_feat2)  
+        thresh = self.precision(threshold)
+        dim = dummy_node1.shape[1]
+        dist = np.sum(np.abs(dummy_node1[:, None, :] - dummy_node2[None, :, :]), axis=-1).astype(self.precision)
+        dist /= dim
+        dist = (dist > thresh).astype(np.int32)
+        dist[-1, :] = 2  
+        dist[:, -1] = 3 
+        dist[-1, -1] = 0
+        return mapping[dist]    
+         
+    def _edge_cost_fn(self, dummy_adj1: np.ndarray, dummy_adj2: np.ndarray, mapping: np.array = None) -> np.ndarray:
+        if mapping is not None:
+            if len(mapping) != 3:
+                raise ValueError("Edge mapping must have three elements.")
         else:
-            node_ins_cost_vec = 1-np.exp(-(node_feat2**2).sum(axis=-1)/1.0)
-
-        if node_del_cost is not None:
-            node_del_cost_vec = node_del_cost(node_feat1) 
-        else:
-            node_del_cost_vec = 1-np.exp(-(node_feat1**2).sum(axis=-1)/1.0)
-
-        node_cost = np.block(
-            [
-            [node_subst_cost_mat, node_del_cost_vec[:, None]],
-            [node_ins_cost_vec[None, :], np.array([[0]])]
-            ]
-        ).astype(self.precision)
-        
-        # Edge cost
-        edge_subst_cost_mat = edge_subst_cost(edge_feat1, edge_feat2)
-        if edge_match is not None:
-            edge_subst_cost_mat = edge_subst_cost_mat * edge_match(edge_feat1, edge_feat2)
-      
-        if edge_ins_cost is not None:
-            edge_ins_cost_vec = edge_ins_cost(edge_feat2)
-        else:
-            edge_ins_cost_vec =  1-np.exp(-(edge_feat2**2).sum(axis=-1)/1.0)
+            mapping = np.array([0, 1, 1])
             
-        if edge_del_cost is not None:
-            edge_del_cost_vec = edge_del_cost(edge_feat1)
-        else:
-            edge_del_cost_vec = 1-np.exp(-(edge_feat1**2).sum(axis=-1)/1.0)
-       
-        edge_cost = np.block(
-            [
-            [edge_subst_cost_mat, edge_del_cost_vec[:, None]],
-            [edge_ins_cost_vec[None, :], np.array([0])]
-            ]
-        ).astype(self.precision)
+        a1 = dummy_adj1.reshape(-1, 1)
+        a2 = dummy_adj2.reshape(1, -1)
+        dist = (a1 - a2 + 1).astype(np.int32)
         
-        # print("node substitution cost matrix:")
-        # print(node_subst_cost_mat)
-        # print("node insertion cost vector:")
-        # print(node_ins_cost_vec)
-        # print("node deletion cost vector:")
-        # print(node_del_cost_vec)
-        # print("edge substitution cost matrix:")
-        # print(edge_subst_cost_mat)
-        # print("edge insertion cost vector:")
-        # print(edge_ins_cost_vec)
-        # print("edge deletion cost vector:")
-        # print(edge_del_cost_vec)
+        if mapping is None:
+            mapping = np.array([0, 1, 1])
+            
+        _mapping = mapping[[1, 0, 2]]  # insert, substitution, delete
+        k = _mapping[dist]
+        k = k.reshape(dummy_adj1.shape[0], dummy_adj1.shape[1], dummy_adj2.shape[0], dummy_adj2.shape[1])
+        k = k.transpose(0, 2, 1, 3).reshape(dummy_adj1.shape[0]*dummy_adj2.shape[0], dummy_adj1.shape[1]*dummy_adj2.shape[1])
+        
+        return k/2
+        
+    def build_cost_mat(self, node_mapping: np.array = None, edge_mapping: np.array = None) -> np.ndarray:
+        """Build cost matrix from node and edge features."""
+        if self.graphs is None:
+            raise ValueError("Graphs are not provided.")
+        
+        if node_mapping is None:
+            node_mapping = self.node_mapping
+        if edge_mapping is None:
+            edge_mapping = self.edge_mapping
+            
+        g1 = self.graphs[0]
+        g2 = self.graphs[1]
         
         
+        adj1 = np.zeros((g1.nodes_num, g1.nodes_num), dtype=self.precision)
+        for edge in g1.edge_index.T:
+            adj1[edge[0], edge[1]] = 1
+            adj1[edge[1], edge[0]] = 1
+            
+        adj2 = np.zeros((g2.nodes_num, g2.nodes_num), dtype=self.precision)
+        for edge in g2.edge_index.T:
+            adj2[edge[0], edge[1]] = 1
+            adj2[edge[1], edge[0]] = 1
         
-        result = self._cost_mat_from_node_edge_cost(node_cost, edge_cost, connectivity1, connectivity2, n1, n2, ne1, ne2)
+        dummy_node1 = np.vstack([g1.node_feature, np.zeros((1, g1.node_feature.shape[1]), dtype=self.precision)])
+        dummy_node2 = np.vstack([g2.node_feature, np.zeros((1, g2.node_feature.shape[1]), dtype=self.precision)])   
+        dummy_adj1 = np.vstack([np.hstack([adj1, np.zeros((g1.nodes_num, 1), dtype=np.int32)]),
+                                np.zeros((1, g1.nodes_num + 1), dtype=np.int32)])
+        dummy_adj2 = np.vstack([np.hstack([adj2, np.zeros((g2.nodes_num, 1), dtype=np.int32)]),
+                                np.zeros((1, g2.nodes_num + 1), dtype=np.int32)])
         
-        return result 
-    
+        node_cost = self._node_cost_fn(dummy_node1, dummy_node2, mapping=node_mapping)
+        k = self._edge_cost_fn(dummy_adj1, dummy_adj2, mapping=edge_mapping)
+        
+        k[np.arange(k.shape[0]), np.arange(k.shape[0])] = node_cost.reshape(-1) 
+        
+        self.cost_mat = k.astype(self.precision)
+        
+        return self.cost_mat
+           
     def from_data(
         self,
         graphs: list[Graph] = None,
@@ -276,20 +171,25 @@ class GEDTask(GraphSetTaskBase):
         
         super().from_data(graphs=graphs, sol=sol, ref=ref)
     
-    def evaluate(self, sol:np.ndarray) -> float:
+    def evaluate(self, sol:np.ndarray, mode: str = "cost") -> float:
         # Check Constraints
         if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Evaluate
-        if self.ref_sol is not None:
-            return (((self.ref_sol == 1) & (sol == 1)).sum() / (self.ref_sol == 1).sum()).astype(self.precision)
-        else:
+        if mode == "acc":
+           if self.ref_sol is not None:
+               return (((self.ref_sol == 1) & (sol == 1)).sum() / (self.ref_sol == 1).sum()).astype(self.precision)
+           else:
+               raise ValueError("Without ground-truth edit path")
+        elif mode == "cost":
             if self.cost_mat is not None:
-                res = sol.T.ravel()
+                res = sol.ravel()
                 return (res @ self.cost_mat @ res.T).astype(self.precision)
             else:
-                raise ValueError("Without ground-truth matching and affinity matrix")
+                raise ValueError("Without cost matrix")
+        else:
+            raise ValueError(f"Unsupported evaluation mode: {mode}")
     
     def render(
         self,

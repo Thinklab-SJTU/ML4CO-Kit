@@ -21,7 +21,7 @@ from ml4co_kit.solver.lib.astar.ged_genn_astar import ged_genn_astar
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
-class GENN_AStarSolver(SolverBase):
+class GennAStarSolver(SolverBase):
     def __init__(
         self,
         channel: int = None,
@@ -37,7 +37,7 @@ class GENN_AStarSolver(SolverBase):
         device: str = "cpu",
         optimizer: OptimizerBase = None
     ):
-        super(GENN_AStarSolver, self).__init__(
+        super(GennAStarSolver, self).__init__(
             solver_type=SOLVER_TYPE.GENN_ASTAR, optimizer=optimizer
         )
         

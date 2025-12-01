@@ -14,7 +14,7 @@ NGM Solver Tester.
 
 
 from ml4co_kit import TASK_TYPE, NGMSolver
-from tests.solver_test.base import SolverTesterBase
+from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 class NGMSolverTester(SolverTesterBase):

@@ -22,7 +22,7 @@ if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
     from .ngm import NGMSolver
-    from .genn_astar import GENN_AStarSolver
+    from .genn_astar import GennAStarSolver
     from .astar import AStarSolver
 
 

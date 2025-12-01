@@ -16,10 +16,8 @@ GENN AStar Solver.
 import torch
 import torch.nn as nn
 import numpy as np
-from ml4co_kit.task.graphset.base import hungarian
 from ml4co_kit.task.graphset.gm import GMTask
-from ml4co_kit.utils import download
-from .modules import hungarian_ged, default_parameter, GraphPair, GENN, check_layer_parameter, _load_model, astar_pretrain_path, genn_astar_kernel
+from .modules import hungarian_ged, genn_astar_kernel
 
 
 
@@ -54,14 +52,14 @@ def ged_genn_astar(
         A1_real = g1.to_adj_matrix()
         A2_real = g2.to_adj_matrix()
         
-        feat1_real = g1.nodes_feature
-        feat2_real = g2.nodes_feature
+        feat1_real = g1.node_feature
+        feat2_real = g2.node_feature
         
         feat1_pad = np.pad(feat1_real, ((0, max_n1 - feat1_real.shape[0]), (0, 0)), mode='constant')
-        feat2_pad = np.pad(feat2_real, ((0, max_n1 - feat2_real.shape[0]), (0, 0)), mode='constant')
+        feat2_pad = np.pad(feat2_real, ((0, max_n2 - feat2_real.shape[0]), (0, 0)), mode='constant')
         
         A1_pad = np.pad(A1_real, ((0, max_n1 - A1_real.shape[0]), (0, max_n1 - A1_real.shape[1])), mode='constant')
-        A2_pad = np.pad(A1_real, ((0, max_n2 - A1_real.shape[0]), (0, max_n2 - A2_real.shape[1])), mode='constant')
+        A2_pad = np.pad(A2_real, ((0, max_n2 - A2_real.shape[0]), (0, max_n2 - A2_real.shape[1])), mode='constant')
         
         n1.append(g1.nodes_num)
         n2.append(g2.nodes_num)

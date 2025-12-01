@@ -144,16 +144,16 @@ class GMTask(GraphSetTaskBase):
         ):
         
         if node_feat1 is None:
-            node_feat1 = self.graphs[0].nodes_feature
+            node_feat1 = self.graphs[0].node_feature
             n1 = self.graphs[0].nodes_num
         if node_feat2 is None:
-            node_feat2 = self.graphs[1].nodes_feature
+            node_feat2 = self.graphs[1].node_feature
             n2 = self.graphs[1].nodes_num
         if edge_feat1 is None:
-            edge_feat1 = self.graphs[0].edges_feature
+            edge_feat1 = self.graphs[0].edge_feature
             ne1 = self.graphs[0].edges_num
         if edge_feat2 is None:
-            edge_feat2 = self.graphs[1].edges_feature
+            edge_feat2 = self.graphs[1].edge_feature
             ne2 = self.graphs[1].edges_num
         if connectivity1 is None:
             connectivity1 = self.graphs[0].edge_index.T
@@ -192,20 +192,25 @@ class GMTask(GraphSetTaskBase):
         
         super().from_data(graphs=graphs, sol=sol, ref=ref)
     
-    def evaluate(self, sol:np.ndarray) -> float:
+    def evaluate(self, sol:np.ndarray, mode: str = "acc") -> float:
         # Check Constraints
         if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Evaluate
-        if self.ref_sol is not None:
-            return (((self.ref_sol == 1) & (sol == 1)).sum() / (self.ref_sol == 1).sum()).astype(self.precision)
-        else:
+        if mode == "acc":
+            if self.ref_sol is not None:
+                return (((self.ref_sol == 1) & (sol == 1)).sum() / (self.ref_sol == 1).sum()).astype(self.precision)
+            else:
+                raise ValueError("Without ground-truth matching solution")
+        elif mode == "score":
             if self.aff_mat is not None:
                 res = sol.T.ravel()
                 return (res @ self.aff_mat @ res.T).astype(self.precision)
             else:
-                raise ValueError("Without ground-truth matching and affinity matrix")
+                raise ValueError("Without cost matrix")
+        else:
+            raise ValueError(f"Unsupported evaluation mode: {mode}")
     
     def render(
         self,

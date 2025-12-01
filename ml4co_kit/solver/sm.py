@@ -40,8 +40,8 @@ class SMSolver(SolverBase):
         if task_data.task_type == TASK_TYPE.GM:
             return gm_sm(
                 task_data=task_data,
-                x0 = self.x0,
-                max_iter = self.max_iter
+                x0=self.x0,
+                max_iter=self.max_iter
             )
         else:
             raise ValueError(

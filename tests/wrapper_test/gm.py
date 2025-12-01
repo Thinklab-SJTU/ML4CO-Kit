@@ -25,12 +25,12 @@ class GMWrapperTester(WrapperTesterBase):
             generator=GMGenerator(),
             solver=RRWMSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_iso_4ins.pkl"),
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_ind_4ins.pkl"),
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_large_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_small_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_iso_4ins.txt"),
-                pathlib.Path("test_dataset/gm/wrapper/gm_er-small_ind_4ins.txt"),
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_large_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/gm/wrapper/gm_er_small_uniform_4ins.txt"),
             ],
         )
         

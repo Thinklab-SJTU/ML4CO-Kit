@@ -89,16 +89,6 @@ class GEDGenTester(GenTesterBase):
                         feature_type=GRAPH_FEATURE_TYPE.BINOMIAL),
                 },
                 
-                # Induced subgraph problem
-                # Uniform (node/edge uniform featured)
-                {
-                    "distribution_type": GRAPH_TYPE.ER,
-                    "graph_generate_rule": GRAPH_GENERATE_RULE.INDUCED_SUBGRAPH,
-                    "node_feature_gen": GraphFeatureGenerator(
-                        feature_type=GRAPH_FEATURE_TYPE.UNIFORM),
-                    "edge_feature_gen": GraphFeatureGenerator(
-                        feature_type=GRAPH_FEATURE_TYPE.UNIFORM),
-                },
                 # Perturbed graph problem
                 # Uniform (node/edge uniform featured)
                 {

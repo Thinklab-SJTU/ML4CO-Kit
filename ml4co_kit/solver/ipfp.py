@@ -40,7 +40,7 @@ class IPFPSolver(SolverBase):
         if task_data.task_type == TASK_TYPE.GM:
             return gm_ipfp(
                 task_data=task_data,
-                x0 = self.x0,
+                x0=self.x0,
                 max_iter=self.max_iter,
             )
         else:
