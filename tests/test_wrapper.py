@@ -29,13 +29,18 @@ from tests.wrapper_test import (
     TSPWrapperTester
 )    
 
-
 # Graph Problems
 from tests.wrapper_test import (
     MClWrapperTester, 
     MISWrapperTester,
     MVCWrapperTester,
     MCutWrapperTester
+)
+
+# Graph Set Problems
+from tests.wrapper_test import (
+    GMWrapperTester,
+    GEDWrapperTester
 )
 
 # Portfolio Problems
@@ -51,6 +56,7 @@ def test_wrapper():
     # Routing Problems
     ATSPWrapperTester().test()
     CVRPWrapperTester().test()
+    PCTSPWrapperTester().test()
     OPWrapperTester().test()
     PCTSPWrapperTester().test()
     SPCTSPWrapperTester().test()
@@ -61,6 +67,10 @@ def test_wrapper():
     MCutWrapperTester().test()
     MISWrapperTester().test()
     MVCWrapperTester().test()
+    
+    # Graph Set Problem
+    GMWrapperTester().test()
+    GEDWrapperTester().test()
 
     # Portfolio Problems
     MaxRetPOWrapperTester().test()

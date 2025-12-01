@@ -18,6 +18,10 @@ from .mcut import MCutWrapper
 from .mis import MISWrapper
 from .mvc import MVCWrapper
 
+# GraphSet problems
+from .gm import GMWrapper
+from .ged import GEDWrapper
+
 # Portfolio Optimization Problems
 from .maxretpo import MaxRetPOWrapper
 from .minvarpo import MinVarPOWrapper

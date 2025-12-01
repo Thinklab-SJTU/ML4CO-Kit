@@ -12,6 +12,11 @@ from .graph.mcut import MCutTask
 from .graph.mis import MISTask
 from .graph.mvc import MVCTask
 
+# Graph Set Task
+from .graphset.base import Graph, GraphSetTaskBase
+from .graphset.gm import GMTask
+from .graphset.ged import GEDTask
+
 # Portfolio Task
 from .portfolio.base import PortfolioTaskBase
 from .portfolio.minvarpo import MinVarPOTask

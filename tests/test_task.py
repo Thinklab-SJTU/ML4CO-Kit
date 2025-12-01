@@ -36,6 +36,12 @@ from tests.task_test import (
     MCutTaskTester
 )
 
+# Graph Set Problems
+from tests.task_test import (
+    GMTaskTester,
+    GEDTaskTester
+)
+
 # Portfolio Problems
 from tests.task_test import (
     MaxRetPOTaskTester,
@@ -57,6 +63,10 @@ def test_task():
     MCutTaskTester().test()
     MISTaskTester().test()
     MVCTaskTester().test()
+
+    # Graph Set Problems
+    GMTaskTester().test()
+    GEDTaskTester().test()
 
     # Portfolio Problems
     MaxRetPOTaskTester().test()
