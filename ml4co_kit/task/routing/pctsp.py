@@ -57,6 +57,8 @@ class PCTSPTask(RoutingTaskBase):
         Normalize depots, points to [0, 1] range. Since the objective function
         includes the penalty, we need to normalize it together.
         """
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         depots = self.depots
         points = self.points
         penalties = self.penalties
@@ -143,15 +145,11 @@ class PCTSPTask(RoutingTaskBase):
         """Ensure reference solution is a 1D array."""
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
-
+    
     def _get_dists(self) -> np.ndarray:
         """Get distance matrix."""
         if self.dists is None:
-            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
-            for i in range(self.nodes_num + 1):
-                for j in range(i + 1, self.nodes_num + 1):
-                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
-                    dists[j, i] = dists[i, j]
+            dists = self.dist_eval.cal_dist_matrix(self.coords)
             self.dists = dists.astype(self.precision)
         return self.dists
     
@@ -214,14 +212,14 @@ class PCTSPTask(RoutingTaskBase):
         if name is not None:
             self.name = name
   
-    def check_constraints(self, sol: np.ndarray) -> bool:
+    def check_constraints(self, sol: np.ndarray) -> np.floating:
         """Check if the solution is valid."""
         # Every tour starts and ends with the depot
         if sol[0] != 0 or sol[-1] != 0:
             return False
         
         # The total collected prize should be at least the required prize
-        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1]-1])
+        collected_norm_prizes = np.sum(self.norm_prizes[sol[1:-1] - 1])
         if collected_norm_prizes < 1 - self.threshold: # for floating point precision
             return False
         return True

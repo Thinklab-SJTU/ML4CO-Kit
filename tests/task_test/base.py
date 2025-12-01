@@ -17,7 +17,7 @@ import os
 import uuid
 import pathlib
 from typing import Type, List
-from ml4co_kit import TaskBase, get_md5
+from ml4co_kit import TaskBase
 
 
 class TaskTesterBase(object):
@@ -49,21 +49,25 @@ class TaskTesterBase(object):
         
     def _test_pickle_evaluate(self):
         for pkl_file in self.pickle_files_list:
-            # Load task
+            # Load task data from pickle file
             task = self.test_task_class()
             task.from_pickle(pkl_file)
+            task_md5 = task.get_data_md5()
             
-            # Test for pickle
+            # Transfer data to pickle file
             tmp_pkl_file_path = self._make_tmp_file() + ".pkl"
             task.to_pickle(pathlib.Path(tmp_pkl_file_path))
-            if get_md5(pkl_file) != get_md5(tmp_pkl_file_path):
+            
+            # Verify the consistency
+            new_task = self.test_task_class()
+            new_task.from_pickle(tmp_pkl_file_path)
+            new_task_md5 = new_task.get_data_md5()
+            if task_md5 != new_task_md5:
                 raise ValueError(f"Test for pickle {pkl_file} failed")
             os.remove(tmp_pkl_file_path)
 
-            # Test for evaluate
-            task.sol = task.ref_sol
-            cost = task.evaluate()
-            _ = task.evaluate_w_gap()
+            # Evaluate the task
+            cost = task.evaluate(task.ref_sol)
             print(f"{self.test_task_class.__name__}: {cost}")
             
     def _test_other_rw_methods(self):

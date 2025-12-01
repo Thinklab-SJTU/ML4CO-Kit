@@ -10,26 +10,6 @@ class OutLayerBase(nn.Module):
         self.sparse = sparse
         
     def forward(self, x: Tensor, e: Tensor) -> Sequence[Tensor]:
-        """
-        Args:
-            [sparse]
-                x: (V, H)
-                e: (E, H)
-                t: (H)
-            [dense]
-                x: (B, V, H) 
-                e: (B, V, V, H) 
-                t: (H) 
-        Return:
-            [sparse]
-                x: (V, out_channels)
-                e: (E, out_channels)
-                t: (H)
-            [dense]
-                x: (B, out_channels, V) 
-                e: (B, out_channels, V, V) 
-                t: (H) 
-        """
         if self.sparse:
             return self.sparse_forward(x, e)
         else:

@@ -1,6 +1,22 @@
+r"""
+ATSP Embedder.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+#
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 from torch import Tensor, nn
-from ...model.embedder.base import GNN4COEmbedder
-from ...model.embedder.utils import ScalarEmbeddingSine1D, ScalarEmbeddingSine3D
+from .base import GNN4COEmbedder
+from .utils import ScalarEmbeddingSine1D, ScalarEmbeddingSine3D
 
 
 class ATSPEmbedder(GNN4COEmbedder):
@@ -8,13 +24,13 @@ class ATSPEmbedder(GNN4COEmbedder):
         super(ATSPEmbedder, self).__init__(hidden_dim, sparse)
         if self.sparse:
             self.edge_embed = nn.Sequential(
-                ScalarEmbeddingSine1D(hidden_dim),
-                nn.Linear(hidden_dim, hidden_dim)
+                ScalarEmbeddingSine1D(self.hidden_dim),
+                nn.Linear(self.hidden_dim, self.hidden_dim)
             )   
         else:
             self.edge_embed = nn.Sequential(
-                ScalarEmbeddingSine3D(hidden_dim),
-                nn.Linear(hidden_dim, hidden_dim)
+                ScalarEmbeddingSine3D(self.hidden_dim),
+                nn.Linear(self.hidden_dim, self.hidden_dim)
             )
 
     def sparse_forward(self, x: Tensor, e: Tensor) -> Tensor:

@@ -17,9 +17,10 @@ Base class for all problems in the ML4CO kit.
 import uuid
 import pickle
 import pathlib
+import hashlib
 import numpy as np
 from enum import Enum
-from typing import Tuple, Union
+from typing import Sequence, Union
 from ml4co_kit.utils.file_utils import check_file_path
 
 
@@ -49,6 +50,16 @@ class TASK_TYPE(str, Enum):
 
     # Linear Programming Problems
     LP = "LP" # Linear Program
+
+    # Portfolio Optimization Problems
+    MAXRETPO = "MaxRetPO" # Maximum Return Portfolio Optimization
+    MINVARPO = "MinVarPO" # Minimum Variance Portfolio Optimization
+    MOPO = "MOPO" # Multi-Objective Portfolio Optimization
+
+    # SAT Problems
+    SATP = "SAT-P" # Satisfiability Prediction Problem
+    SATA = "SAT-A" # Satisfying Assignment Prediction
+    USATC = "USATC" # Unsat-core Variable Prediction
 
 
 class TaskBase(object):
@@ -101,11 +112,11 @@ class TaskBase(object):
         """Check if the given solution satisfies all problem constraints. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
     
-    def evaluate(self, sol: np.ndarray) -> np.float_:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the given solution. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def evaluate_w_gap(self) -> Tuple[np.float_, np.float_, np.float_]:
+    def evaluate_w_gap(self) -> Sequence[np.floating]:
         """Evaluate the given solution with gap."""
         # Check if the solution and reference solution are not None
         if self.sol is None or self.ref_sol is None:
@@ -116,7 +127,7 @@ class TaskBase(object):
         ref_cost = self.evaluate(self.ref_sol)
 
         # Calculate the gap
-        if ref_cost < 1e-6:
+        if abs(ref_cost) < 1e-8:
             gap = None
         else:
             if self.minimize:
@@ -131,5 +142,37 @@ class TaskBase(object):
         """Render the problem instance. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
     
+    def get_data_md5(self) -> str:
+        """
+        Calculate MD5 hash of the task's data content.
+        
+        This method computes the MD5 hash based on the actual data content
+        rather than the file content, which is useful for verifying data
+        integrity when pickle files may have different object references.
+        
+        Returns:
+            str: MD5 hash of the task's data content
+        """
+        data_parts = []
+        ignore_list = ['dist_eval', 'name']
+        
+        # Get all attributes from __dict__ except dist_eval (which contains object references)
+        task_dict = {k: v for k, v in self.__dict__.items() if k not in ignore_list}
+        
+        # Sort keys for consistent ordering
+        for key in sorted(task_dict.keys()):
+            value = task_dict[key]
+            
+            # Handle numpy arrays
+            if isinstance(value, np.ndarray) and value is not None:
+                data_parts.append(value.tobytes())
+            # Handle other data types
+            elif value is not None:
+                data_parts.append(str(value).encode())
+        
+        # Combine all data and compute MD5
+        combined_data = b''.join(data_parts)
+        return hashlib.md5(combined_data).hexdigest()
+    
     def __repr__(self):
-        return f"{self.task_type.value}Task"
+        return f"{self.task_type.value}Task({self.name})"

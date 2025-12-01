@@ -25,7 +25,7 @@ from ml4co_kit.solver.lib.gp_degree.mvc_gp_degree import mvc_gp_degree_decoder
 class GpDegreeSolver(SolverBase):
     def __init__(self, optimizer: OptimizerBase = None):
         super(GpDegreeSolver, self).__init__(
-            solver_type=SOLVER_TYPE.GREEDY, optimizer=optimizer
+            solver_type=SOLVER_TYPE.GP_DEGREE, optimizer=optimizer
         )
 
     def _solve(self, task_data: TaskBase):

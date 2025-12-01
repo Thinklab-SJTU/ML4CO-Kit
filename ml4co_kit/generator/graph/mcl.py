@@ -49,7 +49,7 @@ class MClGenerator(GraphGeneratorBase):
             weighted_type=GRAPH_WEIGHT_TYPE.UNIFORM),
     ):
         # Super Initialization
-        super().__init__(
+        super(MClGenerator, self).__init__(
             task_type=TASK_TYPE.MCL, 
             distribution_type=distribution_type, 
             precision=precision,

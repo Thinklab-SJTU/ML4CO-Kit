@@ -14,21 +14,19 @@ Solver Module.
 
 
 # Check if torch is supported
-import importlib.util
-found_torch = importlib.util.find_spec("torch")
-
-if found_torch is not None:
-    from .beam import BeamSolver
-    from .greedy import GreedySolver
-    from .mcts import MCTSSolver
+from ml4co_kit.utils.env_utils import EnvChecker
+env_checker = EnvChecker()
+if env_checker.check_gnn4co():
+    from .gnn4co import GNN4COSolver
+if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
     from .ngm import NGMSolver
-    from .genn_astar import GENN_AStarSolver 
-else:
-    TORCH_SUPPORT = False
+    from .genn_astar import GENN_AStarSolver
+    from .astar import AStarSolver
 
-# Load other solver testers   
+
+# Load other solvers
 from .base import SolverBase, SOLVER_TYPE
 from .concorde import ConcordeSolver
 from .ga_eax import GAEAXSolver
@@ -37,6 +35,7 @@ from .gurobi import GurobiSolver
 from .hgs import HGSSolver
 from .ils import ILSSolver
 from .insertion import InsertionSolver
+from .isco import ISCOSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
@@ -45,4 +44,5 @@ from .astar import AStarSolver
 from .sm import SMSolver
 from .ipfp import IPFPSolver
 from .rrwm import RRWMSolver
-from .astar import AStarSolver
+from .random import RandomSolver
+from .scip import SCIPSolver

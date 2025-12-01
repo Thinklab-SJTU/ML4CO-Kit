@@ -56,7 +56,7 @@ class DisntanceEvaluator(object):
         self,
         distance_type: DISTANCE_TYPE,
         round_type: ROUND_TYPE,
-        geo_radius: str = 6371.393
+        geo_radius: float = 6371.393
     ):
         # Initialize Attributes
         self.distance_type = distance_type
@@ -157,6 +157,41 @@ class DisntanceEvaluator(object):
 
         # Return Rounded Distance
         return self.round_result(distance=distance)
+
+    def cal_dist_matrix(self, coords: np.ndarray) -> np.ndarray:
+        """Calculate the distance matrix for the given coordinates."""
+        # Calculate Distance Matrix
+        if self.distance_type in [DISTANCE_TYPE.EUC_2D, DISTANCE_TYPE.EUC_3D]:
+            diff = np.expand_dims(coords, 0) - np.expand_dims(coords, 1)
+            dists = np.sqrt(np.sum(diff ** 2, axis=-1))
+        elif self.distance_type in [DISTANCE_TYPE.MAX_2D, DISTANCE_TYPE.MAX_3D]:
+            diff = np.expand_dims(coords, 0) - np.expand_dims(coords, 1)
+            dists = np.max(np.abs(diff), axis=-1)
+        elif self.distance_type in [DISTANCE_TYPE.MAN_2D, DISTANCE_TYPE.MAN_3D]:
+            diff = np.expand_dims(coords, 0) - np.expand_dims(coords, 1)
+            dists = np.sum(np.abs(diff), axis=-1)
+        elif self.distance_type in [DISTANCE_TYPE.GEO, DISTANCE_TYPE.ATT]:
+            dists = np.zeros((coords.shape[0], coords.shape[0]))
+            for i in range(coords.shape[0]):
+                for j in range(i + 1, coords.shape[0]):
+                    dists[i, j] = self.cal_distance(coords[i], coords[j])
+                    dists[j, i] = dists[i, j]
+        else:
+            raise ValueError(f'Unsupported distance type: {self.distance_type}')
+
+        # Apply Rounding if Needed
+        if self.round_type != ROUND_TYPE.NO:
+            if self.round_type == ROUND_TYPE.CEIL:
+                dists = np.ceil(dists)
+            elif self.round_type == ROUND_TYPE.FLOOR:
+                dists = np.floor(dists)
+            elif self.round_type == ROUND_TYPE.ROUND:
+                dists = np.round(dists)
+            else:
+                raise ValueError(f'Unsupported rounding type: {self.round_type}')
+
+        # Return Distance Matrix
+        return dists
 
 
 class RoutingTaskBase(TaskBase):

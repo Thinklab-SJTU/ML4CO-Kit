@@ -41,6 +41,7 @@ class SMSolver(SolverBase):
             return gm_sm(
                 task_data=task_data,
                 x0 = self.x0,
+                max_iter = self.max_iter
             )
         else:
             raise ValueError(

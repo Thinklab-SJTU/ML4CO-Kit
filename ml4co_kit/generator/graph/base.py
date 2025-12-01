@@ -23,7 +23,6 @@ from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.generator.base import GeneratorBase
 from ml4co_kit.task.graph.base import GraphTaskBase
-from ml4co_kit.generator.graph.rb_graph import CSPInstance, independent_set_language
 
 
 class GRAPH_TYPE(str, Enum):
@@ -226,7 +225,7 @@ class GraphGeneratorBase(GeneratorBase):
             GRAPH_TYPE.WS: self._generate_watts_strogatz,
         }
     
-    def _generate_barabasi_albert(self):
+    def _generate_barabasi_albert(self) -> GraphTaskBase:
         # Generate Barabasi-Albert graph
         nx_graph: nx.Graph = nx.barabasi_albert_graph(
             n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
@@ -238,7 +237,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
 
-    def _generate_erdos_renyi(self):
+    def _generate_erdos_renyi(self) -> GraphTaskBase:
         # Generate Erdos-Renyi graph
         nx_graph: nx.Graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
         
@@ -248,7 +247,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_holme_kim(self):
+    def _generate_holme_kim(self) -> GraphTaskBase:
         # Generate Holme-Kim graph
         nx_graph: nx.Graph = nx.powerlaw_cluster_graph(
             n=self.nodes_num, 
@@ -262,7 +261,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_watts_strogatz(self):
+    def _generate_watts_strogatz(self) -> GraphTaskBase:
         # Generate Watts-Strogatz graph
         nx_graph: nx.Graph = nx.watts_strogatz_graph(
             n=self.nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
@@ -274,7 +273,7 @@ class GraphGeneratorBase(GeneratorBase):
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
     
-    def _generate_rb(self):
+    def _generate_rb(self) -> GraphTaskBase:
         # Get params for RB model (n, k, a)
         while True:
             rb_n = np.random.randint(self.rb_n_min, self.rb_n_max)
@@ -304,13 +303,13 @@ class GraphGeneratorBase(GeneratorBase):
             edges |= set(random.sample(tuple(all), k=min(rb_s, len(all))))
         nand_clauses += list(edges)
         clauses = {'NAND': nand_clauses}
-        instance = CSPInstance(
-            language=independent_set_language, n_variables=rb_v, clauses=clauses
-        )
+        
+        # Convert to numpy array
+        clauses = {relation: np.int32(clause_list) for relation, clause_list in clauses.items()}
         
         # Convert to nx.Graph
         nx_graph = nx.Graph()
-        nx_graph.add_edges_from(instance.clauses['NAND'])
+        nx_graph.add_edges_from(clauses['NAND'])
 
         # Add weights to nodes and edges if required
         nx_graph = self._if_need_weighted(nx_graph)
@@ -335,4 +334,6 @@ class GraphGeneratorBase(GeneratorBase):
     
     def _create_instance(self, nx_graph: nx.Graph) -> GraphTaskBase:
         """Create instance from nx.Graph."""
-        return GraphTaskBase(nx_graph)
+        raise NotImplementedError(
+            "Subclasses of GraphGeneratorBase must implement this method."
+        )

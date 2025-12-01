@@ -14,18 +14,23 @@ Gurobi Solver.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit.utils.type_utils import to_numpy
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
-from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
+from ml4co_kit.solver.lib.gurobi.op_gurobi import op_gurobi
 from ml4co_kit.solver.lib.gurobi.tsp_gurobi import tsp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcl_gurobi import mcl_gurobi
 from ml4co_kit.solver.lib.gurobi.mis_gurobi import mis_gurobi
 from ml4co_kit.solver.lib.gurobi.mvc_gurobi import mvc_gurobi
+from ml4co_kit.solver.lib.gurobi.atsp_gurobi import atsp_gurobi
+from ml4co_kit.solver.lib.gurobi.cvrp_gurobi import cvrp_gurobi
 from ml4co_kit.solver.lib.gurobi.mcut_gurobi import mcut_gurobi
-
+from ml4co_kit.solver.lib.gurobi.mopo_gurobi import mopo_gurobi
+from ml4co_kit.solver.lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
+from ml4co_kit.solver.lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
+from ml4co_kit.solver.lib.gurobi.satp_gurobi import satp_gurobi
+from ml4co_kit.solver.lib.gurobi.sata_gurobi import sata_gurobi
+from ml4co_kit.solver.lib.gurobi.unsatc_gurobi import unsatc_gurobi
 
 
 class GurobiSolver(SolverBase):
@@ -56,6 +61,11 @@ class GurobiSolver(SolverBase):
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )
+        elif task_data.task_type == TASK_TYPE.OP:
+            return op_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
         elif task_data.task_type == TASK_TYPE.TSP:
             return tsp_gurobi(
                 task_data=task_data,
@@ -79,6 +89,36 @@ class GurobiSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.MVC:
             return mvc_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.MAXRETPO:
+            return maxretpo_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.MINVARPO:
+            return minvarpo_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.MOPO:
+            return mopo_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.SATP:
+            return satp_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.SATA:
+            return sata_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.USATC:
+            return unsatc_gurobi(
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )

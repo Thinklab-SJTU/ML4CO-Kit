@@ -33,3 +33,8 @@ from .mvc import MVCGenTester
 # Graph Set Problem
 from .gm import GMGenTester
 from .ged import GEDGenTester
+
+# Portfolio Problems
+from .minvarpo import MinVarPOGenTester
+from .maxretpo import MaxRetPOGenTester
+from .mopo import MOPOGenTester

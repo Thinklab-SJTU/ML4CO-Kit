@@ -50,6 +50,8 @@ class TSPTask(RoutingTaskBase):
     
     def _normalize_points(self):
         """Normalize points to [0, 1] range."""
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         points = self.points
         min_vals = np.min(points)
         max_vals = np.max(points)
@@ -84,11 +86,7 @@ class TSPTask(RoutingTaskBase):
     def _get_dists(self) -> np.ndarray:
         """Get distance matrix."""
         if self.dists is None:
-            dists = np.zeros((self.nodes_num, self.nodes_num))
-            for i in range(self.nodes_num):
-                for j in range(i + 1, self.nodes_num):
-                    dists[i, j] = self.dist_eval.cal_distance(self.points[i], self.points[j])
-                    dists[j, i] = dists[i, j]
+            dists = self.dist_eval.cal_dist_matrix(self.points)
             self.dists = dists.astype(self.precision)
         return self.dists
     
@@ -200,7 +198,7 @@ class TSPTask(RoutingTaskBase):
                 f.write(f"DIMENSION: {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{sol[i]}\n")
+                    f.write(f"{sol[i] + 1}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 
@@ -211,7 +209,7 @@ class TSPTask(RoutingTaskBase):
         ordered_sol = np.sort(sol[1:])
         return True if np.all(ordered_sol == np.arange(self.nodes_num)) else False
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total distance of the TSP solution."""
         # Check Constraints
         if not self.check_constraints(sol):
@@ -220,9 +218,10 @@ class TSPTask(RoutingTaskBase):
         # Evaluate
         total_distance = 0
         for i in range(len(sol) - 1):
-            total_distance += self.dist_eval.cal_distance(
+            cost = self.dist_eval.cal_distance(
                 self.points[sol[i]], self.points[sol[i + 1]]
             )
+            total_distance += np.array(cost).astype(self.precision)
         return total_distance
 
     def render(

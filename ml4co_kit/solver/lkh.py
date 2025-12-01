@@ -17,7 +17,6 @@ LKH Solver.
 import os
 import sys
 import shutil
-import pathlib
 from ml4co_kit.utils.file_utils import download
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
@@ -32,25 +31,25 @@ class LKHSolver(SolverBase):
         self,
         lkh_scale: int = 1e6,
         lkh_max_trials: int = 500,
-        lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
         lkh_special: bool = False,
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super().__init__(SOLVER_TYPE.LKH, optimizer=optimizer)
+        super(LKHSolver, self).__init__(SOLVER_TYPE.LKH, optimizer=optimizer)
 
         # Initialize Attributes
         self.lkh_scale = lkh_scale
         self.lkh_max_trials = lkh_max_trials
-        self.lkh_path = lkh_path
         self.lkh_runs = lkh_runs
         self.lkh_seed = lkh_seed
         self.lkh_special = lkh_special
         
-        # Check if need download
-        if shutil.which(self.lkh_path) is None:
+        # LKH Path Check
+        self.lkh_store_path = os.path.join(sys.prefix, "bin")
+        self.lkh_bin_path = os.path.join(self.lkh_store_path, "LKH")
+        if os.path.exists(self.lkh_bin_path) is False:
             self.install()
             
     def _solve(self, task_data: TaskBase):
@@ -60,7 +59,7 @@ class LKHSolver(SolverBase):
                 task_data=task_data,
                 lkh_scale=self.lkh_scale,
                 lkh_max_trials=self.lkh_max_trials,
-                lkh_path=self.lkh_path,
+                lkh_path=self.lkh_bin_path,
                 lkh_runs=self.lkh_runs,
                 lkh_seed=self.lkh_seed,
                 lkh_special=self.lkh_special
@@ -70,7 +69,7 @@ class LKHSolver(SolverBase):
                 task_data=task_data,
                 lkh_scale=self.lkh_scale,
                 lkh_max_trials=self.lkh_max_trials,
-                lkh_path=self.lkh_path,
+                lkh_path=self.lkh_bin_path,
                 lkh_runs=self.lkh_runs,
                 lkh_seed=self.lkh_seed,
                 lkh_special=self.lkh_special
@@ -80,7 +79,7 @@ class LKHSolver(SolverBase):
                 task_data=task_data,
                 lkh_scale=self.lkh_scale,
                 lkh_max_trials=self.lkh_max_trials,
-                lkh_path=self.lkh_path,
+                lkh_path=self.lkh_bin_path,
                 lkh_runs=self.lkh_runs,
                 lkh_seed=self.lkh_seed,
                 lkh_special=self.lkh_special
@@ -92,18 +91,23 @@ class LKHSolver(SolverBase):
 
     def install(self):
         """Install LKH solver."""
+        # Step1: Download LKH
         lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-        download("LKH-3.0.13.tgz", url=lkh_url)
-        # tar .tgz file
+        download(file_path="LKH-3.0.13.tgz", url=lkh_url)
+        
+        # Step2: tar .tgz file
         os.system("tar xvfz LKH-3.0.13.tgz")
-        # build LKH
+        
+        # Step3: build LKH
         ori_dir = os.getcwd()
         os.chdir("LKH-3.0.13")
         os.system("make")
-        # move LKH to the bin dir
-        target_dir = os.path.join(sys.prefix, "bin")
-        os.system(f"cp LKH {target_dir}")
+
+        # Step4: move LKH to the bin dir
+        os.system(f"cp LKH {self.lkh_store_path}")
         os.chdir(ori_dir)
-        # delete .tgz file
+
+        # Step5: clean up
         os.remove("LKH-3.0.13.tgz")
         shutil.rmtree("LKH-3.0.13")
+        print(f"LKH Solver installed successfully at {self.lkh_bin_path}.")

@@ -53,7 +53,7 @@ class MISTask(GraphTaskBase):
         np.fill_diagonal(adj_matrix, 0)
         return False if adj_matrix[index][:, index].any() else True
         
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         # Check Constraints
         if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")

@@ -19,7 +19,9 @@ from .base import WrapperTesterBase
 # Routing Problems
 from .atsp import ATSPWrapperTester
 from .cvrp import CVRPWrapperTester
+from .op import OPWrapperTester
 from .pctsp import PCTSPWrapperTester
+from .spctsp import SPCTSPWrapperTester
 from .tsp import TSPWrapperTester
 
 # Graph Problems
@@ -31,3 +33,8 @@ from .mcut import MCutWrapperTester
 # Graph Set Problem
 from .gm import GMWrapperTester
 from .ged import GEDWrapperTester
+
+# Portfolio Problems
+from .maxretpo import MaxRetPOWrapperTester
+from .minvarpo import MinVarPOWrapperTester
+from .mopo import MOPOWrapperTester

@@ -1,5 +1,5 @@
 r"""
-LKH Algorithm for MCl
+OR-Tools Solver for MCl
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

@@ -23,8 +23,10 @@ sys.path.insert(0, root_folder)
 from tests.wrapper_test import (
     ATSPWrapperTester, 
     CVRPWrapperTester, 
-    TSPWrapperTester, 
-    PCTSPWrapperTester
+    OPWrapperTester,
+    PCTSPWrapperTester,
+    SPCTSPWrapperTester,
+    TSPWrapperTester
 )    
 
 # Graph Problems
@@ -41,12 +43,23 @@ from tests.wrapper_test import (
     GEDWrapperTester
 )
 
+# Portfolio Problems
+from tests.wrapper_test import (
+    MaxRetPOWrapperTester,
+    MinVarPOWrapperTester,
+    MOPOWrapperTester
+)
 
-if __name__ == "__main__":
+
+# Test Wrapper
+def test_wrapper():
     # Routing Problems
     ATSPWrapperTester().test()
     CVRPWrapperTester().test()
     PCTSPWrapperTester().test()
+    OPWrapperTester().test()
+    PCTSPWrapperTester().test()
+    SPCTSPWrapperTester().test()
     TSPWrapperTester().test()
     
     # Graph Problems
@@ -58,3 +71,13 @@ if __name__ == "__main__":
     # Graph Set Problem
     GMWrapperTester().test()
     GEDWrapperTester().test()
+
+    # Portfolio Problems
+    MaxRetPOWrapperTester().test()
+    MinVarPOWrapperTester().test()
+    MOPOWrapperTester().test()
+
+
+# Main
+if __name__ == "__main__":
+    test_wrapper()

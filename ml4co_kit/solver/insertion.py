@@ -18,6 +18,10 @@ from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.lib.insertion.tsp_insertion import tsp_insertion
+from ml4co_kit.solver.lib.insertion.mcl_insertion import mcl_insertion
+from ml4co_kit.solver.lib.insertion.mis_insertion import mis_insertion
+from ml4co_kit.solver.lib.insertion.mvc_insertion import mvc_insertion
+from ml4co_kit.solver.lib.insertion.mcut_insertion import mcut_insertion
 
 
 class InsertionSolver(SolverBase):
@@ -30,6 +34,14 @@ class InsertionSolver(SolverBase):
         """Solve the task data using LKH solver."""
         if task_data.task_type == TASK_TYPE.TSP:
             return tsp_insertion(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.MCL:
+            return mcl_insertion(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.MIS:
+            return mis_insertion(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.MVC:
+            return mvc_insertion(task_data=task_data)
+        elif task_data.task_type == TASK_TYPE.MCUT:
+            return mcut_insertion(task_data=task_data)
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."

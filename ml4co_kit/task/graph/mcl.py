@@ -53,7 +53,7 @@ class MClTask(GraphTaskBase):
         np.fill_diagonal(adj_matrix, 1)
         return True if adj_matrix[index][:, index].all() else False
         
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         # Check Constraints
         if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")

@@ -22,38 +22,49 @@ from ml4co_kit.optimizer.base import OptimizerBase
 
 class SOLVER_TYPE(str, Enum):
     """Define the solver types as an enumeration."""
-    
-    # Simple Heuristic Algorithms
-    GREEDY = "greedy"
-    BEAM = "beam"
-    GP_DEGREE = "gp_degree"
-    LC_DEGREE = "lc_degree"
-    INSERTION = "insertion"
-    
-    # Traditional Algorithms
+    # Does not need any dependencies
     CONCORDE = "concorde"
     GA_EAX = "ga_eax"
-    GUROBI = "gurobi"
-    LKH = "lkh"
+    GP_DEGREE = "gp_degree"
     HGS = "hgs"
-    ORTOOLS = "ortools"
-    PYVRP = "pyvrp"
-    KAMIS = "kamis"
     ILS = "ils"
+    INSERTION = "insertion"
+    ISCO = "isco"
+    KAMIS = "kamis"
+    LC_DEGREE = "lc_degree"
+    LKH = "lkh"
+    ORTOOLS = "ortools"
+    PYSAT = "pysat"
+    PYVRP = "pyvrp"
+    RANDOM = "random"
+    SCIP = "scip"
     SM = 'sm'
     IPFP = 'ipfp'
     RRWM = 'rrwm'
-    ASTAR = 'astar'
-    
-    # Sampling-Based Algorithms
-    ISCO = "isco"
+
+
+    # Need Gurobi License
+    GUROBI = "gurobi"
+
+
+    # Need Torch
+    BEAM = "beam"
+    GNN4CO = "gnn4co"
+    MCTS = "mcts"
+    NEUROLKH = "neurolkh"
     RLSA = "rlsa"
+    ASTAR = 'astar'
+    NGM = 'ngm'
+    GENN_ASTAR = 'genn_astar'
+
 
     # ML4CO
-    NEUROLKH = "neurolkh"
-    MCTS = "mcts"
-    NGM = 'ngm'
-    GNN_ASTAR = 'astar'
+    ML4CO = "ml4co"
+
+
+    # DIY
+    DIY = "diy"
+
 
 class SolverBase(object):
     """Base class for all solvers."""
@@ -78,11 +89,18 @@ class SolverBase(object):
             "The ``solve`` function is required to implemented in subclasses."
         )
     
-    def batch_solve(self, batch_task_data: List[TaskBase]) -> List[TaskBase]:
+    def batch_solve(
+        self, 
+        batch_task_data: List[TaskBase], 
+        optimizer_parallel: bool = False
+    ) -> List[TaskBase]:
         self._batch_solve(batch_task_data)
         if self.optimizer is not None:
-            for task_data in batch_task_data:
-                self.optimizer.optimize(task_data)
+            if optimizer_parallel:
+                self.optimizer.batch_optimize(batch_task_data)
+            else:
+                for task_data in batch_task_data:
+                    self.optimizer.optimize(task_data)
         return batch_task_data
     
     def _batch_solve(self, batch_task_data: List[TaskBase]):

@@ -1,11 +1,27 @@
+r"""
+GNN Layer.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+#
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
 import torch
 import torch.nn.functional as F
 from typing import Sequence
 from torch import Tensor, nn
 from torch_sparse import SparseTensor
 from torch_sparse import sum as sparse_sum
-from torch_sparse import mean as sparse_mean
 from torch_sparse import max as sparse_max
+from torch_sparse import mean as sparse_mean
 
 
 class GNNSparseLayer(nn.Module):
@@ -117,10 +133,8 @@ class GNNSparseLayer(nn.Module):
         e = self.F(E_aggre) + Ce + De # (E, H)
         
         # Apply normalization and activation
-        e = F.relu(self.norm_e(e)) # (E, H)
-        
+        e = F.relu(self.norm_e(e)) # (E, H) 
         return e
-    
     
     def aggregate(
         self, Vx: Tensor, gates: Tensor, edge_index: Tensor, nodes_num: int

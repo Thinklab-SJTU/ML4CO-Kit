@@ -19,7 +19,7 @@ root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
 
 # Routing Problems
-from generator_test import (
+from tests.generator_test import (
     ATSPGenTester, 
     CVRPGenTester, 
     OPGenTester, 
@@ -28,8 +28,9 @@ from generator_test import (
     TSPGenTester
 )
 
+
 # Graph Problems
-from generator_test import (
+from tests.generator_test import (
     MClGenTester, 
     MCutGenTester, 
     MISGenTester, 
@@ -43,7 +44,16 @@ from generator_test import(
 )
 
 
-if __name__ == "__main__":
+# Portfolio Problems
+from tests.generator_test import (
+    MinVarPOGenTester, 
+    MaxRetPOGenTester, 
+    MOPOGenTester
+)
+
+
+# Test Generator
+def test_generator():
     # Routing Problems
     ATSPGenTester().test()
     CVRPGenTester().test()
@@ -61,3 +71,14 @@ if __name__ == "__main__":
     GMGenTester().test()
     GEDGenTester().test()
     
+    MVCGenTester().test()
+
+    # Portfolio Problems
+    MinVarPOGenTester().test()
+    MaxRetPOGenTester().test()
+    MOPOGenTester().test()
+
+
+# Main
+if __name__ == "__main__":
+    test_generator()

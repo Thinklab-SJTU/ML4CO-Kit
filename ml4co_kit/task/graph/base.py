@@ -194,6 +194,31 @@ class GraphTaskBase(TaskBase):
             edges_weight=edges_weight
         )
     
+    def from_adj_matrix_weighted(
+        self, 
+        adj_matrix_weighted: np.ndarray, 
+        nodes_weight: np.ndarray = None,
+    ):
+        """Load graph data from an adjacency matrix."""
+        # Check if the adjacency matrix is square
+        if adj_matrix_weighted.ndim != 2:
+            raise ValueError("Adjacency matrix should be a 2D array.")
+        
+        # Convert adjacency matrix to edge_index and edges_weight
+        coo = scipy.sparse.coo_matrix(adj_matrix_weighted)
+        edge_index = np.vstack((coo.row, coo.col)).astype(np.int32)
+        if self.edge_weighted != False:
+            edges_weight = edges_weight=coo.data.astype(self.precision)
+        else:
+            edges_weight = None
+            
+        # Use ``from_data``
+        self.from_data(
+            edge_index=edge_index,
+            nodes_weight=nodes_weight,
+            edges_weight=edges_weight
+        )
+    
     def to_adj_matrix(self, with_edge_weights: bool = False) -> np.ndarray:
         """Convert edge_index and edges_weight to adjacency matrix."""
         if with_edge_weights:
@@ -353,7 +378,7 @@ class GraphTaskBase(TaskBase):
 
         # Use ``from_data``
         self.from_data(
-            edge_index=self.edge_index, 
+            edge_index=edge_index, 
             nodes_weight=nodes_weight, 
             edges_weight=edges_weight
         )

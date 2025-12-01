@@ -35,7 +35,7 @@ class ATSPTask(RoutingTaskBase):
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
         precision: Union[np.float32, np.float64] = np.float32
     ):
-        super().__init__(
+        super(ATSPTask, self).__init__(
             task_type=TASK_TYPE.ATSP, 
             minimize=True,
             distance_type=distance_type,
@@ -188,7 +188,7 @@ class ATSPTask(RoutingTaskBase):
                 f.write(f"DIMENSION : {self.nodes_num}\n")
                 f.write(f"TOUR_SECTION\n")
                 for i in range(self.nodes_num):
-                    f.write(f"{sol[i]}\n")
+                    f.write(f"{sol[i] + 1}\n")
                 f.write(f"-1\n")
                 f.write(f"EOF\n")
 
@@ -199,12 +199,10 @@ class ATSPTask(RoutingTaskBase):
         ordered_sol = np.sort(sol[1:])
         return True if np.all(ordered_sol == np.arange(self.nodes_num)) else False
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total distance of the TSP solution."""
         # Check Constraints
         if not self.check_constraints(sol):
-            import pdb
-            pdb.set_trace()
             raise ValueError("Invalid solution!")
         
         # Evaluate
@@ -213,14 +211,6 @@ class ATSPTask(RoutingTaskBase):
             total_distance += self.dists[sol[i]][sol[i + 1]]
         return total_distance
 
-    def render(
-        self, 
-        save_path: pathlib.Path, 
-        with_sol: bool = True,
-        figsize: tuple = (5, 5),
-        node_color: str = "darkblue",
-        edge_color: str = "darkblue",
-        node_size: int = 50,
-    ):
+    def render(self):
         """Render the ATSP problem instance with or without solution."""
         raise NotImplementedError("Render is not implemented for ATSP.")

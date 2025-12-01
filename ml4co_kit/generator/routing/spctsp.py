@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.routing.spctsp import SPCTSPTask
-from ml4co_kit.generator.routing.base import RoutingGenerator
+from ml4co_kit.generator.routing.base import RoutingGeneratorBase
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -27,7 +27,7 @@ class SPCTSP_TYPE(str, Enum):
     UNIFORM = "uniform" # Uniform prizes
 
 
-class SPCTSPGenerator(RoutingGenerator):
+class SPCTSPGenerator(RoutingGeneratorBase):
     """Generator for SPCTSP instances."""
     
     def __init__(

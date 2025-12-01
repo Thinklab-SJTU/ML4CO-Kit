@@ -13,7 +13,30 @@ ML4CO-Kit Module.
 # See the Mulan PSL v2 for more details.
 
 
-import importlib.util
+####################################################
+#                  Utils Function                  #
+####################################################
+
+# Env Utils
+from .utils import EnvInstallHelper, EnvChecker
+env_checker = EnvChecker()
+
+# File Utils
+from .utils import (
+    download, pull_file_from_huggingface, get_md5,
+    compress_folder, extract_archive, check_file_path
+)
+
+# Impl Utils
+from .utils import IMPL_TYPE
+
+# Time Utils
+from .utils import tqdm_by_time, Timer
+
+# Type Utils
+if env_checker.check_torch():
+    from .utils import to_numpy, to_tensor
+
 
 ###################################################
 #                      Task                       #
@@ -33,6 +56,14 @@ from .task import GMTask, GEDTask
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
+
+# Portfolio Task
+from .task import PortfolioTaskBase
+from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
+
+# SAT Task
+from .task import SATTaskBase
+from .task import SATPTask, SATATask, USATCTask
 
 
 ###################################################
@@ -57,8 +88,12 @@ from .generator import (
 from .generator import GMGenerator
 from .generator import GEDGenerator
 
+# Portfolio Generator
+from .generator import PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
+from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
+
 # Routing Generator
-from .generator import RoutingGenerator
+from .generator import RoutingGeneratorBase
 from .generator import (
     ATSP_TYPE, CVRP_TYPE, OP_TYPE, 
     PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE
@@ -67,6 +102,10 @@ from .generator import (
     ATSPGenerator, CVRPGenerator, OPGenerator,  
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
+
+# SAT Generator
+from .generator import SATGeneratorBase, SAT_DISTRIBUTION
+from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 
 
 ####################################################
@@ -79,18 +118,32 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
     HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, 
-    SMSolver, IPFPSolver, RRWMSolver, AStarSolver
+    LcDegreeSolver, LKHSolver, ORSolver, SMSolver, IPFPSolver, RRWMSolver
 )
 
 # Solver (use torch backend)
-found_torch = importlib.util.find_spec("torch")
-if found_torch is not None:
-    from .solver import (
-        BeamSolver, GreedySolver, MCTSSolver, NeuroLKHSolver, RLSASolver,
-        NGMSolver, AStarSolver, GENN_AStarSolver
-    )
+if env_checker.check_gnn4co():
+    from .solver import GNN4COSolver
+if env_checker.check_torch():
+    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, AStarSolver, GENN_AStarSolver
 
+
+####################################################
+#                    Optimizer                     #
+####################################################
+
+# Base Optimizer
+from .optimizer import OptimizerBase, OPTIMIZER_TYPE
+
+# Optimizer (not use torch backend)
+from .optimizer import CVRPLSOptimizer, ISCOOptimizer
+
+# Optimizer (use torch backend)
+if env_checker.check_torch():
+    from .optimizer import (
+        TwoOptOptimizer, MCTSOptimizer, RLSAOptimizer
+    )
+    
 
 ####################################################
 #                     Wrapper                      #
@@ -117,27 +170,22 @@ from .wrapper import(
     GMWrapper, GEDWrapper
 )
 
-
-####################################################
-#                  Utils Function                  #
-####################################################
-
-# File Utils
-from .utils import (
-    download, pull_file_from_huggingface, get_md5,
-    compress_folder, extract_archive, check_file_path
+# Portfolio Problems
+from .wrapper import (
+    MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
 )
 
-# Time Utils
-from .utils import tqdm_by_time, Timer
 
-# Type Utils
-from .utils import to_numpy, to_tensor
 
-# GNN4CO
-from .extension.gnn4co import (
-    GNN4COEnv, GNN4COModel, GNNEncoder, TSPGNNEncoder
-)
+####################################################
+#                    Learning                      #
+####################################################
+
+if env_checker.pytorch_lightning_support:
+    from .learning import (
+        BaseEnv, BaseModel, Trainer, Checkpoint, Logger
+    )
+    
 
 __version__ = "1.0.0"
 __author__ = "SJTU-ReThinkLab"

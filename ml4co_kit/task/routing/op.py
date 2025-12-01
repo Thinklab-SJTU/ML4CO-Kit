@@ -46,9 +46,12 @@ class OPTask(RoutingTaskBase):
         self.coords = None                 # All coordinates (including depots and points)
         self.prizes = None                 # Prize values for each node
         self.max_length = None             # Maximum length of the path
+        self.dists = None                  # Distance matrix
     
     def _normalize_depots_and_points(self):
         """Normalize depots and points to [0, 1] range."""
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         depots = self.depots
         points = self.points
         min_vals = min(np.min(points), np.min(self.depots))
@@ -115,6 +118,13 @@ class OPTask(RoutingTaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _get_dists(self) -> np.ndarray:
+        """Get distance matrix."""
+        if self.dists is None:
+            dists = self.dist_eval.cal_dist_matrix(self.coords)
+            self.dists = dists.astype(self.precision)
+        return self.dists
+
     def from_data(
         self,
         depots: np.ndarray = None,
@@ -176,14 +186,14 @@ class OPTask(RoutingTaskBase):
         total_distance = 0
         for i in range(len(sol) - 1):
             total_distance += self.dist_eval.cal_distance(
-                self.points[sol[i]], self.points[sol[i + 1]]
+                self.coords[sol[i]], self.coords[sol[i + 1]]
             )
         if total_distance > self.max_length:
             return False
             
         return True
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total prize collected by the OP solution."""
         # Check Constraints
         if not self.check_constraints(sol):

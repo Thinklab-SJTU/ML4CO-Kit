@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Union, Tuple
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.routing.op import OPTask
-from ml4co_kit.generator.routing.base import RoutingGenerator
+from ml4co_kit.generator.routing.base import RoutingGeneratorBase
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -29,7 +29,7 @@ class OP_TYPE(str, Enum):
     DISTANCE = "distance" # Distance-based prizes
 
 
-class OPGenerator(RoutingGenerator):
+class OPGenerator(RoutingGeneratorBase):
     """Generator for Orienteering Problem (OP) instances."""
     
     def __init__(
@@ -42,7 +42,7 @@ class OPGenerator(RoutingGenerator):
         uniform_scale: tuple = (1, 100),
     ):
         # Super Initialization
-        super().__init__(
+        super(OPGenerator, self).__init__(
             task_type=TASK_TYPE.OP, 
             distribution_type=distribution_type, 
             precision=precision

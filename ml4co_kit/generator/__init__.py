@@ -32,11 +32,25 @@ from .graphset.base import (
 from .graphset.gm import GMGenerator
 from .graphset.ged import GEDGenerator
 
+# Portfolio Generator
+from .portfolio.base import (
+    PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
+)
+from .portfolio.minvarpo import MinVarPOGenerator
+from .portfolio.maxretpo import MaxRetPOGenerator
+from .portfolio.mopo import MOPOGenerator
+
 # Routing Generator
-from .routing.base import RoutingGenerator
+from .routing.base import RoutingGeneratorBase
 from .routing.atsp import ATSPGenerator, ATSP_TYPE
 from .routing.cvrp import CVRPGenerator, CVRP_TYPE
 from .routing.op import OPGenerator, OP_TYPE
 from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
+
+# SAT Generator
+from .sat.base import SATGeneratorBase, SAT_DISTRIBUTION
+from .sat.satp import SATPGenerator
+from .sat.sata import SATAGenerator
+from .sat.unsatc import USATCGenerator

@@ -28,21 +28,24 @@ URL = "https://github.com/Thinklab-SJTU/ML4CO-Kit"
 AUTHOR = get_property("__author__", PACKAGE_NAME)
 VERSION = get_property("__version__", PACKAGE_NAME)
 REQUIRED = [
-    "numpy>=1.24.4",
+    "numpy>=1.24.3",
     "networkx>=2.8.8",
     "tqdm>=4.66.3",
+    "cython>=3.0.8",
     "pulp>=2.8.0",
-    "pandas>=2.0.0",
     "scipy>=1.10.1",
     "aiohttp>=3.10.11",
     "requests>=2.32.0",
+    "matplotlib>=3.7.0",
     "async_timeout>=4.0.3",
     "pyvrp>=0.6.3",
-    "cython>=3.0.8",
     "gurobipy>=11.0.3",
     "scikit-learn>=1.3.0",
     "ortools>=9.12.4544",
-    "huggingface_hub>=0.32.0"   
+    "huggingface_hub>=0.32.0",
+    "setuptools>=75.0.0",
+    "PySCIPOpt>=5.6.0",
+    "pybind11>=3.0.1"
 ]
 
 EXTRAS = {}
@@ -69,7 +72,6 @@ else:
 
 class BdistWheelCommand(_bdist_wheel):
     def run(self):
-        os.system("python publish/compile_solvers.py")
         super().run()
 
     def get_tag(self):
@@ -113,9 +115,13 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Operating System :: POSIX",
         "Operating System :: Unix",
+        "Operating System :: MacOS",
         "Environment :: Console",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Image Recognition",

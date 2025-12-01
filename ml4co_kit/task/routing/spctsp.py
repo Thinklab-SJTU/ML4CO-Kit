@@ -59,6 +59,8 @@ class SPCTSPTask(RoutingTaskBase):
         Normalize depots, points to [0, 1] range. Since the objective function
         includes the penalty, we need to normalize it together.
         """
+        if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
+            raise ValueError("Normalization is only supported for EUC_2D distance type.")
         depots = self.depots
         points = self.points
         penalties = self.penalties
@@ -167,11 +169,7 @@ class SPCTSPTask(RoutingTaskBase):
     def _get_dists(self) -> np.ndarray:
         """Get distance matrix."""
         if self.dists is None:
-            dists = np.zeros((self.nodes_num + 1, self.nodes_num + 1))
-            for i in range(self.nodes_num + 1):
-                for j in range(i + 1, self.nodes_num + 1):
-                    dists[i, j] = self.dist_eval.cal_distance(self.coords[i], self.coords[j])
-                    dists[j, i] = dists[i, j]
+            dists = self.dist_eval.cal_dist_matrix(self.coords)
             self.dists = dists.astype(self.precision)
         return self.dists
     
@@ -254,10 +252,10 @@ class SPCTSPTask(RoutingTaskBase):
             return False
         return True
     
-    def evaluate(self, sol: np.ndarray, use_actual_prizes: bool = False) -> float:
+    def evaluate(self, sol: np.ndarray) -> np.floating:
         """Evaluate the total cost of the SPCTSP solution."""
         # Check Constraints
-        if not self.check_constraints(sol, use_actual_prizes):
+        if not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Calculate total travel distance
@@ -269,7 +267,7 @@ class SPCTSPTask(RoutingTaskBase):
         
         # Calculate total penalty for unvisited nodes
         mask = np.ones(self.nodes_num, dtype=np.bool_)
-        mask[sol[1:-1]] = False
+        mask[sol[1:-1] - 1] = False
         total_penalty = np.sum(self.penalties[mask])
         
         return total_distance + total_penalty

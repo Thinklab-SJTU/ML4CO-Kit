@@ -18,7 +18,7 @@ from typing import Union, Any
 from ml4co_kit.generator.base import GeneratorBase, TASK_TYPE
 
 
-class RoutingGenerator(GeneratorBase):
+class RoutingGeneratorBase(GeneratorBase):
     """Base class for routing problem generators."""
 
     def __init__(
@@ -28,7 +28,7 @@ class RoutingGenerator(GeneratorBase):
         precision: Union[np.float32, np.float64] = np.float32
     ):
         # Super Initialization
-        super().__init__(
+        super(RoutingGeneratorBase, self).__init__(
             task_type=task_type, 
             distribution_type=distribution_type,
             precision=precision
