@@ -57,6 +57,9 @@ class TASK_TYPE(str, Enum):
     SATA = "SAT-A" # Satisfying Assignment Prediction
     USATC = "USATC" # Unsat-core Variable Prediction
 
+    # EDA Problems
+    MACRO_PLACEMENT = "MacroPlacement" # Macro Placement
+
 
 class TaskBase(object):
     """Base class for all tasks in the ML4CO kit."""
