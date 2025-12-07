@@ -16,7 +16,7 @@ Base class for Routing tasks.
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.eda.base import EDATaskBase
+from .base import EDATaskBase
 
 
 class RoutingTask(EDATaskBase):

@@ -36,3 +36,31 @@ class MacroPlacementTask(PlacementTask):
             w_overlap=w_overlap,
             w_oob=w_oob
         )
+
+    def evaluate(self, sol: np.ndarray = None, ref: bool = False) -> float:
+        """
+        Evaluate the solution.
+        Cost = w_hpwl * HPWL + w_overlap * Overlap + w_oob * OOB
+        """
+        if sol is None:
+            if ref:
+                self._check_ref_sol_not_none()
+                sol = self.ref_sol
+            else:
+                self._check_sol_not_none()
+                sol = self.sol
+        
+        hpwl = self._compute_hpwl(sol)
+        overlap = self._compute_overlap(sol)
+        oob = self._compute_oob(sol)
+        
+        cost = self.w_hpwl * hpwl + self.w_overlap * overlap + self.w_oob * oob
+        return float(cost)
+
+    def check_constraints(self, sol: np.ndarray) -> bool:
+        """
+        Check if the solution satisfies constraints (no overlap, no OOB).
+        """
+        overlap = self._compute_overlap(sol)
+        oob = self._compute_oob(sol)
+        return overlap == 0.0 and oob == 0.0
