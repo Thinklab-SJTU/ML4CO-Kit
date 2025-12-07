@@ -32,25 +32,24 @@ class ALLOCATION_HEURISTIC(str, Enum):
     EXPECT_FIT = "expect_fit"
 
 
-# 8 种组合
-HEURISTIC_SPACE: List[Tuple[ASSIGNMENT_HEURISTIC, ALLOCATION_HEURISTIC]] = [
-    (ASSIGNMENT_HEURISTIC.BEST_FIT,  ALLOCATION_HEURISTIC.BEST_FIT),   # 0
-    (ASSIGNMENT_HEURISTIC.BEST_FIT,  ALLOCATION_HEURISTIC.EXPECT_FIT), # 1
-    (ASSIGNMENT_HEURISTIC.FIRST_FIT, ALLOCATION_HEURISTIC.BEST_FIT),   # 2
-    (ASSIGNMENT_HEURISTIC.FIRST_FIT, ALLOCATION_HEURISTIC.EXPECT_FIT), # 3
-    (ASSIGNMENT_HEURISTIC.NEXT_FIT,  ALLOCATION_HEURISTIC.BEST_FIT),   # 4
-    (ASSIGNMENT_HEURISTIC.NEXT_FIT,  ALLOCATION_HEURISTIC.EXPECT_FIT), # 5
-    (ASSIGNMENT_HEURISTIC.WORST_FIT, ALLOCATION_HEURISTIC.BEST_FIT),   # 6
-    (ASSIGNMENT_HEURISTIC.WORST_FIT, ALLOCATION_HEURISTIC.EXPECT_FIT), # 7
-]
+# 8 种启发式组合：可读名称 -> (assignment, allocation)
+HEURISTIC_CONFIG: dict[str, Tuple[ASSIGNMENT_HEURISTIC, ALLOCATION_HEURISTIC]] = {
+    "best_best":   (ASSIGNMENT_HEURISTIC.BEST_FIT,   ALLOCATION_HEURISTIC.BEST_FIT),
+    "best_expect": (ASSIGNMENT_HEURISTIC.BEST_FIT,   ALLOCATION_HEURISTIC.EXPECT_FIT),
+    "first_best":  (ASSIGNMENT_HEURISTIC.FIRST_FIT,  ALLOCATION_HEURISTIC.BEST_FIT),
+    "first_expect":(ASSIGNMENT_HEURISTIC.FIRST_FIT,  ALLOCATION_HEURISTIC.EXPECT_FIT),
+    "next_best":   (ASSIGNMENT_HEURISTIC.NEXT_FIT,   ALLOCATION_HEURISTIC.BEST_FIT),
+    "next_expect": (ASSIGNMENT_HEURISTIC.NEXT_FIT,   ALLOCATION_HEURISTIC.EXPECT_FIT),
+    "worst_best":  (ASSIGNMENT_HEURISTIC.WORST_FIT,  ALLOCATION_HEURISTIC.BEST_FIT),
+    "worst_expect":(ASSIGNMENT_HEURISTIC.WORST_FIT,  ALLOCATION_HEURISTIC.EXPECT_FIT),
+}
 
 
 class BPPHeuristicSolver(SolverBase):
     r"""
     BPP 启发式求解器，使用固定的 (assignment, allocation) 组合。
-    可与深度学习模型结合，由模型预测 heuristic_id 再调用该 Solver。
+    可与深度学习模型结合，由模型预测 heuristic 名称再调用该 Solver。
 
-    【现在的语义】
     - bin_sizes 是一批具体箱子，每个箱子最多使用一次；
     - 求解过程中，我们维护：
         - available_bins: 还没被使用过的箱子索引集合；
@@ -60,12 +59,28 @@ class BPPHeuristicSolver(SolverBase):
 
     def __init__(
         self,
-        heuristic_id: int = 0,
+        heuristic: str = "best_best",
     ):
-        if heuristic_id < 0 or heuristic_id >= len(HEURISTIC_SPACE):
-            raise ValueError("heuristic_id must be in [0, 7].")
-        assignment, allocation = HEURISTIC_SPACE[heuristic_id]
-        self.heuristic_id = heuristic_id
+        """
+        heuristic: 一个可读性更强的名字，如：
+            - "best_best"
+            - "best_expect"
+            - "first_best"
+            - "first_expect"
+            - "next_best"
+            - "next_expect"
+            - "worst_best"
+            - "worst_expect"
+        """
+        if heuristic not in HEURISTIC_CONFIG:
+            valid = ", ".join(sorted(HEURISTIC_CONFIG.keys()))
+            raise ValueError(
+                f"Unknown heuristic '{heuristic}'. "
+                f"Valid options are: {valid}"
+            )
+
+        assignment, allocation = HEURISTIC_CONFIG[heuristic]
+        self.heuristic_name = heuristic
         self.assignment = assignment
         self.allocation = allocation
 
@@ -121,8 +136,10 @@ class BPPHeuristicSolver(SolverBase):
                 if bin_id is None:
                     # 理论上不应该发生（因为我们生成数据时保证“箱子够用”），
                     # 如果发生，就直接抛异常，方便调试。
-                    raise RuntimeError("No available bin can be allocated for item size "
-                                       f"{size}, available_bins={available_bins}")
+                    raise RuntimeError(
+                        "No available bin can be allocated for item size "
+                        f"{size}, available_bins={available_bins}"
+                    )
 
                 # 标记该箱子已被占用
                 if bin_id not in available_bins:
@@ -210,7 +227,9 @@ class BPPHeuristicSolver(SolverBase):
             return int(worst)
 
         else:
-            raise NotImplementedError(f"Unknown assignment heuristic: {assignment}")
+            raise NotImplementedError(
+                f"Unknown assignment heuristic: {assignment}"
+            )
 
     # ----------- Allocation 逻辑：从剩余箱子集合里选一个新箱子 -----------
     @staticmethod
@@ -271,4 +290,6 @@ class BPPHeuristicSolver(SolverBase):
                 return int(feasible_ids[best_idx])
 
         else:
-            raise NotImplementedError(f"Unknown allocation heuristic: {allocation}")
+            raise NotImplementedError(
+                f"Unknown allocation heuristic: {allocation}"
+            )
