@@ -478,7 +478,7 @@ class GraphTaskBase(TaskBase):
         
         # Invalidate cached structures
         self._invalidate_cached_structures()
-        
+
 
 # NetworkX Layout
 SUPPORT_POS_TYPE_DICT = {

@@ -38,9 +38,14 @@ class SOLVER_TYPE(str, Enum):
     PYVRP = "pyvrp"
     RANDOM = "random"
     SCIP = "scip"
+    SM = 'sm'
+    IPFP = 'ipfp'
+    RRWM = 'rrwm'
+
 
     # Need Gurobi License
     GUROBI = "gurobi"
+
 
     # Need Torch
     BEAM = "beam"
@@ -48,9 +53,14 @@ class SOLVER_TYPE(str, Enum):
     MCTS = "mcts"
     NEUROLKH = "neurolkh"
     RLSA = "rlsa"
+    ASTAR = 'astar'
+    NGM = 'ngm'
+    GENN_ASTAR = 'genn_astar'
+
 
     # ML4CO
     ML4CO = "ml4co"
+
 
     # DIY
     DIY = "diy"

@@ -30,6 +30,10 @@ from .mis import MISWrapperTester
 from .mvc import MVCWrapperTester
 from .mcut import MCutWrapperTester
 
+# Graph Set Problem
+from .gm import GMWrapperTester
+from .ged import GEDWrapperTester
+
 # Portfolio Problems
 from .maxretpo import MaxRetPOWrapperTester
 from .minvarpo import MinVarPOWrapperTester

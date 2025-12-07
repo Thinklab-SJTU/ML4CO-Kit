@@ -28,6 +28,10 @@ from .mcut import MCutTaskTester
 from .mis import MISTaskTester
 from .mvc import MVCTaskTester
 
+# Graph Set Problems
+from .gm import GMTaskTester
+from .ged import GEDTaskTester
+
 # Portfolio Problems
 from .maxretpo import MaxRetPOTaskTester
 from .minvarpo import MinVarPOTaskTester
