@@ -16,7 +16,7 @@ PySAT Solver for UNSAT-C
 import numpy as np
 from pysat.formula import CNF
 from pysat.examples.musx import MUSX
-from ml4co_kit.task.sat.unsatc import USATCTask
+from ml4co_kit.task.sat.usatc import USATCTask
 
 
 def unsatc_pysat(task_data: USATCTask, solver_name: str):
