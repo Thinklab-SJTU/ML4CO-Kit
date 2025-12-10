@@ -22,8 +22,8 @@ if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
     from .ngm import NGMSolver
-    from .genn_astar import GennAStarSolver
-    from .astar import AStarSolver
+    # from .genn_astar import GennAStarSolver
+    # from .astar import AStarSolver
 
 
 # Load other solvers
@@ -40,7 +40,7 @@ from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
-from .astar import AStarSolver
+# from .astar import AStarSolver
 from .sm import SMSolver
 from .ipfp import IPFPSolver
 from .rrwm import RRWMSolver

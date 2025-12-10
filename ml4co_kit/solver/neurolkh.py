@@ -1,5 +1,5 @@
 r"""
-NeuroLKH Solver.
+NeuroLKH
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -27,6 +27,19 @@ from ml4co_kit.solver.lib.neurolkh.tsp_neurolkh import batch_tsp_neurolkh
 
 
 class NeuroLKHSolver(SolverBase):
+    """
+    NeuroLKH: https://github.com/liangxinedu/NeuroLKH
+    @article{
+        xin2021neurolkh,
+        title={Neurolkh: Combining deep learning model with lin-kernighan-helsgaun \
+            heuristic for solving the traveling salesman problem},
+        author={Xin, Liang and Song, Wen and Cao, Zhiguang and Zhang, Jie},
+        journal={Advances in Neural Information Processing Systems},
+        volume={34},
+        pages={7472--7483},
+        year={2021}
+    }
+    """
     def __init__(
         self,
         lkh_scale: int = 1e6,
@@ -43,7 +56,7 @@ class NeuroLKHSolver(SolverBase):
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super().__init__(SOLVER_TYPE.NEUROLKH, optimizer=optimizer)
+        super(NeuroLKHSolver, self).__init__(SOLVER_TYPE.NEUROLKH, optimizer=optimizer)
         
         # Initialize Attributes (LKH)
         self.lkh_scale = lkh_scale

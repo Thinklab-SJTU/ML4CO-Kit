@@ -34,17 +34,17 @@ class SATATask(SATTaskBase):
 
         # Initialize Attributes
         self.satisfiable: bool = True
-
+        
     def _check_sol_dim(self):
-        """Ensure solution is a 1D boolean array."""
-        if self.sol.ndim != 1 or self.sol.dtype != bool:
-            raise ValueError("Solution should be a 1D boolean array.")
+        """Ensure solution is a 1D array."""
+        if self.sol.ndim != 1:
+            raise ValueError("Solution should be a 1D array.")
 
     def _check_ref_sol_dim(self):
-        """Ensure reference solution is a 1D boolean array."""
-        if self.ref_sol.ndim != 1 or self.ref_sol.dtype != bool:
-            raise ValueError("Reference solution should be a 1D boolean array.")
-
+        """Ensure reference solution is a 1D array."""
+        if self.ref_sol.ndim != 1:
+            raise ValueError("Reference solution should be a 1D array.")
+        
     def check_constraints(self, sol: np.ndarray) -> bool:
         # Check Dimensions
         if len(sol) != self.vars_num:

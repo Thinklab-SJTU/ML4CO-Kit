@@ -1,5 +1,5 @@
 r"""
-KaMIS Solver.
+KaMIS (Karlsruhe Maximum Independent Sets)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -24,6 +24,18 @@ from ml4co_kit.solver.lib.kamis.mis_kamis import mis_kamis
 
 
 class KaMISSolver(SolverBase):
+    """
+    KaMIS: https://github.com/KarlsruheMIS/KaMIS
+    @inproceedings{
+        lamm2016finding,
+        title={Finding near-optimal independent sets at scale},
+        author={Lamm, Sebastian and Sanders, Peter and Schulz, Christian and Strash, Darren and Werneck, Renato F},
+        booktitle={2016 Proceedings of the eighteenth workshop on algorithm engineering and experiments (ALENEX)},
+        pages={138--150},
+        year={2016},
+        organization={SIAM}
+    }
+    """
     def __init__(
         self, 
         kamis_time_limit: float = 10.0,

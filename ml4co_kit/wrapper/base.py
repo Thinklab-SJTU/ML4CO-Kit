@@ -19,8 +19,8 @@ import random
 import pickle
 import pathlib
 import numpy as np
-from typing import Sequence, Union, Type
 from multiprocessing import Pool
+from typing import Sequence, Union, Type, List
 from ml4co_kit.solver.base import SolverBase
 from ml4co_kit.utils.time_utils import Timer
 from ml4co_kit.generator.base import GeneratorBase
@@ -37,7 +37,7 @@ class WrapperBase(object):
     ):
         self.task_type = task_type
         self.precision = precision
-        self.task_list = list()
+        self.task_list: List[TaskBase] = list()
     
     def swap_sol_and_ref_sol(self):
         for task_data in self.task_list:

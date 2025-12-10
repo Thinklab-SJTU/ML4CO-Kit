@@ -57,6 +57,15 @@ class SPCTSPGenerator(RoutingGeneratorBase):
         }
         
     def _generate_uniform(self) -> SPCTSPTask:
+        """
+        @article{
+            kool2018attention,
+            title={Attention, learn to solve routing problems!},
+            author={Kool, Wouter and Van Hoof, Herke and Welling, Max},
+            journal={arXiv preprint arXiv:1803.08475},
+            year={2018}
+        }
+        """
         # Generate depots and points
         coords = np.random.uniform(size=(self.nodes_num + 1, 2))
         depots = coords[0]
@@ -73,12 +82,12 @@ class SPCTSPGenerator(RoutingGeneratorBase):
         penalties = penalties * 3 * self.uniform_k / self.nodes_num
         
         # Create SPCTSP Instance from Data
-        data = SPCTSPTask(
+        task_data = SPCTSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(
+        task_data.from_data(
             depots=depots, 
             points=points, 
             expected_prizes=expected_prizes, 
@@ -86,4 +95,4 @@ class SPCTSPGenerator(RoutingGeneratorBase):
             penalties=penalties, 
             required_prize=1.0
         )
-        return data
+        return task_data

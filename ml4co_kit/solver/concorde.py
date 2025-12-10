@@ -1,5 +1,5 @@
 r"""
-Concorde Solver.
+Concorde (Exact Solver for TSP).
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -23,6 +23,10 @@ from ml4co_kit.solver.lib.concorde.tsp_concorde import tsp_concorde
 
 
 class ConcordeSolver(SolverBase):
+    """
+    Concorde: https://www.math.uwaterloo.ca/tsp/concorde.html
+    PyConcorde: https://github.com/jvkersch/pyconcorde
+    """
     def __init__(
         self,
         concorde_scale: int = 1e6,

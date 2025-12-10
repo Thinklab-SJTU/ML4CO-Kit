@@ -1,5 +1,5 @@
 r"""
-ORToolsi Solver.
+OR-Tools
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -29,6 +29,9 @@ from ml4co_kit.solver.lib.ortools.pctsp_ortools import pctsp_ortools
 
 
 class ORSolver(SolverBase):
+    """
+    OR-Tools: https://developers.google.cn/optimization/introduction
+    """
     def __init__(
         self, 
         ortools_scale: int = 1e6,

@@ -1,5 +1,5 @@
 r"""
-GaEax Solver.
+GA-EAX (A Genetic Algorithm using Edge Assembly Crossover)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -21,6 +21,20 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
 class GAEAXSolver(SolverBase):
+    """
+    GA-EAX: https://github.com/nagata-yuichi/GA-EAX
+    @article{
+        nagata2013powerful,
+        title={A powerful genetic algorithm using edge assembly crossover for the traveling salesman problem},
+        author={Nagata, Yuichi and Kobayashi, Shigenobu},
+        journal={INFORMS Journal on Computing},
+        volume={25},
+        number={2},
+        pages={346--363},
+        year={2013},
+        publisher={INFORMS}
+    }
+    """
     def __init__(
         self,
         ga_eax_scale: int = 1e5,

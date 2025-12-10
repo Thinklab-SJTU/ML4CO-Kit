@@ -1,5 +1,5 @@
 r"""
-HGS Solver.
+HGS (Hybrid Genetic Search)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -21,6 +21,20 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
 class HGSSolver(SolverBase):
+    """
+    HGS: https://github.com/vidalt/HGS-CVRP
+    @article{
+        vidal2012hybrid,
+        title={A hybrid genetic algorithm for multidepot and periodic vehicle routing problems},
+        author={Vidal, Thibaut and Crainic, Teodor Gabriel and Gendreau, Michel and Lahrichi, Nadia and Rei, Walter},
+        journal={Operations Research},
+        volume={60},
+        number={3},
+        pages={611--624},
+        year={2012},
+        publisher={INFORMS}
+    }
+    """
     def __init__(
         self, 
         hgs_scale: int = 2e4,

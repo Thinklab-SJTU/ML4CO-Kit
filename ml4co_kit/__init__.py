@@ -104,7 +104,7 @@ from .generator import (
 )
 
 # SAT Generator
-from .generator import SATGeneratorBase, SAT_DISTRIBUTION
+from .generator import SATGeneratorBase, SAT_TYPE
 from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 
 
@@ -125,7 +125,7 @@ from .solver import (
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, AStarSolver, GennAStarSolver
+    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver
 
 
 ####################################################
@@ -175,6 +175,10 @@ from .wrapper import (
     MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
 )
 
+# SAT Problems
+from .wrapper import (
+    SATPWrapper, SATAWrapper, USATCWrapper
+)
 
 
 ####################################################
@@ -187,5 +191,5 @@ if env_checker.pytorch_lightning_support:
     )
     
 
-__version__ = "1.0.0"
+__version__ = "0.4.2"
 __author__ = "SJTU-ReThinkLab"

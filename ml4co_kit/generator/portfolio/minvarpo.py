@@ -47,12 +47,12 @@ class MinVarPOGenerator(PortfolioGeneratorBase):
         self.required_returns = required_returns
         self.required_returns_ratio = required_returns_ratio
 
-    def _create_task(self, returns: np.ndarray, cov: np.ndarray) -> MinVarPOTask:
+    def _create_instance(self, returns: np.ndarray, cov: np.ndarray) -> MinVarPOTask:
         if self.required_returns is None:
             mean_returns = np.mean(returns)
             self.required_returns = mean_returns * self.required_returns_ratio
-        data = MinVarPOTask(precision=self.precision)
-        data.from_data(
+        task_data = MinVarPOTask(precision=self.precision)
+        task_data.from_data(
             returns=returns, cov=cov, required_returns=self.required_returns
         )
-        return data
+        return task_data

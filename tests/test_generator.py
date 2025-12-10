@@ -28,7 +28,6 @@ from tests.generator_test import (
     TSPGenTester
 )
 
-
 # Graph Problems
 from tests.generator_test import (
     MClGenTester, 
@@ -43,7 +42,6 @@ from generator_test import(
     GEDGenTester
 )
 
-
 # Portfolio Problems
 from tests.generator_test import (
     MinVarPOGenTester, 
@@ -51,6 +49,12 @@ from tests.generator_test import (
     MOPOGenTester
 )
 
+# SAT Problems
+from tests.generator_test import (
+    SATPGenTester,
+    SATAGenTester,
+    USATCGenTester
+)
 
 # Test Generator
 def test_generator():
@@ -66,17 +70,21 @@ def test_generator():
     MClGenTester().test()
     MCutGenTester().test()
     MISGenTester().test()
+    MVCGenTester().test()
     
     # Graph Set Problem 
     GMGenTester().test()
     GEDGenTester().test()
-    
-    MVCGenTester().test()
 
     # Portfolio Problems
     MinVarPOGenTester().test()
     MaxRetPOGenTester().test()
     MOPOGenTester().test()
+
+    # SAT Problems
+    SATPGenTester().test()
+    SATAGenTester().test()
+    USATCGenTester().test()
 
 
 # Main

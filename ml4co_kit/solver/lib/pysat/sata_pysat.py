@@ -14,25 +14,28 @@ PySAT Solver for SAT-A
 
 
 import numpy as np
-from pysat.solvers import Glucose3
+import pysat.solvers
 from ml4co_kit.task.sat.sata import SATATask
 
 
-def sata_pysat(task_data: SATATask):
-    solver = Glucose3()
-    
+def sata_pysat(
+    task_data: SATATask, solver_name: str, solver_args: dict
+):
+    # Create solver
+    solver = pysat.solvers.Solver(solver_name, **solver_args)
+
+    # Add clauses to solver
     for clause in task_data.clauses:
         solver.add_clause(clause)
     
+    # Solve the problem
     if solver.solve():
-        model = solver.get_model()
-        sol = np.zeros(task_data.vars_num, dtype=bool)
-        for lit in model:
-            var_idx = abs(lit) - 1
-            if var_idx < task_data.vars_num:
-                sol[var_idx] = (lit > 0)
+        idx_sol = solver.get_model()
+        bool_sol = np.zeros_like(idx_sol, dtype=np.bool_)
+        bool_sol[idx_sol > 0] = True
+        bool_sol[idx_sol < 0] = False
     else:
-        sol = np.zeros(task_data.vars_num, dtype=bool)
-    
-    solver.delete()
-    task_data.sol = sol
+        raise ValueError("Failed to solve the problem!")
+
+    # Store the solution
+    task_data.from_data(sol=bool_sol, ref=False)

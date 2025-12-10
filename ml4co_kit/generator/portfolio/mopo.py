@@ -44,7 +44,7 @@ class MOPOGenerator(PortfolioGeneratorBase):
         # Initialize Attributes
         self.var_factor = var_factor
 
-    def _create_task(self, returns: np.ndarray, cov: np.ndarray) -> MOPOTask:
-        data = MOPOTask(precision=self.precision)
-        data.from_data(returns=returns, cov=cov, var_factor=self.var_factor)
-        return data
+    def _create_instance(self, returns: np.ndarray, cov: np.ndarray) -> MOPOTask:
+        task_data = MOPOTask(precision=self.precision)
+        task_data.from_data(returns=returns, cov=cov, var_factor=self.var_factor)
+        return task_data

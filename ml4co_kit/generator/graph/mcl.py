@@ -69,10 +69,10 @@ class MClGenerator(GraphGeneratorBase):
         )
     
     def _create_instance(self, nx_graph: nx.Graph) -> MClTask:
-        data = MClTask(
+        task_data = MClTask(
             node_weighted=self.node_weighted,
             precision=self.precision
         )
-        data.from_networkx(nx_graph)
-        data.add_self_loop()
-        return data
+        task_data.from_networkx(nx_graph)
+        task_data.add_self_loop()
+        return task_data

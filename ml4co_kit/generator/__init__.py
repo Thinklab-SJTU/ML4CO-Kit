@@ -50,7 +50,7 @@ from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
 
 # SAT Generator
-from .sat.base import SATGeneratorBase, SAT_DISTRIBUTION
+from .sat.base import SATGeneratorBase, SAT_TYPE
 from .sat.satp import SATPGenerator
 from .sat.sata import SATAGenerator
-from .sat.unsatc import USATCGenerator
+from .sat.usatc import USATCGenerator

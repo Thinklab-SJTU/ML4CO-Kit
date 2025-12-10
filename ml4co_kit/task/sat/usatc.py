@@ -37,7 +37,7 @@ class USATCTask(SATTaskBase):
         self.unsat_core_vars: np.ndarray = None
 
     def _check_sol_dim(self):
-        """Ensure solution is a 1D boolean array."""
+        """Ensure solution is a 1D array."""
         if self.sol.ndim != 1 or self.sol.dtype != bool:
             raise ValueError("Solution should be a 1D boolean array.")
 

@@ -26,7 +26,7 @@ from torch import Tensor
 import numpy as np
 from typing import Optional, Tuple
 import functools
-from .c_astar_src.c_astar import c_astar
+# from .c_astar_src.c_astar import c_astar
 
 def hungarian(s: np.ndarray, n1: np.ndarray = None, n2: np.ndarray = None,
               unmatch1: Tensor = None, unmatch2: Tensor = None,

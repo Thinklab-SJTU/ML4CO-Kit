@@ -1,5 +1,5 @@
 r"""
-RLSA Solver.
+RLSA (Regularized Langevin Simulated Annealing)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -25,6 +25,17 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
 class RLSASolver(SolverBase):
+    """
+    RLSA: https://github.com/Shengyu-Feng/RLD4CO
+    @inproceedings{
+        feng2025regularizedlangevindynamicscombinatorial,
+        title={Regularized Langevin Dynamics for Combinatorial Optimization}, 
+        author={Shengyu Feng and Yiming Yang},
+        booktitle={International conference on machine learning},
+        year={2025},
+        organization={PMLR}
+    }
+    """
     def __init__(
         self, 
         rlsa_init_type: str = "uniform",

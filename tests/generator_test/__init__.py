@@ -17,24 +17,29 @@ Generator Test Module.
 from .base import GenTesterBase
 
 # Routing Problems
-from .atsp import ATSPGenTester
-from .cvrp import CVRPGenTester
-from .op import OPGenTester
-from .pctsp import PCTSPGenTester
-from .spctsp import SPCTSPGenTester
-from .tsp import TSPGenTester
+from .routing.atsp import ATSPGenTester
+from .routing.cvrp import CVRPGenTester
+from .routing.op import OPGenTester
+from .routing.pctsp import PCTSPGenTester
+from .routing.spctsp import SPCTSPGenTester
+from .routing.tsp import TSPGenTester
 
 # Graph Problems
-from .mcut import MCutGenTester
-from .mcl import MClGenTester
-from .mis import MISGenTester
-from .mvc import MVCGenTester
+from .graph.mcut import MCutGenTester
+from .graph.mcl import MClGenTester
+from .graph.mis import MISGenTester
+from .graph.mvc import MVCGenTester
 
 # Graph Set Problem
-from .gm import GMGenTester
-from .ged import GEDGenTester
+from .graphset.gm import GMGenTester
+from .graphset.ged import GEDGenTester
 
 # Portfolio Problems
-from .minvarpo import MinVarPOGenTester
-from .maxretpo import MaxRetPOGenTester
-from .mopo import MOPOGenTester
+from .portfolio.minvarpo import MinVarPOGenTester
+from .portfolio.maxretpo import MaxRetPOGenTester
+from .portfolio.mopo import MOPOGenTester
+
+# SAT Problems
+from .sat.satp import SATPGenTester
+from .sat.sata import SATAGenTester
+from .sat.usatc import USATCGenTester

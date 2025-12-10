@@ -226,6 +226,19 @@ class GraphGeneratorBase(GeneratorBase):
         }
     
     def _generate_barabasi_albert(self) -> GraphTaskBase:
+        """
+        @article{
+            barabasi1999emergence,
+            title={Emergence of scaling in random networks},
+            author={Barab{\'a}si, Albert-L{\'a}szl{\'o} and Albert, R{\'e}ka},
+            journal={science},
+            volume={286},
+            number={5439},
+            pages={509--512},
+            year={1999},
+            publisher={American Association for the Advancement of Science}
+        }
+        """
         # Generate Barabasi-Albert graph
         nx_graph: nx.Graph = nx.barabasi_albert_graph(
             n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
@@ -238,6 +251,17 @@ class GraphGeneratorBase(GeneratorBase):
         return self._create_instance(nx_graph)
 
     def _generate_erdos_renyi(self) -> GraphTaskBase:
+        """
+        @article{
+            erd6s1960evolution,
+            title={On the evolution of random graphs},
+            author={Erd6s, Paul and R{\'e}nyi, Alfr{\'e}d},
+            journal={Publ. Math. Inst. Hungar. Acad. Sci},
+            volume={5},
+            pages={17--61},
+            year={1960}
+        }
+        """
         # Generate Erdos-Renyi graph
         nx_graph: nx.Graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
         
@@ -248,6 +272,19 @@ class GraphGeneratorBase(GeneratorBase):
         return self._create_instance(nx_graph)
     
     def _generate_holme_kim(self) -> GraphTaskBase:
+        """
+        @article{
+            holme2002growing,
+            title={Growing scale-free networks with tunable clustering},
+            author={Holme, Petter and Kim, Beom Jun},
+            journal={Physical review E},
+            volume={65},
+            number={2},
+            pages={026107},
+            year={2002},
+            publisher={APS}
+        }
+        """
         # Generate Holme-Kim graph
         nx_graph: nx.Graph = nx.powerlaw_cluster_graph(
             n=self.nodes_num, 
@@ -262,6 +299,19 @@ class GraphGeneratorBase(GeneratorBase):
         return self._create_instance(nx_graph)
     
     def _generate_watts_strogatz(self) -> GraphTaskBase:
+        """
+        @article{
+            watts1998collective,
+            title={Collective dynamics of small-world networks},
+            author={Watts, Duncan J and Strogatz, Steven H},
+            journal={nature},
+            volume={393},
+            number={6684},
+            pages={440--442},
+            year={1998},
+            publisher={Nature Publishing Group}
+        }
+        """
         # Generate Watts-Strogatz graph
         nx_graph: nx.Graph = nx.watts_strogatz_graph(
             n=self.nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
@@ -274,6 +324,15 @@ class GraphGeneratorBase(GeneratorBase):
         return self._create_instance(nx_graph)
     
     def _generate_rb(self) -> GraphTaskBase:
+        """
+        @article{
+            xu2005simple,
+            title={A simple model to generate hard satisfiable instances},
+            author={Xu, Ke and Boussemart, Fr{\'e}d{\'e}ric and Hemery, Fred and Lecoutre, Christophe},
+            journal={arXiv preprint cs/0509032},
+            year={2005}
+        }
+        """
         # Get params for RB model (n, k, a)
         while True:
             rb_n = np.random.randint(self.rb_n_min, self.rb_n_max)

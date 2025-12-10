@@ -480,7 +480,7 @@ class PortfolioGeneratorBase(GeneratorBase):
     def _cal_log_returns_and_cov(self, logR: np.ndarray) -> PortfolioTaskBase:
         cov = np.cov(logR, rowvar=False)
         returns = np.mean(logR, axis=0)
-        return self._create_task(returns, cov)
+        return self._create_instance(returns, cov)
 
-    def _create_task(self, returns: np.ndarray, cov: np.ndarray) -> PortfolioTaskBase:
+    def _create_instance(self, returns: np.ndarray, cov: np.ndarray) -> PortfolioTaskBase:
         raise NotImplementedError("Subclasses of PortfolioGeneratorBase must implement this method.")

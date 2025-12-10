@@ -15,10 +15,11 @@ Generator for SAT-P (Satisfiability Prediction) task instances.
 
 
 import numpy as np
-from typing import Union, List, Optional
+import pysat.solvers
+from typing import Union, Callable
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.sat import SATPTask
-from ml4co_kit.generator.sat.base import SATGeneratorBase, SAT_DISTRIBUTION
+from ml4co_kit.generator.sat.base import SATGeneratorBase, SAT_TYPE
 
 
 class SATPGenerator(SATGeneratorBase):
@@ -26,189 +27,121 @@ class SATPGenerator(SATGeneratorBase):
     
     def __init__(
         self,
-        distribution_type: SAT_DISTRIBUTION = SAT_DISTRIBUTION.UNIFORM_RANDOM,
+        distribution_type: SAT_TYPE = SAT_TYPE.PHASE,
         precision: Union[np.float32, np.float64] = np.float32,
-        vars_num: int = 50,
-        clauses_num: Optional[int] = None,
-        clause_length: int = 3,
-        seed: Optional[int] = None,
+        # special args for phase
+        phase_n_range: tuple = (10, 40),
+        phase_k: int = 3,
+        phase_alpha: float = 4.26,
+        # special args for sr
+        sr_n_range: tuple = (10, 40),
+        sr_b: float = 0.3,
+        sr_g: float = 0.4,
+        # special args for ca
+        ca_n_range: tuple = (10, 40),
+        ca_mn_range: tuple = (13, 15),
+        ca_k_range: tuple = (4, 5),
+        ca_c_range: tuple = (3, 10),
+        ca_q_range: tuple = (0.7, 0.9),
+        # special args for ps
+        ps_n_range: tuple = (10, 40),
+        ps_mn_range: tuple = (6, 8),
+        ps_k_range: tuple = (4, 5),
+        ps_beta_range: tuple = (0.0, 1.0),
+        ps_beta_prime: float = 1.0,
+        ps_t_range: tuple = (0.75, 1.5),
+        # special args for k_clique
+        k_clique_v_range: tuple = (15, 20),
+        k_clique_k_range: tuple = (3, 5),
+        # special args for k_domset
+        k_domset_v_range: tuple = (15, 20),
+        k_domset_k_range: tuple = (3, 5),
+        # special args for k_vercov
+        k_vercov_v_range: tuple = (10, 20),
+        k_vercov_k_range: tuple = (6, 8),
+        # base solver
+        base_solver: str = "cadical195"
     ):
         # Super Initialization
         super(SATPGenerator, self).__init__(
             task_type=TASK_TYPE.SATP,
             distribution_type=distribution_type,
             precision=precision,
-            vars_num=vars_num,
-            clauses_num=clauses_num,
-            clause_length=clause_length,
-            seed=seed
+            phase_n_range=phase_n_range,
+            phase_k=phase_k,
+            phase_alpha=phase_alpha,
+            sr_n_range=sr_n_range,
+            sr_b=sr_b,
+            sr_g=sr_g,
+            ca_n_range=ca_n_range,
+            ca_mn_range=ca_mn_range,
+            ca_k_range=ca_k_range,
+            ca_c_range=ca_c_range,
+            ca_q_range=ca_q_range,
+            ps_n_range=ps_n_range,
+            ps_k_range=ps_k_range,
+            ps_mn_range=ps_mn_range,
+            ps_beta_range=ps_beta_range,
+            ps_beta_prime=ps_beta_prime,
+            ps_t_range=ps_t_range,
+            k_clique_v_range=k_clique_v_range,
+            k_clique_k_range=k_clique_k_range,
+            k_domset_v_range=k_domset_v_range,
+            k_domset_k_range=k_domset_k_range,
+            k_vercov_v_range=k_vercov_v_range,
+            k_vercov_k_range=k_vercov_k_range,
+            base_solver=base_solver
         )
+
+    def _create_instance(self, gen_func: Callable) -> SATPTask:
+        # Create SAT-P task
+        task_data = SATPTask(precision=self.precision)
+
+        # Generate SAT clauses
+        clauses = gen_func()
         
-        # Generation function dictionary
-        self.generate_func_dict = {
-            SAT_DISTRIBUTION.UNIFORM_RANDOM: self._generate_uniform_random,
-            SAT_DISTRIBUTION.PHASE_TRANSITION: self._generate_phase_transition,
-            SAT_DISTRIBUTION.PLANTED: self._generate_planted,
-            SAT_DISTRIBUTION.SR: self._generate_sr,
-        }
-    
-    def _create_instance(
-        self, 
-        clauses: List[List[int]], 
-        satisfiable: bool,
-        **kwargs
-    ) -> SATPTask:
-        """Create a SAT-P task instance."""
-        task = SATPTask(precision=self.precision)
-        task.from_data(
-            clauses=clauses,
-            vars_num=self.vars_num,
-            satisfiable=satisfiable
-        )
-        return task
-    
-    def _generate_uniform_random(self) -> SATPTask:
-        """Generate standard k-SAT instance with uniform random clauses."""
-        clauses = []
-        for _ in range(self.clauses_num):
-            clause = self._generate_random_clause()
-            clauses.append(clause)
-        
-        # Use SAT solver to check satisfiability
-        satisfiable = self._check_satisfiable(clauses)
-        
-        return self._create_instance(clauses, satisfiable)
-    
-    def _generate_phase_transition(self) -> SATPTask:
-        """Generate instance near the satisfiability phase transition."""
-        # Use precise phase transition formula
-        if self.clause_length == 3:
-            # G4SATBench formula: α_c ≈ 4.258 + 58.26 * n^(-2/3)
-            alpha_c = 4.258 + 58.26 * (self.vars_num ** (-2.0/3.0))
-            num_clauses = int(alpha_c * self.vars_num)
+        # Call Base Solver to check satisfiability
+        solver = pysat.solvers.Solver(self.base_solver, bootstrap_with=clauses)
+        if solver.solve():
+            task_data.from_data(
+                clauses=clauses, satisfiable=True, sol=True, ref=True
+            )
         else:
-            alpha_c = (2 ** self.clause_length) * np.log(2)
-            num_clauses = int(alpha_c * self.vars_num)
-        
-        clauses = []
-        for _ in range(num_clauses):
-            clause = self._generate_random_clause()
-            clauses.append(clause)
-        
-        satisfiable = self._check_satisfiable(clauses)
-        
-        return self._create_instance(clauses, satisfiable)
-    
-    def _generate_planted(self) -> SATPTask:
-        """Generate SAT instance with planted solution (guaranteed SAT)."""
-        # Generate planted solution
-        solution = np.random.randint(0, 2, self.vars_num).astype(bool)
-        
-        clauses = []
-        for _ in range(self.clauses_num):
-            # Generate clause that is satisfied by the planted solution
-            clause = self._generate_satisfying_clause(solution)
-            clauses.append(clause)
-        
-        return self._create_instance(clauses, satisfiable=True)
-    
-    def _generate_satisfying_clause(self, solution: np.ndarray) -> List[int]:
-        """Generate a clause satisfied by the given solution."""
-        while True:
-            clause = self._generate_random_clause()
-            
-            # Check if clause is satisfied
-            satisfied = False
-            for lit in clause:
-                var_idx = abs(lit) - 1
-                if (lit > 0 and solution[var_idx]) or (lit < 0 and not solution[var_idx]):
-                    satisfied = True
-                    break
-            
-            if satisfied:
-                return clause
-            
-            # If not satisfied, flip one literal to make it satisfied
-            lit_to_flip = clause[0]
-            var_idx = abs(lit_to_flip) - 1
-            if solution[var_idx]:
-                clause[0] = abs(lit_to_flip)  # Make it positive
-            else:
-                clause[0] = -abs(lit_to_flip)  # Make it negative
-            return clause
-    
+            task_data.from_data(
+                clauses=clauses, satisfiable=False, sol=False, ref=True
+            )
+        return task_data
+
+    def _generate_phase(self) -> SATPTask:
+        return self._create_instance(self._super_generate_phase)
+
     def _generate_sr(self) -> SATPTask:
-        """
-        Generate instance using Satisfiability Resolution (SR) method.
-        This creates instances near the SAT/UNSAT boundary.
-        """
-        try:
-            from pysat.solvers import Glucose3
-        except ImportError:
-            print("Warning: python-sat not installed, falling back to uniform random")
-            return self._generate_uniform_random()
+        # Call `_super_generate_sr` to generate SAT clauses
+        unsat_clauses, sat_clauses, _ = self._super_generate_sr()
         
-        max_attempts = 100
-        for attempt in range(max_attempts):
-            solver = Glucose3()
-            clauses = []
-            
-            # Incrementally add clauses until UNSAT or reaching max
-            while len(clauses) < self.clauses_num * 2:  # Allow more clauses
-                # Generate random clause with variable length
-                k = self._sample_clause_length()
-                clause = self._generate_random_clause(k)
-                
-                # Add to solver and check
-                solver.add_clause(clause)
-                
-                if solver.solve():
-                    clauses.append(clause)
-                else:
-                    # Reached UNSAT
-                    solver.delete()
-                    
-                    # Return SAT instance (without last clause)
-                    if np.random.random() < 0.5 and len(clauses) > 0:
-                        return self._create_instance(clauses, satisfiable=True)
-                    # Return UNSAT instance (with last clause)
-                    else:
-                        clauses.append(clause)
-                        return self._create_instance(clauses, satisfiable=False)
-            
-            solver.delete()
-            
-            # If reached max clauses and still SAT
-            if len(clauses) >= self.clauses_num:
-                return self._create_instance(clauses[:self.clauses_num], satisfiable=True)
-        
-        # Fallback
-        return self._generate_uniform_random()
-    
-    def _sample_clause_length(self) -> int:
-        """Sample clause length for SR generation (following G4SATBench)."""
-        p_k_2 = 0.3  # Probability of k=2
-        p_geo = 0.4  # Geometric distribution parameter
-        
-        if np.random.random() < p_k_2:
-            k_base = 1
+        # Create SAT-P task
+        task_data = SATPTask(precision=self.precision)
+        if np.random.random() < 0.5:
+            task_data.from_data(
+                clauses=unsat_clauses, satisfiable=False, sol=False, ref=True
+            )
         else:
-            k_base = 2
-        
-        k = k_base + np.random.geometric(p_geo)
-        return min(k, self.vars_num)
-    
-    def _check_satisfiable(self, clauses: List[List[int]]) -> bool:
-        """Check if clauses are satisfiable using SAT solver."""
-        try:
-            from pysat.solvers import Glucose3
-            solver = Glucose3()
-            for clause in clauses:
-                solver.add_clause(clause)
-            result = solver.solve()
-            solver.delete()
-            return result
-        except ImportError:
-            # If pysat not available, randomly assign (for testing only)
-            print("Warning: python-sat not installed, randomly assigning satisfiability")
-            return np.random.random() < 0.5
+            task_data.from_data(
+                clauses=sat_clauses, satisfiable=True, sol=True, ref=True
+            )
+        return task_data
+
+    def _generate_ca(self) -> SATPTask:
+        return self._create_instance(self._super_generate_ca)
+
+    def _generate_ps(self) -> SATPTask:
+        return self._create_instance(self._super_generate_ps)
+
+    def _generate_k_clique(self) -> SATPTask:
+        pass
+
+    def _generate_k_domset(self) -> SATPTask:
+        pass
+
+    def _generate_k_vercov(self) -> SATPTask:
+        pass  

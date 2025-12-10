@@ -23,6 +23,7 @@ from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 
 
+
 class Graph:
     def __init__(
         self,

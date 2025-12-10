@@ -1,5 +1,5 @@
 r"""
-RLSA Solver.
+ISCO (Improved Sampling Algorithm for Combinatorial Optimization)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -26,6 +26,28 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
 class ISCOSolver(SolverBase):
+    """
+    DISCS: https://github.com/google-research/discs
+    @article{
+        goshvadi2023discs,
+        title={Discs: a benchmark for discrete sampling},
+        author={Goshvadi, Katayoon and Sun, Haoran and Liu, Xingchao and Nova, \
+            Azade and Zhang, Ruqi and Grathwohl, Will and Schuurmans, Dale and Dai, Hanjun},
+        journal={Advances in Neural Information Processing Systems},
+        volume={36},
+        pages={79035--79066},
+        year={2023}
+    }
+    @inproceedings{
+        sun2023revisiting,
+        title={Revisiting sampling for combinatorial optimization},
+        author={Sun, Haoran and Goshvadi, Katayoon and Nova, Azade and Schuurmans, Dale and Dai, Hanjun},
+        booktitle={International Conference on Machine Learning},
+        pages={32859--32874},
+        year={2023},
+        organization={PMLR}
+    }
+    """
     def __init__(
         self, 
         isco_init_type: str = "uniform",

@@ -15,4 +15,4 @@ SAT Task Module.
 from .base import SATTaskBase
 from .satp import SATPTask
 from .sata import SATATask
-from .unsatc import USATCTask
+from .usatc import USATCTask
