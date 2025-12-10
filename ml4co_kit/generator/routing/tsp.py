@@ -76,12 +76,12 @@ class TSPGenerator(RoutingGeneratorBase):
         coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num, 2))
 
         # Create TSP Instance from Data
-        data = TSPTask(
+        task_data = TSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(points=coords)
+        task_data.from_data(points=coords)
         return data
 
     def _generate_gaussian(self) -> TSPTask:
@@ -93,13 +93,13 @@ class TSPGenerator(RoutingGeneratorBase):
         )
         
         # Create TSP Instance from Data
-        data = TSPTask(
+        task_data = TSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(points=coords)
-        return data
+        task_data.from_data(points=coords)
+        return task_data
 
     def _generate_cluster(self) -> TSPTask:
         # Ensure cluster_nums is less than or equal to nodes_num
@@ -129,10 +129,10 @@ class TSPGenerator(RoutingGeneratorBase):
         coords = cluster_centers.astype(self.precision)
 
         # Create TSP Instance from Data
-        data = TSPTask(
+        task_data = TSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(points=coords)
-        return data
+        task_data.from_data(points=coords)
+        return task_data

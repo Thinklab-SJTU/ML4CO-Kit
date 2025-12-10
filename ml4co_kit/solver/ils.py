@@ -1,5 +1,5 @@
 r"""
-ILS (Iterated Local Search) Solver.
+ILS (Iterated Local Search).
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -22,6 +22,18 @@ from ml4co_kit.solver.lib.ils.spctsp_ils import spctsp_ils
 
 
 class ILSSolver(SolverBase):
+    """
+    ILS-PCTSP: https://github.com/jordanamecler/PCTSP
+    
+    ILS-SPCTSP: https://github.com/wouterkool/attention-learn-to-route
+    @article{
+        kool2018attention,
+        title={Attention, learn to solve routing problems!},
+        author={Kool, Wouter and Van Hoof, Herke and Welling, Max},
+        journal={arXiv preprint arXiv:1803.08475},
+        year={2018}
+    }
+    """
     def __init__(
         self, 
         ils_scale: int = 1e6,

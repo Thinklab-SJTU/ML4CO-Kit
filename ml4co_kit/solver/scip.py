@@ -1,5 +1,5 @@
 r"""
-SCIP Solver for Portfolio Optimization Problems.
+SCIP (Solving Constraint Integer Programs)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -26,6 +26,10 @@ from ml4co_kit.solver.lib.scip.minvarpo_scip import minvarpo_scip
 
 
 class SCIPSolver(SolverBase):
+    """
+    SCIP: https://github.com/scipopt/scip
+    PySCIPOpt: https://github.com/scipopt/PySCIPOpt
+    """
     def __init__(
         self,
         scip_time_limit: float = 10.0,

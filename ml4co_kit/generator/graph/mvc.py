@@ -69,10 +69,10 @@ class MVCGenerator(GraphGeneratorBase):
         )
         
     def _create_instance(self, nx_graph: nx.Graph) -> MVCTask:
-        data = MVCTask(
+        task_data = MVCTask(
             node_weighted=self.node_weighted,
             precision=self.precision
         )
-        data.from_networkx(nx_graph)
-        data.remove_self_loop()
-        return data
+        task_data.from_networkx(nx_graph)
+        task_data.remove_self_loop()
+        return task_data

@@ -1,5 +1,5 @@
 r"""
-Global Prediction Degree Solver.
+GP-Degree (Manual Heuristic)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

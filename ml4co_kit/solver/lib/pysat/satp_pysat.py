@@ -13,17 +13,22 @@ PySAT Solver for SAT-P
 # See the Mulan PSL v2 for more details.
 
 
-from pysat.solvers import Glucose3
+import pysat.solvers
 from ml4co_kit.task.sat.satp import SATPTask
 
 
-def satp_pysat(task_data: SATPTask):
-    solver = Glucose3()
-    
+def satp_pysat(
+    task_data: SATPTask, solver_name: str, solver_args: dict
+):
+    # Create solver
+    solver = pysat.solvers.Solver(solver_name, **solver_args)
+
+    # Add clauses to solver
     for clause in task_data.clauses:
         solver.add_clause(clause)
     
+    # Solve the problem
     satisfiable = solver.solve()
-    solver.delete()
-    
-    task_data.sol = satisfiable
+
+    # Store the solution
+    task_data.from_data(sol=satisfiable, ref=False)

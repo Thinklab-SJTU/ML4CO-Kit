@@ -64,6 +64,15 @@ class ATSPGenerator(RoutingGeneratorBase):
         }
         
     def _generate_uniform(self) -> ATSPTask:
+        """
+        @inproceedings{
+            pan2025unico,
+            title={UniCO: On unified combinatorial optimization via problem reduction to matrix-encoded general TSP},
+            author={Pan, Wenzheng and Xiong, Hao and Ma, Jiale and Zhao, Wentao and Li, Yang and Yan, Junchi},
+            booktitle={The Thirteenth International Conference on Learning Representations},
+            year={2025}
+        }
+        """
         # Initialize dists
         dists = np.random.uniform(0.0, 1.0, size=(self.nodes_num, self.nodes_num))
         np.fill_diagonal(dists, 0)
@@ -76,15 +85,24 @@ class ATSPGenerator(RoutingGeneratorBase):
                 break
         
         # Create ATSP Instance from Data
-        data = ATSPTask(
+        task_data = ATSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(dists=dists)
-        return data
+        task_data.from_data(dists=dists)
+        return task_data
 
     def _generate_sat(self) -> ATSPTask:
+        """
+        @inproceedings{
+            pan2025unico,
+            title={UniCO: On unified combinatorial optimization via problem reduction to matrix-encoded general TSP},
+            author={Pan, Wenzheng and Xiong, Hao and Ma, Jiale and Zhao, Wentao and Li, Yang and Yan, Junchi},
+            booktitle={The Thirteenth International Conference on Learning Representations},
+            year={2025}
+        }
+        """
         # Get number of variables and clauses
         num_variables = self.sat_vars_nums
         num_clauses = self.sat_clauses_nums
@@ -170,15 +188,24 @@ class ATSPGenerator(RoutingGeneratorBase):
         sol = np.insert(sol, len(sol), 0)
         
         # Create ATSP Instance from Data
-        data = ATSPTask(
+        task_data = ATSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(dists=dists, sol=sol)
-        return data
+        task_data.from_data(dists=dists, sol=sol)
+        return task_data
         
     def _generate_hcp(self) -> ATSPTask:
+        """
+        @inproceedings{
+            pan2025unico,
+            title={UniCO: On unified combinatorial optimization via problem reduction to matrix-encoded general TSP},
+            author={Pan, Wenzheng and Xiong, Hao and Ma, Jiale and Zhao, Wentao and Li, Yang and Yan, Junchi},
+            booktitle={The Thirteenth International Conference on Learning Representations},
+            year={2025}
+        }
+        """
         # Preparation
         noise_level = np.random.rand() * 0.2 + 0.1
         num_nodes = self.nodes_num
@@ -206,10 +233,10 @@ class ATSPGenerator(RoutingGeneratorBase):
         sol = np.insert(sol, len(sol), 0)
         
         # Create ATSP Instance from Data
-        data = ATSPTask(
+        task_data = ATSPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(dists=dists, sol=sol)
-        return data
+        task_data.from_data(dists=dists, sol=sol)
+        return task_data

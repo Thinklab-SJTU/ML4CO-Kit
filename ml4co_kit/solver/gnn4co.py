@@ -1,5 +1,5 @@
 r"""
-Greedy Solver.
+GNN4CO (Graph Neural Network for Combinatorial Optimization)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -23,6 +23,15 @@ from ml4co_kit.extension.gnn4co.model.model import GNN4COModel
 
 
 class GNN4COSolver(SolverBase):
+    """
+    @inproceedings{
+        ma2025mlcobench,
+        title={ML4CO-Bench-101: Benchmark Machine Learning for Classic Combinatorial Problems on Graphs},
+        author={Jiale Ma and Wenzheng Pan and Yang Li and Junchi Yan},
+        booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
+        year={2025}
+    }
+    """
     def __init__(
         self, 
         model: GNN4COModel, 

@@ -43,11 +43,9 @@ class SATTaskBase(TaskBase):
         self.satisfiable: bool = None             # Whether the formula is satisfiable
 
     def _check_sol_dim(self):
-        """Ensure solution is a 1D array."""
         raise NotImplementedError("Subclasses should implement this method.")
 
     def _check_ref_sol_dim(self):
-        """Ensure reference solution is a 1D array."""
         raise NotImplementedError("Subclasses should implement this method.")
 
     def from_data(

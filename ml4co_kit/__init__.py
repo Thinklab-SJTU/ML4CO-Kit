@@ -46,8 +46,12 @@ if env_checker.check_torch():
 from .task import TaskBase, TASK_TYPE
 
 # Graph Task
-from .task import GraphTaskBase
+from .task import GraphTaskBase 
 from .task import MClTask, MCutTask, MISTask, MVCTask
+
+# Graph Set Task
+from .task import Graph, Graph, GraphSetTaskBase
+from .task import GMTask, GEDTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
@@ -76,6 +80,14 @@ from .generator import (
 )
 from .generator import MClGenerator, MCutGenerator, MISGenerator, MVCGenerator
 
+# GraphSet Generator
+from .generator import (
+    GraphFeatureGenerator, GraphSetGeneratorBase, 
+    GRAPH_TYPE, GRAPH_FEATURE_TYPE, 
+)
+from .generator import GMGenerator
+from .generator import GEDGenerator
+
 # Portfolio Generator
 from .generator import PortfolioGeneratorBase, PO_TYPE, PortfolioDistributionArgs
 from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
@@ -92,7 +104,7 @@ from .generator import (
 )
 
 # SAT Generator
-from .generator import SATGeneratorBase, SAT_DISTRIBUTION
+from .generator import SATGeneratorBase, SAT_TYPE
 from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 
 
@@ -105,15 +117,15 @@ from .solver import SolverBase, SOLVER_TYPE
 # Solver (not use torch backend)
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
-    HGSSolver, ILSSolver, InsertionSolver, ISCOSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, RandomSolver, SCIPSolver
+    HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
+    LcDegreeSolver, LKHSolver, ORSolver, SMSolver, IPFPSolver, RRWMSolver
 )
 
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import NeuroLKHSolver, RLSASolver
+    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver
 
 
 ####################################################
@@ -153,9 +165,19 @@ from .wrapper import (
     MClWrapper, MCutWrapper, MISWrapper, MVCWrapper
 )
 
+# Graph Set Problems
+from .wrapper import(
+    GMWrapper, GEDWrapper
+)
+
 # Portfolio Problems
 from .wrapper import (
     MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
+)
+
+# SAT Problems
+from .wrapper import (
+    SATPWrapper, SATAWrapper, USATCWrapper
 )
 
 
@@ -168,10 +190,6 @@ if env_checker.pytorch_lightning_support:
         BaseEnv, BaseModel, Trainer, Checkpoint, Logger
     )
     
-
-####################################################
-#                Version and Author                #
-####################################################
 
 __version__ = "0.4.2"
 __author__ = "SJTU-ReThinkLab"

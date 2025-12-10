@@ -15,10 +15,11 @@ Generator for SAT-A (Satisfying Assignment Prediction) task instances.
 
 
 import numpy as np
-from typing import Union, List, Optional
-from ml4co_kit.task.base import TASK_TYPE
+import pysat.solvers
+from typing import Union, Callable
 from ml4co_kit.task.sat import SATATask
-from ml4co_kit.generator.sat.base import SATGeneratorBase, SAT_DISTRIBUTION
+from ml4co_kit.task.base import TASK_TYPE
+from ml4co_kit.generator.sat.base import SATGeneratorBase, SAT_TYPE
 
 
 class SATAGenerator(SATGeneratorBase):
@@ -26,126 +27,117 @@ class SATAGenerator(SATGeneratorBase):
     
     def __init__(
         self,
-        distribution_type: SAT_DISTRIBUTION = SAT_DISTRIBUTION.PLANTED,
+        distribution_type: SAT_TYPE = SAT_TYPE.PHASE,
         precision: Union[np.float32, np.float64] = np.float32,
-        vars_num: int = 50,
-        clauses_num: Optional[int] = None,
-        clause_length: int = 3,
-        seed: Optional[int] = None,
+        # special args for phase
+        phase_n_range: tuple = (10, 40),
+        phase_k: int = 3,
+        phase_alpha: float = 4.26,
+        # special args for sr
+        sr_n_range: tuple = (10, 40),
+        sr_b: float = 0.3,
+        sr_g: float = 0.4,
+        # special args for ca
+        ca_n_range: tuple = (10, 40),
+        ca_mn_range: tuple = (13, 15),
+        ca_k_range: tuple = (4, 5),
+        ca_c_range: tuple = (3, 10),
+        ca_q_range: tuple = (0.7, 0.9),
+        # special args for ps
+        ps_n_range: tuple = (10, 40),
+        ps_mn_range: tuple = (6, 8),
+        ps_k_range: tuple = (4, 5),
+        ps_beta_range: tuple = (0.0, 1.0),
+        ps_beta_prime: float = 1.0,
+        ps_t_range: tuple = (0.75, 1.5),
+        # special args for k_clique
+        k_clique_v_range: tuple = (15, 20),
+        k_clique_k_range: tuple = (3, 5),
+        # special args for k_domset
+        k_domset_v_range: tuple = (15, 20),
+        k_domset_k_range: tuple = (3, 5),
+        # special args for k_vercov
+        k_vercov_v_range: tuple = (10, 20),
+        k_vercov_k_range: tuple = (6, 8),
+        # base solver
+        base_solver: str = "cadical195"
     ):
         # Super Initialization
         super(SATAGenerator, self).__init__(
             task_type=TASK_TYPE.SATA,
             distribution_type=distribution_type,
             precision=precision,
-            vars_num=vars_num,
-            clauses_num=clauses_num,
-            clause_length=clause_length,
-            seed=seed
+            phase_n_range=phase_n_range,
+            phase_k=phase_k,
+            phase_alpha=phase_alpha,
+            sr_n_range=sr_n_range,
+            sr_b=sr_b,
+            sr_g=sr_g,
+            ca_n_range=ca_n_range,
+            ca_mn_range=ca_mn_range,
+            ca_k_range=ca_k_range,
+            ca_c_range=ca_c_range,
+            ca_q_range=ca_q_range,
+            ps_n_range=ps_n_range,
+            ps_k_range=ps_k_range,
+            ps_mn_range=ps_mn_range,
+            ps_beta_range=ps_beta_range,
+            ps_beta_prime=ps_beta_prime,
+            ps_t_range=ps_t_range,
+            k_clique_v_range=k_clique_v_range,
+            k_clique_k_range=k_clique_k_range,
+            k_domset_v_range=k_domset_v_range,
+            k_domset_k_range=k_domset_k_range,
+            k_vercov_v_range=k_vercov_v_range,
+            k_vercov_k_range=k_vercov_k_range,
+            base_solver=base_solver
         )
-        
-        # Generation function dictionary
-        # SAT-A only generates SAT instances
-        self.generate_func_dict = {
-            SAT_DISTRIBUTION.PLANTED: self._generate_planted,
-            SAT_DISTRIBUTION.UNIFORM_RANDOM: self._generate_uniform_random_sat,
-        }
+
+    def _idx2bool(self, idx: np.ndarray) -> np.ndarray:
+        bool_sol = np.zeros_like(idx, dtype=np.bool_)
+        bool_sol[idx > 0] = True
+        bool_sol[idx < 0] = False
+        return bool_sol
     
-    def _create_instance(
-        self, 
-        clauses: List[List[int]], 
-        solution: np.ndarray,
-        **kwargs
-    ) -> SATATask:
-        """Create a SAT-A task instance."""
-        task = SATATask(precision=self.precision)
-        task.from_data(
-            clauses=clauses,
-            vars_num=self.vars_num,
-            sol=solution,
-            ref=True  # This is a reference solution
-        )
-        return task
-    
-    def _generate_planted(self) -> SATATask:
-        """Generate SAT instance with planted solution."""
-        # Generate planted solution
-        solution = np.random.randint(0, 2, self.vars_num).astype(bool)
-        
-        clauses = []
-        for _ in range(self.clauses_num):
-            # Generate clause satisfied by the solution
-            clause = self._generate_satisfying_clause(solution)
-            clauses.append(clause)
-        
-        return self._create_instance(clauses, solution)
-    
-    def _generate_satisfying_clause(self, solution: np.ndarray) -> List[int]:
-        """Generate a clause satisfied by the given solution."""
+    def _create_instance(self, gen_func: Callable) -> SATATask:
+        # Generate SAT clauses (until the clauses are satisfiable)
         while True:
-            clause = self._generate_random_clause()
-            
-            # Check if at least one literal is satisfied
-            satisfied = False
-            for lit in clause:
-                var_idx = abs(lit) - 1
-                if (lit > 0 and solution[var_idx]) or (lit < 0 and not solution[var_idx]):
-                    satisfied = True
-                    break
-            
-            if satisfied:
-                return clause
-            
-            # If not satisfied, flip one literal to satisfy it
-            lit_to_flip = np.random.choice(len(clause))
-            var_idx = abs(clause[lit_to_flip]) - 1
-            
-            if solution[var_idx]:
-                clause[lit_to_flip] = abs(clause[lit_to_flip])  # Make positive
-            else:
-                clause[lit_to_flip] = -abs(clause[lit_to_flip])  # Make negative
-            
-            return clause
-    
-    def _generate_uniform_random_sat(self) -> SATATask:
-        """
-        Generate uniform random SAT instance and find solution using solver.
-        Warning: This may fail if instance is UNSAT.
-        """
-        try:
-            from pysat.solvers import Glucose3
-        except ImportError:
-            print("Warning: python-sat not installed, using planted generation")
-            return self._generate_planted()
-        
-        max_attempts = 100
-        for attempt in range(max_attempts):
-            clauses = []
-            for _ in range(self.clauses_num):
-                clause = self._generate_random_clause()
-                clauses.append(clause)
-            
-            # Check if SAT and get solution
-            solver = Glucose3()
-            for clause in clauses:
-                solver.add_clause(clause)
-            
+            clauses = gen_func()
+            solver = pysat.solvers.Solver(self.base_solver, bootstrap_with=clauses)
             if solver.solve():
-                # Get model (solution)
-                model = solver.get_model()
-                solver.delete()
-                
-                # Convert model to boolean array
-                solution = np.zeros(self.vars_num, dtype=bool)
-                for lit in model:
-                    if abs(lit) <= self.vars_num:
-                        var_idx = abs(lit) - 1
-                        solution[var_idx] = (lit > 0)
-                
-                return self._create_instance(clauses, solution)
-            
-            solver.delete()
+                sol = solver.get_model()
+                break
         
-        # If all attempts failed, use planted generation
-        print(f"Warning: Failed to generate SAT instance after {max_attempts} attempts, using planted")
-        return self._generate_planted()
+        # Create SAT-A task
+        task_data = SATATask(precision=self.precision)
+        bool_sol = self._idx2bool(np.array(sol))
+        task_data.from_data(clauses=clauses, sol=bool_sol, ref=True)
+        return task_data
+
+    def _generate_phase(self) -> SATATask:
+        return self._create_instance(self._super_generate_phase)
+
+    def _generate_sr(self) -> SATATask:
+        # Call `_super_generate_sr` to generate SAT clauses
+        _, sat_clauses, sat_sol = self._super_generate_sr()
+        
+        # Create SAT-A task
+        task_data = SATATask(precision=self.precision)
+        bool_sol = self._idx2bool(np.array(sat_sol))
+        task_data.from_data(clauses=sat_clauses, sol=bool_sol, ref=True)
+        return task_data
+
+    def _generate_ca(self) -> SATATask:
+        return self._create_instance(self._super_generate_ca)
+
+    def _generate_ps(self) -> SATATask:
+        return self._create_instance(self._super_generate_ps)
+
+    def _generate_k_clique(self) -> SATATask:
+        pass
+
+    def _generate_k_domset(self) -> SATATask:
+        pass
+
+    def _generate_k_vercov(self) -> SATATask:
+        pass

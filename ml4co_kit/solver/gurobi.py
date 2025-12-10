@@ -1,5 +1,5 @@
 r"""
-Gurobi Solver.
+Gurobi (Commercial Closed-Source Solver)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -34,6 +34,9 @@ from ml4co_kit.solver.lib.gurobi.unsatc_gurobi import unsatc_gurobi
 
 
 class GurobiSolver(SolverBase):
+    """
+    Gurobi: https://www.gurobi.com/
+    """
     def __init__(
         self, 
         gurobi_time_limit: float = 10.0, 

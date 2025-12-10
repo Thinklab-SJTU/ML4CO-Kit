@@ -47,11 +47,11 @@ class MaxRetPOGenerator(PortfolioGeneratorBase):
         self.max_var = max_var
         self.max_var_ratio = max_var_ratio
 
-    def _create_task(self, returns: np.ndarray, cov: np.ndarray) -> MaxRetPOTask:
+    def _create_instance(self, returns: np.ndarray, cov: np.ndarray) -> MaxRetPOTask:
         if self.max_var is None:
             self.max_var = np.max(np.diag(cov)) * self.max_var_ratio
-        data = MaxRetPOTask(precision=self.precision)
-        data.from_data(
+        task_data = MaxRetPOTask(precision=self.precision)
+        task_data.from_data(
             returns=returns, cov=cov, max_var=self.max_var 
         )
-        return data
+        return task_data

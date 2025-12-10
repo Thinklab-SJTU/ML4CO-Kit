@@ -74,7 +74,18 @@ class CVRPGenerator(RoutingGeneratorBase):
         }
     
     def _generate_demands_and_capacity(self) -> Tuple[np.ndarray, int]:
-        """Generate demands and capacity"""
+        """
+        Generate demands and capacity
+
+        @article{
+            nazari2018reinforcement,
+            title={Reinforcement learning for solving the vehicle routing problem},
+            author={Nazari, Mohammadreza and Oroojlooy, Afshin and Snyder, Lawrence and Tak{\'a}c, Martin},
+            journal={Advances in neural information processing systems},
+            volume={31},
+            year={2018}
+        }
+        """
         demands = np.random.randint(
             self.min_demand, self.max_demand+1, size=(self.nodes_num,)
         )
@@ -91,15 +102,15 @@ class CVRPGenerator(RoutingGeneratorBase):
         points = coords[1:]
         
         # Create CVRP Instance from Data
-        data = CVRPTask(
+        task_data = CVRPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(
+        task_data.from_data(
             depots=depots, points=points, demands=demands, capacity=capacity
         )
-        return data
+        return task_data
 
     def _generate_gaussian(self) -> CVRPTask:
         # Generate demands and capacity
@@ -115,12 +126,12 @@ class CVRPGenerator(RoutingGeneratorBase):
         points = coords[1:]
         
         # Create CVRP Instance from Data
-        data = CVRPTask(
+        task_data = CVRPTask(
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision
         )
-        data.from_data(
+        task_data.from_data(
             depots=depots, points=points, demands=demands, capacity=capacity
         )
-        return data
+        return task_data

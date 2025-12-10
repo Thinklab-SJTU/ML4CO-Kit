@@ -5,20 +5,29 @@ Wrapper Module.
 from .base import WrapperBase
 
 # Routing Problems
-from .atsp import ATSPWrapper
-from .cvrp import CVRPWrapper
-from .op import OPWrapper
-from .pctsp import PCTSPWrapper
-from .spctsp import SPCTSPWrapper
-from .tsp import TSPWrapper
+from .routing.atsp import ATSPWrapper
+from .routing.cvrp import CVRPWrapper
+from .routing.op import OPWrapper
+from .routing.pctsp import PCTSPWrapper
+from .routing.spctsp import SPCTSPWrapper
+from .routing.tsp import TSPWrapper
 
 # Graph Problems
-from .mcl import MClWrapper
-from .mcut import MCutWrapper
-from .mis import MISWrapper
-from .mvc import MVCWrapper
+from .graph.mcl import MClWrapper
+from .graph.mcut import MCutWrapper
+from .graph.mis import MISWrapper
+from .graph.mvc import MVCWrapper
 
-# Portfolio Optimization Problems
-from .maxretpo import MaxRetPOWrapper
-from .minvarpo import MinVarPOWrapper
-from .mopo import MOPOWrapper
+# GraphSet problems
+from .graphset.gm import GMWrapper
+from .graphset.ged import GEDWrapper
+
+# Portfolio Problems
+from .portfolio.maxretpo import MaxRetPOWrapper
+from .portfolio.minvarpo import MinVarPOWrapper
+from .portfolio.mopo import MOPOWrapper
+
+# SAT Problems
+from .sat.satp import SATPWrapper
+from .sat.sata import SATAWrapper
+from .sat.usatc import USATCWrapper

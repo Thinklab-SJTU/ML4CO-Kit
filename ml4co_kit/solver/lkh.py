@@ -1,5 +1,5 @@
 r"""
-LKH Solver.
+LKH (Lin-Kernighan-Helsgaun)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -27,6 +27,9 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 
 
 class LKHSolver(SolverBase):
+    """
+    LKH: http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz
+    """
     def __init__(
         self,
         lkh_scale: int = 1e6,

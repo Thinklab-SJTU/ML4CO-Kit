@@ -1,5 +1,5 @@
 r"""
-Insertion Solver.
+Insertion (Manual Heuristic)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -25,6 +25,16 @@ from ml4co_kit.solver.lib.insertion.mcut_insertion import mcut_insertion
 
 
 class InsertionSolver(SolverBase):
+    """
+    Insertion-TSP: https://github.com/henry-yeh/GLOP
+    @inproceedings{
+        ye2024glop,
+        title={GLOP: Learning Global Partition and Local Construction for Solving Large-scale Routing Problems in Real-time},
+        author={Ye, Haoran and Wang, Jiarui and Liang, Helan and Cao, Zhiguang and Li, Yong and Li, Fanzhang},
+        booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+        year={2024},
+    }
+    """
     def __init__(self, optimizer: OptimizerBase = None):
         super(InsertionSolver, self).__init__(
             solver_type=SOLVER_TYPE.INSERTION, optimizer=optimizer

@@ -16,17 +16,20 @@ PySAT Solver for UNSAT-C
 import numpy as np
 from pysat.formula import CNF
 from pysat.examples.musx import MUSX
-from ml4co_kit.task.sat.unsatc import USATCTask
+from ml4co_kit.task.sat.usatc import USATCTask
 
 
-def unsatc_pysat(task_data: USATCTask):
+def unsatc_pysat(task_data: USATCTask, solver_name: str):
+    # Create CNF object
     cnf = CNF()
     cnf.clauses = task_data.clauses
     cnf.nv = task_data.vars_num
     
-    musx = MUSX(cnf, verbosity=0)
+    # Using MUSX to compute the unsat core
+    musx = MUSX(cnf, solver=solver_name, verbosity=0)
     core = musx.compute()
     
+    # Get the unsat core variables
     sol = np.zeros(task_data.vars_num, dtype=bool)
     if core:
         for lit in core:
@@ -34,5 +37,8 @@ def unsatc_pysat(task_data: USATCTask):
             if var_idx < task_data.vars_num:
                 sol[var_idx] = True
     
+    # Delete the MUSX object
     musx.delete()
-    task_data.sol = sol
+    
+    # Store the solution
+    task_data.from_data(sol=sol, ref=False)
