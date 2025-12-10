@@ -1,10 +1,13 @@
 from .base import EDATaskBase, PlacementTask
 from .macro_placement import MacroPlacementTask
-from .routing import RoutingTask
+from .standard_cell_placement import StandardCellPlacementTask
+from .routing import RoutingTask, GlobalRoutingTask
 
 __all__ = [
     "EDATaskBase",
     "PlacementTask",
     "MacroPlacementTask",
-    "RoutingTask"
+    "StandardCellPlacementTask",
+    "RoutingTask",
+    "GlobalRoutingTask"
 ]

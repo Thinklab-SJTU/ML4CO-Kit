@@ -59,6 +59,8 @@ class TASK_TYPE(str, Enum):
 
     # EDA Problems
     MACRO_PLACEMENT = "MacroPlacement" # Macro Placement
+    STANDARD_CELL_PLACEMENT = "StandardCellPlacement" # Standard Cell Placement
+    GLOBAL_ROUTING = "GlobalRouting" # Global Routing
 
 
 class TaskBase(object):
