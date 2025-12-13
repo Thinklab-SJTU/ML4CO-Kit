@@ -38,17 +38,17 @@ class USATCGenTester(GenTesterBase):
                 {
                     "distribution_type": SAT_TYPE.PS,
                 },
-                # # K-Clique
-                # {
-                #     "distribution_type": SAT_TYPE.K_CLIQUE,
-                # },
-                # # K-Domset
-                # {
-                #     "distribution_type": SAT_TYPE.K_DOMSET,
-                # },
-                # # K-Vercov
-                # {
-                #     "distribution_type": SAT_TYPE.K_VERCOV,
-                # },
+                # K-Clique
+                {
+                    "distribution_type": SAT_TYPE.K_CLIQUE,
+                },
+                # K-Domset
+                {
+                    "distribution_type": SAT_TYPE.K_DOMSET,
+                },
+                # K-Vercov
+                {
+                    "distribution_type": SAT_TYPE.K_VERCOV,
+                },
             ]
         )

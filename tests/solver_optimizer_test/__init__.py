@@ -50,6 +50,7 @@ from .solver.scip import SCIPSolverTester
 from .solver.sm import SMSolverTester
 from .solver.ipfp import IPFPSolverTester
 from .solver.rrwm import RRWMSolverTester
+from .solver.pysat import PySATSolverTester
 
 # Load other optimizer testers
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester

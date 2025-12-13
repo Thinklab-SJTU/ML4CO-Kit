@@ -134,10 +134,10 @@ class SATAGenerator(SATGeneratorBase):
         return self._create_instance(self._super_generate_ps)
 
     def _generate_k_clique(self) -> SATATask:
-        pass
+        return self._create_instance(self._super_generate_k_clique)
 
     def _generate_k_domset(self) -> SATATask:
-        pass
+        return self._create_instance(self._super_generate_k_domset)
 
     def _generate_k_vercov(self) -> SATATask:
-        pass
+        return self._create_instance(self._super_generate_k_vercov)

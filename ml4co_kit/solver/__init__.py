@@ -44,5 +44,6 @@ from .ortools import ORSolver
 from .sm import SMSolver
 from .ipfp import IPFPSolver
 from .rrwm import RRWMSolver
+from .pysat import PySATSolver
 from .random import RandomSolver
 from .scip import SCIPSolver

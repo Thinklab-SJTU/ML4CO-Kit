@@ -118,7 +118,7 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
     HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, SMSolver, IPFPSolver, RRWMSolver
+    LcDegreeSolver, LKHSolver, ORSolver, PySATSolver, SMSolver, IPFPSolver, RRWMSolver
 )
 
 # Solver (use torch backend)

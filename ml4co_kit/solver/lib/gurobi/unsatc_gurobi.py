@@ -16,7 +16,7 @@ Gurobi Solver for UNSAT-C
 import os
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.sat.unsatc import USATCTask
+from ml4co_kit.task.sat.usatc import USATCTask
 
 
 def unsatc_gurobi(

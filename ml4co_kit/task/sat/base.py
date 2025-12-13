@@ -50,7 +50,7 @@ class SATTaskBase(TaskBase):
 
     def from_data(
         self, 
-        clauses: List[List[int]],
+        clauses: List[List[int]] = None,
         vars_num: int = None,
         sol: Union[np.ndarray, bool] = None,
         ref: bool = False,
