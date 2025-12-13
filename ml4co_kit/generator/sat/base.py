@@ -192,7 +192,7 @@ class SATGeneratorBase(GeneratorBase):
             num_vars = np.random.randint(self.phase_n_min, self.phase_n_max + 1)
             num_clauses = int(self.phase_alpha * num_vars)
             cnf = RandomKCNF(k=self.phase_k, n=num_vars, m=num_clauses)
-            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            clauses = [list(clause) for clause in cnf.clauses()]
             if not self._check_vig(num_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)
@@ -323,7 +323,7 @@ class SATGeneratorBase(GeneratorBase):
                 continue
             cnf = CliqueFormula(graph, k)
             n_vars = len(list(cnf.variables()))
-            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            clauses = [list(clause) for clause in cnf.clauses()]
             if not self._check_vig(n_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)
@@ -339,7 +339,7 @@ class SATGeneratorBase(GeneratorBase):
                 continue
             cnf = DominatingSet(graph, k)
             n_vars = len(list(cnf.variables()))
-            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            clauses = [list(clause) for clause in cnf.clauses()]
             if not self._check_vig(n_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)

@@ -14,7 +14,7 @@ Greedy Algorithm for UNSAT-C
 
 
 import numpy as np
-from ml4co_kit.task.sat.unsatc import USATCTask
+from ml4co_kit.task.sat.usatc import USATCTask
 
 
 def unsatc_greedy(task_data: USATCTask):
