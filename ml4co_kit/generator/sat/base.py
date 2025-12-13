@@ -19,7 +19,7 @@ import numpy as np
 import pysat.solvers
 import networkx as nx
 from enum import Enum
-from cnfgen import RandomKCNF, CliqueFormula, DominatingSet, VertexCoverFormula
+from cnfgen import RandomKCNF, CliqueFormula, DominatingSet
 from itertools import combinations
 from ml4co_kit.task.base import TASK_TYPE
 from typing import Union, List, Optional, Tuple
@@ -355,13 +355,32 @@ class SATGeneratorBase(GeneratorBase):
             graph = nx.complement(com_graph)
             if not nx.is_connected(graph):
                 continue
-            cnf = VertexCoverFormula(graph, k)
-            n_vars = len(list(cnf.variables()))
-            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            clauses = self._encode_vertex_cover(graph, k)
+            n_vars = v
             if not self._check_vig(n_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)
             return clauses
+
+    def _encode_vertex_cover(self, graph: nx.Graph, k: int) -> List[List[int]]:
+        """Encode k-vertex cover problem as CNF clauses."""
+        clauses = []
+        nodes = list(graph.nodes())
+        n = len(nodes)
+        node_to_idx = {node: i + 1 for i, node in enumerate(nodes)}
+        
+        # Edge constraints: for each edge (u, v), at least one endpoint is in cover
+        for u, v in graph.edges():
+            clauses.append([node_to_idx[u], node_to_idx[v]])
+        
+        # Cardinality constraint: at most k vertices selected
+        # Using sequential counter encoding for at-most-k constraint
+        if k < n:
+            for subset in combinations(nodes, k + 1):
+                clause = [-node_to_idx[node] for node in subset]
+                clauses.append(clause)
+        
+        return clauses
 
     def _check_vig(self, num_vars: int, clauses: List[List[int]]) -> bool:
         # Create networkx graph
