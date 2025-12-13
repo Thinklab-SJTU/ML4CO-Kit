@@ -45,6 +45,7 @@ from tests.solver_optimizer_test import (
     SMSolverTester,
     IPFPSolverTester,
     RRWMSolverTester,
+    PySATSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,
@@ -67,6 +68,7 @@ basic_tester_class_list = [
     SMSolverTester,
     IPFPSolverTester,
     RRWMSolverTester,
+    PySATSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,

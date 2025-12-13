@@ -14,11 +14,12 @@ Base classes for all SAT problem generators.
 # See the Mulan PSL v2 for more details.
 
 
+import math
 import numpy as np
 import pysat.solvers
 import networkx as nx
 from enum import Enum
-from cnfgen import RandomKCNF
+from cnfgen import RandomKCNF, CliqueFormula, DominatingSet, VertexCoverFormula
 from itertools import combinations
 from ml4co_kit.task.base import TASK_TYPE
 from typing import Union, List, Optional, Tuple
@@ -187,27 +188,15 @@ class SATGeneratorBase(GeneratorBase):
             publisher={Elsevier}
         }
         """
-        # Randomly sample number of variables
-        num_vars = np.random.randint(self.phase_n_min, self.phase_n_max + 1)
-
-        # Generate clauses
         while True:
-            # Randomly sample number of clauses
+            num_vars = np.random.randint(self.phase_n_min, self.phase_n_max + 1)
             num_clauses = int(self.phase_alpha * num_vars)
-
-            # Call `RandomKCNF` to generate a random k-CNF formula
             cnf = RandomKCNF(k=self.phase_k, n=num_vars, m=num_clauses)
-
-            # Get clauses
-            clauses = list(cnf.clauses())
-            
-            # Ensure the graph in connected
-            if self._check_vig(num_vars, clauses):
-                break
-        
-        # Remove duplicate unsat clauses and sat clauses
-        clauses = self._clean_clauses(clauses)
-        return clauses
+            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            if not self._check_vig(num_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
 
     def _super_generate_sr(self) -> Tuple[List[List[int]], bool, Optional[List[int]]]:
         """
@@ -278,41 +267,23 @@ class SATGeneratorBase(GeneratorBase):
             publisher={AAAI Press}
         }
         """
-        # Randomly sample number of literals per clause
-        k = np.random.randint(self.ca_k_min, self.ca_k_max + 1)
-
-        # Randomly sample number of variables
-        num_vars = np.random.randint(self.ca_n_min, self.ca_n_max + 1)
-        while max(self.ca_k_min, k) > min(self.ca_c_max, int(num_vars / k)):
+        while True:
+            k = np.random.randint(self.ca_k_min, self.ca_k_max + 1)
             num_vars = np.random.randint(self.ca_n_min, self.ca_n_max + 1)
-
-        # Randomly sample number of clauses
-        mn_ratio = np.random.uniform(self.ca_mn_min, self.ca_mn_max)
-        num_clauses = int(mn_ratio * num_vars)
-
-        # Randomly sample modularity parameter
-        q = np.random.uniform(self.ca_q_min, self.ca_q_max)
-        
-        # According to Giráldez-Cru and Levy's original paper and official implementation, 
-        # the CA generator requires the number of communities c to satisfy k ≤ c ≤ n/k.
-        # This means there must be at least k communities, and each community should be assigned at least k variables.
-        # min(self.ca_c_max, int(num_vars / k)) ensures that c does not become too large to violate the constraints.
-        # max(self.ca_c_min, k) ensures there are at least k communities, as required by the CA model.
-        c = np.random.randint(max(self.ca_c_min, k), min(self.ca_c_max, int(num_vars / k)) + 1)
-
-        # Randomly sample seed
-        seed = np.random.randint(0, 2**16)
-
-        # Call PyBind11 CA generator to generate CA clauses
-        clauses = pybind11_ca_gen_func(
-            int(num_vars),      # Number of variables
-            int(num_clauses),   # Number of clauses
-            int(k),             # Number of literals per clause
-            float(q),           # Modularity parameter
-            int(c),             # Number of communities
-            int(seed)           # Seed
-        )
-        return clauses
+            while max(self.ca_k_min, k) > min(self.ca_c_max, int(num_vars / k)):
+                num_vars = np.random.randint(self.ca_n_min, self.ca_n_max + 1)
+            mn_ratio = np.random.uniform(self.ca_mn_min, self.ca_mn_max)
+            num_clauses = int(mn_ratio * num_vars)
+            q = np.random.uniform(self.ca_q_min, self.ca_q_max)
+            c = np.random.randint(max(self.ca_c_min, k), min(self.ca_c_max, int(num_vars / k)) + 1)
+            seed = np.random.randint(0, 2**16)
+            clauses = pybind11_ca_gen_func(
+                int(num_vars), int(num_clauses), int(k), float(q), int(c), int(seed)
+            )
+            if not self._check_vig(num_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
     
     def _super_generate_ps(self):
         """
@@ -325,47 +296,72 @@ class SATGeneratorBase(GeneratorBase):
             organization={International Joint Conferences on Artificial Intelligence}
         }
         """
-        # Randomly sample number of literals per clause
-        k = np.random.randint(self.ps_k_min, self.ps_k_max + 1)
-
-        # Randomly sample number of variables
-        num_vars = np.random.randint(self.ps_n_min, self.ps_n_max + 1)
-
-        # Randomly sample number of clauses
-        mn_ratio = np.random.uniform(self.ps_mn_min, self.ps_mn_max)
-        num_clauses = int(mn_ratio * num_vars)
-
-        # Randomly sample beta
-        beta = np.random.uniform(self.ps_beta_min, self.ps_beta_max)
-
-        # Randomly sample t
-        t = np.random.uniform(self.ps_beta_min, self.ps_beta_max)
-
-        # Randomly sample seed
-        seed = np.random.randint(0, 2**16)
-        
-        # Call PyBind11 PS generator to generate PS clauses
-        # Convert numpy types to Python native types for pybind11 compatibility
-        clauses = pybind11_ps_gen_func(
-            int(num_vars),              # Number of variables
-            int(num_clauses),           # Number of clauses
-            int(k),                     # Average clause size
-            int(k-3),                   # Rigid clause size
-            float(beta),                # Beta
-            float(self.ps_beta_prime),  # Beta prime
-            float(t),                   # Temperature
-            int(seed)                   # Seed
-        )
-        return clauses
+        while True:
+            k = np.random.randint(self.ps_k_min, self.ps_k_max + 1)
+            num_vars = np.random.randint(self.ps_n_min, self.ps_n_max + 1)
+            mn_ratio = np.random.uniform(self.ps_mn_min, self.ps_mn_max)
+            num_clauses = int(mn_ratio * num_vars)
+            beta = np.random.uniform(self.ps_beta_min, self.ps_beta_max)
+            t = np.random.uniform(self.ps_t_min, self.ps_t_max)
+            seed = np.random.randint(0, 2**16)
+            clauses = pybind11_ps_gen_func(
+                int(num_vars), int(num_clauses), int(k), int(k-3),
+                float(beta), float(self.ps_beta_prime), float(t), int(seed)
+            )
+            if not self._check_vig(num_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
 
     def _super_generate_k_clique(self):
-        pass
+        k = np.random.randint(self.k_clique_k_min, self.k_clique_k_max + 1)
+        while True:
+            v = np.random.randint(self.k_clique_v_min, self.k_clique_v_max + 1)
+            p = pow(1 / math.comb(v, k), 2 / (k * (k - 1)))
+            graph = nx.erdos_renyi_graph(v, p)
+            if not nx.is_connected(graph):
+                continue
+            cnf = CliqueFormula(graph, k)
+            n_vars = len(list(cnf.variables()))
+            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            if not self._check_vig(n_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
 
     def _super_generate_k_domset(self):
-        pass
+        k = np.random.randint(self.k_domset_k_min, self.k_domset_k_max + 1)
+        while True:
+            v = np.random.randint(max(self.k_domset_v_min, k + 1), self.k_domset_v_max + 1)
+            p = 1 - pow(1 - pow(1 / math.comb(v, k), 1 / (v - k)), 1 / k)
+            graph = nx.erdos_renyi_graph(v, p)
+            if not nx.is_connected(graph):
+                continue
+            cnf = DominatingSet(graph, k)
+            n_vars = len(list(cnf.variables()))
+            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            if not self._check_vig(n_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
 
     def _super_generate_k_vercov(self):
-        pass
+        k = np.random.randint(self.k_vercov_k_min, self.k_vercov_k_max + 1)
+        while True:
+            v = np.random.randint(max(self.k_vercov_v_min, k + 2), self.k_vercov_v_max + 1)
+            com_k = v - k
+            p = pow(1 / math.comb(v, com_k), 2 / (com_k * (com_k - 1)))
+            com_graph = nx.erdos_renyi_graph(v, p)
+            graph = nx.complement(com_graph)
+            if not nx.is_connected(graph):
+                continue
+            cnf = VertexCoverFormula(graph, k)
+            n_vars = len(list(cnf.variables()))
+            clauses = [list(cnf._compress_clause(clause)) for clause in cnf.clauses()]
+            if not self._check_vig(n_vars, clauses):
+                continue
+            clauses = self._clean_clauses(clauses)
+            return clauses
 
     def _check_vig(self, num_vars: int, clauses: List[List[int]]) -> bool:
         # Create networkx graph
