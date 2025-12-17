@@ -37,3 +37,7 @@ from .sat.base import SATTaskBase
 from .sat.satp import SATPTask
 from .sat.sata import SATATask
 from .sat.usatc import USATCTask
+
+# EDA Task
+from .eda import EDATaskBase, PlacementTask, MacroPlacementTask, StandardCellPlacementTask, RoutingTask, GlobalRoutingTask
+

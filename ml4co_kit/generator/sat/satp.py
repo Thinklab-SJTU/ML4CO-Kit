@@ -138,10 +138,10 @@ class SATPGenerator(SATGeneratorBase):
         return self._create_instance(self._super_generate_ps)
 
     def _generate_k_clique(self) -> SATPTask:
-        pass
+        return self._create_instance(self._super_generate_k_clique)
 
     def _generate_k_domset(self) -> SATPTask:
-        pass
+        return self._create_instance(self._super_generate_k_domset)
 
     def _generate_k_vercov(self) -> SATPTask:
-        pass  
+        return self._create_instance(self._super_generate_k_vercov)  

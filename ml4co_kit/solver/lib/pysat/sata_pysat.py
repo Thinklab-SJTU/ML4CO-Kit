@@ -30,8 +30,8 @@ def sata_pysat(
     
     # Solve the problem
     if solver.solve():
-        idx_sol = solver.get_model()
-        bool_sol = np.zeros_like(idx_sol, dtype=np.bool_)
+        idx_sol = np.array(solver.get_model())
+        bool_sol = np.zeros(len(idx_sol), dtype=np.bool_)
         bool_sol[idx_sol > 0] = True
         bool_sol[idx_sol < 0] = False
     else:

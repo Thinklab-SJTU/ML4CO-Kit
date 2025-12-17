@@ -47,7 +47,7 @@ class SATPTask(SATTaskBase):
     
     def from_data(
         self, 
-        clauses: List[List[int]], 
+        clauses: List[List[int]] = None, 
         vars_num: int = None, 
         satisfiable: bool = None,
         sol: bool = None, 
