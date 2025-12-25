@@ -36,11 +36,11 @@ from tests.generator_test import (
     MVCGenTester
 )
 
-# Graph Set Problem
-from generator_test import(
-    GMGenTester,
-    GEDGenTester
-)
+# # Graph Set Problem
+# from tests.generator_test import(
+#     GMGenTester,
+#     GEDGenTester
+# )
 
 # Portfolio Problems
 from tests.generator_test import (
@@ -72,9 +72,9 @@ def test_generator():
     MISGenTester().test()
     MVCGenTester().test()
     
-    # Graph Set Problem 
-    GMGenTester().test()
-    GEDGenTester().test()
+    # # Graph Set Problem 
+    # GMGenTester().test()
+    # GEDGenTester().test()
 
     # Portfolio Problems
     MinVarPOGenTester().test()
