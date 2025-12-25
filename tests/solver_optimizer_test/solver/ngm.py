@@ -35,7 +35,7 @@ class NGMSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [],
-                ] # GM
+            ] # GM
         )
         
     def pre_test(self):

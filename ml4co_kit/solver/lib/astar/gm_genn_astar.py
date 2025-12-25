@@ -21,7 +21,6 @@ from ml4co_kit.solver.lib.utils_gm import hungarian
 from .modules import genn_astar_kernel
 
 
-
 def gm_genn_astar(
     task_data: list[GMTask],
     channel: int = None, 

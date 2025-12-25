@@ -49,13 +49,13 @@ class GurobiSolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl")
+                    pathlib.Path("test_dataset/routing/atsp/task/atsp500_uniform_task.pkl")
                 ],  # ATSP
                 [
-                    pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl")
+                    pathlib.Path("test_dataset/routing/cvrp/task/cvrp500_uniform_task.pkl")
                 ],  # CVRP
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl")
                 ],  # TSP
                 [], # MCl
                 [], # MCut

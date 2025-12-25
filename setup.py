@@ -46,8 +46,8 @@ REQUIRED = [
     "setuptools>=75.0.0",
     "PySCIPOpt>=5.6.0",
     "pybind11>=3.0.1",
-    "python-sat",
-    "cnfgen>=0.9.5"
+    "cnfgen>=0.9.5",
+    "python-sat"
 ]
 
 EXTRAS = {}

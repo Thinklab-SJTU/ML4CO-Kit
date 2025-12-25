@@ -189,12 +189,23 @@ class SATGeneratorBase(GeneratorBase):
         }
         """
         while True:
+            # Randomly choose number of variables
             num_vars = np.random.randint(self.phase_n_min, self.phase_n_max + 1)
+
+            # Randomly choose number of clauses
             num_clauses = int(self.phase_alpha * num_vars)
+
+            # Generate CNF
             cnf = RandomKCNF(k=self.phase_k, n=num_vars, m=num_clauses)
+
+            # Convert CNF to clauses
             clauses = [list(clause) for clause in cnf.clauses()]
+
+            # Ensure the graph in connected
             if not self._check_vig(num_vars, clauses):
                 continue
+
+            # Remove duplicate clauses
             clauses = self._clean_clauses(clauses)
             return clauses
 
@@ -207,6 +218,13 @@ class SATGeneratorBase(GeneratorBase):
                 and Liang, Percy and de Moura, Leonardo and Dill, David L},
             journal={arXiv preprint arXiv:1802.03685},
             year={2018}
+        }
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
         }
         """
         while True:
@@ -266,20 +284,42 @@ class SATGeneratorBase(GeneratorBase):
             year={2015},
             publisher={AAAI Press}
         }
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
+        }
         """
         while True:
+            # Randomly choose k
             k = np.random.randint(self.ca_k_min, self.ca_k_max + 1)
+
+            # Randomly choose number of variables
             num_vars = np.random.randint(self.ca_n_min, self.ca_n_max + 1)
+
+            # Ensure the number of variables is large enough
             while max(self.ca_k_min, k) > min(self.ca_c_max, int(num_vars / k)):
                 num_vars = np.random.randint(self.ca_n_min, self.ca_n_max + 1)
+
+            # Randomly choose modularity
             mn_ratio = np.random.uniform(self.ca_mn_min, self.ca_mn_max)
             num_clauses = int(mn_ratio * num_vars)
+
+            # Randomly choose modularity
             q = np.random.uniform(self.ca_q_min, self.ca_q_max)
+
+            # Randomly choose number of communities
             c = np.random.randint(max(self.ca_c_min, k), min(self.ca_c_max, int(num_vars / k)) + 1)
+
+            # Randomly choose seed
             seed = np.random.randint(0, 2**16)
             clauses = pybind11_ca_gen_func(
                 int(num_vars), int(num_clauses), int(k), float(q), int(c), int(seed)
             )
+
+            # Ensure the graph in connected
             if not self._check_vig(num_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)
@@ -295,68 +335,188 @@ class SATGeneratorBase(GeneratorBase):
             year={2017},
             organization={International Joint Conferences on Artificial Intelligence}
         }
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
+        }
         """
         while True:
+            # Randomly choose k
             k = np.random.randint(self.ps_k_min, self.ps_k_max + 1)
+
+            # Randomly choose number of variables
             num_vars = np.random.randint(self.ps_n_min, self.ps_n_max + 1)
+
+            # Randomly choose modularity
             mn_ratio = np.random.uniform(self.ps_mn_min, self.ps_mn_max)
             num_clauses = int(mn_ratio * num_vars)
+
+            # Randomly choose beta
             beta = np.random.uniform(self.ps_beta_min, self.ps_beta_max)
+
+            # Randomly choose t
             t = np.random.uniform(self.ps_t_min, self.ps_t_max)
+
+            # Randomly choose seed
             seed = np.random.randint(0, 2**16)
+
+            # Generate CNF
             clauses = pybind11_ps_gen_func(
                 int(num_vars), int(num_clauses), int(k), int(k-3),
                 float(beta), float(self.ps_beta_prime), float(t), int(seed)
             )
+
+            # Ensure the graph in connected
             if not self._check_vig(num_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)
             return clauses
 
     def _super_generate_k_clique(self):
+        """
+        @inproceedings{
+            bollobas1976cliques,
+            title={Cliques in random graphs},
+            author={Bollob{\'a}s, B{\'e}la and Erd{\"o}s, Paul},
+            booktitle={Mathematical Proceedings of the Cambridge Philosophical Society},
+            volume={80},
+            number={3},
+            pages={419--427},
+            year={1976},
+            organization={Cambridge University Press}
+        }
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
+        }
+        """
+        # Randomly choose k
         k = np.random.randint(self.k_clique_k_min, self.k_clique_k_max + 1)
+
+        # While loop ()
         while True:
+            # Randomly choose v
             v = np.random.randint(self.k_clique_v_min, self.k_clique_v_max + 1)
+
+            # Set p
             p = pow(1 / math.comb(v, k), 2 / (k * (k - 1)))
+
+            # Randomly generate a graph
             graph = nx.erdos_renyi_graph(v, p)
+
+            # Ensure the graph in connected
             if not nx.is_connected(graph):
                 continue
+
+            # Randomly generate a graph
+            graph = nx.erdos_renyi_graph(v, p)
+
+            # Ensure the graph in connected
+            if not nx.is_connected(graph):
+                continue
+
+            # Encode k-clique problem as CNF clauses
             cnf = CliqueFormula(graph, k)
             n_vars = len(list(cnf.variables()))
             clauses = [list(clause) for clause in cnf.clauses()]
+
+            # Ensure the graph in connected
             if not self._check_vig(n_vars, clauses):
                 continue
+
+            # Remove duplicate clauses
             clauses = self._clean_clauses(clauses)
             return clauses
 
     def _super_generate_k_domset(self):
+        """
+        @article{
+            wieland2001domination,
+            title={On the domination number of a random graph},
+            author={Wieland, Ben and Godbole, Anant P},
+            journal={the electronic journal of combinatorics},
+            pages={R37--R37},
+            year={2001}
+        }
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
+        }
+        """
+        # Randomly choose k
         k = np.random.randint(self.k_domset_k_min, self.k_domset_k_max + 1)
+
+        # While loop (until the clauses are satisfiable)
         while True:
+            # Randomly choose v
             v = np.random.randint(max(self.k_domset_v_min, k + 1), self.k_domset_v_max + 1)
+
+            # Set p
             p = 1 - pow(1 - pow(1 / math.comb(v, k), 1 / (v - k)), 1 / k)
+
+            # Randomly generate a graph
             graph = nx.erdos_renyi_graph(v, p)
+
+            # Ensure the graph in connected
             if not nx.is_connected(graph):
                 continue
+
+            # Encode k-domset problem as CNF clauses
             cnf = DominatingSet(graph, k)
             n_vars = len(list(cnf.variables()))
             clauses = [list(clause) for clause in cnf.clauses()]
+
+            # Ensure the graph in connected
             if not self._check_vig(n_vars, clauses):
                 continue
+
+            # Remove duplicate clauses
             clauses = self._clean_clauses(clauses)
             return clauses
 
     def _super_generate_k_vercov(self):
+        """
+        @article{
+            li2023g4satbench,
+            title={G4satbench: Benchmarking and advancing sat solving with graph neural networks},
+            author={Li, Zhaoyu and Guo, Jinpei and Si, Xujie},
+            journal={arXiv preprint arXiv:2309.16941},
+            year={2023}
+        }
+        """
         k = np.random.randint(self.k_vercov_k_min, self.k_vercov_k_max + 1)
         while True:
+            # Randomly choose v
             v = np.random.randint(max(self.k_vercov_v_min, k + 2), self.k_vercov_v_max + 1)
             com_k = v - k
+            
+            # Set p
             p = pow(1 / math.comb(v, com_k), 2 / (com_k * (com_k - 1)))
+            
+            # Randomly generate a graph
             com_graph = nx.erdos_renyi_graph(v, p)
             graph = nx.complement(com_graph)
+
+            # Ensure the graph in connected
             if not nx.is_connected(graph):
                 continue
+
+            # Encode vertex cover problem as CNF clauses
             clauses = self._encode_vertex_cover(graph, k)
+
+            # Set number of variables
             n_vars = v
+            
+            # Ensure the graph in connected
             if not self._check_vig(n_vars, clauses):
                 continue
             clauses = self._clean_clauses(clauses)

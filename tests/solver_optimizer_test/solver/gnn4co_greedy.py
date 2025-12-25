@@ -172,18 +172,18 @@ class GNN4COGreedySolverTester(SolverTesterBase):
             ],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl"),
-                    pathlib.Path("test_dataset/atsp/wrapper/atsp500_uniform_4ins.pkl"),
+                    pathlib.Path("test_dataset/routing/atsp/task/atsp500_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.pkl"),
                 ], # ATSP-50 (dense)
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"),
-                    pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.pkl"),
                 ],  # TSP-50 (dense)
                 [
-                    pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
-                    pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"), 
-                    pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"),
                 ],  # TSP-500 (sparse)
                 [], # MCl (sparse)
                 [], # MCut (sparse)

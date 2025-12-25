@@ -81,8 +81,8 @@ class ISCOSolverTester(SolverTesterBase):
             exclude_test_files_list=[
                 [], 
                 [], 
-                [pathlib.Path("test_dataset/mis/task/mis_satlib_no-weighted_task.pkl")],
-                [pathlib.Path("test_dataset/mvc/task/mvc_rb-large_no-weighted_task.pkl")]
+                [pathlib.Path("test_dataset/graph/mis/task/mis_satlib_no-weighted_task.pkl")],
+                [pathlib.Path("test_dataset/graph/mvc/task/mvc_rb-large_no-weighted_task.pkl")]
             ]
         )
         

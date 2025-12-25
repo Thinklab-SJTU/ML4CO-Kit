@@ -82,7 +82,7 @@ class TSPGenerator(RoutingGeneratorBase):
             precision=self.precision
         )
         task_data.from_data(points=coords)
-        return data
+        return task_data
 
     def _generate_gaussian(self) -> TSPTask:
         # Generate coordinates from a Gaussian distribution

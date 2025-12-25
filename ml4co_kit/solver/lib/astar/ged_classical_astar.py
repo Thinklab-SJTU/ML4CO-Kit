@@ -17,12 +17,13 @@ import torch
 import functools
 from ml4co_kit.task.graphset.ged import GEDTask
 from .modules import  heuristic_prediction_hun
-from ml4co_kit.solver.lib.astar.c_astar_src.c_astar import c_astar 
+from ml4co_kit.solver.lib.astar.c_astar_src import c_astar 
+
 
 def ged_astar(
     task_data: GEDTask,
     beam_width: int = 0
-    ):
+):
     """
     Pytorch implementation of ASTAR algorithm (for solving QAP)
     """

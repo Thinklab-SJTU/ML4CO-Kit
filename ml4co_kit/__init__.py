@@ -116,16 +116,17 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
-    HGSSolver, ILSSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver, LKHSolver, ORSolver, PySATSolver, SMSolver, IPFPSolver, RRWMSolver
+    AStarSolver, ConcordeSolver, GAEAXSolver, GpDegreeSolver, 
+    GurobiSolver, HGSSolver, ILSSolver, ISCOSolver, InsertionSolver, 
+    KaMISSolver, LcDegreeSolver, LKHSolver, ORSolver, PySATSolver, 
+    RandomSolver, SMSolver, IPFPSolver, RRWMSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver
+    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, GennAStarSolver
 
 
 ####################################################

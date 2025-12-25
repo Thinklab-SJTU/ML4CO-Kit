@@ -40,7 +40,8 @@ from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
-# from .astar import AStarSolver
+from .astar import AStarSolver
+from .genn_astar import GennAStarSolver
 from .sm import SMSolver
 from .ipfp import IPFPSolver
 from .rrwm import RRWMSolver

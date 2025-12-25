@@ -34,7 +34,7 @@ def ged_genn_astar(
     network: nn.Module = None, 
     pretrain: str = "AIDS700nef",
     device: str = "cpu"
-    ):
+):
     """
     Pytorch implementation of GENN-ASTAR
     """

@@ -14,7 +14,6 @@ PySAT Solver.
 # See the Mulan PSL v2 for more details.
 
 
-import pysat.solvers
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE

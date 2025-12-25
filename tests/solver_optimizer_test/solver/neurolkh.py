@@ -28,7 +28,7 @@ class NeuroLKHSolverTester(SolverTesterBase):
                 {"neurolkh_device": device}
             ],
             exclude_test_files_list=[
-                [pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl")]
+                [pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl")]
             ]
         )
         
