@@ -22,3 +22,4 @@ if env_checker.check_torch():
     
 # Load other utils testers
 from .file_utils import FileUtilsTester
+from .augment_utils import AugmentUtilsTester

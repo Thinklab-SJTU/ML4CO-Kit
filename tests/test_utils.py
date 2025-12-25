@@ -25,16 +25,14 @@ env_checker = EnvChecker()
 
 
 # Utils Testers
-from tests.utils_test import FileUtilsTester
-test_class_list = [FileUtilsTester]
+from tests.utils_test import FileUtilsTester, AugmentUtilsTester
+test_class_list = [FileUtilsTester, AugmentUtilsTester]
 
 
 # if torch is supported
 if env_checker.check_torch():
     from tests.utils_test import TypeUtilsTester
-    test_class_list += [
-        TypeUtilsTester
-    ]
+    test_class_list += [TypeUtilsTester]
 
 
 # Test Utils

@@ -21,10 +21,17 @@ ML4CO-Kit Module.
 from .utils import EnvInstallHelper, EnvChecker
 env_checker = EnvChecker()
 
+# Augment Utils
+from .utils import (
+    points_augment, graph_augment, _flip_points, 
+    _normalize_points, _rotation_points, _translation_points
+)
+
 # File Utils
 from .utils import (
     download, pull_file_from_huggingface, get_md5,
-    compress_folder, extract_archive, check_file_path
+    compress_folder, extract_archive, 
+    check_file_path, split_txt_file
 )
 
 # Impl Utils

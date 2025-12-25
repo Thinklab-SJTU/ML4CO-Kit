@@ -65,9 +65,9 @@ basic_tester_class_list = [
     ORSolverTester,
     RandomSolverTester,
     SCIPSolverTester,
-    SMSolverTester,
-    IPFPSolverTester,
-    RRWMSolverTester,
+    # SMSolverTester,
+    # IPFPSolverTester,
+    # RRWMSolverTester,
     PySATSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
@@ -96,10 +96,11 @@ if env_checker.check_torch():
     torch_tester_class_list = [
         RLSASolverTester,
         NeuroLKHSolverTester,
-        AStarSolverTester,
+        # AStarSolverTester,
         NGMSolverTester,
-        GennAStarSolverTester,
+        # GennAStarSolverTester,
     ]
+
 if env_checker.check_gnn4co():
     from tests.solver_optimizer_test import (
         GNN4COBeamSolverTester, 

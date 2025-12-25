@@ -17,7 +17,7 @@ import os
 import shutil
 from ml4co_kit import (
     download, pull_file_from_huggingface, get_md5, 
-    extract_archive, compress_folder
+    extract_archive, compress_folder, split_txt_file
 )
 
 
@@ -104,3 +104,15 @@ class FileUtilsTester(object):
         # 2.4 compress the dataset to tar.gz
         compress_folder(folder="tmp/tsplib4ml", compress_path="tmp/tsplib4ml.tar.gz")
         shutil.rmtree("tmp/tsplib4ml")
+
+
+        ###############################################
+        #          Test-3  Split the txt file         #
+        ###############################################
+
+        # 3.1 split the txt file
+        split_txt_file(
+            file_path="test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.txt", 
+            lines_per_file=8, save_dir="tmp/tsp_split"
+        )
+        shutil.rmtree("tmp/tsp_split")

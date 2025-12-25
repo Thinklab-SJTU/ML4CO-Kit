@@ -19,10 +19,11 @@ import itertools
 import numpy as np
 import networkx as nx
 from enum import Enum
-from typing import Union
+from typing import Union, Tuple
 from ml4co_kit.task.base import TASK_TYPE, TaskBase
 from ml4co_kit.generator.base import GeneratorBase
 from ml4co_kit.task.graphset.base import Graph, GraphSetTaskBase
+
 
 class GRAPH_TYPE(str, Enum):
     """Define the graph types as an enumeration."""
@@ -31,6 +32,7 @@ class GRAPH_TYPE(str, Enum):
     HK = "hk" # Holme-Kim Graph
     WS = "ws" # Watts-Strogatz Graph
     RB = "rb" # RB Graph
+
 
 class GRAPH_FEATURE_TYPE(str, Enum):
     """Define the featrue types as an enumeration."""
@@ -312,7 +314,7 @@ class GraphSetGeneratorBase(GeneratorBase):
         
         return nx_graph
 
-    def _isomorphic_graph_generate(self, graph: Graph) -> tuple[Graph, np.ndarray]:
+    def _isomorphic_graph_generate(self, graph: Graph) -> Tuple[Graph, np.ndarray]:
         # Build assignment matrix
         nodes_num = graph.nodes_num
         X = np.zeros((nodes_num, nodes_num))
@@ -336,7 +338,7 @@ class GraphSetGeneratorBase(GeneratorBase):
       
         return iso_graph, X
      
-    def _induced_subgraph_generate(self, graph: Graph, keep_ratio: float = 0.5) ->tuple[Graph, np.ndarray]:
+    def _induced_subgraph_generate(self, graph: Graph, keep_ratio: float = 0.5) -> Tuple[Graph, np.ndarray]:
         nodes_num = graph.nodes_num
         nodes = np.arange(nodes_num, dtype=np.int32)
         k = max(1, int(nodes_num * keep_ratio))

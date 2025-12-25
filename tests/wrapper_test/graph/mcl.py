@@ -45,7 +45,7 @@ class MClWrapperTester(WrapperTesterBase):
         ###############################################################
         
         # 1.1 Read txt data and transfer it to gpickle-result format
-        txt_path = pathlib.Path("test_dataset/mcl/wrapper/mcl_rb-small_uniform-weighted_4ins.txt")
+        txt_path = pathlib.Path("test_dataset/graph/mcl/wrapper/mcl_rb-small_uniform-weighted_4ins.txt")
         wrapper = MClWrapper()
         wrapper.from_txt(file_path=txt_path)
         wrapper.to_gpickle_result_folder(

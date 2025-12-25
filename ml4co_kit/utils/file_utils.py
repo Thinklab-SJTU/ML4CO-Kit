@@ -17,15 +17,17 @@ import os
 import uuid
 import time
 import shutil
-import requests
+import pathlib
 import aiohttp
 import asyncio
 import hashlib
 import zipfile
 import tarfile
+import requests
 import async_timeout
 import urllib.request
 from tqdm import tqdm
+from typing import Union
 from huggingface_hub import HfApi
 
 
@@ -223,3 +225,47 @@ def check_file_path(file_path: str):
     # Create Directory if it does not exist
     if not directory == "":
         os.makedirs(directory, exist_ok=True)
+
+
+###############################################
+#                  Split TXT File              #
+###############################################      
+
+def split_txt_file(
+    file_path: Union[str, pathlib.Path], 
+    lines_per_file: int, 
+    save_dir: str
+):
+    """
+    Split the txt file into multiple parts.
+    """
+    # Check save directory
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
+    # File path
+    file_path = pathlib.Path(file_path)
+
+    # Preparation
+    counter = 0
+    file_idx = 1
+    out = None
+
+    # Split the txt file
+    with file_path.open(encoding='utf-8') as infile:
+        for line in infile:
+            if counter == 0:
+                if out:
+                    out.close()
+                out_name = f"{file_idx:04d}.txt"
+                out_path = pathlib.Path(save_dir) / out_name
+                out = out_path.open('w', encoding='utf-8')
+                file_idx += 1
+            out.write(line)
+            counter += 1
+            if counter == lines_per_file:
+                counter = 0
+
+    # Close the last file
+    if out:
+        out.close()
