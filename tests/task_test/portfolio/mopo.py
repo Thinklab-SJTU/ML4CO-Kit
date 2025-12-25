@@ -1,5 +1,5 @@
 r"""
-PCTSP Task Tester.
+MOPO Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,16 +14,16 @@ PCTSP Task Tester.
 
 
 import pathlib
-from ml4co_kit import PCTSPTask
+from ml4co_kit import MOPOTask
 from tests.task_test.base import TaskTesterBase
 
 
-class PCTSPTaskTester(TaskTesterBase):
+class MOPOTaskTester(TaskTesterBase):
     def __init__(self):
-        super(PCTSPTaskTester, self).__init__(
-            test_task_class=PCTSPTask,
+        super(MOPOTaskTester, self).__init__(
+            test_task_class=MOPOTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/pctsp/task/pctsp50_uniform_task.pkl")
+                pathlib.Path("test_dataset/portfolio/mopo/task/mopo_gbm_task.pkl"),
             ],
         )
         

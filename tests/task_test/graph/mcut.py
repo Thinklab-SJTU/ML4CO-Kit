@@ -24,9 +24,9 @@ class MCutTaskTester(TaskTesterBase):
         super(MCutTaskTester, self).__init__(
             test_task_class=MCutTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mcut/task/mcut_ba-large_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcut/task/mcut_ba-small_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcut/task/mcut_ba-small_uniform-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/task/mcut_ba-large_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/task/mcut_ba-small_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/task/mcut_ba-small_uniform-weighted_task.pkl"),
             ],
         )
         
@@ -38,7 +38,7 @@ class MCutTaskTester(TaskTesterBase):
         
         # 1.1 Transfer pickle to adj_matrix
         task = MCutTask(edge_weighted=True)
-        task.from_pickle("test_dataset/mcut/task/mcut_ba-small_uniform-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mcut/task/mcut_ba-small_uniform-weighted_task.pkl")
         adj_matrix_weighted = task.to_adj_matrix(with_edge_weights=True)
         
         # 1.2 Read data from adj_matrix
@@ -58,7 +58,7 @@ class MCutTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = MCutTask()
-        task.from_pickle("test_dataset/mcut/task/mcut_ba-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mcut/task/mcut_ba-small_no-weighted_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)

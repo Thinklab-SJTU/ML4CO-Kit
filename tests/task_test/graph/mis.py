@@ -24,10 +24,10 @@ class MISTaskTester(TaskTesterBase):
         super(MISTaskTester, self).__init__(
             test_task_class=MISTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mis/task/mis_er-700-800_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mis/task/mis_rb-small_uniform-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mis/task/mis_satlib_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mis/task/mis_er-700-800_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mis/task/mis_rb-small_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mis/task/mis_rb-small_uniform-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mis/task/mis_satlib_no-weighted_task.pkl"),
             ],
         )
         
@@ -39,7 +39,7 @@ class MISTaskTester(TaskTesterBase):
 
         # 1.1 Transfer pickle to adj_matrix
         task = MISTask()
-        task.from_pickle("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mis/task/mis_rb-small_no-weighted_task.pkl")
         adj_matrix = task.to_adj_matrix()
         
         # 1.2 Read data from adj_matrix
@@ -59,7 +59,7 @@ class MISTaskTester(TaskTesterBase):
         
         # 2.1 Transfer pickle to adj_matrix
         task = MISTask()
-        task.from_pickle("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mis/task/mis_rb-small_no-weighted_task.pkl")
         adj_matrix_weighted = task.to_adj_matrix(with_edge_weights=True)
         
         # 2.2 Read data from adj_matrix
@@ -79,7 +79,7 @@ class MISTaskTester(TaskTesterBase):
     
         # 3.1 Transfer pickle to adj_matrix
         task = MISTask()
-        task.from_pickle("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mis/task/mis_rb-small_no-weighted_task.pkl")
         xadj, adjncy = task.to_csr()
         
         # 3.2 Read data from adj_matrix
@@ -95,7 +95,7 @@ class MISTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = MISTask()
-        task.from_pickle("test_dataset/mis/task/mis_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mis/task/mis_rb-small_no-weighted_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)

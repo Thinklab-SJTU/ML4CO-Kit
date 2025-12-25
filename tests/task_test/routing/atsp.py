@@ -1,5 +1,5 @@
 r"""
-MinVarPO Task Tester.
+ATSP Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,16 +14,19 @@ MinVarPO Task Tester.
 
 
 import pathlib
-from ml4co_kit import MinVarPOTask
+from ml4co_kit import ATSPTask
 from tests.task_test.base import TaskTesterBase
 
 
-class MinVarPOTaskTester(TaskTesterBase):
+class ATSPTaskTester(TaskTesterBase):
     def __init__(self):
-        super(MinVarPOTaskTester, self).__init__(
-            test_task_class=MinVarPOTask,
+        super(ATSPTaskTester, self).__init__(
+            test_task_class=ATSPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/minvarpo/task/minvarpo_gbm_task.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/task/atsp50_hcp_task.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/task/atsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/task/atsp54_sat_task.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/task/atsp500_uniform_task.pkl"),
             ],
         )
         

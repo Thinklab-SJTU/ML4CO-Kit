@@ -25,10 +25,10 @@ class TSPTaskTester(TaskTesterBase):
         super(TSPTaskTester, self).__init__(
             test_task_class=TSPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
-                pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
-                pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"),
             ],
         )
         
@@ -41,8 +41,8 @@ class TSPTaskTester(TaskTesterBase):
         # 1.1 Read data from TSPLIB file
         task = TSPTask()
         task.from_tsplib(
-            tsp_file_path=pathlib.Path("test_dataset/tsp/tsplib/problem/a280.tsp"),
-            tour_file_path=pathlib.Path("test_dataset/tsp/tsplib/solution/a280.opt.tour"),
+            tsp_file_path=pathlib.Path("test_dataset/routing/tsp/tsplib/problem/a280.tsp"),
+            tour_file_path=pathlib.Path("test_dataset/routing/tsp/tsplib/solution/a280.opt.tour"),
         )
         
         # 1.2 Evaluate the solution
@@ -140,7 +140,7 @@ class TSPTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = TSPTask()
-        task.from_pickle("test_dataset/tsp/task/tsp50_cluster_task.pkl")
+        task.from_pickle("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)

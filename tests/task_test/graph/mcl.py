@@ -24,9 +24,9 @@ class MClTaskTester(TaskTesterBase):
         super(MClTaskTester, self).__init__(
             test_task_class=MClTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-large_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-small_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mcl/task/mcl_rb-small_uniform-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcl/task/mcl_rb-large_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcl/task/mcl_rb-small_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mcl/task/mcl_rb-small_uniform-weighted_task.pkl"),
             ],
         )
         
@@ -36,7 +36,7 @@ class MClTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = MClTask()
-        task.from_pickle("test_dataset/mcl/task/mcl_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mcl/task/mcl_rb-small_no-weighted_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)

@@ -18,7 +18,7 @@ import pathlib
 import numpy as np
 import scipy.sparse
 import networkx as nx
-from typing import Union
+from typing import Union, List
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 
@@ -349,7 +349,7 @@ class GraphSetTaskBase(TaskBase):
         self,
         task_type: TASK_TYPE,
         minimize: bool,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         precision: Union[np.float32, np.float64] = np.float32
     ):
         super().__init__(
@@ -395,7 +395,7 @@ class GraphSetTaskBase(TaskBase):
    
     def from_data( 
         self,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         sol: np.ndarray = None,
         ref: bool = False,
         ):

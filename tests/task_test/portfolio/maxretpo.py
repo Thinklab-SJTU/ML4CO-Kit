@@ -1,5 +1,5 @@
 r"""
-ATSP Task Tester.
+MaxRetPO Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,19 +14,16 @@ ATSP Task Tester.
 
 
 import pathlib
-from ml4co_kit import ATSPTask
+from ml4co_kit import MaxRetPOTask
 from tests.task_test.base import TaskTesterBase
 
 
-class ATSPTaskTester(TaskTesterBase):
+class MaxRetPOTaskTester(TaskTesterBase):
     def __init__(self):
-        super(ATSPTaskTester, self).__init__(
-            test_task_class=ATSPTask,
+        super(MaxRetPOTaskTester, self).__init__(
+            test_task_class=MaxRetPOTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/atsp/task/atsp50_hcp_task.pkl"),
-                pathlib.Path("test_dataset/atsp/task/atsp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/atsp/task/atsp54_sat_task.pkl"),
-                pathlib.Path("test_dataset/atsp/task/atsp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/portfolio/maxretpo/task/maxretpo_gbm_task.pkl"),
             ],
         )
         

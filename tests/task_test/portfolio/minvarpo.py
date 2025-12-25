@@ -1,5 +1,5 @@
 r"""
-MaxRetPO Task Tester.
+MinVarPO Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,16 +14,16 @@ MaxRetPO Task Tester.
 
 
 import pathlib
-from ml4co_kit import MaxRetPOTask
+from ml4co_kit import MinVarPOTask
 from tests.task_test.base import TaskTesterBase
 
 
-class MaxRetPOTaskTester(TaskTesterBase):
+class MinVarPOTaskTester(TaskTesterBase):
     def __init__(self):
-        super(MaxRetPOTaskTester, self).__init__(
-            test_task_class=MaxRetPOTask,
+        super(MinVarPOTaskTester, self).__init__(
+            test_task_class=MinVarPOTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/maxretpo/task/maxretpo_gbm_task.pkl"),
+                pathlib.Path("test_dataset/portfolio/minvarpo/task/minvarpo_gbm_task.pkl"),
             ],
         )
         

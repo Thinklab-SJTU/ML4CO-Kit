@@ -24,8 +24,8 @@ class CVRPTaskTester(TaskTesterBase):
         super(CVRPTaskTester, self).__init__(
             test_task_class=CVRPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/cvrp/task/cvrp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/cvrp/task/cvrp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/cvrp/task/cvrp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/cvrp/task/cvrp500_uniform_task.pkl"),
             ],
         )
         
@@ -35,7 +35,7 @@ class CVRPTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = CVRPTask()
-        task.from_pickle("test_dataset/cvrp/task/cvrp50_uniform_task.pkl")
+        task.from_pickle("test_dataset/routing/cvrp/task/cvrp50_uniform_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)

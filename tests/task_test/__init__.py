@@ -17,22 +17,22 @@ Task Test Module.
 from .base import TaskTesterBase
 
 # Routing Problems
-from .atsp import ATSPTaskTester
-from .cvrp import CVRPTaskTester
-from .tsp import TSPTaskTester
-from .pctsp import PCTSPTaskTester
+from .routing.atsp import ATSPTaskTester
+from .routing.cvrp import CVRPTaskTester
+from .routing.tsp import TSPTaskTester
+from .routing.pctsp import PCTSPTaskTester
 
 # Graph Problems
-from .mcl import MClTaskTester
-from .mcut import MCutTaskTester
-from .mis import MISTaskTester
-from .mvc import MVCTaskTester
+from .graph.mcl import MClTaskTester
+from .graph.mcut import MCutTaskTester
+from .graph.mis import MISTaskTester
+from .graph.mvc import MVCTaskTester
 
 # Graph Set Problems
-from .gm import GMTaskTester
-from .ged import GEDTaskTester
+from .graphset.gm import GMTaskTester
+from .graphset.ged import GEDTaskTester
 
 # Portfolio Problems
-from .maxretpo import MaxRetPOTaskTester
-from .minvarpo import MinVarPOTaskTester
-from .mopo import MOPOTaskTester
+from .portfolio.maxretpo import MaxRetPOTaskTester
+from .portfolio.minvarpo import MinVarPOTaskTester
+from .portfolio.mopo import MOPOTaskTester

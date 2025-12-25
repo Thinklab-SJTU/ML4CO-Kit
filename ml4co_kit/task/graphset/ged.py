@@ -25,6 +25,7 @@ from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 from ml4co_kit.task.graphset.base import GraphSetTaskBase, Graph, get_pos_layer
 
+
 class GEDTask(GraphSetTaskBase):
     def __init__(
         self,

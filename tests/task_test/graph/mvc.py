@@ -24,9 +24,9 @@ class MVCTaskTester(TaskTesterBase):
         super(MVCTaskTester, self).__init__(
             test_task_class=MVCTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/mvc/task/mvc_rb-large_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mvc/task/mvc_rb-small_no-weighted_task.pkl"),
-                pathlib.Path("test_dataset/mvc/task/mvc_rb-small_uniform-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mvc/task/mvc_rb-large_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mvc/task/mvc_rb-small_no-weighted_task.pkl"),
+                pathlib.Path("test_dataset/graph/mvc/task/mvc_rb-small_uniform-weighted_task.pkl"),
             ],
         )
         
@@ -36,7 +36,7 @@ class MVCTaskTester(TaskTesterBase):
     def _test_render(self):
         # Read data
         task = MVCTask()
-        task.from_pickle("test_dataset/mvc/task/mvc_rb-small_no-weighted_task.pkl")
+        task.from_pickle("test_dataset/graph/mvc/task/mvc_rb-small_no-weighted_task.pkl")
         task.sol = task.ref_sol
         
         # Render (problem)
