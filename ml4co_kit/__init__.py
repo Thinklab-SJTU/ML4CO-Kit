@@ -111,12 +111,13 @@ from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 ####################################################
 #                      Solver                      #
 ####################################################
+
 # Base Solver
 from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    AStarSolver, ConcordeSolver, GAEAXSolver, GpDegreeSolver, 
+    ConcordeSolver, GAEAXSolver, GpDegreeSolver, 
     GurobiSolver, HGSSolver, ILSSolver, ISCOSolver, InsertionSolver, 
     KaMISSolver, LcDegreeSolver, LKHSolver, ORSolver, PySATSolver, 
     RandomSolver, SMSolver, IPFPSolver, RRWMSolver, SCIPSolver
@@ -126,7 +127,9 @@ from .solver import (
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
-    from .solver import NeuroLKHSolver, RLSASolver, NGMSolver, GennAStarSolver
+    from .solver import (
+        AStarSolver, GennAStarSolver, NeuroLKHSolver, RLSASolver, NGMSolver
+    )
 
 
 ####################################################

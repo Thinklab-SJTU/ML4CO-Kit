@@ -19,11 +19,11 @@ env_checker = EnvChecker()
 if env_checker.check_gnn4co():
     from .gnn4co import GNN4COSolver
 if env_checker.check_torch():
+    from .astar import AStarSolver
+    from .genn_astar import GennAStarSolver
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
     from .ngm import NGMSolver
-    # from .genn_astar import GennAStarSolver
-    # from .astar import AStarSolver
 
 
 # Load other solvers
@@ -35,15 +35,13 @@ from .gurobi import GurobiSolver
 from .hgs import HGSSolver
 from .ils import ILSSolver
 from .insertion import InsertionSolver
+from .ipfp import IPFPSolver
 from .isco import ISCOSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
 from .ortools import ORSolver
-from .astar import AStarSolver
-from .genn_astar import GennAStarSolver
 from .sm import SMSolver
-from .ipfp import IPFPSolver
 from .rrwm import RRWMSolver
 from .pysat import PySATSolver
 from .random import RandomSolver
