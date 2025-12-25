@@ -25,10 +25,10 @@ class PCTSPWrapperTester(WrapperTesterBase):
             generator=PCTSPGenerator(),
             solver=ILSSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/pctsp/wrapper/pctsp50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/pctsp/wrapper/pctsp50_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/pctsp/wrapper/pctsp50_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/pctsp/wrapper/pctsp50_uniform_4ins.txt"),
             ],
         )
         

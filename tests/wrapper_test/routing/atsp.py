@@ -27,12 +27,12 @@ class ATSPWrapperTester(WrapperTesterBase):
             generator=ATSPGenerator(),
             solver=LKHSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/atsp/wrapper/atsp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.txt"),
-                pathlib.Path("test_dataset/atsp/wrapper/atsp500_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp50_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.txt"),
             ],
         )
         
@@ -45,8 +45,8 @@ class ATSPWrapperTester(WrapperTesterBase):
         # 1.1 Read Real-World TSPLIB data using ``from_tsplib_folder``
         wrapper = ATSPWrapper()
         wrapper.from_tsplib_folder(
-            atsp_folder_path=pathlib.Path("test_dataset/atsp/tsplib/problem"),
-            tour_folder_path=pathlib.Path("test_dataset/atsp/tsplib/solution"),
+            atsp_folder_path=pathlib.Path("test_dataset/routing/atsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/routing/atsp/tsplib/solution"),
             ref=True,
             overwrite=True,
             normalize=True
@@ -62,8 +62,8 @@ class ATSPWrapperTester(WrapperTesterBase):
         
         # 1.4 Using ``overwrite`` to evaluate solution under the original data
         wrapper.from_tsplib_folder(
-            atsp_folder_path=pathlib.Path("test_dataset/atsp/tsplib/problem"),
-            tour_folder_path=pathlib.Path("test_dataset/atsp/tsplib/solution"),
+            atsp_folder_path=pathlib.Path("test_dataset/routing/atsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/routing/atsp/tsplib/solution"),
             ref=True,
             overwrite=False,
             normalize=False
@@ -76,8 +76,8 @@ class ATSPWrapperTester(WrapperTesterBase):
         ###############################################################
         
         # 2.1 Read pickle data and transfer it to TSPLIB format
-        txt_path = pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.txt")
-        pkl_path = pathlib.Path("test_dataset/atsp/wrapper/atsp50_uniform_16ins.pkl")
+        txt_path = pathlib.Path("test_dataset/routing/atsp/wrapper/atsp50_uniform_16ins.txt")
+        pkl_path = pathlib.Path("test_dataset/routing/atsp/wrapper/atsp50_uniform_16ins.pkl")
         wrapper.from_pickle(pkl_path)
         wrapper.swap_sol_and_ref_sol()
         tmp_name = self._make_tmp_file()

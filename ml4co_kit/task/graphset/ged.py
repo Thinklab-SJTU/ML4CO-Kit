@@ -20,7 +20,7 @@ import pathlib
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, List
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 from ml4co_kit.task.graphset.base import GraphSetTaskBase, Graph, get_pos_layer
@@ -29,7 +29,7 @@ from ml4co_kit.task.graphset.base import GraphSetTaskBase, Graph, get_pos_layer
 class GEDTask(GraphSetTaskBase):
     def __init__(
         self,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         node_mapping: np.array = None, # substitution_with_same_label, substitution_with_diff_label, insert, delete cost
         edge_mapping: np.array = None, # substitution, insert, delete cost
         precision: Union[np.float32, np.float64] = np.float32
@@ -162,7 +162,7 @@ class GEDTask(GraphSetTaskBase):
            
     def from_data(
         self,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         sol: np.ndarray = None,
         ref: bool = False,
         ):

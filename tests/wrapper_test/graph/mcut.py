@@ -31,14 +31,14 @@ class MCutWrapperTester(WrapperTesterBase):
             ),
             solver=LcDegreeSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-large_no-weighted_4ins.pkl"),
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_no-weighted_4ins.pkl"),
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-large_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-small_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-large_no-weighted_4ins.txt"),
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_no-weighted_4ins.txt"),
-                pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-large_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-small_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.txt"),
             ],
         )
         
@@ -49,7 +49,7 @@ class MCutWrapperTester(WrapperTesterBase):
         ###############################################################
         
         # 1.1 Read txt data and transfer it to gpickle-result format
-        txt_path = pathlib.Path("test_dataset/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.txt")
+        txt_path = pathlib.Path("test_dataset/graph/mcut/wrapper/mcut_ba-small_uniform-weighted_4ins.txt")
         wrapper = MCutWrapper()
         wrapper.from_txt(file_path=txt_path)
         wrapper.to_gpickle_result_folder(

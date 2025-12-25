@@ -28,12 +28,12 @@ class TSPWrapperTester(WrapperTesterBase):
             generator=TSPGenerator(),
             solver=LKHSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.txt"),
-                pathlib.Path("test_dataset/tsp/wrapper/tsp500_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.txt"),
             ],
         )
         
@@ -46,8 +46,8 @@ class TSPWrapperTester(WrapperTesterBase):
         # 1.1 Read Real-World TSPLIB data using ``from_tsplib_folder``
         wrapper = TSPWrapper()
         wrapper.from_tsplib_folder(
-            tsp_folder_path=pathlib.Path("test_dataset/tsp/tsplib/problem"),
-            tour_folder_path=pathlib.Path("test_dataset/tsp/tsplib/solution"),
+            tsp_folder_path=pathlib.Path("test_dataset/routing/tsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/routing/tsp/tsplib/solution"),
             ref=True,
             overwrite=True,
             normalize=True
@@ -63,8 +63,8 @@ class TSPWrapperTester(WrapperTesterBase):
         
         # 1.4 Using ``overwrite`` to evaluate solution under the original data
         wrapper.from_tsplib_folder(
-            tsp_folder_path=pathlib.Path("test_dataset/tsp/tsplib/problem"),
-            tour_folder_path=pathlib.Path("test_dataset/tsp/tsplib/solution"),
+            tsp_folder_path=pathlib.Path("test_dataset/routing/tsp/tsplib/problem"),
+            tour_folder_path=pathlib.Path("test_dataset/routing/tsp/tsplib/solution"),
             ref=True,
             overwrite=False,
             normalize=False
@@ -79,7 +79,7 @@ class TSPWrapperTester(WrapperTesterBase):
         
         # 2.1 Read txt data and transfer it to TSPLIB format
         wrapper = TSPWrapper()
-        txt_path = pathlib.Path("test_dataset/tsp/wrapper/tsp50_uniform_16ins.txt")
+        txt_path = pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.txt")
         wrapper.from_txt(txt_path)
         tmp_name = self._make_tmp_file()
         tmp_tsp_folder_path = pathlib.Path(tmp_name + "_tsp")
@@ -133,7 +133,7 @@ class TSPWrapperTester(WrapperTesterBase):
         # 4.1 Read task data (pickle) in folder
         wrapper = TSPWrapper()
         wrapper.from_task_pickle_folder(
-            task_class=TSPTask, folder_path=pathlib.Path("test_dataset/tsp/task")
+            task_class=TSPTask, folder_path=pathlib.Path("test_dataset/routing/tsp/task")
         )
         
         # 4.2 Evaluate
@@ -146,10 +146,10 @@ class TSPWrapperTester(WrapperTesterBase):
         
         # 4.3 Check the consistency
         ori_task_path_list = [
-            pathlib.Path("test_dataset/tsp/task/tsp50_cluster_task.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp50_gaussian_task.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp50_uniform_task.pkl"),
-            pathlib.Path("test_dataset/tsp/task/tsp500_uniform_task.pkl"),
+            pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
+            pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
+            pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"),
+            pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"),
         ]
         for ori_task_path in ori_task_path_list:
             task_ori = TSPTask()

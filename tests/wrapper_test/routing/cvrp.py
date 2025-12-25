@@ -27,12 +27,12 @@ class CVRPWrapperTester(WrapperTesterBase):
             generator=CVRPGenerator(),
             solver=HGSSolver(hgs_time_limit=5.0),
             pickle_files_list=[
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.txt"),
-                pathlib.Path("test_dataset/cvrp/wrapper/cvrp500_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp50_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp500_uniform_4ins.txt"),
             ],
         )
         
@@ -45,8 +45,8 @@ class CVRPWrapperTester(WrapperTesterBase):
         # 1.1 Read Real-World (X) VRPLIB data using ``from_vrplib_folder``
         wrapper = CVRPWrapper()
         wrapper.from_vrplib_folder(
-            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_1"),
-            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_1"),
+            vrp_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/problem_1"),
+            sol_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/solution_1"),
             ref=True,
             overwrite=True,
             normalize=True
@@ -62,8 +62,8 @@ class CVRPWrapperTester(WrapperTesterBase):
         
         # 1.4 Using ``overwrite`` to evaluate solution under the original data
         wrapper.from_vrplib_folder(
-            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_1"),
-            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_1"),
+            vrp_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/problem_1"),
+            sol_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/solution_1"),
             ref=True,
             overwrite=False,
             normalize=False
@@ -78,8 +78,8 @@ class CVRPWrapperTester(WrapperTesterBase):
         
         # 2.1 Read Real-World (A) VRPLIB data using ``from_vrplib_folder``
         wrapper.from_vrplib_folder(
-            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_2"),
-            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_2"),
+            vrp_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/problem_2"),
+            sol_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/solution_2"),
             ref=True,
             overwrite=True,
             normalize=True
@@ -95,8 +95,8 @@ class CVRPWrapperTester(WrapperTesterBase):
         
         # 2.4 Using ``overwrite`` to evaluate solution under the original data
         wrapper.from_vrplib_folder(
-            vrp_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/problem_2"),
-            sol_folder_path=pathlib.Path("test_dataset/cvrp/vrplib/solution_2"),
+            vrp_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/problem_2"),
+            sol_folder_path=pathlib.Path("test_dataset/routing/cvrp/vrplib/solution_2"),
             ref=True,
             overwrite=False,
             normalize=False
@@ -109,8 +109,8 @@ class CVRPWrapperTester(WrapperTesterBase):
         ###############################################################
         
         # 3.1 Read pickle data and transfer it to VRPLIB format
-        txt_path = pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.txt")
-        pkl_path = pathlib.Path("test_dataset/cvrp/wrapper/cvrp50_uniform_16ins.pkl")
+        txt_path = pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp50_uniform_16ins.txt")
+        pkl_path = pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp50_uniform_16ins.pkl")
         wrapper.from_pickle(pkl_path)
         wrapper.swap_sol_and_ref_sol()
         tmp_name = self._make_tmp_file()

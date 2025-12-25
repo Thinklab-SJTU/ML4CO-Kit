@@ -25,10 +25,10 @@ class MinVarPOWrapperTester(WrapperTesterBase):
             generator=MinVarPOGenerator(),
             solver=SCIPSolver(scip_time_limit=2.0),
             pickle_files_list=[
-                pathlib.Path("test_dataset/minvarpo/wrapper/minvarpo_gbm_4ins.pkl"),
+                pathlib.Path("test_dataset/portfolio/minvarpo/wrapper/minvarpo_gbm_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/minvarpo/wrapper/minvarpo_gbm_4ins.txt"),
+                pathlib.Path("test_dataset/portfolio/minvarpo/wrapper/minvarpo_gbm_4ins.txt"),
             ],
         )
         

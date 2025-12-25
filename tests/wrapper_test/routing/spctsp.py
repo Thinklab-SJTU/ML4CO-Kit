@@ -25,10 +25,10 @@ class SPCTSPWrapperTester(WrapperTesterBase):
             generator=SPCTSPGenerator(),
             solver=ILSSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/spctsp/wrapper/spctsp50_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/spctsp/wrapper/spctsp50_uniform_4ins.txt"),
             ],
         )
         

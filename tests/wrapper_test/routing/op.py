@@ -25,10 +25,10 @@ class OPWrapperTester(WrapperTesterBase):
             generator=OPGenerator(),
             solver=ORSolver(ortools_time_limit=2),
             pickle_files_list=[
-                pathlib.Path("test_dataset/op/wrapper/op50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/op/wrapper/op50_uniform_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/op/wrapper/op50_uniform_4ins.txt"),
+                pathlib.Path("test_dataset/routing/op/wrapper/op50_uniform_4ins.txt"),
             ],
         )
         

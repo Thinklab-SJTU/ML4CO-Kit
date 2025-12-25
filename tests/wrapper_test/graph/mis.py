@@ -27,16 +27,16 @@ class MISWrapperTester(WrapperTesterBase):
             generator=MISGenerator(),
             solver=LcDegreeSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.pkl"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.pkl"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.pkl"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_er-700-800_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_rb-small_no-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_rb-small_uniform-weighted_4ins.pkl"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_satlib_no-weighted_4ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/mis/wrapper/mis_er-700-800_no-weighted_4ins.txt"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_no-weighted_4ins.txt"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt"),
-                pathlib.Path("test_dataset/mis/wrapper/mis_satlib_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_er-700-800_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_rb-small_no-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt"),
+                pathlib.Path("test_dataset/graph/mis/wrapper/mis_satlib_no-weighted_4ins.txt"),
             ],
         )
         
@@ -49,8 +49,8 @@ class MISWrapperTester(WrapperTesterBase):
         # 1.1 Read gpickle-result data using ``from_gpickle_result_folder``
         wrapper = MISWrapper()
         wrapper.from_gpickle_result_folder(
-            graph_folder_path=pathlib.Path("test_dataset/mis/gpickle_result/instance"),
-            result_foler_path=pathlib.Path("test_dataset/mis/gpickle_result/solution"),
+            graph_folder_path=pathlib.Path("test_dataset/graph/mis/gpickle_result/instance"),
+            result_foler_path=pathlib.Path("test_dataset/graph/mis/gpickle_result/solution"),
             ref=True,
             overwrite=True
         )
@@ -82,7 +82,7 @@ class MISWrapperTester(WrapperTesterBase):
             overwrite=True,
         )
         wrapper.from_gpickle_result_folder(
-            result_foler_path=pathlib.Path("test_dataset/mis/gpickle_result/solution"),
+            result_foler_path=pathlib.Path("test_dataset/graph/mis/gpickle_result/solution"),
             ref=True,
             overwrite=False,
         )
@@ -105,7 +105,7 @@ class MISWrapperTester(WrapperTesterBase):
         ###############################################################
         
         # 3.1 Read txt data and transfer it to gpickle-result format
-        txt_path = pathlib.Path("test_dataset/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt")
+        txt_path = pathlib.Path("test_dataset/graph/mis/wrapper/mis_rb-small_uniform-weighted_4ins.txt")
         wrapper = MISWrapper()
         wrapper.from_txt(file_path=txt_path,)
         wrapper.to_gpickle_result_folder(

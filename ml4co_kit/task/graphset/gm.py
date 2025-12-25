@@ -19,15 +19,16 @@ import pathlib
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, List
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 from ml4co_kit.task.graphset.base import GraphSetTaskBase, Graph, get_pos_layer
 
+
 class GMTask(GraphSetTaskBase):
     def __init__(
         self,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         node_aff_fn = None,
         edge_aff_fn = None,
         precision: Union[np.float32, np.float64] = np.float32
@@ -182,10 +183,10 @@ class GMTask(GraphSetTaskBase):
     
     def from_data(
         self,
-        graphs: list[Graph] = None,
+        graphs: List[Graph] = None,
         sol: np.ndarray = None,
         ref: bool = False,
-        ):
+    ):
         # Check num of graphs
         if graphs is not None and len(graphs) != 2:
             raise ValueError("There must be two graphs")
