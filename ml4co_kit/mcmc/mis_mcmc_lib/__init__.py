@@ -1,15 +1,19 @@
 import os
+import shutil
 import pathlib
 
 
 try:
-    from .mis_mcmc_lib import mis_mcmc_enhanced_impl
+    from .source import mis_mcmc_lib
 except:
-    root_path = pathlib.Path(__file__).parent
+    root_path = pathlib.Path(__file__).parent / "source"
     ori_dir = os.getcwd()
     os.chdir(root_path)
-    os.system("make clean")
-    os.system("make")
+    os.system("python ./setup.py build_ext --inplace")
     os.chdir(ori_dir)
-    from .mis_mcmc_lib import mis_mcmc_enhanced_impl
+    if os.path.exists(f"{root_path}/build"):
+        shutil.rmtree(f"{root_path}/build")
+    from .source import mis_mcmc_lib
+
+mis_mcmc_enhanced_impl = mis_mcmc_lib.mis_mcmc_enhanced_impl
 
