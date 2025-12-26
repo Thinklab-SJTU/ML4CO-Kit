@@ -488,40 +488,7 @@ class SolverTesterBase(object):
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
-
-    ########################################
-    #              QAP Problems            #
-    ########################################
-
-    def _get_gm_tasks(
-        self, mode: str, exclude_test_files: list[pathlib.Path]
-    ) -> List[GMTask]:
-        # ``Solve`` mode
-        if mode == "solve":
-            gm_test_files_list = [
-                pathlib.Path("test_dataset/graph/gm/task/gm_er_large_uniform_task.pkl"),
-                pathlib.Path("test_dataset/graph/gm/task/gm_er_small_uniform_task.pkl"),
-            ]
-            task_list = list()
-            for test_file in gm_test_files_list:
-                if test_file not in exclude_test_files:
-                    task = GMTask()
-                    task.from_pickle(test_file)
-                    task_list.append(task)
-            return task_list
-        
-        # ``Batch Solve`` mode
-        if mode == "batch_solve":
-            gm_test_files_list = [
-                    pathlib.Path("test_dataset/graph/gm/wrapper/gm_er_large_uniform_4ins.pkl"),
-                    pathlib.Path("test_dataset/graph/gm/wrapper/gm_er_small_uniform_4ins.pkl"),
-                ]
-            batch_task_list = list()
-            for test_file in gm_test_files_list:
-                if test_file not in exclude_test_files:
-                    wrapper = GMWrapper()
-                    batch_task_list.append(wrapper.task_list)
-            return batch_task_list
+            
             
     ########################################
     #         Portfolio Problems           #
