@@ -16,19 +16,21 @@ Generator for Graph Edit Distance(GED) instances
 import numpy as np
 import networkx as nx
 from enum import Enum
-from typing import Union
+from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.graphset.base import GraphSetTaskBase,Graph
+from ml4co_kit.task.graphset.base import Graph
 from ml4co_kit.task.graphset.ged import GEDTask
 from ml4co_kit.generator.graphset.base import GRAPH_TYPE
 from ml4co_kit.generator.graphset.base import (
     GraphSetGeneratorBase, GRAPH_FEATURE_TYPE, GraphFeatureGenerator
-    )
+)
+
 
 class GRAPH_GENERATE_RULE(str, Enum):
     ISOMORPHIC = "isomorphic"         # Isomorphic Graph
     INDUCED_SUBGRAPH = "induced_subgraph"  # Induced Subgraph
     PERTURBED = "perturbed"           # Perturbed Graph
+
 
 class GEDGenerator(GraphSetGeneratorBase):
     def __init__(
@@ -104,10 +106,10 @@ class GEDGenerator(GraphSetGeneratorBase):
     
     def _create_instance(
         self,
-        nx_graphs: list[nx.Graph],
+        nx_graphs: List[nx.Graph],
         sol: np.ndarray = None,
         ref:bool = False,
-        ) -> GEDTask:
+    ) -> GEDTask:
         # Check num of graphs
         if len(nx_graphs) != 2:
            raise ValueError("There must be two graphs")
@@ -145,7 +147,12 @@ class GEDGenerator(GraphSetGeneratorBase):
             ref_sol[unmatched, -1] = 1
             
         elif self.graph_generate_rule == GRAPH_GENERATE_RULE.PERTURBED:
-            graph_gened, ref_sol = self._perturbed_graph_generate(graph_base, perturb_node_features=self.perturb_node_features, perturb_edge_features=self.perturb_edge_features, node_feat_noise_std=self.node_feat_noise_std, edge_feat_noise_std=self.edge_feat_noise_std)
+            graph_gened, ref_sol = self._perturbed_graph_generate(
+                graph_base, perturb_node_features=self.perturb_node_features, 
+                perturb_edge_features=self.perturb_edge_features, 
+                node_feat_noise_std=self.node_feat_noise_std, 
+                edge_feat_noise_std=self.edge_feat_noise_std
+            )
             ref_sol = np.pad(ref_sol,((0, 1), (0, 1)), mode = 'constant')
         else:
             raise ValueError("This generate rule is not supported for GED.")

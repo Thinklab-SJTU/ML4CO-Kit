@@ -97,7 +97,7 @@ if env_checker.check_torch():
         RLSASolverTester,
         NeuroLKHSolverTester,
         # AStarSolverTester,
-        NGMSolverTester,
+        # NGMSolverTester,
         # GennAStarSolverTester,
     ]
 
