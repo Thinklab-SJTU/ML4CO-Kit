@@ -16,11 +16,13 @@ Task Test Module.
 # Base Class
 from .base import TaskTesterBase
 
+
 # Routing Problems
 from .routing.atsp import ATSPTaskTester
 from .routing.cvrp import CVRPTaskTester
 from .routing.tsp import TSPTaskTester
 from .routing.pctsp import PCTSPTaskTester
+
 
 # Graph Problems
 from .graph.mcl import MClTaskTester
@@ -28,9 +30,6 @@ from .graph.mcut import MCutTaskTester
 from .graph.mis import MISTaskTester
 from .graph.mvc import MVCTaskTester
 
-# Graph Set Problems
-from .graphset.gm import GMTaskTester
-from .graphset.ged import GEDTaskTester
 
 # Portfolio Problems
 from .portfolio.maxretpo import MaxRetPOTaskTester

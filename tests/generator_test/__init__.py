@@ -16,6 +16,7 @@ Generator Test Module.
 # Base Class
 from .base import GenTesterBase
 
+
 # Routing Problems
 from .routing.atsp import ATSPGenTester
 from .routing.cvrp import CVRPGenTester
@@ -24,20 +25,19 @@ from .routing.pctsp import PCTSPGenTester
 from .routing.spctsp import SPCTSPGenTester
 from .routing.tsp import TSPGenTester
 
+
 # Graph Problems
 from .graph.mcut import MCutGenTester
 from .graph.mcl import MClGenTester
 from .graph.mis import MISGenTester
 from .graph.mvc import MVCGenTester
 
-# Graph Set Problem
-from .graphset.gm import GMGenTester
-from .graphset.ged import GEDGenTester
 
 # Portfolio Problems
 from .portfolio.minvarpo import MinVarPOGenTester
 from .portfolio.maxretpo import MaxRetPOGenTester
 from .portfolio.mopo import MOPOGenTester
+
 
 # SAT Problems
 from .sat.satp import SATPGenTester

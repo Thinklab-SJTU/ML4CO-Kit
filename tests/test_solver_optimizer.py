@@ -42,9 +42,6 @@ from tests.solver_optimizer_test import (
     ORSolverTester,
     RandomSolverTester,
     SCIPSolverTester,
-    SMSolverTester,
-    IPFPSolverTester,
-    RRWMSolverTester,
     PySATSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
@@ -65,9 +62,6 @@ basic_tester_class_list = [
     ORSolverTester,
     RandomSolverTester,
     SCIPSolverTester,
-    # SMSolverTester,
-    # IPFPSolverTester,
-    # RRWMSolverTester,
     PySATSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
@@ -88,17 +82,11 @@ if env_checker.check_gurobi():
 if env_checker.check_torch():
     from tests.solver_optimizer_test import (
         RLSASolverTester, 
-        NeuroLKHSolverTester,
-        AStarSolverTester,
-        NGMSolverTester,
-        GennAStarSolverTester,
+        NeuroLKHSolverTester
     )
     torch_tester_class_list = [
         RLSASolverTester,
-        NeuroLKHSolverTester,
-        # AStarSolverTester,
-        # NGMSolverTester,
-        # GennAStarSolverTester,
+        NeuroLKHSolverTester
     ]
 
 if env_checker.check_gnn4co():

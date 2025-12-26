@@ -16,6 +16,7 @@ Wrapper Test Module.
 # Base Class
 from .base import WrapperTesterBase
 
+
 # Routing Problems
 from .routing.atsp import ATSPWrapperTester
 from .routing.cvrp import CVRPWrapperTester
@@ -24,15 +25,13 @@ from .routing.pctsp import PCTSPWrapperTester
 from .routing.spctsp import SPCTSPWrapperTester
 from .routing.tsp import TSPWrapperTester
 
+
 # Graph Problems
 from .graph.mcl import MClWrapperTester
 from .graph.mis import MISWrapperTester
 from .graph.mvc import MVCWrapperTester
 from .graph.mcut import MCutWrapperTester
 
-# Graph Set Problem
-from .graphset.gm import GMWrapperTester
-from .graphset.ged import GEDWrapperTester
 
 # Portfolio Problems
 from .portfolio.maxretpo import MaxRetPOWrapperTester

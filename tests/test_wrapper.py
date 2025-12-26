@@ -29,6 +29,7 @@ from tests.wrapper_test import (
     TSPWrapperTester
 )    
 
+
 # Graph Problems
 from tests.wrapper_test import (
     MClWrapperTester, 
@@ -37,11 +38,6 @@ from tests.wrapper_test import (
     MCutWrapperTester
 )
 
-# # Graph Set Problems
-# from tests.wrapper_test import (
-#     GMWrapperTester,
-#     GEDWrapperTester
-# )
 
 # Portfolio Problems
 from tests.wrapper_test import (
@@ -67,10 +63,6 @@ def test_wrapper():
     MCutWrapperTester().test()
     MISWrapperTester().test()
     MVCWrapperTester().test()
-    
-    # # Graph Set Problem
-    # GMWrapperTester().test()
-    # GEDWrapperTester().test()
 
     # Portfolio Problems
     MaxRetPOWrapperTester().test()

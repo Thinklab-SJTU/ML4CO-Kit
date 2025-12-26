@@ -26,9 +26,6 @@ if env_checker.check_gnn4co():
 if env_checker.check_torch():
     from .solver.neurolkh import NeuroLKHSolverTester
     from .solver.rlsa import RLSASolverTester
-    from .solver.ngm import NGMSolverTester
-    from .solver.genn_astar import GennAStarSolverTester
-    from .solver.astar import AStarSolverTester
 
 
 # Load other solver testers
@@ -47,10 +44,8 @@ from .solver.lkh import LKHSolverTester
 from .solver.ortools import ORSolverTester
 from .solver.random import RandomSolverTester
 from .solver.scip import SCIPSolverTester
-from .solver.sm import SMSolverTester
-from .solver.ipfp import IPFPSolverTester
-from .solver.rrwm import RRWMSolverTester
 from .solver.pysat import PySATSolverTester
+
 
 # Load other optimizer testers
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester

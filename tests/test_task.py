@@ -36,11 +36,6 @@ from tests.task_test import (
     MCutTaskTester
 )
 
-# # Graph Set Problems
-# from tests.task_test import (
-#     GMTaskTester,
-#     GEDTaskTester
-# )
 
 # Portfolio Problems
 from tests.task_test import (
