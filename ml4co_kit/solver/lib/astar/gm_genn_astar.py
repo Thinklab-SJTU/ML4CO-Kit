@@ -14,15 +14,16 @@ GENN AStar Solver.
 # See the Mulan PSL v2 for more details.
 
 import torch
-import torch.nn as nn
 import numpy as np
+import torch.nn as nn
+from typing import List
 from ml4co_kit.task.graphset.gm import GMTask
 from ml4co_kit.solver.lib.utils_gm import hungarian
 from .modules import genn_astar_kernel
 
 
 def gm_genn_astar(
-    task_data: list[GMTask],
+    task_data: List[GMTask],
     channel: int = None, 
     filters_1: int = 64, 
     filters_2: int = 32, 

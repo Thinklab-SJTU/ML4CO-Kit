@@ -16,13 +16,14 @@ GENN AStar Solver.
 import torch
 import torch.nn as nn
 import numpy as np
-from ml4co_kit.task.graphset.gm import GMTask
+from typing import List
+from ml4co_kit.task.graphset.ged import GEDTask
 from .modules import hungarian_ged, genn_astar_kernel
 
 
 
 def ged_genn_astar(
-    task_data: list[GMTask],
+    task_data: List[GEDTask],
     channel: int = None, 
     filters_1: int = 64, 
     filters_2: int = 32, 
