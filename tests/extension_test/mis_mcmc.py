@@ -15,7 +15,8 @@ Test MIS MCMC Module.
 
 
 import numpy as np
-from ml4co_kit import MISTask, mis_mcmc
+from ml4co_kit import MISTask
+from ml4co_kit.extension.mcmc import mis_mcmc
 
 
 class MISMCMCTester(object):

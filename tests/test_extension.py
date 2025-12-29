@@ -20,7 +20,7 @@ sys.path.insert(0, root_folder)
 
 
 # MCMC
-from tests.mcmc_test import MISMCMCTester
+from tests.extension_test import MISMCMCTester
 
 
 # Test MCMC

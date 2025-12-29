@@ -1,5 +1,5 @@
 r"""
-MCMC Test Module.
+Extension Test Module.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,4 +13,4 @@ MCMC Test Module.
 # See the Mulan PSL v2 for more details.
 
 
-from .mis import MISMCMCTester
+from .mis_mcmc import MISMCMCTester
