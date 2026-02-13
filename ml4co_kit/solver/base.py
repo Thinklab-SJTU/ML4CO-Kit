@@ -61,6 +61,10 @@ class SOLVER_TYPE(str, Enum):
     # ML4CO
     ML4CO = "ml4co"
 
+    # EDA Solvers
+    SIMULATED_ANNEALING = "simulated_annealing"
+    FORCE_DIRECTED = "force_directed"
+    SEQUENTIAL_ROUTING = "sequential_routing"
 
     # DIY
     DIY = "diy"

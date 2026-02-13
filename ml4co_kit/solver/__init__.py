@@ -46,3 +46,8 @@ from .rrwm import RRWMSolver
 from .pysat import PySATSolver
 from .random import RandomSolver
 from .scip import SCIPSolver
+
+# EDA Solvers
+from .simulated_annealing import SimulatedAnnealingSolver
+from .force_directed import ForceDirectedSolver
+from .sequential_routing import SequentialRoutingSolver
