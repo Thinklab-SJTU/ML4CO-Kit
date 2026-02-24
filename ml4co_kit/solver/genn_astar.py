@@ -14,6 +14,7 @@ GENN_AStar Solver.
 # See the Mulan PSL v2 for more details.
 
 import torch.nn as nn
+from typing import List
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.lib.astar.gm_genn_astar import gm_genn_astar
@@ -54,7 +55,7 @@ class GennAStarSolver(SolverBase):
         self.pretrain = pretrain
         self.device = device
     
-    def _batch_solve(self, task_data: list[TaskBase]):
+    def _batch_solve(self, task_data: List[TaskBase]):
         """Solve the task data using GNN_AStar solver."""
         if task_data[0].task_type == TASK_TYPE.GM:
             return gm_genn_astar(
