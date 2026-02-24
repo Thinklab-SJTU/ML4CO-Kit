@@ -357,7 +357,7 @@ class GraphSetTaskBase(TaskBase):
             minimize=minimize, 
             precision=precision
             ) 
-        self.graphs: list[Graph] = graphs if graphs is not None else [] 
+        self.graphs: List[Graph] = graphs if graphs is not None else [] 
         self.graphs_num: int = len(self.graphs)
         
     def add_graph(self, graph: Graph):
@@ -423,7 +423,7 @@ class GraphSetTaskBase(TaskBase):
         # Read graph data from .gpickle
         if gpickle_file_path is not None:
             with open(gpickle_file_path, "rb") as f:
-                nx_graphs: list[nx.Graph] = pickle.load(f)
+                nx_graphs: List[nx.Graph] = pickle.load(f)
 
             # Use ``from_nx_graph``
             graphs_list = []
