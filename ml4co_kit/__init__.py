@@ -72,6 +72,12 @@ from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
 from .task import SATTaskBase
 from .task import SATPTask, SATATask, USATCTask
 
+# EDA Task
+from .task import (
+    EDATaskBase, PlacementTask, MacroPlacementTask,
+    StandardCellPlacementTask, RoutingTask, GlobalRoutingTask,
+)
+
 
 ###################################################
 #                    Generator                    #
@@ -114,6 +120,14 @@ from .generator import (
 from .generator import SATGeneratorBase, SAT_TYPE
 from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 
+# EDA Generator
+from .generator import EDAGeneratorBase
+from .generator import (
+    MacroPlacementGenerator, MACRO_PLACEMENT_TYPE,
+    StandardCellPlacementGenerator, STD_CELL_PLACEMENT_TYPE,
+    GlobalRoutingGenerator, GLOBAL_ROUTING_TYPE,
+)
+
 
 ####################################################
 #                      Solver                      #
@@ -129,6 +143,9 @@ from .solver import (
     KaMISSolver, LcDegreeSolver, LKHSolver, ORSolver, PySATSolver, 
     RandomSolver, SMSolver, IPFPSolver, RRWMSolver, SCIPSolver
 )
+
+# EDA Solvers
+from .solver import SimulatedAnnealingSolver, ForceDirectedSolver, SequentialRoutingSolver
 
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
