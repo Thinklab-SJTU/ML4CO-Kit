@@ -151,8 +151,8 @@ class GMWrapper(WrapperBase):
                 
                 graph1 = Graph(precision=self.precision)
                 graph2 = Graph(precision=self.precision)
-                graph1.from_data(edge_index=edge_index1, nodes_feature=node_feat1, edges_feature=edge_feat1)      
-                graph2.from_data(edge_index=edge_index2, nodes_feature=node_feat2, edges_feature=edge_feat2)  
+                graph1.from_data(edge_index=edge_index1, node_feature=node_feat1, edge_feature=edge_feat1)      
+                graph2.from_data(edge_index=edge_index2, node_feature=node_feat2, edge_feature=edge_feat2)  
                 graphs = [graph1, graph2]    
                 
                 if overwrite:

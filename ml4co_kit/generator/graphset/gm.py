@@ -41,8 +41,8 @@ class GMGenerator(GraphSetGeneratorBase):
         graph_generate_rule: GRAPH_GENERATE_RULE =  GRAPH_GENERATE_RULE.ISOMORPHIC,
         # special args for different graph matching problrms
         keep_ratio: np.ndarray = 0.5, 
-        add_ratio: float = 0.01,
-        remove_ratio: float = 0.01,
+        add_ratio: float = 0.0,
+        remove_ratio: float = 0.0,
         perturb_node_features: bool = False,
         perturb_edge_features: bool = False,
         node_feat_noise_std: float = 0.1,

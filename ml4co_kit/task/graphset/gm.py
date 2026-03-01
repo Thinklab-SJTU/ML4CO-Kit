@@ -73,16 +73,20 @@ class GMTask(GraphSetTaskBase):
         
         if sol.shape != (n1, n2):
             return False
-        
-        if np.array_equal(sol, sol.astype(bool)):
-            row_sum = sol.sum(axis=1)   
-            col_sum = sol.sum(axis=0) 
-            if (row_sum <= 1).all() or (col_sum <= 1).all(): 
-                if n1 <= n2:            
-                    is_valid = bool(np.all(row_sum==1))
-                else:                    
-                    is_valid = bool(np.all(col_sum == 1))
-        return is_valid
+
+        if not ((sol == 0) | (sol == 1)).all():
+            return False
+
+        row_sum = sol.sum(axis=1)   
+        col_sum = sol.sum(axis=0) 
+
+        if row_sum.max() > 1 or col_sum.max() > 1:
+            return False
+
+        if n1 <= n2:
+            return row_sum.min() == 1
+        else:
+            return col_sum.min() == 1
     
     def inner_prod_aff_fn(self, feat1: np.ndarray, feat2: np.ndarray) -> np.ndarray:
         """inner product affinity function"""
@@ -169,13 +173,13 @@ class GMTask(GraphSetTaskBase):
             'The following arguments must all be given if you want to compute edge-wise affinity: ' \
             'edge_feat1, edge_feat2'
         
-        if node_aff_fn is None:
-            node_aff_fn = self.inner_prod_aff_fn
-        if edge_aff_fn is None:
-            edge_aff_fn = self.inner_prod_aff_fn
+        if self.node_aff_fn is None:
+            self.node_aff_fn = self.inner_prod_aff_fn
+        if self.edge_aff_fn is None:
+            self.edge_aff_fn = self.inner_prod_aff_fn
         
-        node_aff = node_aff_fn(node_feat1, node_feat2) if node_feat1 is not None else None
-        edge_aff = edge_aff_fn(edge_feat1, edge_feat2) if edge_feat1 is not None else None
+        node_aff = self.node_aff_fn(node_feat1, node_feat2) if node_feat1 is not None else None
+        edge_aff = self.edge_aff_fn(edge_feat1, edge_feat2) if edge_feat1 is not None else None
         
         result = self._aff_mat_from_node_edge_aff(node_aff, edge_aff, connectivity1, connectivity2, n1, n2, ne1, ne2)
         
@@ -209,7 +213,7 @@ class GMTask(GraphSetTaskBase):
                 res = sol.T.ravel()
                 return (res @ self.aff_mat @ res.T).astype(self.precision)
             else:
-                raise ValueError("Without cost matrix")
+                raise ValueError("Without affinity matrix")
         else:
             raise ValueError(f"Unsupported evaluation mode: {mode}")
     

@@ -153,7 +153,6 @@ class GEDGenerator(GraphSetGeneratorBase):
                 node_feat_noise_std=self.node_feat_noise_std, 
                 edge_feat_noise_std=self.edge_feat_noise_std
             )
-            ref_sol = np.pad(ref_sol,((0, 1), (0, 1)), mode = 'constant')
         else:
             raise ValueError("This generate rule is not supported for GED.")
         
