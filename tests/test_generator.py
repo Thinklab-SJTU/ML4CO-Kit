@@ -47,6 +47,12 @@ from tests.generator_test import (
 )
 
 
+# QAP Problems
+from tests.generator_test import (
+    GMGenTester
+)
+
+
 # SAT Problems
 from tests.generator_test import (
     SATPGenTester,
@@ -75,6 +81,9 @@ def test_generator():
     MinVarPOGenTester().test()
     MaxRetPOGenTester().test()
     MOPOGenTester().test()
+
+    # QAP Problems
+    GMGenTester().test()
 
     # SAT Problems
     SATPGenTester().test()

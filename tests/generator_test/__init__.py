@@ -39,6 +39,10 @@ from .portfolio.maxretpo import MaxRetPOGenTester
 from .portfolio.mopo import MOPOGenTester
 
 
+# QAP Problems
+from .qap.gm import GMGenTester
+
+
 # SAT Problems
 from .sat.satp import SATPGenTester
 from .sat.sata import SATAGenTester

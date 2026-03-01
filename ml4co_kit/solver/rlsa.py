@@ -66,7 +66,7 @@ class RLSASolver(SolverBase):
         self.rlsa_seed = rlsa_seed
             
     def _solve(self, task_data: TaskBase):
-        """Solve the task data using LKH solver."""
+        """Solve the task data using RLSA solver."""
         if task_data.task_type == TASK_TYPE.MCL:
             return mcl_rlsa(
                 task_data=task_data,

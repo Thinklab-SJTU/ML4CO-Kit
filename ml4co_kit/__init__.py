@@ -64,6 +64,11 @@ from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
 from .task import PortfolioTaskBase
 from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
 
+# QAP Task
+from .task import QAPTaskBase, QAPGraphBase
+from .task import GMTask, GMAffinityMatrixBuilder
+from .task import GEDTask, KQAPTask
+
 # SAT Task
 from .task import SATTaskBase
 from .task import SATPTask, SATATask, USATCTask
@@ -98,6 +103,10 @@ from .generator import (
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
 
+# QAP Generator
+from .generator import QAPGraphGenerator
+from .generator import GMGenerator, GM_TYPE
+
 # SAT Generator
 from .generator import SATGeneratorBase, SAT_TYPE
 from .generator import SATPGenerator, SATAGenerator, USATCGenerator
@@ -122,7 +131,7 @@ if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
     from .solver import (
-        NeuroLKHSolver, RLSASolver
+        NeuroLKHSolver, RLSASolver, PyGMSolver
     )
 
 
@@ -166,6 +175,11 @@ from .wrapper import (
 # Portfolio Problems
 from .wrapper import (
     MinVarPOWrapper, MaxRetPOWrapper, MOPOWrapper
+)
+
+# QAP Problems
+from .wrapper import (
+    GMWrapper, GEDWrapper, KQAPWrapper
 )
 
 # SAT Problems

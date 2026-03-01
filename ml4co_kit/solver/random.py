@@ -29,7 +29,7 @@ class RandomSolver(SolverBase):
         )
             
     def _solve(self, task_data: TaskBase):
-        """Solve the task data using LKH solver."""
+        """Solve the task data using Random solver."""
         if task_data.task_type == TASK_TYPE.ATSP:
             return atsp_random(task_data=task_data)
         elif task_data.task_type == TASK_TYPE.CVRP:

@@ -18,6 +18,12 @@ from .portfolio.minvarpo import MinVarPOTask
 from .portfolio.maxretpo import MaxRetPOTask
 from .portfolio.mopo import MOPOTask
 
+# QAP Task
+from .qap.base import QAPTaskBase, QAPGraphBase
+from .qap.gm import GMTask, GMAffinityMatrixBuilder
+from .qap.ged import GEDTask
+from .qap.kqap import KQAPTask
+
 # Routing Task
 from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .routing.atsp import ATSPTask

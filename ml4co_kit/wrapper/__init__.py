@@ -23,6 +23,11 @@ from .portfolio.maxretpo import MaxRetPOWrapper
 from .portfolio.minvarpo import MinVarPOWrapper
 from .portfolio.mopo import MOPOWrapper
 
+# QAP Problems
+from .qap.gm import GMWrapper
+from .qap.ged import GEDWrapper
+from .qap.kqap import KQAPWrapper
+
 # SAT Problems
 from .sat.satp import SATPWrapper
 from .sat.sata import SATAWrapper

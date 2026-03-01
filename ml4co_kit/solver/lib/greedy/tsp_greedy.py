@@ -16,6 +16,7 @@ Greedy Algorithm for TSP
 import numpy as np
 from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.solver.lib.greedy.cython_tsp_greedy import cython_tsp_greedy
+from ml4co_kit.solver.lib.greedy.pybind11_tsp_greedy_v2 import pybind11_tsp_greedy_v2
 
 
 def _tsp_greedy(heatmap: np.ndarray) -> np.ndarray:
@@ -43,6 +44,30 @@ def _tsp_greedy(heatmap: np.ndarray) -> np.ndarray:
 def tsp_greedy(task_data: TSPTask):
     # Call ``_tsp_greedy`` to get the tour
     tour = _tsp_greedy(heatmap=task_data.cache["heatmap"])
+    
+    # Store the tour in the task_data
+    task_data.from_data(sol=tour, ref=False)
+
+
+def _tsp_greedy_v2(
+    candidate_edges: np.ndarray, nodes_num: int, num_workers: int = 1
+) -> np.ndarray:
+    # Ensure input is int32 for C++ compatibility
+    candidate_edges = np.ascontiguousarray(candidate_edges, dtype=np.int32)
+    
+    # Call the pybind11 implementation
+    tours = pybind11_tsp_greedy_v2(candidate_edges, nodes_num, num_workers)
+    
+    return tours
+
+
+def tsp_greedy_v2(task_data: TSPTask):
+    # Call ``_tsp_greedy_v2`` to get the tour
+    tour = _tsp_greedy_v2(
+        candidate_edges=task_data.cache["candidate_edges"], 
+        nodes_num=task_data.nodes_num, 
+        num_workers=1
+    )
     
     # Store the tour in the task_data
     task_data.from_data(sol=tour, ref=False)

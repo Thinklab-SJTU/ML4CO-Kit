@@ -197,7 +197,6 @@ class GraphGeneratorBase(GeneratorBase):
 
         # Initialize Attributes
         self.nodes_num_min, self.nodes_num_max = nodes_num_scale
-        self.nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
         
         # Special args for different distributions (structural)
         self.er_prob = er_prob
@@ -240,12 +239,13 @@ class GraphGeneratorBase(GeneratorBase):
         }
         """
         # Generate Barabasi-Albert graph
+        nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
         nx_graph: nx.Graph = nx.barabasi_albert_graph(
-            n=self.nodes_num, m=min(self.ba_conn_degree, self.nodes_num)
+            n=nodes_num, m=min(self.ba_conn_degree, nodes_num)
         )
         
         # Add weights to nodes and edges if required
-        nx_graph = self._if_need_weighted(nx_graph)
+        nx_graph = self._if_need_weighted(nx_graph, nodes_num)
         
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
@@ -263,10 +263,11 @@ class GraphGeneratorBase(GeneratorBase):
         }
         """
         # Generate Erdos-Renyi graph
-        nx_graph: nx.Graph = nx.erdos_renyi_graph(self.nodes_num, self.er_prob)
+        nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
+        nx_graph: nx.Graph = nx.erdos_renyi_graph(nodes_num, self.er_prob)
         
         # Add weights to nodes and edges if required
-        nx_graph = self._if_need_weighted(nx_graph)
+        nx_graph = self._if_need_weighted(nx_graph, nodes_num)
         
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
@@ -286,14 +287,15 @@ class GraphGeneratorBase(GeneratorBase):
         }
         """
         # Generate Holme-Kim graph
+        nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
         nx_graph: nx.Graph = nx.powerlaw_cluster_graph(
-            n=self.nodes_num, 
-            m=min(self.hk_conn_degree, self.nodes_num), 
+            n=nodes_num, 
+            m=min(self.hk_conn_degree, nodes_num), 
             p=self.hk_prob
         )
         
         # Add weights to nodes and edges if required
-        nx_graph = self._if_need_weighted(nx_graph)
+        nx_graph = self._if_need_weighted(nx_graph, nodes_num)
         
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
@@ -313,12 +315,13 @@ class GraphGeneratorBase(GeneratorBase):
         }
         """
         # Generate Watts-Strogatz graph
+        nodes_num = np.random.randint(self.nodes_num_min, self.nodes_num_max+1)
         nx_graph: nx.Graph = nx.watts_strogatz_graph(
-            n=self.nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
+            n=nodes_num, k=self.ws_ring_neighbors, p=self.ws_prob
         )
 
         # Add weights to nodes and edges if required
-        nx_graph = self._if_need_weighted(nx_graph)
+        nx_graph = self._if_need_weighted(nx_graph, nodes_num)
         
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
@@ -340,7 +343,6 @@ class GraphGeneratorBase(GeneratorBase):
             rb_v = rb_n * rb_k
             if self.nodes_num_min <= rb_v and self.nodes_num_max >= rb_v:
                 break
-        self.nodes_num = rb_v
         rb_a = np.log(rb_k) / np.log(rb_n)
         
         # Get params for RB model (p, r, s, iterations)
@@ -371,16 +373,16 @@ class GraphGeneratorBase(GeneratorBase):
         nx_graph.add_edges_from(clauses['NAND'])
 
         # Add weights to nodes and edges if required
-        nx_graph = self._if_need_weighted(nx_graph)
+        nx_graph = self._if_need_weighted(nx_graph, rb_v)
         
         # Create instance from nx.Graph
         return self._create_instance(nx_graph)
 
-    def _if_need_weighted(self, nx_graph: nx.Graph) -> nx.Graph:
+    def _if_need_weighted(self, nx_graph: nx.Graph, nodes_num: int) -> nx.Graph:
         """Assign weights to nodes and/or edges if required."""
         # Add weights to nodes if specified
         if self.node_weighted:
-            node_weights = self.node_weighted_gen.generate(self.nodes_num)
+            node_weights = self.node_weighted_gen.generate(nodes_num)
             for i, node in enumerate(nx_graph.nodes):
                 nx_graph.nodes[node]['weight'] = node_weights[i]
         

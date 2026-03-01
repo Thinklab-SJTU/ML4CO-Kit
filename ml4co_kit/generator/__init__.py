@@ -42,6 +42,10 @@ from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
 
+# QAP Generator
+from .qap.base import QAPGraphGenerator
+from .qap.gm import GMGenerator, GM_TYPE
+
 # SAT Generator
 from .sat.base import SATGeneratorBase, SAT_TYPE
 from .sat.satp import SATPGenerator

@@ -41,9 +41,11 @@ class TASK_TYPE(str, Enum):
     MIS = "MIS" # Maximum Independent Set
     MVC = "MVC" # Minimum Vertex Cover
     
-    # Graph Set Problem
+    # Quadratic Assignment Problems
     GM = "GM" # Graph Matching
     GED = "GED" # Graph Edit Distance
+    KQAP = "KQAP" # Koopmans-Beckmann QAP
+    LQAP = "LQAP" # Lawler QAP
     
     # Knapsack Problems
     KP = "KP" # Knapsack Problem
