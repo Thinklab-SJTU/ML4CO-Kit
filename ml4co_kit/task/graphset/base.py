@@ -344,6 +344,23 @@ class Graph:
         self.edges_num = int(self.edge_index.shape[1])
         self._invalidate_cached_structures()
        
+    def __repr__(self):
+        node_feat_shape = None if self.node_feature is None else self.node_feature.shape
+        edge_feat_shape = None if self.edge_feature is None else self.edge_feature.shape
+        edge_index_shape = None if self.edge_index is None else self.edge_index.shape
+
+        node_dtype = None if self.node_feature is None else str(self.node_feature.dtype)
+        edge_dtype = None if self.edge_feature is None else str(self.edge_feature.dtype)
+
+        return (
+            f"Graph("
+            f"nodes={self.nodes_num}, edges={self.edges_num}, "
+            f"node_feat_shape={node_feat_shape}, node_feat_dtype={node_dtype}, "
+            f"edge_feat_shape={edge_feat_shape}, edge_feat_dtype={edge_dtype}, "
+            f"edge_index_shape={edge_index_shape})"
+        )
+        
+    
 class GraphSetTaskBase(TaskBase):                   
     def __init__(
         self,
@@ -376,8 +393,6 @@ class GraphSetTaskBase(TaskBase):
         if self.graphs is not None: 
            self.graphs.clear() 
         self.graphs_num = 0 
-        self.ref_sol = None
-        self.sol = None
         
     def get_graph(self, idx: int) -> Graph: 
         if idx < 0 or idx >= len(self.graphs): 
@@ -453,7 +468,7 @@ class GraphSetTaskBase(TaskBase):
             check_file_path(gpickle_file_path)
             
             # Transfer to NetworkX graph list
-            nx_graphs = [g.to_networkx for g in self.graphs]
+            nx_graphs = [g.to_networkx() for g in self.graphs]
             
             # Save to .gpickle file
             with open(gpickle_file_path, "wb") as f:
@@ -468,7 +483,7 @@ class GraphSetTaskBase(TaskBase):
             with open(result_file_path, "w") as f:
                 for node_label in self.sol:
                     f.write(f"{node_label}\n")
-
+    
 # NetworkX Layout
 SUPPORT_POS_TYPE_DICT = {
     "bipartite_layout": nx.bipartite_layout,

@@ -13,6 +13,7 @@ GM Task Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import os
 import pathlib
 from ml4co_kit import GMTask
 from tests.task_test.base import TaskTesterBase
@@ -23,8 +24,8 @@ class GMTaskTester(TaskTesterBase):
         super(GMTaskTester, self).__init__(
             test_task_class=GMTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/gm/task/gm_er_large_uniform_task.pkl"),
-                pathlib.Path("test_dataset/gm/task/gm_er_small_uniform_task.pkl"),
+                pathlib.Path("test_dataset/qap/qap/gm/task/gm_er_large_uniform_task.pkl"),
+                pathlib.Path("test_dataset/qap/qap/gm/task/gm_er_small_uniform_task.pkl"),
             ],
         )
         
@@ -32,4 +33,18 @@ class GMTaskTester(TaskTesterBase):
         pass
     
     def _test_render(self):
-        pass
+        # Read data
+        task = GMTask()
+        task.from_pickle(pathlib.Path('test_dataset/qap/qap/gm/task/gm_er_small_uniform_task.pkl'))
+        task.sol = task.ref_sol
+
+        # Render (problem)
+        tmp_path = self._make_tmp_file()
+        task.render(save_path=pathlib.Path(tmp_path + ".png"), with_sol=False)
+
+        # Render (solution)
+        task.render(save_path=pathlib.Path(tmp_path + "_sol.png"), with_sol=True)
+
+        # Clean up
+        os.remove(tmp_path + ".png")
+        os.remove(tmp_path + "_sol.png")

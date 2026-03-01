@@ -173,10 +173,10 @@ class GMTask(GraphSetTaskBase):
             'The following arguments must all be given if you want to compute edge-wise affinity: ' \
             'edge_feat1, edge_feat2'
         
-        if node_aff_fn is None:
-            node_aff_fn = self.inner_prod_aff_fn
-        if edge_aff_fn is None:
-            edge_aff_fn = self.inner_prod_aff_fn
+        if self.node_aff_fn is None:
+            self.node_aff_fn = self.inner_prod_aff_fn
+        if self.edge_aff_fn is None:
+            self.edge_aff_fn = self.inner_prod_aff_fn
         
         node_aff = self.node_aff_fn(node_feat1, node_feat2) if node_feat1 is not None else None
         edge_aff = self.edge_aff_fn(edge_feat1, edge_feat2) if edge_feat1 is not None else None

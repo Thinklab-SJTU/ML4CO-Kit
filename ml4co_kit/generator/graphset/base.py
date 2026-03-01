@@ -339,6 +339,10 @@ class GraphSetGeneratorBase(GeneratorBase):
         return iso_graph, X
      
     def _induced_subgraph_generate(self, graph: Graph, keep_ratio: float = 0.5) -> Tuple[Graph, np.ndarray]:
+        # Check contrains for keep ratio
+        if keep_ratio <= 0 or keep_ratio > 1:
+            raise ValueError("keep_ratio should be in the range (0, 1].")
+        
         nodes_num = graph.nodes_num
         nodes = np.arange(nodes_num, dtype=np.int32)
         k = max(1, int(nodes_num * keep_ratio))
@@ -385,79 +389,84 @@ class GraphSetGeneratorBase(GeneratorBase):
         ) -> nx.Graph:
         """Generate a perturbed graph by adding/removing edges and optionally perturbing features."""
         n = graph.nodes_num
-        edge_index = graph.edge_index.copy()        
-        edge_feat = graph.edge_feature.copy()     
-        node_feat = graph.node_feature.copy() 
-        
-        # Remove edges
-        u = edge_index[0]
-        v = edge_index[1]
-        
-        can_u = np.minimum(u, v)
-        can_v = np.maximum(u, v)
-        can_edges = list(zip(can_u, can_v))
-        
-        unique_edges = list(set(can_edges))
-        num_unique = len(unique_edges)
-        
-        num_remove = int(num_unique * remove_ratio)
-        
-        if num_remove > 0:  
-            remove_edges = set(random.sample(unique_edges, k=min(num_remove, num_unique)))
+        edge_index = graph.edge_index.copy()
+        edge_feat = graph.edge_feature.copy()
+        node_feat = graph.node_feature.copy()
 
-            remove_mask = np.array([edge in remove_edges for edge in can_edges])
-            keep_mask = ~remove_mask
+        # add/remove must not both be active
+        if add_ratio > 0 and remove_ratio > 0:
+            raise ValueError("add_ratio and remove_ratio cannot both be > 0")
 
-            edge_index = edge_index[:, keep_mask]
-            edge_feat = edge_feat[keep_mask]
-        
-        # Add edges
+        # Canonical undirected pairs for current directed edges
         u = edge_index[0]
         v = edge_index[1]
         can_u = np.minimum(u, v)
         can_v = np.maximum(u, v)
-        existing_edges = set(zip(can_u, can_v))
+        pairs = np.stack([can_u, can_v], axis=1) if edge_index.size else np.zeros((0, 2), dtype=np.int32)
 
-        possible_edges = [
-            (i, j)
-            for i in range(n)
-            for j in range(i + 1, n)
-            if (i, j) not in existing_edges
-        ]
-        
-        num_add = 0
-        if len(possible_edges) > 0 and add_ratio > 0:
-            num_add = int(add_ratio * len(possible_edges))
+        # ---- Remove edges (if requested) ----
+        if remove_ratio > 0 and pairs.shape[0] > 0:
+            unique_pairs, inverse = np.unique(pairs, axis=0, return_inverse=True)
+            num_unique = unique_pairs.shape[0]
+            num_remove = int(num_unique * remove_ratio)
+            num_remove = max(0, min(num_remove, num_unique))
+            if num_remove > 0:
+                # choose undirected edges to remove (numpy for speed)
+                remove_idx = np.random.choice(num_unique, size=num_remove, replace=False)
+                remove_set = {tuple(x) for x in unique_pairs[remove_idx].tolist()}
+                # build mask for directed edges to keep
+                remove_mask = np.array([tuple(p) in remove_set for p in pairs])
+                keep_mask = ~remove_mask
+                edge_index = edge_index[:, keep_mask]
+                edge_feat = edge_feat[keep_mask]
 
-        if num_add > 0:
-            new_edges = random.sample(possible_edges, k=min(num_add, len(possible_edges)))
-            new_feat = self.edge_feature_gen.generate(len(new_edges), dim=self.edge_feat_dim)
-            add_list = []
-            for (u, v) in new_edges:
-                add_list.append([u, v])
-                add_list.append([v, u])
+        # ---- Add edges (if requested) ----
+        if add_ratio > 0:
+            # compute existing undirected edge set
+            if pairs.shape[0] > 0:
+                existing = {tuple(x) for x in pairs.tolist()}
+            else:
+                existing = set()
 
-            add_edge_index = np.array(add_list).T  
-            add_feat = np.repeat(new_feat, repeats=2, axis=0)
-            
-            edge_index = np.concatenate([edge_index, add_edge_index], axis=1)
-            edge_feat = np.concatenate([edge_feat, add_feat], axis=0)
-        
-        # Perturb features
+            # list all possible undirected pairs not present
+            possible = [(i, j) for i in range(n) for j in range(i + 1, n) if (i, j) not in existing]
+            if len(possible) > 0:
+                num_add = int(add_ratio * len(possible))
+                num_add = max(0, min(num_add, len(possible)))
+                if num_add > 0:
+                    sel = np.random.choice(len(possible), size=num_add, replace=False)
+                    new_edges = [possible[int(i)] for i in sel]
+                    new_feat = self.edge_feature_gen.generate(len(new_edges), dim=self.edge_feat_dim)
+                    # create both directed copies and repeat features
+                    add_list = []
+                    for (a, b) in new_edges:
+                        add_list.append([a, b])
+                        add_list.append([b, a])
+                    add_edge_index = np.array(add_list).T
+                    add_feat = np.repeat(new_feat, repeats=2, axis=0)
+                    edge_index = np.concatenate([edge_index, add_edge_index], axis=1) if edge_index.size else add_edge_index
+                    edge_feat = np.concatenate([edge_feat, add_feat], axis=0) if edge_feat.size else add_feat
+
+        # ---- Perturb features ----
         if perturb_node_features:
-            noise = np.random.normal(
-                0, node_feat_noise_std,
-                size=node_feat.shape
-            ).astype(node_feat.dtype)
-            node_feat = node_feat + noise
-            
+            if node_feat.size:
+                noise = np.random.normal(0, node_feat_noise_std, size=node_feat.shape).astype(node_feat.dtype)
+                node_feat = node_feat + noise
+
         if perturb_edge_features:
-            noise = np.random.normal(
-                0, edge_feat_noise_std,
-                size=edge_feat.shape
-            ).astype(edge_feat.dtype)
-            edge_feat = edge_feat + noise    
-        
+            # recompute canonical pairs and mapping after any add/remove
+            if edge_index.size:
+                u = edge_index[0]
+                v = edge_index[1]
+                can_u = np.minimum(u, v)
+                can_v = np.maximum(u, v)
+                pairs = np.stack([can_u, can_v], axis=1)
+                unique_pairs, inverse = np.unique(pairs, axis=0, return_inverse=True)
+                # one noise vector per undirected edge, broadcast to directed copies
+                noise_unique = np.random.normal(0, edge_feat_noise_std, size=(unique_pairs.shape[0], edge_feat.shape[1])).astype(edge_feat.dtype)
+                noise = noise_unique[inverse]
+                edge_feat = edge_feat + noise
+
         pert_graph = Graph(
             nodes_num=n,
             node_feature=node_feat,
@@ -466,9 +475,8 @@ class GraphSetGeneratorBase(GeneratorBase):
             node_feat_dim=graph.node_feature.shape[1],
             edge_feat_dim=graph.edge_feature.shape[1]
         )
-        
-        X = np.eye(n, dtype=np.int32)
-        return pert_graph, X
+
+        return pert_graph, None
                
     def _generate_feature(self, nx_graph: nx.Graph) -> nx.Graph:
         """Assign feature to nodes and edges."""
