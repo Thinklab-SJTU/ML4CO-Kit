@@ -108,40 +108,8 @@ class GEDTask(QAPTaskBase):
         k = k.transpose([0, 2, 1, 3])
         k = k.reshape(n12_plus_1 * n12_plus_1, n12_plus_1 * n12_plus_1)
         k = k / 2
-        
-        # from torch_geometric.nn import GCNConv, GINConv, SplineConv
-        # from torch_geometric.data import DataLoader, Data, Batch
-        # from torch_geometric.utils import to_dense_batch, to_dense_adj, degree, dense_to_sparse, subgraph
-        # from torch_geometric.transforms import OneHotDegree, Constant
-        # import torch
-        # dummy_adj_1 = torch.from_numpy(dummy_adj_1).unsqueeze(0).float()
-        # dummy_adj_2 = torch.from_numpy(dummy_adj_2).unsqueeze(0).float()
-        # mask_1 = torch.zeros_like(dummy_adj_1)
-        # mask_2 = torch.zeros_like(dummy_adj_2)
-        # batch_num = 1
-        # ns_1 = torch.tensor([n1])
-        # ns_2 = torch.tensor([n2])
-        # for b in range(batch_num):
-        #     mask_1[b, :ns_1[b] + 1, :ns_1[b] + 1] = 1
-        #     mask_1[b, :ns_1[b], :ns_1[b]] -= torch.eye(ns_1[b], device=mask_1.device)
-        #     mask_2[b, :ns_2[b] + 1, :ns_2[b] + 1] = 1
-        #     mask_2[b, :ns_2[b], :ns_2[b]] -= torch.eye(ns_2[b], device=mask_2.device)
-
-        # a1 = dummy_adj_1.reshape(batch_num, -1, 1)
-        # a2 = dummy_adj_2.reshape(batch_num, 1, -1)
-        # m1 = mask_1.reshape(batch_num, -1, 1)
-        # m2 = mask_2.reshape(batch_num, 1, -1)
-        # k = torch.abs(a1 - a2) * torch.bmm(m1, m2)
-        # k[torch.logical_not(torch.bmm(m1, m2).to(dtype=torch.bool))] = 10000
-        # k = k.reshape(batch_num, dummy_adj_1.shape[1], dummy_adj_1.shape[2], dummy_adj_2.shape[1], dummy_adj_2.shape[2])
-        # k = k.permute([0, 1, 3, 2, 4])
-        # k = k.reshape(batch_num, dummy_adj_1.shape[1] * dummy_adj_2.shape[1], dummy_adj_1.shape[2] * dummy_adj_2.shape[2])
-        # k = k / 2
-        # import pdb
-        # pdb.set_trace()
 
         # Get cost matrix
-        # K = k[0].numpy().copy()
         K = k.copy()
         K[np.arange(K.shape[0]), np.arange(K.shape[0])] = node_cost.reshape(-1)
         return K
