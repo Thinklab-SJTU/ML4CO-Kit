@@ -52,6 +52,7 @@ class SOLVER_TYPE(str, Enum):
     NGM = 'ngm'
     GENN_ASTAR = 'genn_astar'
     PYGM = 'pygm'
+    FEM = "fem"
 
     # ML4CO
     ML4CO = "ml4co"

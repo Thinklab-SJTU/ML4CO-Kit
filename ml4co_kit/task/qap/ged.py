@@ -29,16 +29,13 @@ class GEDTask(QAPTaskBase):
         node_sub_cost: float = 1.0,
         node_ins_cost: float = 1.0,
         node_del_cost: float = 1.0,
-        edge_sub_cost: float = 1.0,
-        edge_ins_cost: float = 1.0,
-        edge_del_cost: float = 1.0,
         precision: Union[np.float32, np.float64] = np.float32,
         threshold: float = 1e-5
     ):
         # Super Initialization
         super(GEDTask, self).__init__(
             task_type=TASK_TYPE.GED,
-            minimize=False,
+            minimize=True,
             precision=precision
         )
         
@@ -46,9 +43,6 @@ class GEDTask(QAPTaskBase):
         self.node_sub_cost = node_sub_cost
         self.node_ins_cost = node_ins_cost
         self.node_del_cost = node_del_cost
-        self.edge_sub_cost = edge_sub_cost
-        self.edge_ins_cost = edge_ins_cost
-        self.edge_del_cost = edge_del_cost
 
         # Initialize Attributes (Graph)
         self.g1: QAPGraphBase = None
@@ -64,24 +58,27 @@ class GEDTask(QAPTaskBase):
         n2 = self.g2.nodes_num
         n1_plus_1 = n1 + 1
         n2_plus_1 = n2 + 1
+        n12_plus_1 = max(n1_plus_1, n2_plus_1)
         adj_1 = self.g1.to_adj_matrix()
         adj_2 = self.g2.to_adj_matrix()
 
         # Get dummy adjacency matrices
-        dummy_adj_1 = np.zeros((n1_plus_1, n1_plus_1), dtype=np.int32)
-        dummy_adj_2 = np.zeros((n2_plus_1, n2_plus_1), dtype=np.int32)
-        dummy_adj_1[:-1, :-1] = adj_1
-        dummy_adj_2[:-1, :-1] = adj_2
+        dummy_adj_1 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
+        dummy_adj_2 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
+        dummy_adj_1[0:n1, 0:n1] = adj_1
+        dummy_adj_2[0:n2, 0:n2] = adj_2
 
         # Get dummy node features
-        dummy_node_feature_1 = np.vstack(
-            [self.g1.node_feature, np.zeros((1, self.g1.node_feat_dim), 
-            dtype=self.precision)]
+        dummy_node_feature_1 = np.zeros(
+            (n12_plus_1, self.g1.node_feat_dim), 
+            dtype=self.precision
         )
-        dummy_node_feature_2 = np.vstack(
-            [self.g2.node_feature, np.zeros((1, self.g2.node_feat_dim), 
-            dtype=self.precision)]
+        dummy_node_feature_2 = np.zeros(
+            (n12_plus_1, self.g2.node_feat_dim), 
+            dtype=self.precision
         )
+        dummy_node_feature_1[0:n1, :] = self.g1.node_feature
+        dummy_node_feature_2[0:n2, :] = self.g2.node_feature
 
         # Get node costs
         node_mapping = [0, self.node_sub_cost, self.node_ins_cost, self.node_del_cost]
@@ -94,18 +91,58 @@ class GEDTask(QAPTaskBase):
         node_diff[-1, -1] = 0 # self-eps
         node_cost = node_mapping[node_diff]
 
+        # Get mask
+        mask_1 = np.ones_like(dummy_adj_1)
+        mask_2 = np.ones_like(dummy_adj_2)
+        np.fill_diagonal(mask_1, 0)
+        np.fill_diagonal(mask_2, 0)
+
         # Get edge costs
-        edge_mapping = [self.edge_ins_cost, self.edge_sub_cost, self.edge_del_cost]
-        edge_mapping = np.array(edge_mapping)
-        edge_diff = dummy_adj_1.reshape(-1, 1) - dummy_adj_2.reshape(1, -1) + 1
-        edge_diff = edge_diff.astype(np.int32)
-        edge_cost = edge_mapping[edge_diff]
-        edge_cost = edge_cost.reshape(n1_plus_1, n1_plus_1, n2_plus_1, n2_plus_1)
-        edge_cost = edge_cost.transpose(0, 2, 1, 3).reshape(n1_plus_1*n2_plus_1, n1_plus_1*n2_plus_1)
-        edge_cost = edge_cost / 2
+        dummy_adj_1 = dummy_adj_1.reshape(-1, 1)
+        dummy_adj_2 = dummy_adj_2.reshape(1, -1)
+        mask_1 = mask_1.reshape(-1, 1)
+        mask_2 = mask_2.reshape(1, -1)
+        k: np.ndarray = np.abs(dummy_adj_1 - dummy_adj_2) * np.matmul(mask_1, mask_2)
+        k[np.logical_not(np.matmul(mask_1, mask_2))] = 1e5
+        k = k.reshape(n12_plus_1, n12_plus_1, n12_plus_1, n12_plus_1)
+        k = k.transpose([0, 2, 1, 3])
+        k = k.reshape(n12_plus_1 * n12_plus_1, n12_plus_1 * n12_plus_1)
+        k = k / 2
         
+        # from torch_geometric.nn import GCNConv, GINConv, SplineConv
+        # from torch_geometric.data import DataLoader, Data, Batch
+        # from torch_geometric.utils import to_dense_batch, to_dense_adj, degree, dense_to_sparse, subgraph
+        # from torch_geometric.transforms import OneHotDegree, Constant
+        # import torch
+        # dummy_adj_1 = torch.from_numpy(dummy_adj_1).unsqueeze(0).float()
+        # dummy_adj_2 = torch.from_numpy(dummy_adj_2).unsqueeze(0).float()
+        # mask_1 = torch.zeros_like(dummy_adj_1)
+        # mask_2 = torch.zeros_like(dummy_adj_2)
+        # batch_num = 1
+        # ns_1 = torch.tensor([n1])
+        # ns_2 = torch.tensor([n2])
+        # for b in range(batch_num):
+        #     mask_1[b, :ns_1[b] + 1, :ns_1[b] + 1] = 1
+        #     mask_1[b, :ns_1[b], :ns_1[b]] -= torch.eye(ns_1[b], device=mask_1.device)
+        #     mask_2[b, :ns_2[b] + 1, :ns_2[b] + 1] = 1
+        #     mask_2[b, :ns_2[b], :ns_2[b]] -= torch.eye(ns_2[b], device=mask_2.device)
+
+        # a1 = dummy_adj_1.reshape(batch_num, -1, 1)
+        # a2 = dummy_adj_2.reshape(batch_num, 1, -1)
+        # m1 = mask_1.reshape(batch_num, -1, 1)
+        # m2 = mask_2.reshape(batch_num, 1, -1)
+        # k = torch.abs(a1 - a2) * torch.bmm(m1, m2)
+        # k[torch.logical_not(torch.bmm(m1, m2).to(dtype=torch.bool))] = 10000
+        # k = k.reshape(batch_num, dummy_adj_1.shape[1], dummy_adj_1.shape[2], dummy_adj_2.shape[1], dummy_adj_2.shape[2])
+        # k = k.permute([0, 1, 3, 2, 4])
+        # k = k.reshape(batch_num, dummy_adj_1.shape[1] * dummy_adj_2.shape[1], dummy_adj_1.shape[2] * dummy_adj_2.shape[2])
+        # k = k / 2
+        # import pdb
+        # pdb.set_trace()
+
         # Get cost matrix
-        K = edge_cost.copy()
+        # K = k[0].numpy().copy()
+        K = k.copy()
         K[np.arange(K.shape[0]), np.arange(K.shape[0])] = node_cost.reshape(-1)
         return K
            
@@ -119,10 +156,19 @@ class GEDTask(QAPTaskBase):
         # Set Attributes
         if g1 is not None:
             self.g1 = g1
-            n1 = g1.nodes_num
+            n1 = g1.nodes_num + 1
+        else:
+            n1 = None
         if g2 is not None:
             self.g2 = g2
-            n2 = g2.nodes_num
+            n2 = g2.nodes_num + 1
+        else:
+            n2 = None
+
+        if n1 is not None:
+            max_n1_n2 = max(n1, n2)
+        else:
+            max_n1_n2 = None
 
         # Build Affinity Matrix
         if g1 is not None or g2 is not None:
@@ -131,4 +177,6 @@ class GEDTask(QAPTaskBase):
             K = None
 
         # Call super ``from_data``
-        super().from_data(K=K, n1=n1, n2=n2, sol=sol, ref=ref)
+        super().from_data(
+            K=K, n1=max_n1_n2, n2=max_n1_n2, sol=sol, ref=ref
+        )

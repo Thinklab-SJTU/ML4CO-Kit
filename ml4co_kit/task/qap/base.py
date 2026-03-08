@@ -38,9 +38,6 @@ class QAPGraphBase(object):
 
         # Initialize Attributes (Precision)
         self.precision = precision
-        
-        # Symmetric flag
-        self.already_symmetric = False
 
     def from_data(
         self, 
@@ -97,37 +94,13 @@ class QAPGraphBase(object):
             ).toarray()
         return self.adj_matrix
     
-    def _invalidate_cached_structures(self):
-        """Invalidate cached adjacency matrix."""
-        self.adj_matrix = None
-    
     def make_symmetric(self):
-        """
-        Convert the graph to its symmetric (undirected) version.
-        
-        This method ensures that the graph is undirected by adding reverse edges.
-        For each edge (i, j) with features, it adds edge (j, i) with the same features
-        if it doesn't already exist.
-        
-        The symmetrization process:
-        1. Checks the adjacency structure for symmetry
-        2. If not symmetric, adds reverse edges by flipping edge_index
-        3. Concatenates original and reverse edges (and their features)
-        4. Removes duplicate edges
-        
-        Note:
-            - After calling this method, the graph will have symmetric structure
-            - Edge features are preserved (reverse edges get the same features)
-            - The number of edges may double after symmetrization
-            - If an edge (i,j) already has a reverse edge (j,i), no duplicate is added
-        """
         # Step 1: Check if edge_index is already symmetric
         adj_matrix = self.to_adj_matrix()
         
         # Check if adjacency matrix is symmetric
         if np.array_equal(adj_matrix, adj_matrix.T):
             # Already symmetric, just mark it
-            self.already_symmetric = True
             return
         
         # Step 2: Create reverse edges by flipping edge_index
@@ -163,10 +136,9 @@ class QAPGraphBase(object):
         # Step 6: Update graph with symmetric structure
         self.edges_num = None
         self.edge_feature = None
-        self._invalidate_cached_structures()
+        self.adj_matrix = None
         
-        # Mark as symmetric and update data
-        self.already_symmetric = True
+        # Update data
         self.from_data(
             node_feature=self.node_feature,
             edge_feature=symmetric_edge_feature,

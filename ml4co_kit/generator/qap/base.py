@@ -1,6 +1,6 @@
 
 r"""
-Base classes for all graph problem generators.
+Base class for all QAP graph problem generators.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -49,6 +49,8 @@ class QAPGraphGenerator(object):
         node_feat_dim: int = 10,
         edge_weighted: bool = False,
         edge_feat_dim: int = 10,
+        # special args for symmetric graph
+        graph_symmetric: bool = True,
     ):
         # Initialize Attributes
         self.precision = precision
@@ -71,6 +73,9 @@ class QAPGraphGenerator(object):
         self.node_feat_dim = node_feat_dim
         self.edge_weighted = edge_weighted
         self.edge_feat_dim = edge_feat_dim
+        
+        # Special args for symmetric graph
+        self.graph_symmetric = graph_symmetric
 
         # Generation Function Dictionary
         self.generate_func_dict = {
@@ -233,6 +238,10 @@ class QAPGraphGenerator(object):
             edge_feature=edge_feature, 
             edge_index=edge_index
         )
+
+        # Make the graph symmetric if needed
+        if self.graph_symmetric:
+            qap_graph.make_symmetric()
         return qap_graph
 
     def generate(self) -> QAPGraphBase:

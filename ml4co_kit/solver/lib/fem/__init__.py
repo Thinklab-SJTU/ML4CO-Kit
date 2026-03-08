@@ -1,5 +1,7 @@
 r"""
-Pygmtools Solver for Graph Matching.
+FEM (Free Energy Minimization) Library.
+
+This module contains problem-specific implementations of the FEM algorithm.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -7,28 +9,16 @@ Pygmtools Solver for Graph Matching.
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 # http://license.coscl.org.cn/MulanPSL2
+#
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
 
-import numpy as np
-from typing import List
-from ml4co_kit.task.qap.kqap import KQAPTask
-from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver
+from .mcut_fem import mcut_fem
+from .mis_fem import mis_fem
+from .mvc_fem import mvc_fem
+from .mcl_fem import mcl_fem
 
-
-def kqap_pygm(
-    task_data: KQAPTask, pygm_qap_solver: PyGMToolsQAPSolver
-):
-    return kqap_pygm_batch(
-        batch_task_data=[task_data], pygm_qap_solver=pygm_qap_solver
-    )
-
-
-def kqap_pygm_batch(
-    batch_task_data: List[KQAPTask], pygm_qap_solver: PyGMToolsQAPSolver
-):
-    # TODO
-    pass
+__all__ = ['mcut_fem', 'mis_fem', 'mvc_fem', 'mcl_fem']

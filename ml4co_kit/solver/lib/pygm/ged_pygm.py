@@ -1,5 +1,5 @@
 r"""
-Pygmtools Solver for Graph Matching.
+Pygmtools Solver for Graph Edit Distance.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,10 +13,12 @@ Pygmtools Solver for Graph Matching.
 # See the Mulan PSL v2 for more details.
 
 
-import numpy as np
+import torch
 from typing import List
+from torch import Tensor
 from ml4co_kit.task.qap.ged import GEDTask
-from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver
+from ml4co_kit.utils import to_tensor, to_numpy
+from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver, pygm_hungarian
 
 
 def ged_pygm(
@@ -30,4 +32,67 @@ def ged_pygm(
 def ged_pygm_batch(
     batch_task_data: List[GEDTask], pygm_qap_solver: PyGMToolsQAPSolver
 ):
-    pass
+    # Merge affinity matrices
+    Ks = []
+    n1s = []
+    n2s = []
+    max_n1n2 = 0
+    batch_size = len(batch_task_data)
+    for task_data in batch_task_data:
+        import numpy as np
+        Ks.append(task_data.K)
+        n1s.append(task_data.n1)
+        n2s.append(task_data.n2)
+
+    # Convert to tensor with proper index mapping
+    n1_tensor = torch.tensor(n1s)
+    n2_tensor = torch.tensor(n2s)
+    max_n1 = max(n1s)
+    max_n2 = max(n2s)
+    max_n1n2 = max_n1 * max_n2
+    K_tensor = torch.zeros(batch_size, max_n1n2, max_n1n2)
+    
+    for batch_idx, K in enumerate(Ks):
+        n1 = n1s[batch_idx]
+        n2 = n2s[batch_idx]
+        
+        # K[i*n2+j, p*n2+q] should map to K_tensor[i*max_n2+j, p*max_n2+q]
+        # Use reshape to avoid loops
+        # Step 1: Reshape K from (n1*n2, n1*n2) to (n1, n2, n1, n2)
+        K: Tensor
+        K_4d = K.reshape(n1, n2, n1, n2)
+        
+        # Step 2: Place into padded 4D tensor (max_n1, max_n2, max_n1, max_n2)
+        K_padded_4d = torch.zeros(max_n1, max_n2, max_n1, max_n2)
+        K_padded_4d[:n1, :n2, :n1, :n2] = to_tensor(K_4d)
+        
+        # Step 3: Reshape back to 2D (max_n1*max_n2, max_n1*max_n2)
+        K_tensor[batch_idx] = K_padded_4d.reshape(max_n1n2, max_n1n2)
+    
+    # Solve
+    Xs = pygm_qap_solver.solve(
+        K=K_tensor, n1=n1_tensor, n2=n2_tensor, n1max=None, n2max=None
+    )
+    Xs = to_numpy(pygm_hungarian(Xs))
+    for task_data, X, n1, n2 in zip(batch_task_data, Xs, n1s, n2s):
+        task_data: GEDTask
+        task_data.from_data(sol=X[:n1, :n2], ref=False)
+        print(task_data.evaluate(X[:n1, :n2], "score"))
+        import pdb
+        pdb.set_trace()
+        import numpy as np
+        best_X = np.zeros_like(X)
+        best_X[0][0] = 1
+        best_X[1][2] = 1
+        best_X[2][1] = 1
+        best_X[3][6] = 1
+        best_X[4][4] = 1
+        best_X[5][5] = 1
+        best_X[6][3] = 1
+        best_X[7][7] = 1
+        best_X[8][8] = 1
+        best_X[9][9] = 1
+        print(task_data.evaluate(best_X[:n1, :n2], "score"))
+        import pdb
+        pdb.set_trace()
+    return batch_task_data

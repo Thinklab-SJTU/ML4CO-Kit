@@ -113,6 +113,7 @@ class GraphTaskBase(TaskBase):
         edges_weight: np.ndarray = None,
         sol: np.ndarray = None,
         ref: bool = False,
+        re_check_symmetric: bool = False,
     ):
         # Set Attributes and Check Dimensions
         if nodes_weight is not None:
@@ -134,11 +135,10 @@ class GraphTaskBase(TaskBase):
             self.edges_weight = edges_weight.astype(self.precision)
             self._check_edges_weight_dim()
             self.edges_num = int(edges_weight.shape[0])
-        
+
         if edge_index is not None:
             self.edge_index = edge_index
             self._check_edges_index_dim()
-            
             # Infer nodes_num and edges_num if not provided
             if self.nodes_num is None:
                 self.nodes_num = int(np.max(edge_index) + 1)
@@ -161,7 +161,7 @@ class GraphTaskBase(TaskBase):
             self.edges_weight = np.ones(self.edges_num, dtype=self.precision)
     
         # Make the graph symmetric
-        if self.already_symmetric == False:
+        if self.already_symmetric == False or re_check_symmetric:
             self.make_symmetric()
             
         # Deal with self-loop

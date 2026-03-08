@@ -112,6 +112,17 @@ from .generator import SATGeneratorBase, SAT_TYPE
 from .generator import SATPGenerator, SATAGenerator, USATCGenerator
 
 
+###################################################
+#                    Dataset                      #
+###################################################
+
+# Base Dataset
+from .dataset import DatasetBase
+
+# QAP Dataset
+from .dataset import GEDAIDS700nefDataset
+
+
 ####################################################
 #                      Solver                      #
 ####################################################
@@ -131,7 +142,7 @@ if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
     from .solver import (
-        NeuroLKHSolver, RLSASolver, PyGMSolver
+        NeuroLKHSolver, RLSASolver, PyGMSolver, FEMSolver
     )
 
 

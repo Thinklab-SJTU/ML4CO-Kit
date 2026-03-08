@@ -35,6 +35,7 @@ dataset/**
 data/**
 weights/**
 ml4co_kit/solver/lib/neurolkh/tsp_neurolkh.pt
+ml4co_kit/dataset/cache/**
 
 # tmp
 tmp/**

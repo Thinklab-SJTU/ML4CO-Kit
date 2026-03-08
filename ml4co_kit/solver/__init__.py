@@ -22,6 +22,7 @@ if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
     from .pygm import PyGMSolver
+    from .fem import FEMSolver
 
 
 # Load other solvers
