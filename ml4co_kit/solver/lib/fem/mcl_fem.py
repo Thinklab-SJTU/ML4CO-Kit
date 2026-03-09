@@ -17,8 +17,8 @@ FEM Solver for Maximum Clique (MCL) Problem.
 import torch
 from torch import Tensor
 from typing import Callable
+from ml4co_kit.task.graph.mcl import MClTask
 from ml4co_kit.utils import to_tensor, to_numpy
-from ml4co_kit.task.graph.mcl import MCLTask
 
 
 def energy_mcl(adj: Tensor, p: Tensor, penalty: float = 10.0) -> Tensor:
@@ -54,7 +54,7 @@ def entropy_mcl(p: Tensor) -> Tensor:
 
 
 def mcl_fem(
-    task_data: MCLTask,
+    task_data: MClTask,
     num_trials: int,
     betas: Tensor,
     grad_opt_class: Callable,
