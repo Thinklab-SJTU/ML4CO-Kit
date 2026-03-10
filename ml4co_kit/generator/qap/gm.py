@@ -40,6 +40,7 @@ class GMGenerator(GeneratorBase):
         self, 
         distribution_type: GM_TYPE = GM_TYPE.ISO,
         qap_graph_generator: QAPGraphGenerator = QAPGraphGenerator(),
+        iso_noise_std: float = 0.1,
         sub_ratio_scale: tuple = (0.3, 0.7),
         precision: Union[np.float32, np.float64] = np.float32,
     ):
@@ -78,6 +79,7 @@ class GMGenerator(GeneratorBase):
         if g1.node_feature is not None:
             node_feature_2 = np.zeros_like(g1.node_feature)
             node_feature_2[perm] = g1.node_feature
+            node_feature_2 += np.random.normal(scale=self.iso_noise_std, size=node_feature_2.shape).astype(self.precision)
         else:
             node_feature_2 = None
         
@@ -86,7 +88,10 @@ class GMGenerator(GeneratorBase):
         edge_index_2 = perm[g1.edge_index]
         
         # Edge features remain the same (same edge order after node permutation)
-        edge_feature_2 = g1.edge_feature if g1.edge_feature is not None else None
+        if g1.edge_feature is not None:
+            edge_feature_2 = g1.edge_feature + np.random.normal(scale=self.iso_noise_std, size=g1.edge_feature.shape).astype(self.precision) 
+        else:
+            edge_feature_2 = None
         
         # Create second graph
         g2 = QAPGraphBase(precision=self.precision)
