@@ -27,6 +27,7 @@ class PyGMToolsQAPSolver(object):
         self,
         solver_name = "rrwm", 
         astar_beam_width: int = 0,
+        is_dummy: bool = False,
         ipfp_x0: Tensor = None,
         ipfp_max_iter: int = 50,
         rrwm_x0: Tensor = None,
@@ -42,6 +43,7 @@ class PyGMToolsQAPSolver(object):
 
         # Initialize Attributes (ASTAR)
         self.astar_beam_width = astar_beam_width
+        self.is_dummy = is_dummy
 
         # Initialize Attributes (IPFP)
         self.ipfp_x0 = ipfp_x0
@@ -62,7 +64,8 @@ class PyGMToolsQAPSolver(object):
         if self.solver_name == "astar":
             return pygm_astar(
                 K=K, n1=n1, n2=n2, n1max=n1max, n2max=n2max, 
-                beam_width=self.astar_beam_width
+                beam_width=self.astar_beam_width,
+                is_dummy=self.is_dummy
             )
         elif self.solver_name == "ipfp":
             return pygm_ipfp(

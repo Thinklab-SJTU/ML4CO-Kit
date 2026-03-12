@@ -247,7 +247,8 @@ def pygm_astar(
     n2: Tensor, 
     n1max: int, 
     n2max: int, 
-    beam_width: int
+    beam_width: int,
+    is_dummy: bool = False
 ) -> Tensor:
     """
     PyTorch implementation of A* algorithm for solving QAP in graph matching.
@@ -261,8 +262,8 @@ def pygm_astar(
     trade-off between solution quality and computational cost.
     
     Args:
-        K: Affinity matrix of shape (batch_size, n1max*n2max, n1max*n2max)
-           K[b, i*n2max+j, k*n2max+l] represents the affinity between 
+        K: Affinity matrix of shape (batch_size, n2max*n1max, n2max*n1max)
+           K[b, j*n1max+i, l*n1max+k] represents the affinity between 
            matching (i,j) and matching (k,l) in batch b
         n1: Number of nodes in graph 1 for each batch, shape (batch_size,)
             If None, uses n1max for all batches
@@ -272,6 +273,8 @@ def pygm_astar(
         n2max: Maximum number of nodes in graph 2 across all batches
         beam_width: Number of best candidates to keep at each search level
                     Typical values: 1 (greedy), 10-100 (balanced), 1000+ (thorough)
+        is_dummy: If True, indicates that K is already in the padded format with dummy nodes
+                  If False, the function will reshape K and add dummy dimensions as needed
     
     Returns:
         Predicted assignment matrix of shape (batch_size, n1max, n2max)
@@ -311,50 +314,60 @@ def pygm_astar(
         # Extract the real affinity matrix (excluding padding)
         real_K = K[b, :n2[b], :n1[b], :n2[b], :n1[b]]
         
-        # Add dummy dimensions for partial matching support
-        # The dummy dimension allows nodes to remain unmatched
-        # Final shape: (n2[b]+1, n1[b]+1, n2[b]+1, n1[b]+1)
-        
-        # Add dummy row (dim 0)
-        K_padded = torch.cat((
-            real_K, 
-            torch.zeros((1, n1[b], n2[b], n1[b]), dtype=K.dtype, device=K.device)
-        ), dim=0)
-        
-        # Add dummy column (dim 1)
-        K_padded = torch.cat((
-            K_padded, 
-            torch.zeros((n2[b] + 1, 1, n2[b], n1[b]), dtype=K.dtype, device=K.device)
-        ), dim=1)
-        
-        # Add dummy slice (dim 2)
-        K_padded = torch.cat((
-            K_padded, 
-            torch.zeros((n2[b] + 1, n1[b] + 1, 1, n1[b]), dtype=K.dtype, device=K.device)
-        ), dim=2)
-        
-        # Add dummy slice (dim 3)
-        K_padded = torch.cat((
-            K_padded, 
-            torch.zeros((n2[b] + 1, n1[b] + 1, n2[b] + 1, 1), dtype=K.dtype, device=K.device)
-        ), dim=3)
+        if is_dummy:
+            # If K is already in padded format, we can directly use it
+            K_padded = real_K
+        else:
+            # Add dummy dimensions for partial matching support
+            # The dummy dimension allows nodes to remain unmatched
+            # Final shape: (n1[b]+1, n2[b]+1, n1[b]+1, n2[b]+1)
+            
+            # Add dummy row (dim 0)
+            K_padded = torch.cat((
+                real_K, 
+                torch.zeros((1, n1[b], n2[b], n1[b]), dtype=K.dtype, device=K.device)
+            ), dim=0)
+            
+            # Add dummy column (dim 1)
+            K_padded = torch.cat((
+                K_padded, 
+                torch.zeros((n2[b] + 1, 1, n2[b], n1[b]), dtype=K.dtype, device=K.device)
+            ), dim=1)
+            
+            # Add dummy slice (dim 2)
+            K_padded = torch.cat((
+                K_padded, 
+                torch.zeros((n2[b] + 1, n1[b] + 1, 1, n1[b]), dtype=K.dtype, device=K.device)
+            ), dim=2)
+            
+            # Add dummy slice (dim 3)
+            K_padded = torch.cat((
+                K_padded, 
+                torch.zeros((n2[b] + 1, n1[b] + 1, n2[b] + 1, 1), dtype=K.dtype, device=K.device)
+            ), dim=3)
         
         # Permute to match expected format: (n1+1, n2+1, n1+1, n2+1)
         K_padded = K_padded.permute([1, 0, 3, 2])
         
         # Reshape to matrix form for A* algorithm
-        padded_n1n2 = (n1[b] + 1) * (n2[b] + 1)
+        if is_dummy:
+            padded_n1n2 = n1[b] * n2[b]
+        else:
+            padded_n1n2 = (n1[b] + 1) * (n2[b] + 1)
         K_padded = K_padded.reshape(padded_n1n2, padded_n1n2)
         
         # Run A* search for this batch
+        padded_n1 = n1[b].item() - 1 if is_dummy else n1[b].item() 
+        padded_n2 = n2[b].item() - 1 if is_dummy else n2[b].item()
+        
         x_pred_b = classic_astar_kernel(
             K_padded, 
-            n1[b].item(), 
-            n2[b].item(), 
+            padded_n1, 
+            padded_n2, 
             beam_width
         )
         
-        # Remove the dummy dimension from result
+        # Extract the predicted assignment 
         x_pred[b, :n1[b], :n2[b]] = x_pred_b[:n1[b], :n2[b]]
     
     return x_pred

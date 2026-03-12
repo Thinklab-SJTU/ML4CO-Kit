@@ -45,6 +45,7 @@ from .solver.ortools import ORSolverTester
 from .solver.random import RandomSolverTester
 from .solver.scip import SCIPSolverTester
 from .solver.pysat import PySATSolverTester
+from .solver.pygm import PyGMSolverTester
 
 
 # Load other optimizer testers

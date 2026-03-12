@@ -52,8 +52,8 @@ def pygm_sm(
     3. Repeat until convergence
     
     Args:
-        K: Affinity matrix of shape (batch_size, n1max*n2max, n1max*n2max)
-           K[b, i*n2max+j, k*n2max+l] represents the affinity between 
+        K: Affinity matrix of shape (batch_size, n2max*n1max, n2max*n1max)
+           K[b, j*n1max+i, l*n1max+k] represents the affinity between 
            matching (i,j) and matching (k,l) in batch b
         n1: Number of nodes in graph 1 for each batch, shape (batch_size,)
             If None, uses n1max for all batches

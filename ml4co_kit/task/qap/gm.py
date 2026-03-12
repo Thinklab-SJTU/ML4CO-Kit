@@ -128,6 +128,9 @@ class GMAffinityMatrixBuilder(object):
         # pdb.set_trace()
         # X = pygm.rrwm(K, n1, n2, beta=100)
         return K
+    
+    def __repr__(self):
+        return f"GMAffinityMatrixBuilder(node_aff_fn={self.node_aff_fn.__name__}, edge_aff_fn={self.edge_aff_fn.__name__}, precision={self.precision})"
 
 
 class GMTask(QAPTaskBase):

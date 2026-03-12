@@ -44,6 +44,11 @@ from tests.task_test import (
     MOPOTaskTester
 )
 
+# Qap Problems
+from tests.task_test import (
+    GMTaskTester,
+    GEDTaskTester
+)
 
 # Test Task
 def test_task():
@@ -59,15 +64,15 @@ def test_task():
     MISTaskTester().test()
     MVCTaskTester().test()
 
-    # # Graph Set Problems
-    # GMTaskTester().test()
-    # GEDTaskTester().test()
+    # Qap Problems
+    GMTaskTester().test()
+    GEDTaskTester().test()
 
     # Portfolio Problems
     MaxRetPOTaskTester().test()
     MinVarPOTaskTester().test()
     MOPOTaskTester().test()
-    
+
 
 # Main
 if __name__ == "__main__":

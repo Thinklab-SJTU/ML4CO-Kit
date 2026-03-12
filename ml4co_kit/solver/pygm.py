@@ -27,6 +27,7 @@ from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver
 class PyGMSolver(SolverBase):
     def __init__(
         self,
+        temperature: float = 0.3,
         pygm_qap_solver: PyGMToolsQAPSolver = PyGMToolsQAPSolver(),
         optimizer: OptimizerBase = None
     ):
@@ -36,7 +37,8 @@ class PyGMSolver(SolverBase):
 
         # Initialize Attributes
         self.pygm_qap_solver = pygm_qap_solver
-            
+        self.temperature = temperature
+
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Pygmtools solver."""
         if task_data.task_type == TASK_TYPE.GM:
@@ -45,7 +47,7 @@ class PyGMSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.GED:
             return ged_pygm(
-                task_data=task_data, pygm_qap_solver=self.pygm_qap_solver
+                task_data=task_data, pygm_qap_solver=self.pygm_qap_solver, temperature=self.temperature
             )
         elif task_data.task_type == TASK_TYPE.KQAP:
             return kqap_pygm(

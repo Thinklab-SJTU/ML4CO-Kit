@@ -59,11 +59,11 @@ def gm_pygm_batch(
         # Use reshape to avoid loops
         # Step 1: Reshape K from (n1*n2, n1*n2) to (n1, n2, n1, n2)
         K: Tensor
-        K_4d = K.reshape(n1, n2, n1, n2)
+        K_4d = K.reshape(n2, n1, n2, n1)
         
         # Step 2: Place into padded 4D tensor (max_n1, max_n2, max_n1, max_n2)
-        K_padded_4d = torch.zeros(max_n1, max_n2, max_n1, max_n2)
-        K_padded_4d[:n1, :n2, :n1, :n2] = to_tensor(K_4d)
+        K_padded_4d = torch.zeros(max_n2, max_n1, max_n2, max_n1)
+        K_padded_4d[:n2, :n1, :n2, :n1] = to_tensor(K_4d)
         
         # Step 3: Reshape back to 2D (max_n1*max_n2, max_n1*max_n2)
         K_tensor[batch_idx] = K_padded_4d.reshape(max_n1n2, max_n1n2)
@@ -72,7 +72,11 @@ def gm_pygm_batch(
     Xs = pygm_qap_solver.solve(
         K=K_tensor, n1=n1_tensor, n2=n2_tensor, n1max=None, n2max=None
     )
-    Xs = to_numpy(pygm_hungarian(Xs))
+    
+    if pygm_qap_solver.solver_name in ["ipfp", "rrwm", "sm"]:
+        Xs = pygm_hungarian(Xs)
+    Xs = to_numpy(Xs)
+    
     for task_data, X, n1, n2 in zip(batch_task_data, Xs, n1s, n2s):
         task_data: GMTask
         task_data.from_data(sol=X[:n1, :n2], ref=False)
