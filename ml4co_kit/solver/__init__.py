@@ -38,6 +38,7 @@ from .isco import ISCOSolver
 from .kamis import KaMISSolver
 from .lc_degree import LcDegreeSolver
 from .lkh import LKHSolver
+from .null import NullSolver
 from .ortools import ORSolver
 from .pysat import PySATSolver
 from .random import RandomSolver

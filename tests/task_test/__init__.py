@@ -36,6 +36,12 @@ from .portfolio.maxretpo import MaxRetPOTaskTester
 from .portfolio.minvarpo import MinVarPOTaskTester
 from .portfolio.mopo import MOPOTaskTester
 
+
 # Qap Problems
 from .qap.gm import GMTaskTester
 from .qap.ged import GEDTaskTester
+
+
+# SAT Problems
+from .sat.satp import SATPTaskTester
+from .sat.sata import SATATaskTester

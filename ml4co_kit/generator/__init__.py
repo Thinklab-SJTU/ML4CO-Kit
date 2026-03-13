@@ -50,4 +50,3 @@ from .qap.gm import GMGenerator, GM_TYPE
 from .sat.base import SATGeneratorBase, SAT_TYPE
 from .sat.satp import SATPGenerator
 from .sat.sata import SATAGenerator
-from .sat.usatc import USATCGenerator

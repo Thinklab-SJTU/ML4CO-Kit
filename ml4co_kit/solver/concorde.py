@@ -47,7 +47,7 @@ class ConcordeSolver(SolverBase):
             self.install()
             
     def _solve(self, task_data: TaskBase):
-        """Solve the task data using LKH solver."""
+        """Solve the task data using Concorde solver."""
         if task_data.task_type == TASK_TYPE.TSP:
             return tsp_concorde(
                 task_data=task_data,

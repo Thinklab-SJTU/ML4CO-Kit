@@ -57,7 +57,8 @@ class SOLVER_TYPE(str, Enum):
     # ML4CO
     ML4CO = "ml4co"
 
-    # DIY
+    # DIY or Null
+    NULL = "null"
     DIY = "diy"
 
 

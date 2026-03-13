@@ -61,7 +61,6 @@ class TASK_TYPE(str, Enum):
     # SAT Problems
     SATP = "SAT-P" # Satisfiability Prediction Problem
     SATA = "SAT-A" # Satisfying Assignment Prediction
-    USATC = "USATC" # Unsat-core Variable Prediction
 
     # EDA Problems
     MACRO_PLACEMENT = "MacroPlacement" # Macro Placement
@@ -161,7 +160,7 @@ class TaskBase(object):
             str: MD5 hash of the task's data content
         """
         data_parts = []
-        ignore_list = ['dist_eval', 'name']
+        ignore_list = ['dist_eval', 'name', 'g1', 'g2', 'affn_builder']
         
         # Get all attributes from __dict__ except dist_eval (which contains object references)
         task_dict = {k: v for k, v in self.__dict__.items() if k not in ignore_list}

@@ -50,6 +50,12 @@ from tests.task_test import (
     GEDTaskTester
 )
 
+# SAT Problems
+from tests.task_test import (
+    SATPTaskTester,
+    SATATaskTester
+)
+
 # Test Task
 def test_task():
     # Routing Problems
@@ -72,6 +78,10 @@ def test_task():
     MaxRetPOTaskTester().test()
     MinVarPOTaskTester().test()
     MOPOTaskTester().test()
+
+    # SAT Problems
+    SATPTaskTester().test()
+    SATATaskTester().test()
 
 
 # Main

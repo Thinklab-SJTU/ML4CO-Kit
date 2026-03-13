@@ -31,4 +31,3 @@ from .qap.kqap import KQAPWrapper
 # SAT Problems
 from .sat.satp import SATPWrapper
 from .sat.sata import SATAWrapper
-from .sat.usatc import USATCWrapper

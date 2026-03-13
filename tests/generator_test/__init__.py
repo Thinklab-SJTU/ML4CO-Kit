@@ -46,4 +46,3 @@ from .qap.gm import GMGenTester
 # SAT Problems
 from .sat.satp import SATPGenTester
 from .sat.sata import SATAGenTester
-from .sat.usatc import USATCGenTester

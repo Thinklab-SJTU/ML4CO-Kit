@@ -1,5 +1,5 @@
 r"""
-SAT Task Module.
+SAT-P Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -12,6 +12,23 @@ SAT Task Module.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-from .base import SATTaskBase
-from .satp import SATPTask
-from .sata import SATATask
+
+import pathlib
+from ml4co_kit import SATPTask
+from tests.task_test.base import TaskTesterBase
+
+
+class SATPTaskTester(TaskTesterBase):
+    def __init__(self):
+        super(SATPTaskTester, self).__init__(
+            test_task_class=SATPTask,
+            pickle_files_list=[
+                pathlib.Path("test_dataset/sat/satp/task/satp_ca-small_task.pkl"),
+            ],
+        )
+        
+    def _test_other_rw_methods(self):
+        pass
+    
+    def _test_render(self):
+        pass

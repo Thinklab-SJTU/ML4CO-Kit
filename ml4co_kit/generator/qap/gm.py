@@ -93,8 +93,7 @@ class GMGenerator(GeneratorBase):
         
         # Edge features remain the same (same edge order after node permutation)
         if g1.edge_feature is not None:
-            edge_feature_2 = np.zeros_like(g1.edge_feature)
-            edge_feature_2[perm] = g1.edge_feature
+            edge_feature_2 = g1.edge_feature.copy()
             small_noise = np.random.normal(
                 scale=self.noise_std, size=edge_feature_2.shape
             ).astype(self.precision)

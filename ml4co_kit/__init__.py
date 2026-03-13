@@ -71,7 +71,7 @@ from .task import GEDTask, KQAPTask
 
 # SAT Task
 from .task import SATTaskBase
-from .task import SATPTask, SATATask, USATCTask
+from .task import SATPTask, SATATask
 
 
 ###################################################
@@ -109,7 +109,7 @@ from .generator import GMGenerator, GM_TYPE
 
 # SAT Generator
 from .generator import SATGeneratorBase, SAT_TYPE
-from .generator import SATPGenerator, SATAGenerator, USATCGenerator
+from .generator import SATPGenerator, SATAGenerator
 
 
 ###################################################
@@ -134,7 +134,7 @@ from .solver import SolverBase, SOLVER_TYPE
 from .solver import (
     ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, HGSSolver, 
     ILSSolver, ISCOSolver, InsertionSolver, KaMISSolver, LcDegreeSolver, 
-    LKHSolver, ORSolver, PySATSolver, RandomSolver, SCIPSolver
+    LKHSolver, NullSolver, ORSolver, PySATSolver, RandomSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
@@ -168,9 +168,7 @@ if env_checker.check_torch():
 ####################################################
 
 # Base Wrapper
-from .wrapper import (
-    WrapperBase,
-)
+from .wrapper import WrapperBase
 
 # Routing Problems
 from .wrapper import (
@@ -195,7 +193,7 @@ from .wrapper import (
 
 # SAT Problems
 from .wrapper import (
-    SATPWrapper, SATAWrapper, USATCWrapper
+    SATPWrapper, SATAWrapper
 )
 
 

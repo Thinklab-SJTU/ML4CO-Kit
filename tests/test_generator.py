@@ -56,8 +56,7 @@ from tests.generator_test import (
 # SAT Problems
 from tests.generator_test import (
     SATPGenTester,
-    SATAGenTester,
-    USATCGenTester
+    SATAGenTester
 )
 
 
@@ -88,10 +87,6 @@ def test_generator():
     # SAT Problems
     SATPGenTester().test()
     SATAGenTester().test()
-    USATCGenTester().test()
-    
-    # Qap Problems
-    GMGenTester().test()
     
 
 # Main

@@ -19,7 +19,6 @@ from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.lib.pysat.satp_pysat import satp_pysat
 from ml4co_kit.solver.lib.pysat.sata_pysat import sata_pysat
-from ml4co_kit.solver.lib.pysat.unsatc_pysat import unsatc_pysat
 
 
 class PySATSolver(SolverBase):
@@ -54,11 +53,6 @@ class PySATSolver(SolverBase):
                 task_data=task_data, 
                 solver_name=self.solver_name,
                 solver_args=self.solver_args
-            )
-        elif task_data.task_type == TASK_TYPE.USATC:
-            return unsatc_pysat(
-                task_data=task_data, 
-                solver_name=self.solver_name
             )
         else:
             raise ValueError(
