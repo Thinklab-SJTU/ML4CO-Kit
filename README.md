@@ -140,12 +140,14 @@ After the environment is installed, run the following command to confirm that th
 
 ⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9.
 
+⚠️ **2026-03-13:** For Python versions 3.9 to 3.11 on macOS, it is necessary to downgrade setuptools (recommended versions: 75.0.0 ~ 80.9.0).
+
 
 ## 📝 **ML4CO-Kit Development status**
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO**
+**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO; SAT: SATA & SATP**
 
 **✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
@@ -166,6 +168,13 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |  Maximum Cut (MCut)                                 | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
 |  Maximum Independent Set (MIS)                      | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
 |  Minimum Vertex Cover (MVC)                         | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
+| **QAP Tasks** |
+|  Graph Matching (GM)                                | ✔ | ✔ | ✔ | 📆 |  |
+|  Graph Edit Distance (GED)                          | ✔ | ✔ | ✔ | 📆 |  |
+|  Koopmans-Beckmann QAP (KQAP)                       | ✔ | ✔ | ✔ | 📆 |  |
+| **SAT Tasks** |
+|  Satisfiability Prediction (SATP)                   | ✔ | ✔ | ✔ | 📆 | ``cnf`` |
+|  Satisfying Assignment Prediction (SATA)            | ✔ | ✔ | ✔ | 📆 | ``cnf`` |
 | **Portfolio Tasks** |
 |  Maximum Return Portfolio Optimization (MaxRetPO)   | ✔ | ✔ | ✔ | 📆  |  |
 |  Minimum Variance Portfolio Optimization (MinVarPO) | ✔ | ✔ | ✔ | 📆  |  |
@@ -206,6 +215,17 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |         | Lognormal (weighted) | Weights with Lognormal distribution | ✔ |
 |         | Powerlaw (weighted) | Weights with Powerlaw distribution | ✔ |
 |         | Binomial (weighted) | Weights with Binomial distribution | ✔ |
+| **QAP Tasks** |
+| GM | ISO | Isomorphic Graph matching | ✔ |
+| GM | SUB | Subgraph Graph matching | ✔ |
+| **SAT Tasks** |
+| (SAT)   | PHASE | Near satisfiability phase transition | ✔ |
+|         | SR | SAT/UNSAT paired generation | ✔ |
+|         | CA | Community Attachment generator | ✔ |
+|         | PS | Popularity Similarity generator | ✔ |
+|         | K_CLIQUE | Reduction-based SAT instance generation | ✔ |
+|         | K_CLIQUE | Reduction-based SAT instance generation | ✔ |
+|         | K_CLIQUE | Reduction-based SAT instance generation | ✔ |
 | **Portfolio Tasks** |
 | (Portfolio) | GBM | Geometric Brownian Motion model | ✔ |
 |          | Factor | Factor model with k factors and idiosyncratic noise | ✔ |
@@ -258,6 +278,10 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                      | MCut  | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 |                      | MIS   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 |                      | MVC   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
+| FEMSolver            | MCl   | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | MCut  | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | MIS   | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | MVC   | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | KaMISSolver          | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [MIS-Bench](https://github.com/MaxiBoether/mis-benchmark-framework) | ✔ |
 | LcDegreeSolver       | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MCut  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -274,6 +298,11 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                      | MCl   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MVC   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PyGMSolver           | GM    | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | GED   | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | KQAP  | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PySATSolver          | SATP  | Python | [PySAT](https://github.com/pysathq/pysat) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | SATA  | Python | [PySAT](https://github.com/pysathq/pysat) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | RLSASolver           | MCl   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -324,6 +353,13 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | **Graph Tasks** |
 | (Graph)Wrapper            | "[edge_index] label [sol]" | ``gpickle`` |
 | (Graph)Wrapper [weighted] | "[edge_index] weights [weights] label [sol]" | ``gpickle`` |
+| **QAP Tasks** |
+| GMWrapper                 | -- | ``pickle`` |
+| GEDWrapper                | -- | ``pickle`` |
+| KQAPWrapper               | -- | ``pickle`` |
+| **SAT Tasks** |
+| SATPWrapper               | "[vars_num] vars_num [clauses] output [sol]" | ``cnf`` |
+| SATAWrapper               | "[vars_num] vars_num [clauses] output [sol]" | ``cnf`` |
 | **Portfolio Tasks** |
 | MaxRetPOWrapper           | "[returns] cov [cov] max_var [max_var] output [sol]" | |
 | MinVarPOWrapper           | "[returns] cov [cov] required_returns [required_returns] output [sol]" | |
