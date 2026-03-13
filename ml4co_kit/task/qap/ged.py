@@ -16,7 +16,7 @@ including node/edge insertion, node/edge deletion, and node/edge substitution.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import pdb
+
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE

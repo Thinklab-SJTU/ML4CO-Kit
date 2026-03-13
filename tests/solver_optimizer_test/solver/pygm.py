@@ -14,15 +14,16 @@ Pygm Solver Tester.
 
 
 import pathlib
-import numpy as np
 from ml4co_kit import TASK_TYPE, PyGMSolver
 from tests.solver_optimizer_test.base import SolverTesterBase
 from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver
+
 
 pygm_qap_solver_rrwm = PyGMToolsQAPSolver(solver_name="rrwm")
 pygm_qap_solver_sm = PyGMToolsQAPSolver(solver_name="sm")
 pygm_qap_solver_ipfp = PyGMToolsQAPSolver(solver_name="ipfp")
 pygm_qap_solver_astar = PyGMToolsQAPSolver(solver_name="astar")
+
 
 class PyGMSolverTester(SolverTesterBase):
     def __init__(self):

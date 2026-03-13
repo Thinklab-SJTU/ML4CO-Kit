@@ -110,27 +110,7 @@ class GMAffinityMatrixBuilder(object):
         if node_aff is not None:
             K[np.arange(n1n2), np.arange(n1n2)] = node_aff.T.reshape(-1)
 
-        # import pdb
-        # pdb.set_trace()
-        # import pygmtools as pygm
-        # pygm.set_backend('numpy')
-        # pygm_K = pygm.utils.build_aff_mat(
-        #     node_feat1=np.expand_dims(g1.node_feature, axis=0), 
-        #     edge_feat1=np.expand_dims(g1.edge_feature, axis=0), 
-        #     connectivity1=np.expand_dims(g1.edge_index.T, axis=0), 
-        #     node_feat2=np.expand_dims(g2.node_feature, axis=0), 
-        #     edge_feat2=np.expand_dims(g2.edge_feature, axis=0), 
-        #     connectivity2=np.expand_dims(g2.edge_index.T, axis=0), 
-        #     n1=np.array([n1]), 
-        #     n2=np.array([n2]), 
-        #     edge_aff_fn=pygm.utils.inner_prod_aff_fn
-        # )
-        # pdb.set_trace()
-        # X = pygm.rrwm(K, n1, n2, beta=100)
         return K
-    
-    def __repr__(self):
-        return f"GMAffinityMatrixBuilder(node_aff_fn={self.node_aff_fn.__name__}, edge_aff_fn={self.edge_aff_fn.__name__}, precision={self.precision})"
 
 
 class GMTask(QAPTaskBase):

@@ -63,6 +63,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r tests/requirements.txt
         python tests/install_torch_env.py
+        pip install -U setuptools
     - name: Test using pytest
       run: |
         pip install pytest

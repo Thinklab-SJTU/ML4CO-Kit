@@ -80,7 +80,10 @@ class GMGenerator(GeneratorBase):
         if g1.node_feature is not None:
             node_feature_2 = np.zeros_like(g1.node_feature)
             node_feature_2[perm] = g1.node_feature
-            node_feature_2 += np.random.normal(scale=self.noise_std, size=node_feature_2.shape).astype(self.precision)
+            small_noise = np.random.normal(
+                scale=self.noise_std, size=node_feature_2.shape
+            ).astype(self.precision)
+            node_feature_2 = node_feature_2 + small_noise
         else:
             node_feature_2 = None
         
@@ -90,7 +93,12 @@ class GMGenerator(GeneratorBase):
         
         # Edge features remain the same (same edge order after node permutation)
         if g1.edge_feature is not None:
-            edge_feature_2 = g1.edge_feature + np.random.normal(scale=self.noise_std, size=g1.edge_feature.shape).astype(self.precision)
+            edge_feature_2 = np.zeros_like(g1.edge_feature)
+            edge_feature_2[perm] = g1.edge_feature
+            small_noise = np.random.normal(
+                scale=self.noise_std, size=edge_feature_2.shape
+            ).astype(self.precision)
+            edge_feature_2 = edge_feature_2 + small_noise
         else:
             edge_feature_2 = None
         
@@ -161,7 +169,10 @@ class GMGenerator(GeneratorBase):
         # Node features
         if g2.node_feature is not None:
             node_feature_1 = g2.node_feature[selected]
-            node_feature_1 += np.random.normal(scale=self.noise_std, size=node_feature_1.shape).astype(self.precision)
+            small_noise = np.random.normal(
+                scale=self.noise_std, size=node_feature_1.shape
+            ).astype(self.precision)
+            node_feature_1 = node_feature_1 + small_noise
         else:
             node_feature_1 = None
         
@@ -182,7 +193,10 @@ class GMGenerator(GeneratorBase):
         # Extract corresponding edge features
         if g2.edge_feature is not None:
             edge_feature_1 = g2.edge_feature[edge_mask]
-            edge_feature_1 += np.random.normal(scale=self.noise_std, size=edge_feature_1.shape).astype(self.precision)
+            small_noise = np.random.normal(
+                scale=self.noise_std, size=edge_feature_1.shape
+            ).astype(self.precision)
+            edge_feature_1 = edge_feature_1 + small_noise
         else:
             edge_feature_1 = None
         
