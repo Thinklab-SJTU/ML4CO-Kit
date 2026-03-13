@@ -39,7 +39,7 @@ jobs:
         pytest --cov=ml4co_kit --cov-report=xml --cov-append
     - name: Upload to codecov
       uses: codecov/codecov-action@v3
-      if: matrix.python-version == 3.8
+      if: matrix.python-version == '3.8'
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: Thinklab-SJTU/ML4CO-Kit
@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v2
@@ -63,33 +63,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r tests/requirements.txt
         python tests/install_torch_env.py
-        pip install setuptools==80.9.0
-    - name: Test using pytest
-      run: |
-        pip install pytest
-        python -m pip install pytest-cov
-        pytest --cov=ml4co_kit --cov-report=xml --cov-append
-
-  macos:
-
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.12", "3.13"]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r tests/requirements.txt
-        python tests/install_torch_env.py
-        pip install -U setuptools
+        if [[ "${{ matrix.python-version }}" =~ ^3\.(9|10|11)$ ]]; then
+          pip install setuptools==80.9.0
+        fi
     - name: Test using pytest
       run: |
         pip install pytest
