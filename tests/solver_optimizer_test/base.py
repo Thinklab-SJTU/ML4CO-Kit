@@ -594,18 +594,63 @@ class SolverTesterBase(object):
     #            SAT Problems              #
     ########################################
 
+    def _get_sata_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[SATATask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            sata_test_files_list = [
+                pathlib.Path("test_dataset/sat/sata/task/sata_ca-small_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in sata_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = SATATask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            sata_test_files_list = [
+                pathlib.Path("test_dataset/sat/sata/wrapper/sata_ca-small_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in sata_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = SATAWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
     def _get_satp_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
     ) -> List[SATPTask]:
         # ``Solve`` mode
         if mode == "solve":
             satp_test_files_list = [
-                pathlib.Path("test_dataset/sat/satp/task/satp_task.pkl"),
+                pathlib.Path("test_dataset/sat/satp/task/satp_ca-small_task.pkl"),
             ]
             task_list = list()
             for test_file in satp_test_files_list:
                 if test_file not in exclude_test_files:
                     task = SATPTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            satp_test_files_list = [
+                pathlib.Path("test_dataset/sat/satp/wrapper/satp_ca-small_16ins.pkl")
+            ]
+            bacth_task_list = list()
+            for test_file in satp_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = SATPWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
                     
     ########################################
     #            QAP Problems              #
@@ -613,7 +658,7 @@ class SolverTesterBase(object):
     
     def _get_gm_tasks(
         self, mode: str, exclude_test_files: List[pathlib.Path]
-    ) -> List[MClTask]:
+    ) -> List[GMTask]:
         # ``Solve`` mode
         if mode == "solve":
             gm_test_files_list = [
