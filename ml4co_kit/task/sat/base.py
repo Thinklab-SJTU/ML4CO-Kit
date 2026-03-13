@@ -81,6 +81,7 @@ class SATTaskBase(TaskBase):
 
     def from_cnf(self, file_path: pathlib.Path):
         """Load SAT instance from CNF file."""
+        clauses = list()
         with open(file_path, 'r') as f:
             for line in f:
                 line = line.strip()
@@ -92,14 +93,15 @@ class SATTaskBase(TaskBase):
                 else:  # Clause line
                     clause = [int(x) for x in line.split() if int(x) != 0]
                     if clause:  # Only add non-empty clauses
-                        self.clauses.append(clause)
-        self.from_data(clauses=self.clauses, vars_num=vars_num)
+                        clauses.append(clause)
+        self.from_data(clauses=clauses, vars_num=vars_num)
 
     def to_cnf(self, file_path: pathlib.Path):
         """Save SAT instance to CNF file."""
         check_file_path(file_path)
         with open(file_path, 'w') as f:
+            f.write(f"c\nc SAT instance in DIMACS CNF input format.\nc\n")
             f.write(f"p cnf {self.vars_num} {self.clauses_num}\n")
             for clause in self.clauses:
-                clause_str = ' '.join(map(str, clause)) + ' 0\n'
+                clause_str = '  '.join(map(str, clause)) + '  0\n'
                 f.write(clause_str)
