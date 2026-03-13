@@ -43,6 +43,7 @@ from tests.solver_optimizer_test import (
     RandomSolverTester,
     SCIPSolverTester,
     PySATSolverTester,
+    PyGMSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,
@@ -63,6 +64,7 @@ basic_tester_class_list = [
     RandomSolverTester,
     SCIPSolverTester,
     PySATSolverTester,
+    PyGMSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     ISCOOptimizerTester,
@@ -86,7 +88,7 @@ if env_checker.check_torch():
     )
     torch_tester_class_list = [
         RLSASolverTester,
-        NeuroLKHSolverTester
+        NeuroLKHSolverTester,
     ]
 
 if env_checker.check_gnn4co():
@@ -126,3 +128,4 @@ def test_solver_optimizer():
 # Main
 if __name__ == "__main__":
     test_solver_optimizer()
+

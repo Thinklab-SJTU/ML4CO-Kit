@@ -52,8 +52,8 @@ def pygm_ipfp(
     convergence is detected or maximum iterations are reached.
     
     Args:
-        K: Affinity matrix of shape (batch_size, n1max*n2max, n1max*n2max)
-           K[b, i*n2max+j, k*n2max+l] represents the affinity between 
+        K: Affinity matrix of shape (batch_size, n2max*n1max, n2max*n1max)
+           K[b, j*n1max+i, l*n1max+k] represents the affinity between 
            matching (i,j) and matching (k,l) in batch b
         n1: Number of nodes in graph 1 for each batch, shape (batch_size,)
             If None, uses n1max for all batches
@@ -79,7 +79,12 @@ def pygm_ipfp(
     v = v0
     last_v = v
     best_v = v
-    best_obj = -1
+    best_obj = torch.full(
+        (batch_num, 1, 1),
+        float("-inf"),
+        dtype=K.dtype,
+        device=K.device,
+    )
     
     def comp_obj_score(v1: Tensor, K: Tensor, v2: Tensor) -> Tensor:
         """

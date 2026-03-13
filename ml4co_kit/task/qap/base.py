@@ -145,6 +145,17 @@ class QAPGraphBase(object):
             edge_index=symmetric_edge_index
         )
     
+    def __repr__(self):
+        return (
+            "QAPGraphBase("
+            f"nodes_num={self.nodes_num}, "
+            f"edges_num={self.edges_num}, "
+            f"node_feat_dim={self.node_feat_dim}, "
+            f"edge_feat_dim={self.edge_feat_dim}, "
+            f"precision={self.precision.__name__}"
+            ")"
+        )
+    
 
 class QAPTaskBase(TaskBase):
     def __init__(

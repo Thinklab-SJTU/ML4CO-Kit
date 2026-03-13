@@ -89,7 +89,10 @@ def test_generator():
     SATPGenTester().test()
     SATAGenTester().test()
     USATCGenTester().test()
-
+    
+    # Qap Problems
+    GMGenTester().test()
+    
 
 # Main
 if __name__ == "__main__":

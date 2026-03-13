@@ -70,6 +70,7 @@ class SolverTesterBase(object):
                             test_task_type=test_task_type, 
                             exclude_test_files=exclude_test_files
                         )
+                
                         for test_task in test_task_list:
                             solver.solve(test_task)
                             eval_results = test_task.evaluate_w_gap()
@@ -132,6 +133,8 @@ class SolverTesterBase(object):
         # Graph Set Problems
         elif test_task_type == TASK_TYPE.GM:
             return self._get_gm_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.GED:
+            return self._get_ged_tasks(mode, exclude_test_files)
         
         # Portfolio Problems
         elif test_task_type == TASK_TYPE.MINVARPO:
@@ -148,6 +151,12 @@ class SolverTesterBase(object):
             return self._get_sata_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.USATC:
             return self._get_usatc_tasks(mode, exclude_test_files)
+        
+        # QAP Problems
+        elif test_task_type == TASK_TYPE.GM:
+            return self._get_gm_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.GED:
+            return self._get_ged_tasks(mode, exclude_test_files)
 
         # Others
         else:
@@ -597,3 +606,70 @@ class SolverTesterBase(object):
             for test_file in satp_test_files_list:
                 if test_file not in exclude_test_files:
                     task = SATPTask()
+                    
+    ########################################
+    #            QAP Problems              #
+    ########################################
+    
+    def _get_gm_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[MClTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            gm_test_files_list = [
+                pathlib.Path("test_dataset/qap/gm/task/gm_er_iso_task.pkl"),
+                pathlib.Path("test_dataset/qap/gm/task/gm_er_sub_task.pkl"),
+                pathlib.Path("test_dataset/qap/gm/task/gm_er-small_iso_task.pkl")
+            ]
+            task_list = list()
+            for test_file in gm_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = GMTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            gm_test_files_list = [
+                pathlib.Path("test_dataset/qap/gm/wrapper/gm_er_iso_4ins.pkl"),
+                pathlib.Path("test_dataset/qap/gm/wrapper/gm_er_sub_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in gm_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = GMWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+        
+    def _get_ged_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[GEDTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            ged_test_files_list = [
+                pathlib.Path("test_dataset/qap/ged/task/ged8_ncomp_task.pkl"),
+                pathlib.Path("test_dataset/qap/ged/task/ged8_comp_task.pkl")
+            ]
+            task_list = list()
+            for test_file in ged_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = GEDTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            ged_test_files_list = [
+                pathlib.Path("test_dataset/qap/ged/wrapper/ged8_ncomp_4ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in ged_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = GEDWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list  
+    

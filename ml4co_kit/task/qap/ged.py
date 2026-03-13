@@ -16,7 +16,7 @@ including node/edge insertion, node/edge deletion, and node/edge substitution.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-
+import pdb
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
@@ -29,6 +29,7 @@ class GEDTask(QAPTaskBase):
         node_sub_cost: float = 1.0,
         node_ins_cost: float = 1.0,
         node_del_cost: float = 1.0,
+        is_compacted: bool = False,
         precision: Union[np.float32, np.float64] = np.float32,
         threshold: float = 1e-5
     ):
@@ -48,95 +49,163 @@ class GEDTask(QAPTaskBase):
         self.g1: QAPGraphBase = None
         self.g2: QAPGraphBase = None
 
-        # Initialize Attributes (Threshold)
+        # Initialize Attributes (Threshold & is_compacted)
         self.threshold = threshold
-  
+        self.is_compacted = is_compacted
+
     def build_cost_mat(self) -> np.ndarray:
         """Build cost matrix from node and edge features."""
         # Get adjacency matrices
         n1 = self.g1.nodes_num
         n2 = self.g2.nodes_num
-        n1_plus_1 = n1 + 1
-        n2_plus_1 = n2 + 1
-        n12_plus_1 = max(n1_plus_1, n2_plus_1)
         adj_1 = self.g1.to_adj_matrix()
         adj_2 = self.g2.to_adj_matrix()
 
-        # Get dummy adjacency matrices
-        dummy_adj_1 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
-        dummy_adj_2 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
-        dummy_adj_1[0:n1, 0:n1] = adj_1
-        dummy_adj_2[0:n2, 0:n2] = adj_2
+        if not self.is_compacted:        
+            N = n1 + n2
+            # Get dummy adjacency matrices
+            dummy_adj_1 = np.zeros((N, N), dtype=np.int32)  # source-side adjacency
+            dummy_adj_2 = np.zeros((N, N), dtype=np.int32)  # target-side adjacency
+            dummy_adj_1[:n1, :n1] = adj_1
+            dummy_adj_2[:n2, :n2] = adj_2    
+            
+            # Get dummy node features
+            dummy_node_feature_1 = np.zeros(
+                (N, self.g1.node_feat_dim), 
+                dtype=self.precision
+            )  
+            dummy_node_feature_2 = np.zeros(
+                (N, self.g2.node_feat_dim),
+                dtype=self.precision
+            )
+            dummy_node_feature_1[:n1, :] = self.g1.node_feature
+            dummy_node_feature_2[:n2, :] = self.g2.node_feature
+            
+            # Get node costs
+            node_mapping = [0, self.node_sub_cost, self.node_ins_cost, self.node_del_cost]
+            node_mapping = np.array(node_mapping)   
+            node_diff = dummy_node_feature_1[:, None, :] - dummy_node_feature_2[None, :, :]
+            node_diff: np.ndarray = np.sum(np.abs(node_diff), axis=-1)
+            node_diff = (node_diff > self.threshold).astype(np.int32)
+            node_diff[-n2:, :] = 2 # Insert
+            node_diff[:, -n1:] = 3 # Delete
+            node_diff[-n2:, -n1:] = 0 # self-eps
+            node_cost = node_mapping[node_diff]  
+            
+            # Get mask
+            mask_1 = np.ones_like(dummy_adj_1)
+            mask_2 = np.ones_like(dummy_adj_2)
+            np.fill_diagonal(mask_1, 0)
+            np.fill_diagonal(mask_2, 0)
+            
+            # Get edge costs
+            dummy_adj_1 = dummy_adj_1.reshape(-1, 1)
+            dummy_adj_2 = dummy_adj_2.reshape(1, -1)
+            mask_1 = mask_1.reshape(-1, 1)
+            mask_2 = mask_2.reshape(1, -1)
+            k: np.ndarray = np.abs(dummy_adj_1 - dummy_adj_2) * np.matmul(mask_1, mask_2)
+            #k[np.logical_not(np.matmul(mask_1, mask_2))] = 2 * (self.node_ins_cost + self.node_del_cost)
+            k = k.reshape(N, N, N, N)
+            #k = k.transpose([0, 2, 1, 3])
+            k = k.transpose([2, 0, 3, 1]) # indices: start_g2, start_g1, end_g2, end_g1
+            k = k.reshape(N * N, N * N)
+            k = k / 2
+            
+            K = k.copy()
+            K[np.arange(K.shape[0]), np.arange(K.shape[0])] = node_cost.reshape(-1)
+        else:
+            # Get adjacency matrices
+            n1 = self.g1.nodes_num
+            n2 = self.g2.nodes_num
+            n1_plus_1 = n1 + 1
+            n2_plus_1 = n2 + 1
+            n12_plus_1 = max(n1_plus_1, n2_plus_1)
+            adj_1 = self.g1.to_adj_matrix()
+            adj_2 = self.g2.to_adj_matrix()
+        
+            # Get dummy adjacency matrices
+            dummy_adj_1 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
+            dummy_adj_2 = np.zeros((n12_plus_1, n12_plus_1), dtype=np.int32)
+            dummy_adj_1[0:n1, 0:n1] = adj_1
+            dummy_adj_2[0:n2, 0:n2] = adj_2
 
-        # Get dummy node features
-        dummy_node_feature_1 = np.zeros(
-            (n12_plus_1, self.g1.node_feat_dim), 
-            dtype=self.precision
-        )
-        dummy_node_feature_2 = np.zeros(
-            (n12_plus_1, self.g2.node_feat_dim), 
-            dtype=self.precision
-        )
-        dummy_node_feature_1[0:n1, :] = self.g1.node_feature
-        dummy_node_feature_2[0:n2, :] = self.g2.node_feature
+            # Get dummy node features
+            dummy_node_feature_1 = np.zeros(
+                (n12_plus_1, self.g1.node_feat_dim), 
+                dtype=self.precision
+            )
+            dummy_node_feature_2 = np.zeros(
+                (n12_plus_1, self.g2.node_feat_dim), 
+                dtype=self.precision
+            )
+            dummy_node_feature_1[0:n1, :] = self.g1.node_feature
+            dummy_node_feature_2[0:n2, :] = self.g2.node_feature
 
-        # Get node costs
-        node_mapping = [0, self.node_sub_cost, self.node_ins_cost, self.node_del_cost]
-        node_mapping = np.array(node_mapping)
-        node_diff = dummy_node_feature_1[:, None, :] - dummy_node_feature_2[None, :, :]
-        node_diff: np.ndarray = np.sum(np.abs(node_diff), axis=-1)
-        node_diff = (node_diff > self.threshold).astype(np.int32)
-        node_diff[-1, :] = 2 # Insert
-        node_diff[:, -1] = 3 # Delete
-        node_diff[-1, -1] = 0 # self-eps
-        node_cost = node_mapping[node_diff]
+            # Get node costs
+            node_mapping = [0, self.node_sub_cost, self.node_ins_cost, self.node_del_cost]
+            node_mapping = np.array(node_mapping)
+            node_diff = dummy_node_feature_1[:, None, :] - dummy_node_feature_2[None, :, :]
+            node_diff: np.ndarray = np.sum(np.abs(node_diff), axis=-1)
+            node_diff = (node_diff > self.threshold).astype(np.int32)
+            node_diff[-1, :] = 2 # Insert
+            node_diff[:, -1] = 3 # Delete
+            node_diff[-1, -1] = 0 # self-eps
+            node_cost = node_mapping[node_diff]
 
-        # Get mask
-        mask_1 = np.ones_like(dummy_adj_1)
-        mask_2 = np.ones_like(dummy_adj_2)
-        np.fill_diagonal(mask_1, 0)
-        np.fill_diagonal(mask_2, 0)
+            # Get mask
+            mask_1 = np.ones_like(dummy_adj_1)
+            mask_2 = np.ones_like(dummy_adj_2)
+            np.fill_diagonal(mask_1, 0)
+            np.fill_diagonal(mask_2, 0)
 
-        # Get edge costs
-        dummy_adj_1 = dummy_adj_1.reshape(-1, 1)
-        dummy_adj_2 = dummy_adj_2.reshape(1, -1)
-        mask_1 = mask_1.reshape(-1, 1)
-        mask_2 = mask_2.reshape(1, -1)
-        k: np.ndarray = np.abs(dummy_adj_1 - dummy_adj_2) * np.matmul(mask_1, mask_2)
-        k[np.logical_not(np.matmul(mask_1, mask_2))] = 1e5
-        k = k.reshape(n12_plus_1, n12_plus_1, n12_plus_1, n12_plus_1)
-        k = k.transpose([0, 2, 1, 3])
-        k = k.reshape(n12_plus_1 * n12_plus_1, n12_plus_1 * n12_plus_1)
-        k = k / 2
+            # Get edge costs
+            dummy_adj_1 = dummy_adj_1.reshape(-1, 1)
+            dummy_adj_2 = dummy_adj_2.reshape(1, -1)
+            mask_1 = mask_1.reshape(-1, 1)
+            mask_2 = mask_2.reshape(1, -1)
+            k: np.ndarray = np.abs(dummy_adj_1 - dummy_adj_2) * np.matmul(mask_1, mask_2)
+            #k[np.logical_not(np.matmul(mask_1, mask_2))] = 2 * (self.node_ins_cost + self.node_del_cost)
+            k = k.reshape(n12_plus_1, n12_plus_1, n12_plus_1, n12_plus_1)
+            #k = k.transpose([0, 2, 1, 3])
+            k = k.transpose([2, 0, 3, 1]) # indices: start_g2, start_g1, end_g2, end_g1
+            k = k.reshape(n12_plus_1 * n12_plus_1, n12_plus_1 * n12_plus_1)
+            k = k / 2
 
-        # Get cost matrix
-        K = k.copy()
-        K[np.arange(K.shape[0]), np.arange(K.shape[0])] = node_cost.reshape(-1)
+            # Get cost matrix
+            K = k.copy()
+            K[np.arange(K.shape[0]), np.arange(K.shape[0])] = node_cost.reshape(-1)
+          
         return K
            
     def from_data(
         self,
         g1: QAPGraphBase = None,
         g2: QAPGraphBase = None,
+        is_compacted: bool = False,
         sol: np.ndarray = None,
         ref: bool = False,
     ):
         # Set Attributes
         if g1 is not None:
             self.g1 = g1
-            n1 = g1.nodes_num + 1
+            n1 = g1.nodes_num
         else:
             n1 = None
         if g2 is not None:
             self.g2 = g2
-            n2 = g2.nodes_num + 1
+            n2 = g2.nodes_num
         else:
             n2 = None
-
-        if n1 is not None:
-            max_n1_n2 = max(n1, n2)
+        
+        self.is_compacted = is_compacted
+        
+        if n1 is not None and n2 is not None:
+            if self.is_compacted:
+                N = max(n1, n2) + 1
+            else:
+                N = n1 + n2
         else:
-            max_n1_n2 = None
+            N = None
 
         # Build Affinity Matrix
         if g1 is not None or g2 is not None:
@@ -146,5 +215,8 @@ class GEDTask(QAPTaskBase):
 
         # Call super ``from_data``
         super().from_data(
-            K=K, n1=max_n1_n2, n2=max_n1_n2, sol=sol, ref=ref
+            K=K, n1=N, n2=N, sol=sol, ref=ref
         )
+        
+    def evaluate(self, sol: np.ndarray, mode: str = "score") -> np.floating:
+        return super().evaluate(sol=sol, mode=mode)

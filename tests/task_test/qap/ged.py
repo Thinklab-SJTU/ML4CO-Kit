@@ -1,5 +1,5 @@
 r"""
-GM Task Tester.
+GED Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,18 +14,17 @@ GM Task Tester.
 
 
 import pathlib
-from ml4co_kit import GMTask
+from ml4co_kit import GEDTask
 from tests.task_test.base import TaskTesterBase
 
 
-class GMTaskTester(TaskTesterBase):
+class GEDTaskTester(TaskTesterBase):
     def __init__(self):
-        super(GMTaskTester, self).__init__(
-            test_task_class=GMTask,
+        super(GEDTaskTester, self).__init__(
+            test_task_class=GEDTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/qap/gm/task/gm_er_iso_task.pkl"),
-                pathlib.Path("test_dataset/qap/gm/task/gm_er_sub_task.pkl"),
-                pathlib.Path("test_dataset/qap/gm/task/gm_er-small_iso_task.pkl"),
+                pathlib.Path("test_dataset/qap/ged/task/ged8_ncomp_task.pkl"),
+                pathlib.Path("test_dataset/qap/ged/task/ged8_comp_task.pkl"),
             ],
         )
         
