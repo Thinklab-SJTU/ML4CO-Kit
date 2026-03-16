@@ -37,3 +37,8 @@ from .graph.mcut import MCutWrapperTester
 from .portfolio.maxretpo import MaxRetPOWrapperTester
 from .portfolio.minvarpo import MinVarPOWrapperTester
 from .portfolio.mopo import MOPOWrapperTester
+
+
+# SAT Problems
+from .sat.satp import SATPWrapperTester
+from .sat.sata import SATAWrapperTester

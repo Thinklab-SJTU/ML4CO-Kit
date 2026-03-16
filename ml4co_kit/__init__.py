@@ -142,7 +142,7 @@ if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
     from .solver import (
-        NeuroLKHSolver, RLSASolver, PyGMSolver, FEMSolver
+        NeuroLKHSolver, RLSASolver, PyGMSolver, PyGMToolsQAPSolver, FEMSolver
     )
 
 

@@ -47,6 +47,13 @@ from tests.wrapper_test import (
 )
 
 
+# SAT Problems
+from tests.wrapper_test import (
+    SATPWrapperTester,
+    SATAWrapperTester
+)
+
+
 # Test Wrapper
 def test_wrapper():
     # Routing Problems
@@ -68,6 +75,10 @@ def test_wrapper():
     MaxRetPOWrapperTester().test()
     MinVarPOWrapperTester().test()
     MOPOWrapperTester().test()
+
+    # SAT Problems
+    SATPWrapperTester().test()
+    SATAWrapperTester().test()
 
 
 # Main

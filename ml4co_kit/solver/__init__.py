@@ -21,7 +21,7 @@ if env_checker.check_gnn4co():
 if env_checker.check_torch():
     from .neurolkh import NeuroLKHSolver
     from .rlsa import RLSASolver
-    from .pygm import PyGMSolver
+    from .pygm import PyGMSolver, PyGMToolsQAPSolver
     from .fem import FEMSolver
 
 

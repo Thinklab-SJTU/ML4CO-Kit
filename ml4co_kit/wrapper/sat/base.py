@@ -60,7 +60,7 @@ class SATWrapperBase(WrapperBase):
             cnf_files_path, load_msg, show_time
         ):
             sat_task = self._create_task()
-            sat_task.from_cnf(cnf_file_path=cnf_file_path)
+            sat_task.from_cnf(file_path=cnf_file_path)
             self.task_list.append(sat_task)
         
     def to_cnf_folder(
@@ -74,4 +74,4 @@ class SATWrapperBase(WrapperBase):
         for task in tqdm_by_time(self.task_list, write_msg, show_time):
             file_name = f"{task.name}.cnf"
             file_path = os.path.join(cnf_folder_path, file_name)
-            task.to_cnf(cnf_file_path=file_path)
+            task.to_cnf(file_path=file_path)

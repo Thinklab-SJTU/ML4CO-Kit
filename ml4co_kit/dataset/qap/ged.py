@@ -1,8 +1,5 @@
-
-
-
 r"""
-Graph Matching (GM) Generator.
+AIDS700nef Dataset for GED.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
