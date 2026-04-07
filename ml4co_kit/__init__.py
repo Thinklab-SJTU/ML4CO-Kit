@@ -132,9 +132,10 @@ from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (not use torch backend)
 from .solver import (
-    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, HGSSolver, 
-    ILSSolver, ISCOSolver, InsertionSolver, KaMISSolver, LcDegreeSolver, 
-    LKHSolver, NullSolver, ORSolver, PySATSolver, RandomSolver, SCIPSolver
+    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
+    HGSSolver, ILSSolver, ISCOSolver, InsertionSolver, KaMISSolver, 
+    LcDegreeSolver,LKHSolver, NearestSolver, NullSolver, ORSolver, 
+    PySATSolver, RandomSolver, SCIPSolver
 )
 
 # Solver (use torch backend)
@@ -154,7 +155,7 @@ if env_checker.check_torch():
 from .optimizer import OptimizerBase, OPTIMIZER_TYPE
 
 # Optimizer (not use torch backend)
-from .optimizer import CVRPLSOptimizer, ISCOOptimizer
+from .optimizer import CVRPLSOptimizer, FastTwoOptOptimizer, ISCOOptimizer
 
 # Optimizer (use torch backend)
 if env_checker.check_torch():

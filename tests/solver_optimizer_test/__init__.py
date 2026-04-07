@@ -41,6 +41,7 @@ from .solver.insertion import InsertionSolverTester
 from .solver.kamis import KaMISSolverTester
 from .solver.lc_degree import LcDegreeSolverTester
 from .solver.lkh import LKHSolverTester
+from .solver.nearest import NearestSolverTester
 from .solver.ortools import ORSolverTester
 from .solver.random import RandomSolverTester
 from .solver.scip import SCIPSolverTester
@@ -50,4 +51,5 @@ from .solver.pygm import PyGMSolverTester
 
 # Load other optimizer testers
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester
+from .optimizer.fast_2opt import FastTwoOptOptimizerTester
 from .optimizer.isco import ISCOOptimizerTester

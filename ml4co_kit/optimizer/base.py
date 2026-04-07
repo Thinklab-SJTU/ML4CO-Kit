@@ -26,6 +26,7 @@ class OPTIMIZER_TYPE(str, Enum):
     
     # Routing Problems
     TWO_OPT = "two_opt"
+    FAST_2OPT = "fast_2opt"
     MCTS = "mcts"
     CVRP_LS = "cvrp_ls"
     

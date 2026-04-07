@@ -33,6 +33,7 @@ class SOLVER_TYPE(str, Enum):
     KAMIS = "kamis"
     LC_DEGREE = "lc_degree"
     LKH = "lkh"
+    NEAREST = "nearest"
     ORTOOLS = "ortools"
     PYSAT = "pysat"
     PYVRP = "pyvrp"

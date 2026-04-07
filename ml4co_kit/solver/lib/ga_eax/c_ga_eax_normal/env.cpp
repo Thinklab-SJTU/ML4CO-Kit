@@ -291,5 +291,3 @@ void TEnvironment::ReadPop( char* fileName )
   }
   fclose( fp );
 }
-
-

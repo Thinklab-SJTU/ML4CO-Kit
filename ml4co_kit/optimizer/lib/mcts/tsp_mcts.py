@@ -29,12 +29,10 @@ def tsp_mcts_ls(
 ):
     # Preparation
     heatmap: np.ndarray = task_data.cache["heatmap"]
-    nodes_num = heatmap.shape[-1]
+    nodes_num: int = heatmap.shape[-1]
     init_tour = task_data.sol.astype(np.int16)
     heatmap = heatmap.astype(np.float32).reshape(-1)
     points = task_data.points.astype(np.float32).reshape(-1)
-    points = points.reshape(-1)
-    heatmap = heatmap.reshape(-1)  
     
     # Call ``c_mcts_local_search`` to optimize the tour
     mcts_tour = c_mcts_local_search(

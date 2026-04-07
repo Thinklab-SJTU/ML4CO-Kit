@@ -39,6 +39,7 @@ from tests.solver_optimizer_test import (
     KaMISSolverTester, 
     LcDegreeSolverTester,
     LKHSolverTester,
+    NearestSolverTester,
     ORSolverTester,
     RandomSolverTester,
     SCIPSolverTester,
@@ -46,6 +47,7 @@ from tests.solver_optimizer_test import (
     PyGMSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
+    FastTwoOptOptimizerTester,
     ISCOOptimizerTester,
 )
 
@@ -60,6 +62,7 @@ basic_tester_class_list = [
     ISCOSolverTester,
     LcDegreeSolverTester,
     LKHSolverTester,
+    NearestSolverTester,
     ORSolverTester,
     RandomSolverTester,
     SCIPSolverTester,
@@ -67,6 +70,7 @@ basic_tester_class_list = [
     PyGMSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
+    FastTwoOptOptimizerTester,
     ISCOOptimizerTester,
 ]
 if env_checker.system == "Linux":
@@ -123,8 +127,7 @@ def test_solver_optimizer():
         tester_class(device="cpu").test()
         if env_checker.check_cuda():
             tester_class(device="cuda").test()
-
-
+            
 # Main
 if __name__ == "__main__":
     test_solver_optimizer()

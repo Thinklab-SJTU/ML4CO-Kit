@@ -29,3 +29,4 @@ if env_checker.check_torch():
 from .base import OptimizerBase, OPTIMIZER_TYPE
 from .cvrp_ls import CVRPLSOptimizer
 from .isco import ISCOOptimizer
+from .fast_2opt import FastTwoOptOptimizer
