@@ -16,7 +16,6 @@ PyBind11-backed fast 2-opt local search for TSP.
 
 import numpy as np
 from ml4co_kit.task.routing.tsp import TSPTask
-from ml4co_kit.utils.type_utils import to_numpy
 from .pybind11_tsp_fast_2opt import c_tsp_fast_2opt_impl
 
 
@@ -41,8 +40,8 @@ def pybind11_tsp_fast_2opt_ls(
     seed: int = 0,
 ) -> None:
     """Run DC 2-opt and update task data in-place. Solution is canonical: city 0 at tour[0]."""
-    tour = to_numpy(task_data.sol)
-    points = to_numpy(task_data.points)
+    tour = task_data.sol
+    points = task_data.points.astype(np.float32)
     if points is None:
         raise ValueError("TSPTask.points is required for DC 2-opt.")
 
