@@ -16,9 +16,26 @@ Local Construction Degree Solver for MCut
 import copy
 import numpy as np
 from ml4co_kit.task.graph.mcut import MCutTask
+from ml4co_kit.solver.lib.lc_degree.pybind11_impl import c_mcut_lc_degree
 
 
-def mcut_lc_degree(task_data: MCutTask):
+def mcut_lc_degree(task_data: MCutTask, impl_type: str = "pybind11"):
+    if impl_type == "pybind11":
+        return pybind11_mcut_lc_degree(task_data)
+    elif impl_type == "python":
+        return python_mcut_lc_degree(task_data)
+    else:
+        raise ValueError(f"Invalid implementation type: {impl_type}")
+
+
+def pybind11_mcut_lc_degree(task_data: MCutTask):
+    adj_w = task_data.to_adj_matrix(with_edge_weights=True)
+    adj_w = np.ascontiguousarray(adj_w.astype(np.float32))
+    sol = c_mcut_lc_degree(adj_w)
+    task_data.from_data(sol=sol, ref=False)
+
+
+def python_mcut_lc_degree(task_data: MCutTask):
     # Preparation for decoding
     adj_matrix_weighted = task_data.to_adj_matrix(with_edge_weights=True)
     lc_graph = copy.deepcopy(adj_matrix_weighted)

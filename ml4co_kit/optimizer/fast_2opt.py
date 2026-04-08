@@ -20,12 +20,17 @@ from ml4co_kit.optimizer.lib.fast_2opt.tsp_fast_2opt import pybind11_tsp_fast_2o
 
 
 class FastTwoOptOptimizer(OptimizerBase):
-    """Fast 2-opt."""
+    """Fast 2-opt (GA-EAX-style k-opt local search).
+
+    ``num_steps``: maximum number of *accepted* 2-opt moves (>0). Use ``-1`` for no cap (natural
+    stop when one full inner scan finds no improving move in the near-neighbor lists), matching
+    GA-EAX ``kopt.cpp``. ``0`` skips local search.
+    """
 
     def __init__(
         self,
         impl_type: IMPL_TYPE = IMPL_TYPE.AUTO,
-        num_steps: int = 1e6,
+        num_steps: int = -1,
         knn: int = 50,
         seed: int = 1234,
         num_workers: int = 1

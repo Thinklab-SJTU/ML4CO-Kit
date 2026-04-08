@@ -5,11 +5,15 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <numeric>
 #include <vector>
 #include "parallel.hpp"
 
 namespace tsp {
+
+/** Ignore 2-opt moves with gain below this (float noise); does not change GA-EAX logic much. */
+inline constexpr float kMin2OptGainAbs = 1e-7f;
 
 struct TIndi {
     int n = 0;
@@ -209,11 +213,16 @@ private:
     }
 
     void Sub(int max_steps) {
+        // max_steps < 0: no cap (same termination as GA-EAX kopt.cpp Sub — inner break only).
+        // max_steps > 0: safety cap on accepted improving moves.
+        const int imp_cap =
+            (max_steps < 0) ? std::numeric_limits<int>::max() : max_steps;
         for (int t = 0; t < fN; ++t) fActiveV[t] = 1;
         int imp = 0;
+        int t1_st = 0;
 LLL1:
-        if (imp >= max_steps) return;
-        int t1_st = rand() % fN;
+        if (imp >= imp_cap) return;
+        t1_st = rand() % fN;
         fT[1] = t1_st;
         while (1) {
             fT[1] = GetNext(fT[1]);
@@ -227,7 +236,7 @@ LLL1:
                 float dis1 = eval->Direct(fT[1], fT[2]) - eval->Direct(fT[1], fT[4]);
                 if (dis1 > 0) {
                     float dis2 = dis1 + eval->Direct(fT[3], fT[4]) - eval->Direct(fT[3], fT[2]);
-                    if (dis2 > 0) {
+                    if (dis2 > kMin2OptGainAbs) {
                         IncrementImp();
                         ++imp;
                         for (int a = 1; a <= 4; ++a) {
@@ -248,7 +257,7 @@ LLL1:
                 float dis1 = eval->Direct(fT[1], fT[2]) - eval->Direct(fT[1], fT[4]);
                 if (dis1 > 0) {
                     float dis2 = dis1 + eval->Direct(fT[3], fT[4]) - eval->Direct(fT[3], fT[2]);
-                    if (dis2 > 0) {
+                    if (dis2 > kMin2OptGainAbs) {
                         IncrementImp();
                         ++imp;
                         for (int a = 1; a <= 4; ++a) {
@@ -450,7 +459,11 @@ inline void fast_two_opt(
     const int near_num_max = 50,
     const unsigned long long seed = 1234ULL
 ) {
-    if (num_nodes <= 3 || num_steps <= 0) {
+    if (num_nodes <= 3) {
+        tour[num_nodes] = tour[0];
+        return;
+    }
+    if (num_steps == 0) {
         tour[num_nodes] = tour[0];
         return;
     }

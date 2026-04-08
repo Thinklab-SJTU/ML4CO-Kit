@@ -16,9 +16,28 @@ Local Construction Degree Solver for MVC
 import copy
 import numpy as np
 from ml4co_kit.task.graph.mvc import MVCTask
+from ml4co_kit.solver.lib.lc_degree.pybind11_impl import c_mvc_lc_degree
 
 
-def mvc_lc_degree(task_data: MVCTask):
+def mvc_lc_degree(task_data: MVCTask, impl_type: str = "pybind11"):
+    if impl_type == "pybind11":
+        return pybind11_mvc_lc_degree(task_data)
+    elif impl_type == "python":
+        return python_mvc_lc_degree(task_data)
+    else:
+        raise ValueError(f"Invalid implementation type: {impl_type}")
+
+
+def pybind11_mvc_lc_degree(task_data: MVCTask):
+    adj = task_data.to_adj_matrix().astype(np.float32)
+    nw = task_data.nodes_weight.astype(np.float32)
+    adj = np.ascontiguousarray(adj)
+    nw = np.ascontiguousarray(nw)
+    sol = c_mvc_lc_degree(adj, nw)
+    task_data.from_data(sol=sol, ref=False)
+
+
+def python_mvc_lc_degree(task_data: MVCTask):
     # Preparation for decoding
     adj = task_data.to_adj_matrix()
     adj_matrix = copy.deepcopy(adj)

@@ -17,9 +17,28 @@ Local Construction Degree Solver for MCl
 import copy
 import numpy as np
 from ml4co_kit.task.graph.mcl import MClTask
+from ml4co_kit.solver.lib.lc_degree.pybind11_impl import c_mcl_lc_degree
 
 
-def mcl_lc_degree(task_data: MClTask):
+def mcl_lc_degree(task_data: MClTask, impl_type: str = "pybind11"):
+    if impl_type == "pybind11":
+        return pybind11_mcl_lc_degree(task_data)
+    elif impl_type == "python":
+        return python_mcl_lc_degree(task_data)
+    else:
+        raise ValueError(f"Invalid implementation type: {impl_type}")
+
+
+def pybind11_mcl_lc_degree(task_data: MClTask):
+    adj = task_data.to_adj_matrix().astype(np.float32)
+    nw = task_data.nodes_weight.astype(np.float32)
+    adj = np.ascontiguousarray(adj)
+    nw = np.ascontiguousarray(nw)
+    sol = c_mcl_lc_degree(adj, nw)
+    task_data.from_data(sol=sol, ref=False)
+
+
+def python_mcl_lc_degree(task_data: MClTask):
     # Preparation for decoding
     adj = task_data.to_adj_matrix()
     adj_matrix = copy.deepcopy(adj)

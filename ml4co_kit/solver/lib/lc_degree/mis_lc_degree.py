@@ -16,9 +16,28 @@ Local Construction Degree Solver for MIS
 import copy
 import numpy as np
 from ml4co_kit.task.graph.mis import MISTask
+from ml4co_kit.solver.lib.lc_degree.pybind11_impl import c_mis_lc_degree
 
 
-def mis_lc_degree(task_data: MISTask):
+def mis_lc_degree(task_data: MISTask, impl_type: str = "pybind11"):
+    if impl_type == "pybind11":
+        return pybind11_mis_lc_degree(task_data)
+    elif impl_type == "python":
+        return python_mis_lc_degree(task_data)
+    else:
+        raise ValueError(f"Invalid implementation type: {impl_type}")
+
+
+def pybind11_mis_lc_degree(task_data: MISTask):
+    adj = task_data.to_adj_matrix().astype(np.float32)
+    nw = task_data.nodes_weight.astype(np.float32)
+    adj = np.ascontiguousarray(adj)
+    nw = np.ascontiguousarray(nw)
+    sol = c_mis_lc_degree(adj, nw)
+    task_data.from_data(sol=sol, ref=False)
+
+
+def python_mis_lc_degree(task_data: MISTask):
     # Preparation for decoding
     adj = task_data.to_adj_matrix()
     adj_matrix = copy.deepcopy(adj)

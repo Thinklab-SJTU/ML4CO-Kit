@@ -24,21 +24,26 @@ from ml4co_kit.solver.lib.lc_degree.mcut_lc_degree import mcut_lc_degree
 
 
 class LcDegreeSolver(SolverBase):
-    def __init__(self, optimizer: OptimizerBase = None):
+    def __init__(
+        self, 
+        impl_type: str = "pybind11",
+        optimizer: OptimizerBase = None
+    ):
         super(LcDegreeSolver, self).__init__(
             solver_type=SOLVER_TYPE.LC_DEGREE, optimizer=optimizer
         )
+        self.impl_type = impl_type
 
     def _solve(self, task_data: TaskBase):
         """Solve the task data using Local Construction Degree Solver."""
         if task_data.task_type == TASK_TYPE.MCL:
-            return mcl_lc_degree(task_data=task_data)
+            return mcl_lc_degree(task_data=task_data, impl_type=self.impl_type)
         elif task_data.task_type == TASK_TYPE.MIS:
-            return mis_lc_degree(task_data=task_data)
+            return mis_lc_degree(task_data=task_data, impl_type=self.impl_type)
         elif task_data.task_type == TASK_TYPE.MVC:
-            return mvc_lc_degree(task_data=task_data)
+            return mvc_lc_degree(task_data=task_data, impl_type=self.impl_type)
         elif task_data.task_type == TASK_TYPE.MCUT:
-            return mcut_lc_degree(task_data=task_data)
+            return mcut_lc_degree(task_data=task_data, impl_type=self.impl_type)
         else:
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."

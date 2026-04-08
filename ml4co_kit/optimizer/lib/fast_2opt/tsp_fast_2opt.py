@@ -22,29 +22,31 @@ from .pybind11_tsp_fast_2opt import c_tsp_fast_2opt_impl
 def _pybind11_tsp_fast_2opt_ls(
     tour: np.ndarray,
     points: np.ndarray,
-    num_steps: int = 1e5,
-    knn: int = 50,  
+    num_steps: int = -1,
+    knn: int = 50,
     num_workers: int = 1,
-    seed: int = 0,
+    seed: int = 1234,
 ) -> np.ndarray:
+    """Optimize tour in-place.
+    """
     return c_tsp_fast_2opt_impl(
-        tour, points, int(num_steps), knn, num_workers, seed
+        tour, points, int(num_steps), knn, num_workers, int(seed)
     )
 
 
 def pybind11_tsp_fast_2opt_ls(
     task_data: TSPTask,
-    num_steps: int = 1e5,
-    knn: int = 50,  
+    num_steps: int = -1,
+    knn: int = 50,
     num_workers: int = 1,
-    seed: int = 0,
+    seed: int = 1234,
 ) -> None:
-    """Run DC 2-opt and update task data in-place. Solution is canonical: city 0 at tour[0]."""
+    """Run fast 2-opt"""
+    # Get data from task data
     tour = task_data.sol
     points = task_data.points.astype(np.float32)
-    if points is None:
-        raise ValueError("TSPTask.points is required for DC 2-opt.")
-
+    
+    # Call ``_pybind11_tsp_fast_2opt_ls`` to optimize the tour
     optimized_tour = _pybind11_tsp_fast_2opt_ls(
         tour=tour,
         points=points,
