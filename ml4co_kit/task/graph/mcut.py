@@ -50,9 +50,9 @@ class MCutTask(GraphTaskBase):
         """Check if the solution is valid."""
         return True
         
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
 
         # Evaluate

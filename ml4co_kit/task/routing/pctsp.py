@@ -224,10 +224,10 @@ class PCTSPTask(RoutingTaskBase):
             return False
         return True
     
-    def evaluate(self, sol: np.ndarray) -> float:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> float:
         """Evaluate the total cost of the PCTSP solution."""
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Calculate total travel distance

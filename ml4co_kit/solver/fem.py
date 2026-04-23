@@ -21,9 +21,6 @@ from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.lib.fem.mcut_fem import mcut_fem
-from ml4co_kit.solver.lib.fem.mis_fem import mis_fem
-from ml4co_kit.solver.lib.fem.mvc_fem import mvc_fem
-from ml4co_kit.solver.lib.fem.mcl_fem import mcl_fem
 
 
 class FEMSolver(SolverBase):
@@ -45,7 +42,7 @@ class FEMSolver(SolverBase):
     
     def __init__(
         self,
-        num_trials: int = 1000,
+        num_trials: int = 100,
         num_steps: int = 1000,
         beta_range: tuple = (0.01, 0.5),
         anneal_type: str = "inverse",
@@ -107,38 +104,7 @@ class FEMSolver(SolverBase):
                 seed=self.seed,
                 h_factor=self.h_factor
             )
-        elif task_data.task_type == TASK_TYPE.MIS:
-            return mis_fem(
-                task_data=task_data,
-                num_trials=self.num_trials,
-                betas=self.betas,
-                grad_opt_class=self.grad_opt_class,
-                device=self.device,
-                seed=self.seed,
-                h_factor=self.h_factor
-            )
-        elif task_data.task_type == TASK_TYPE.MVC:
-            return mvc_fem(
-                task_data=task_data,
-                num_trials=self.num_trials,
-                betas=self.betas,
-                grad_opt_class=self.grad_opt_class,
-                device=self.device,
-                seed=self.seed,
-                h_factor=self.h_factor
-            )
-        elif task_data.task_type == TASK_TYPE.MCL:
-            return mcl_fem(
-                task_data=task_data,
-                num_trials=self.num_trials,
-                betas=self.betas,
-                grad_opt_class=self.grad_opt_class,
-                device=self.device,
-                seed=self.seed,
-                h_factor=self.h_factor
-            )
         else:
             raise ValueError(
-                f"FEM Solver supports MCUT, MIS, MVC, MCL, "
-                f"but got {task_data.task_type}"
+                f"Solver {self.solver_type} is not supported for {task_data.task_type}."
             )

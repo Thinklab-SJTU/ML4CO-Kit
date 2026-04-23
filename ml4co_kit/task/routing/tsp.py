@@ -209,10 +209,10 @@ class TSPTask(RoutingTaskBase):
         ordered_sol = np.sort(sol[1:])
         return True if np.all(ordered_sol == np.arange(self.nodes_num)) else False
     
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         """Evaluate the total distance of the TSP solution."""
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Evaluate

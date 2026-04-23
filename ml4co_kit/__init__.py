@@ -160,7 +160,7 @@ from .optimizer import CVRPLSOptimizer, FastTwoOptOptimizer, ISCOOptimizer
 # Optimizer (use torch backend)
 if env_checker.check_torch():
     from .optimizer import (
-        TwoOptOptimizer, MCTSOptimizer, RLSAOptimizer
+        TwoOptOptimizer, MCTSOptimizer
     )
     
 

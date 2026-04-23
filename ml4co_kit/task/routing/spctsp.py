@@ -252,10 +252,10 @@ class SPCTSPTask(RoutingTaskBase):
             return False
         return True
     
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         """Evaluate the total cost of the SPCTSP solution."""
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Calculate total travel distance

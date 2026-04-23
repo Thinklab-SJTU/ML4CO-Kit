@@ -218,5 +218,7 @@ class GEDTask(QAPTaskBase):
             K=K, n1=N, n2=N, sol=sol, ref=ref
         )
         
-    def evaluate(self, sol: np.ndarray, mode: str = "score") -> np.floating:
-        return super().evaluate(sol=sol, mode=mode)
+    def evaluate(
+        self, sol: np.ndarray, check_constr: bool = True, mode: str = "score"
+    ) -> np.floating:
+        return super().evaluate(sol=sol, check_constr=check_constr, mode=mode)

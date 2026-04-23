@@ -22,7 +22,6 @@ env_checker = EnvChecker()
 if env_checker.check_torch():
     from .two_opt import TwoOptOptimizer
     from .mcts import MCTSOptimizer
-    from .rlsa import RLSAOptimizer
 
 
 # Load other optimizers

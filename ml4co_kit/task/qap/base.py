@@ -241,9 +241,11 @@ class QAPTaskBase(TaskBase):
 
         return True
 
-    def evaluate(self, sol: np.ndarray, mode: str = "acc") -> np.floating:
+    def evaluate(
+        self, sol: np.ndarray, check_constr: bool = True, mode: str = "acc"
+    ) -> np.floating:
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
 
         # Evaluate

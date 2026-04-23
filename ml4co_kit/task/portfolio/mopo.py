@@ -61,10 +61,10 @@ class MOPOTask(PortfolioTaskBase):
             self.var_factor = var_factor
             self.ret_factor = 1 - var_factor
 
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         """Evaluate the given solution."""
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
 
         # minimize portfolio variance w^T Σ w and

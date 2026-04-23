@@ -118,19 +118,19 @@ class TaskBase(object):
         """Check if the given solution satisfies all problem constraints. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
     
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         """Evaluate the given solution. To be implemented by subclasses."""
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def evaluate_w_gap(self) -> Sequence[np.floating]:
+    def evaluate_w_gap(self, check_constr: bool = True) -> Sequence[np.floating]:
         """Evaluate the given solution with gap."""
         # Check if the solution and reference solution are not None
         if self.sol is None or self.ref_sol is None:
             raise ValueError("Solution and reference solution cannot be None!")
         
         # Evaluate the solution and reference solution
-        sol_cost = self.evaluate(self.sol)
-        ref_cost = self.evaluate(self.ref_sol)
+        sol_cost = self.evaluate(self.sol, check_constr=check_constr)
+        ref_cost = self.evaluate(self.ref_sol, check_constr=check_constr)
 
         # Calculate the gap
         if abs(ref_cost) < 1e-8:

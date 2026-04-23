@@ -53,9 +53,9 @@ class SATATask(SATTaskBase):
         # Check if all values are 0 or 1
         return np.all((sol == 0) | (sol == 1))
 
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Evaluate

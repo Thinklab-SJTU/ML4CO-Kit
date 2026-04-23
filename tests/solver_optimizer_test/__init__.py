@@ -22,11 +22,11 @@ if env_checker.check_gnn4co():
     from .solver.gnn4co_mcts import GNN4COMCTSSolverTester
     from .optimizer.two_opt import TwoOptOptimizerTester
     from .optimizer.mcts import MCTSOptimizerTester
-    from .optimizer.rlsa import RLSAOptimizerTester
 if env_checker.check_torch():
     from .solver.neurolkh import NeuroLKHSolverTester
     from .solver.rlsa import RLSASolverTester
-
+    from .solver.fem import FEMSolverTester
+    
 
 # Load other solver testers
 from .base import SolverTesterBase

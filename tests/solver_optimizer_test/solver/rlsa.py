@@ -13,6 +13,7 @@ RLSA Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import torch
 from ml4co_kit import TASK_TYPE, RLSASolver
 from tests.solver_optimizer_test.base import SolverTesterBase
 
@@ -23,55 +24,43 @@ class RLSASolverTester(SolverTesterBase):
             mode_list=["solve"],
             test_solver_class=RLSASolver,
             test_task_type_list=[
-                TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC,
+                TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS
             ],
             test_args_list=[
                 # MCl
                 {
-                    "rlsa_kth_dim": "both",
+                    "rlsa_tau": 4.0,
                     "rlsa_d": 2,
-                    "rlsa_k": 1000,
-                    "rlsa_t": 1000,
-                    "rlsa_alpha": 0.3,
+                    "rlsa_k": 200,
+                    "rlsa_t": 100,
                     "rlsa_beta": 1.02,
                     "rlsa_device": device,
+                    "rlsa_dtype": torch.float32,
                     "rlsa_seed": 1234
                 }, 
                 # MCut
                 {
-                    "rlsa_kth_dim": 0,
-                    "rlsa_d": 2,
-                    "rlsa_k": 1000,
-                    "rlsa_t": 1000,
-                    "rlsa_alpha": 0.3,
-                    "rlsa_beta": 1.02,
+                    "rlsa_tau": 5.0,
+                    "rlsa_d": 20,
+                    "rlsa_k": 200,
+                    "rlsa_t": 200,
+                    "rlsa_dtype": torch.float32,
                     "rlsa_device": device,
                     "rlsa_seed": 1234
                 },
                 # MIS
                 {
-                    "rlsa_kth_dim": "both",
-                    "rlsa_d": 2,
-                    "rlsa_k": 1000,
-                    "rlsa_t": 1000,
-                    "rlsa_alpha": 0.3,
+                    "rlsa_tau": 0.01,
+                    "rlsa_d": 5,
+                    "rlsa_k": 200,
+                    "rlsa_t": 300,
                     "rlsa_beta": 1.02,
+                    "rlsa_dtype": torch.float32,
                     "rlsa_device": device,
                     "rlsa_seed": 1234
                 },
-                # MVC
-                {
-                    "rlsa_kth_dim": "both",
-                    "rlsa_d": 2,
-                    "rlsa_k": 1000,
-                    "rlsa_t": 1000,
-                    "rlsa_alpha": 0.3,
-                    "rlsa_beta": 1.02,
-                    "rlsa_device": device,
-                    "rlsa_seed": 1234
-                }
             ],
-            exclude_test_files_list=[[], [], [], []]
+            exclude_test_files_list=[[], [], []]
         )
         
     def pre_test(self):

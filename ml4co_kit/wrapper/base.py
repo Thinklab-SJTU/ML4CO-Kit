@@ -286,15 +286,17 @@ class WrapperBase(object):
         timer.end()
         timer.show_time()
     
-    def evaluate(self) -> float:
+    def evaluate(self, check_constr: bool = True) -> float:
         """Evaluate the task list."""
         sol_costs_list = list()
         for task_data in self.task_list:
-            sol_cost = task_data.evaluate(task_data.sol)
+            sol_cost = task_data.evaluate(
+                task_data.sol, check_constr=check_constr
+            )
             sol_costs_list.append(sol_cost)
         return float(np.mean(sol_costs_list))
     
-    def evaluate_w_gap(self) -> Sequence[float]:
+    def evaluate_w_gap(self, check_constr: bool = True) -> Sequence[float]:
         """Evaluate the task list."""
         # Initialize lists
         sol_costs_list = list()
@@ -303,7 +305,8 @@ class WrapperBase(object):
         
         # Evaluate the task list
         for task_data in self.task_list:
-            sol_cost, ref_cost, gap = task_data.evaluate_w_gap()
+            sol_cost, ref_cost, gap = task_data.evaluate_w_gap(
+                check_constr=check_constr)
             sol_costs_list.append(sol_cost)
             ref_costs_list.append(ref_cost)
             gaps_list.append(gap)

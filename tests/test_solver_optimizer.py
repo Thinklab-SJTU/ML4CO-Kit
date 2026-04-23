@@ -88,11 +88,13 @@ if env_checker.check_gurobi():
 if env_checker.check_torch():
     from tests.solver_optimizer_test import (
         RLSASolverTester, 
-        NeuroLKHSolverTester
+        NeuroLKHSolverTester,
+        FEMSolverTester,
     )
     torch_tester_class_list = [
         RLSASolverTester,
         NeuroLKHSolverTester,
+        FEMSolverTester,
     ]
 
 if env_checker.check_gnn4co():
@@ -101,7 +103,6 @@ if env_checker.check_gnn4co():
         GNN4COGreedySolverTester,
         GNN4COMCTSSolverTester,
         MCTSOptimizerTester,
-        RLSAOptimizerTester,
         TwoOptOptimizerTester,
     )
     torch_tester_class_list += [
@@ -109,7 +110,6 @@ if env_checker.check_gnn4co():
         GNN4COGreedySolverTester,
         GNN4COMCTSSolverTester,
         MCTSOptimizerTester,
-        RLSAOptimizerTester,
         TwoOptOptimizerTester,
     ]
     
@@ -131,4 +131,3 @@ def test_solver_optimizer():
 # Main
 if __name__ == "__main__":
     test_solver_optimizer()
-

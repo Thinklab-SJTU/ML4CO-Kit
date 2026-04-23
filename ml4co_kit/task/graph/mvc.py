@@ -53,9 +53,9 @@ class MVCTask(GraphTaskBase):
         src_dst = sol[edge_index[0]] + sol[edge_index[1]]
         return False if src_dst.min() == 0 else True
         
-    def evaluate(self, sol: np.ndarray) -> np.floating:
+    def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Evaluate

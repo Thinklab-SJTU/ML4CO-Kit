@@ -67,9 +67,9 @@ class SATPTask(SATTaskBase):
     def check_constraints(self, sol: bool) -> bool:
         return True # for boolean solution, no constraints are needed
 
-    def evaluate(self, sol: bool) -> np.floating:
+    def evaluate(self, sol: bool, check_constr: bool = True) -> np.floating:
         # Check Constraints
-        if not self.check_constraints(sol):
+        if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
         
         # Check Satisfiability
