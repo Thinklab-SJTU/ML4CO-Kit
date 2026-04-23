@@ -208,5 +208,5 @@ if env_checker.pytorch_lightning_support:
     )
     
 
-__version__ = "0.4.2"
+__version__ = "0.5.0"
 __author__ = "SJTU-ReThinkLab"
