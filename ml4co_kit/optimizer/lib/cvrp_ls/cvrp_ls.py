@@ -49,5 +49,8 @@ def cvrp_ls(
     
     # Store the optimized tour in the task data
     if ls_tour[0] != -1:
-        ls_tour = ls_tour[:np.where(ls_tour==-1)[0][0]]
+        try:
+            ls_tour = ls_tour[:np.where(ls_tour==-1)[0][0]]
+        except:
+            pass
         task_data.from_data(sol=ls_tour, ref=False)
