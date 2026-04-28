@@ -24,14 +24,12 @@ from ml4co_kit.task.base import TaskBase, TASK_TYPE
 class OPTIMIZER_TYPE(str, Enum):
     """Define the optimizer types as an enumeration."""
     
-    # Routing Problems
     TWO_OPT = "two_opt"
     FAST_2OPT = "fast_2opt"
     MCTS = "mcts"
     CVRP_LS = "cvrp_ls"
-    
-    # Graph Problems
     RLSA = "rlsa"
+    MCMC = "mcmc"
 
 
 class OptimizerBase:

@@ -53,3 +53,4 @@ from .solver.pygm import PyGMSolverTester
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester
 from .optimizer.fast_2opt import FastTwoOptOptimizerTester
 from .optimizer.isco import ISCOOptimizerTester
+from .optimizer.mcmc import RoutingMCMCOptimizerTester, GraphMCMCOptimizerTester

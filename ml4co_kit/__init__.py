@@ -155,7 +155,9 @@ if env_checker.check_torch():
 from .optimizer import OptimizerBase, OPTIMIZER_TYPE
 
 # Optimizer (not use torch backend)
-from .optimizer import CVRPLSOptimizer, FastTwoOptOptimizer, ISCOOptimizer
+from .optimizer import (
+    CVRPLSOptimizer, FastTwoOptOptimizer, ISCOOptimizer, MCMCOptimizer
+)
 
 # Optimizer (use torch backend)
 if env_checker.check_torch():

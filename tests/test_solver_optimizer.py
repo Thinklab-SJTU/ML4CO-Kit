@@ -49,6 +49,8 @@ from tests.solver_optimizer_test import (
     CVRPLSOptimizerTester,
     FastTwoOptOptimizerTester,
     ISCOOptimizerTester,
+    RoutingMCMCOptimizerTester,
+    GraphMCMCOptimizerTester,
 )
 
 basic_tester_class_list = [
@@ -72,6 +74,8 @@ basic_tester_class_list = [
     CVRPLSOptimizerTester,
     FastTwoOptOptimizerTester,
     ISCOOptimizerTester,
+    RoutingMCMCOptimizerTester,
+    GraphMCMCOptimizerTester,
 ]
 if env_checker.system == "Linux":
     basic_tester_class_list.append(KaMISSolverTester)
