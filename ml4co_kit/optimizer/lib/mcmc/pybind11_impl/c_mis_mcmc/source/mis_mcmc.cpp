@@ -18,16 +18,6 @@ bool is_mis_feasible(const std::vector<int>& sol, const std::vector<std::vector<
     }
     return true;
 }
-
-double mis_weight(const std::vector<int>& sol, const std::vector<double>& w) {
-    double score = 0.0;
-    for (size_t i = 0; i < sol.size(); ++i) {
-        if (sol[i]) {
-            score += w[i];
-        }
-    }
-    return score;
-}
 }  // namespace
 
 std::pair<std::vector<int>, std::vector<double>> mis_mcmc_cpp(
@@ -54,8 +44,8 @@ std::pair<std::vector<int>, std::vector<double>> mis_mcmc_cpp(
     std::vector<double> weights(nodes_weight, nodes_weight + nodes_num);
     std::vector<int> cur(init_sol, init_sol + nodes_num);
     std::vector<int> best = cur;
-    double best_w = mis_weight(best, weights);
     double energy = 0.0;
+    double best_energy = 0.0;
     std::vector<double> trace;
     if (return_trace) {
         trace.reserve(steps);
@@ -85,9 +75,8 @@ std::pair<std::vector<int>, std::vector<double>> mis_mcmc_cpp(
             cur[u] = 1 - cur[u];
             energy += delta;
             if (is_mis_feasible(cur, adj)) {
-                const double w = mis_weight(cur, weights);
-                if (w > best_w) {
-                    best_w = w;
+                if (energy > best_energy) {
+                    best_energy = energy;
                     best = cur;
                 }
             }

@@ -20,7 +20,7 @@ from tests.solver_optimizer_test.base import SolverTesterBase
 # Optimizers
 tsp_optimizer = MCMCOptimizer(tau_start=0.01, tau_end=0.001, num_steps=int(1e6))
 cvrp_optimizer = MCMCOptimizer(tau_start=0.01, tau_end=0.001, num_steps=int(1e6))
-mis_optimizer = MCMCOptimizer(tau_start=1.0, tau_end=0.001, num_steps=int(1e6))
+mis_optimizer = MCMCOptimizer(tau_start=10.0, tau_end=0.001, num_steps=int(1e6))
 
 
 class RoutingMCMCOptimizerTester(SolverTesterBase):

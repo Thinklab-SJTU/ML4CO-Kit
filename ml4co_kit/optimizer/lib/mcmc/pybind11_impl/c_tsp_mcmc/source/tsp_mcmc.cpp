@@ -13,14 +13,6 @@ double euclid_dist(const double* points, int dim, int i, int j) {
     }
     return std::sqrt(s);
 }
-
-double tsp_len(const double* points, int dim, const std::vector<int>& tour) {
-    double total = 0.0;
-    for (size_t i = 0; i + 1 < tour.size(); ++i) {
-        total += euclid_dist(points, dim, tour[i], tour[i + 1]);
-    }
-    return total;
-}
 }  // namespace
 
 std::pair<std::vector<int>, std::vector<double>> tsp_mcmc_cpp(
@@ -35,8 +27,8 @@ std::pair<std::vector<int>, std::vector<double>> tsp_mcmc_cpp(
 ) {
     std::vector<int> cur(init_sol, init_sol + nodes_num + 1);
     std::vector<int> best = cur;
-    double best_len = tsp_len(points, dim, best);
     double energy = 0.0;
+    double best_energy = 0.0;
     std::vector<double> trace;
     if (return_trace) {
         trace.reserve(steps);
@@ -69,9 +61,8 @@ std::pair<std::vector<int>, std::vector<double>> tsp_mcmc_cpp(
             energy += delta;
         }
 
-        double cur_len = tsp_len(points, dim, cur);
-        if (cur_len < best_len) {
-            best_len = cur_len;
+        if (energy > best_energy) {
+            best_energy = energy;
             best = cur;
         }
         if (return_trace) {

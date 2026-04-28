@@ -59,9 +59,9 @@ std::pair<std::vector<int>, std::vector<double>> cvrp_mcmc_cpp(
     std::vector<double> demand(norm_demands, norm_demands + nodes_num);
     std::vector<int> cur(init_sol, init_sol + sol_len);
     std::vector<int> best = cur;
-    double best_dist = cvrp_penalized_cost(best, coords, dim, demand, 0.0);
     double cur_cost = cvrp_penalized_cost(cur, coords, dim, demand, penalty_coeff);
     double energy = 0.0;
+    double best_energy = 0.0;
     std::vector<double> trace;
     if (return_trace) {
         trace.reserve(steps);
@@ -126,9 +126,8 @@ std::pair<std::vector<int>, std::vector<double>> cvrp_mcmc_cpp(
             energy += delta;
         }
 
-        double d = cvrp_penalized_cost(cur, coords, dim, demand, 0.0);
-        if (d < best_dist) {
-            best_dist = d;
+        if (energy > best_energy) {
+            best_energy = energy;
             best = cur;
         }
         if (return_trace) {
