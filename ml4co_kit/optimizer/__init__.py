@@ -17,7 +17,6 @@ This module provides various optimization algorithms for combinatorial optimizat
 
 
 # Check if torch is supported
-import imp
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_torch():

@@ -79,11 +79,14 @@ void mis_lc_degree_impl(const float *adj_in, const float *nw, int n, std::int32_
 
     while (true) {
         int next_node = -1;
-        float min_d = 0.f;
+        float min_score = 0.f;
         for (int i = 0; i < n; ++i) {
             if (!mask[static_cast<size_t>(i)]) {
-                if (next_node < 0 || deg[static_cast<size_t>(i)] < min_d) {
-                    min_d = deg[static_cast<size_t>(i)];
+                // Match Python mis_lc_degree: next_node = argmin(degrees - nodes_weight),
+                // where degrees = lc_graph.sum(1) - nodes_weight (already in deg[i]).
+                const float score = deg[static_cast<size_t>(i)] - nw[i];
+                if (next_node < 0 || score < min_score) {
+                    min_score = score;
                     next_node = i;
                 }
             }

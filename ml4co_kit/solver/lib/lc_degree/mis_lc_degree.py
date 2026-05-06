@@ -42,7 +42,8 @@ def python_mis_lc_degree(task_data: MISTask):
     adj = task_data.to_adj_matrix()
     adj_matrix = copy.deepcopy(adj)
     np.fill_diagonal(adj_matrix, 0) # Remove self-loops
-    lc_graph = adj_matrix * task_data.nodes_weight
+    nodes_weight = task_data.nodes_weight
+    lc_graph = adj_matrix * nodes_weight
     degrees: np.ndarray = lc_graph.sum(1) - task_data.nodes_weight
     sol = np.zeros_like(degrees).astype(np.bool_)
     mask = np.zeros_like(degrees).astype(np.bool_)
@@ -50,7 +51,7 @@ def python_mis_lc_degree(task_data: MISTask):
     # Each step, find the node with the minimum degree
     # Until all nodes are masked
     while not mask.all():
-        next_node = np.argmin(degrees)
+        next_node = np.argmin(degrees - nodes_weight)
         connect_nodes = np.where(adj_matrix[next_node] == 1)[0]
         sol[connect_nodes] = False
         sol[next_node] = True
