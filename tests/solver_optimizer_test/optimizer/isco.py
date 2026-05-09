@@ -18,7 +18,7 @@ from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 # Optimizers
-optimizer_numpy = ISCOOptimizer(impl_type=IMPL_TYPE.NUMPY)
+optimizer_numpy = ISCOOptimizer(impl_type=IMPL_TYPE.NUMPY, isco_iterations=1000)
 
 
 class ISCOOptimizerTester(SolverTesterBase):
@@ -43,7 +43,8 @@ class ISCOOptimizerTester(SolverTesterBase):
                 [],
                 [],
                 [],
-            ]
+            ],
+            info="ISCOOptimizer"
         )
         
     def pre_test(self):

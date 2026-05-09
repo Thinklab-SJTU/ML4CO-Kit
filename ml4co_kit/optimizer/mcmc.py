@@ -14,8 +14,8 @@ MCMC (Markov Chain Monte Carlo) Optimizer
 # See the Mulan PSL v2 for more details.
 
 
-import random
 import numpy as np
+from typing import List
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.optimizer.lib.mcmc.mis_mcmc import mis_mcmc_ls
@@ -104,3 +104,26 @@ class MCMCOptimizer(OptimizerBase):
         # Return the solution if needed
         if return_sol:
             return task_data.sol
+
+    #######################################
+    #      Batch Optimization Methods     #
+    #######################################
+
+    def _auto_batch_optimize(self, batch_task_data: List[TaskBase]):
+        """Optimize the batch task data using auto implementation."""
+        task_type = batch_task_data[0].task_type
+        if task_type in [TASK_TYPE.MIS, TASK_TYPE.TSP, TASK_TYPE.CVRP]:
+            return self._pybind11_batch_optimize(batch_task_data)
+        else:
+            raise self._get_not_implemented_error(task_type, True)
+
+    def _pybind11_batch_optimize(self, batch_task_data: List[TaskBase]):
+        """Optimize the batch task data using MCMC optimizer."""
+        task_type = batch_task_data[0].task_type
+        if task_type in [TASK_TYPE.MIS, TASK_TYPE.TSP, TASK_TYPE.CVRP]:
+            return self._pool_optimize(
+                batch_task_data=batch_task_data,
+                single_func=self._pybind11_optimize
+            )
+        else:
+            raise self._get_not_implemented_error(task_type, True)

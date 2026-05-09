@@ -1,5 +1,5 @@
 r"""
-Insertion (Manual Heuristic)
+Nearest Neighbor Heuristic Solver
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

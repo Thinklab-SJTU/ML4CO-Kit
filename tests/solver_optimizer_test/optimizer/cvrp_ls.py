@@ -13,18 +13,19 @@ CVRP-LS Optimizer Tester.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit import TASK_TYPE, HGSSolver, CVRPLSOptimizer
+from ml4co_kit import TASK_TYPE, RandomSolver, CVRPLSOptimizer
 from tests.solver_optimizer_test.base import SolverTesterBase
 
 
 class CVRPLSOptimizerTester(SolverTesterBase):
     def __init__(self):
         super(CVRPLSOptimizerTester, self).__init__(
-            mode_list=["solve"],
-            test_solver_class=HGSSolver,
+            mode_list=["solve", "batch_solve_parallel"],
+            test_solver_class=RandomSolver,
             test_task_type_list=[TASK_TYPE.CVRP],
             test_args_list=[{"optimizer": CVRPLSOptimizer()}],
-            exclude_test_files_list=[[]]
+            exclude_test_files_list=[[]],
+            info="CVRPLSOptimizer"
         )
         
     def pre_test(self):

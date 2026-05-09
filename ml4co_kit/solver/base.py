@@ -15,7 +15,7 @@ Base class for all solvers.
 
 
 from enum import Enum
-from typing import List
+from typing import List, Callable
 from ml4co_kit.task.base import TaskBase
 from ml4co_kit.optimizer.base import OptimizerBase
 
@@ -75,6 +75,10 @@ class SolverBase(object):
         self.solve_func_dict: dict = None
         self.optimizer = optimizer
     
+    #######################################
+    #        Single Solving Methods       #
+    #######################################
+
     def solve(self, task_data: TaskBase) -> TaskBase:
         self._solve(task_data)
         if self.optimizer is not None:
@@ -85,7 +89,11 @@ class SolverBase(object):
         raise NotImplementedError(
             "The ``solve`` function is required to implemented in subclasses."
         )
-    
+
+    #######################################
+    #        Batch Solving Methods        #
+    #######################################    
+
     def batch_solve(
         self, 
         batch_task_data: List[TaskBase], 
@@ -100,7 +108,18 @@ class SolverBase(object):
                     self.optimizer.optimize(task_data)
         return batch_task_data
     
+    def _sequential_solve(
+        self,
+        batch_task_data: List[TaskBase],
+        single_func: Callable,
+    ):
+        """Solve the given batch task data sequentially."""
+        for task_data in batch_task_data:
+            single_func(task_data)
+        return batch_task_data
+
     def _batch_solve(self, batch_task_data: List[TaskBase]):
-        raise NotImplementedError(
-            "The ``batch_solve`` function is required to implemented in subclasses."
-        )
+        """
+        If not implemented, solve the batch task data sequentially.
+        """
+        return self._sequential_solve(batch_task_data, self._solve)

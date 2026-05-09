@@ -14,19 +14,16 @@ NeuroLKH
 # See the Mulan PSL v2 for more details.
 
 
-import os
-import sys
-import shutil
 import pathlib
 from typing import List
-from ml4co_kit.utils.file_utils import download
+from ml4co_kit.solver.lkh import LKHSolver
+from ml4co_kit.solver.base import SOLVER_TYPE
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.lib.neurolkh.tsp_neurolkh import batch_tsp_neurolkh
 
 
-class NeuroLKHSolver(SolverBase):
+class NeuroLKHSolver(LKHSolver):
     """
     NeuroLKH: https://github.com/liangxinedu/NeuroLKH
     @article{
@@ -44,7 +41,6 @@ class NeuroLKHSolver(SolverBase):
         self,
         lkh_scale: int = 1e6,
         lkh_max_trials: int = 500,
-        lkh_path: pathlib.Path = "LKH",
         lkh_runs: int = 1,
         lkh_seed: int = 1234,
         lkh_special: bool = False, 
@@ -56,26 +52,22 @@ class NeuroLKHSolver(SolverBase):
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super(NeuroLKHSolver, self).__init__(SOLVER_TYPE.NEUROLKH, optimizer=optimizer)
-        
-        # Initialize Attributes (LKH)
-        self.lkh_scale = lkh_scale
-        self.lkh_max_trials = lkh_max_trials
-        self.lkh_path = lkh_path
-        self.lkh_runs = lkh_runs
-        self.lkh_seed = lkh_seed
-        self.lkh_special = lkh_special
+        super(NeuroLKHSolver, self).__init__(
+            lkh_scale=lkh_scale,
+            lkh_max_trials=lkh_max_trials,
+            lkh_runs=lkh_runs,
+            lkh_seed=lkh_seed,
+            lkh_special=lkh_special,
+            optimizer=optimizer
+        )
         
         # Initialize Attributes (NeuroLKH)
+        self.solver_type = SOLVER_TYPE.NEUROLKH
         self.neurolkh_device = neurolkh_device
         self.neurolkh_tree_cands_num = neurolkh_tree_cands_num
         self.neurolkh_search_cands_num = neurolkh_search_cands_num
         self.neurolkh_initial_period = neurolkh_initial_period
         self.neurolkh_sparse_factor = neurolkh_sparse_factor
-        
-        # Check if need download
-        if shutil.which(self.lkh_path) is None:
-            self.install()  
         
     def _batch_solve(self, batch_task_data: List[TaskBase]):
         """Solve the task data using LKH solver."""
@@ -85,7 +77,7 @@ class NeuroLKHSolver(SolverBase):
                 batch_task_data=batch_task_data,
                 lkh_scale=self.lkh_scale,
                 lkh_max_trials=self.lkh_max_trials,
-                lkh_path=self.lkh_path,
+                lkh_path=self.lkh_bin_path,
                 lkh_runs=self.lkh_runs,
                 lkh_seed=self.lkh_seed,
                 lkh_special=self.lkh_special,
@@ -99,26 +91,3 @@ class NeuroLKHSolver(SolverBase):
             raise ValueError(
                 f"Solver {self.solver_type} is not supported for {batch_task_data[0].task_type}."
             )
-
-    def install(self):
-        """Install LKH solver."""
-        # Step1: Download LKH
-        lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-        download(file_path="LKH-3.0.13.tgz", url=lkh_url)
-        
-        # Step2: tar .tgz file
-        os.system("tar xvfz LKH-3.0.13.tgz")
-        
-        # Step3: build LKH
-        ori_dir = os.getcwd()
-        os.chdir("LKH-3.0.13")
-        os.system("make")
-
-        # Step4: move LKH to the bin dir
-        os.system(f"cp LKH {self.lkh_store_path}")
-        os.chdir(ori_dir)
-
-        # Step5: clean up
-        os.remove("LKH-3.0.13.tgz")
-        shutil.rmtree("LKH-3.0.13")
-        print(f"LKH Solver installed successfully at {self.lkh_bin_path}.")

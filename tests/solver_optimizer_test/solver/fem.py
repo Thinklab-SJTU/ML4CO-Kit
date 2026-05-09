@@ -22,9 +22,21 @@ class FEMSolverTester(SolverTesterBase):
         super(FEMSolverTester, self).__init__(
             mode_list=["solve"],
             test_solver_class=FEMSolver,
-            test_task_type_list=[TASK_TYPE.MCUT],
-            test_args_list=[{}],
-            exclude_test_files_list=[[]]
+            test_task_type_list=[
+                TASK_TYPE.MCUT,
+                TASK_TYPE.MCUT,
+                TASK_TYPE.MCUT,
+                TASK_TYPE.MCUT,
+                TASK_TYPE.MCUT,
+                TASK_TYPE.MCUT,
+            ],
+            test_args_list=[
+                {"anneal_type": "inverse", "grad_opt_type": "adam"},
+                {"anneal_type": "inverse", "grad_opt_type": "rmsprop"},
+                {"anneal_type": "linear", "grad_opt_type": "rmsprop"},
+                {"anneal_type": "exp", "grad_opt_type": "rmsprop"},
+            ],
+            exclude_test_files_list=[[], [], [], [], [], []]
         )
         
     def pre_test(self):

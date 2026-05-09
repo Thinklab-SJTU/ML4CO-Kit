@@ -24,13 +24,17 @@ from ml4co_kit.optimizer.lib.isco.mcut_isco import mcut_isco_ls
 from ml4co_kit.optimizer.base import OptimizerBase, OPTIMIZER_TYPE, IMPL_TYPE
 
 
+def _default_isco_g_func(r: np.ndarray) -> np.ndarray:
+    return np.sqrt(r)
+
+
 class ISCOOptimizer(OptimizerBase):
     def __init__(
         self,
         impl_type: IMPL_TYPE = IMPL_TYPE.AUTO,
         isco_tau: float = 0.5, 
         isco_mu_init: float = 5.0,
-        isco_g_func: Callable[[np.ndarray], np.ndarray] = lambda r: np.sqrt(r),
+        isco_g_func: Callable[[np.ndarray], np.ndarray] = _default_isco_g_func,
         isco_adapt_mu: bool = True,
         isco_target_accept_rate: float = 0.574,
         isco_beta: float = 1.002,
@@ -52,7 +56,11 @@ class ISCOOptimizer(OptimizerBase):
         self.isco_beta = isco_beta
         self.isco_iterations = isco_iterations
         self.isco_seed = isco_seed
-            
+
+    #######################################
+    #     Single Optimization Methods     #
+    #######################################
+    
     def _auto_optimize(self, task_data: TaskBase, return_sol: bool = False):
         return self._numpy_optimize(task_data, return_sol)
 
@@ -114,10 +122,14 @@ class ISCOOptimizer(OptimizerBase):
         if return_sol:
             return task_data.sol
         
+    #######################################
+    #      Batch Optimization Methods     #
+    #######################################
+    
     def _auto_batch_optimize(self, batch_task_data: List[TaskBase]):
         """Optimize the batch task data using auto implementation."""
         task_type = batch_task_data[0].task_type
-        if task_type == TASK_TYPE.MCL:
+        if task_type in [TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC]:
             return self._numpy_batch_optimize(batch_task_data)
         else:
             raise self._get_not_implemented_error(task_type, True)
@@ -125,7 +137,7 @@ class ISCOOptimizer(OptimizerBase):
     def _numpy_batch_optimize(self, batch_task_data: List[TaskBase]):
         """Optimize the batch task data using ISCO local search."""
         task_type = batch_task_data[0].task_type
-        if task_type == TASK_TYPE.MCL:
+        if task_type in [TASK_TYPE.MCL, TASK_TYPE.MCUT, TASK_TYPE.MIS, TASK_TYPE.MVC]:
             return self._pool_optimize(
                 batch_task_data=batch_task_data,
                 single_func=self._numpy_optimize

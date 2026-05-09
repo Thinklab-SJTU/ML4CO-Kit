@@ -55,6 +55,8 @@ class SolverTesterBase(object):
         ):
             # Print test task type
             print(f"\nTest task type: {test_task_type}")
+            if "optimizer" in test_args:
+                print(f"Optimizer: {test_args['optimizer'].__class__.__name__}")
 
             # Test for each mode
             try:
@@ -149,8 +151,6 @@ class SolverTesterBase(object):
             return self._get_satp_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.SATA:
             return self._get_sata_tasks(mode, exclude_test_files)
-        elif test_task_type == TASK_TYPE.USATC:
-            return self._get_usatc_tasks(mode, exclude_test_files)
         
         # QAP Problems
         elif test_task_type == TASK_TYPE.GM:

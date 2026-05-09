@@ -26,14 +26,15 @@ mis_optimizer = MCMCOptimizer(tau_start=10.0, tau_end=0.001, num_steps=int(1e6))
 class RoutingMCMCOptimizerTester(SolverTesterBase):
     def __init__(self):
         super(RoutingMCMCOptimizerTester, self).__init__(
-            mode_list=["solve"],
+            mode_list=["solve", "batch_solve_parallel"],
             test_solver_class=NearestSolver,
             test_task_type_list=[TASK_TYPE.TSP, TASK_TYPE.CVRP],
             test_args_list=[
                 {"optimizer": tsp_optimizer}, # TSP
                 {"optimizer": cvrp_optimizer}, # CVRP
             ],
-            exclude_test_files_list=[[],[]]
+            exclude_test_files_list=[[],[]],
+            info="MCMCOptimizer"
         )
         
     def pre_test(self):
@@ -43,13 +44,14 @@ class RoutingMCMCOptimizerTester(SolverTesterBase):
 class GraphMCMCOptimizerTester(SolverTesterBase):
     def __init__(self):
         super(GraphMCMCOptimizerTester, self).__init__(
-            mode_list=["solve"],
+            mode_list=["solve", "batch_solve_parallel"],
             test_solver_class=LcDegreeSolver,
             test_task_type_list=[TASK_TYPE.MIS],
             test_args_list=[
                 {"optimizer": mis_optimizer}, # MIS
             ],
-            exclude_test_files_list=[[]]
+            exclude_test_files_list=[[]],
+            info="MCMCOptimizer"
         )
         
     def pre_test(self):

@@ -1,5 +1,5 @@
 r"""
-Fast 2-Opt optimizer.
+Fast Two-Opt Optimizer.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,19 +14,13 @@ Fast 2-Opt optimizer.
 # See the Mulan PSL v2 for more details.
 
 
+from typing import List
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.optimizer.base import OptimizerBase, OPTIMIZER_TYPE, IMPL_TYPE
 from ml4co_kit.optimizer.lib.fast_2opt.tsp_fast_2opt import pybind11_tsp_fast_2opt_ls
 
 
 class FastTwoOptOptimizer(OptimizerBase):
-    """Fast 2-opt (GA-EAX-style k-opt local search).
-
-    ``num_steps``: maximum number of *accepted* 2-opt moves (>0). Use ``-1`` for no cap (natural
-    stop when one full inner scan finds no improving move in the near-neighbor lists), matching
-    GA-EAX ``kopt.cpp``. ``0`` skips local search.
-    """
-
     def __init__(
         self,
         impl_type: IMPL_TYPE = IMPL_TYPE.AUTO,
@@ -78,3 +72,26 @@ class FastTwoOptOptimizer(OptimizerBase):
         # Return the solution if needed
         if return_sol:
             return task_data.sol
+
+    #######################################
+    #      Batch Optimization Methods     #
+    #######################################
+    
+    def _auto_batch_optimize(self, batch_task_data: List[TaskBase]):
+        """Optimize the batch task data using auto implementation."""
+        task_type = batch_task_data[0].task_type
+        if task_type == TASK_TYPE.TSP:
+            return self._pybind11_batch_optimize(batch_task_data)
+        else:
+            raise self._get_not_implemented_error(task_type, True)
+
+    def _pybind11_batch_optimize(self, batch_task_data: List[TaskBase]):
+        """Optimize the batch task data using DC 2-opt (pybind11)."""
+        task_type = batch_task_data[0].task_type
+        if task_type == TASK_TYPE.TSP:
+            return self._pool_optimize(
+                batch_task_data=batch_task_data,
+                single_func=self._pybind11_optimize
+            )
+        else:
+            raise self._get_not_implemented_error(task_type, True)

@@ -39,6 +39,10 @@ class CVRPLSOptimizer(OptimizerBase):
         self.demands_scale = demands_scale
         self.seed = seed
             
+    #######################################
+    #     Single Optimization Methods     #
+    #######################################
+    
     def _auto_optimize(self, task_data: TaskBase, return_sol: bool = False):
         return self._ctypes_optimize(task_data, return_sol)
 
@@ -59,6 +63,10 @@ class CVRPLSOptimizer(OptimizerBase):
         # Return the solution if needed
         if return_sol:
             return task_data.sol
+    
+    #######################################
+    #      Batch Optimization Methods     #
+    #######################################
     
     def _auto_batch_optimize(self, batch_task_data: List[TaskBase]):
         """Optimize the batch task data using auto implementation."""

@@ -135,7 +135,7 @@ class TwoOptOptimizerTester(SolverTesterBase):
                     pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
                 ],  # TSP-500 (sparse)
             ],
-            info="Two-opt Optimizer"
+            info="TwoOptOptimizer"
         )
         
     def pre_test(self):

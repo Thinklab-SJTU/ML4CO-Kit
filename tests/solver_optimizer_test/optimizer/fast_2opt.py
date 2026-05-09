@@ -22,7 +22,7 @@ from tests.solver_optimizer_test.base import SolverTesterBase
 class FastTwoOptOptimizerTester(SolverTesterBase):
     def __init__(self):
         super(FastTwoOptOptimizerTester, self).__init__(
-            mode_list=["solve"],
+            mode_list=["solve", "batch_solve_parallel"],
             test_solver_class=NearestSolver,
             test_task_type_list=[TASK_TYPE.TSP],
             test_args_list=[{"optimizer": FastTwoOptOptimizer()}],
@@ -34,7 +34,7 @@ class FastTwoOptOptimizerTester(SolverTesterBase):
                     pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
                 ],
             ],
-            info="Fast 2-opt Optimizer"
+            info="FastTwoOptOptimizer"
         )
         
     def pre_test(self):

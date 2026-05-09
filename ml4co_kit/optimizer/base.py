@@ -15,8 +15,8 @@ Base class for all optimizers.
 
 
 from enum import Enum
-from multiprocessing import Pool
 from typing import List, Callable, Dict
+from concurrent.futures import ProcessPoolExecutor
 from ml4co_kit.utils.impl_utils import IMPL_TYPE
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 
@@ -63,14 +63,13 @@ class OptimizerBase:
             IMPL_TYPE.TORCH: self._torch_batch_optimize,
         }
 
+    #######################################
+    #     Single Optimization Methods     #
+    #######################################
+    
     def optimize(self, task_data: TaskBase):
-        """Optimize the given task data.
-        
-        Args:
-            task_data: The task data to optimize.
-            
-        Raises:
-            ValueError: If solution is None or implementation type is not supported.
+        """
+        Optimize the given task data.
         """
         # Check if solution is not None
         if task_data.sol is None:
@@ -85,44 +84,6 @@ class OptimizerBase:
         
         # Optimize the task data
         optimize_method(task_data)
-
-    def batch_optimize(self, batch_task_data: List[TaskBase]):
-        """Optimize the given batch task data.
-        
-        Args:
-            batch_task_data: List of task data to optimize.
-            
-        Raises:
-            ValueError: If any solution is None or implementation type is not supported.
-        """
-        # Check if solution is not None
-        if any(task_data.sol is None for task_data in batch_task_data):
-            raise ValueError("`sol` cannot be None!")
-
-        # Get the appropriate batch optimization method
-        batch_optimize_method = self._batch_optimize_methods.get(self.impl_type, None)
-        if batch_optimize_method is None:
-            raise ValueError(
-                f"Implementation type {self.impl_type} is not supported."
-            )
-        
-        # Optimize the batch task data
-        batch_optimize_method(batch_task_data)
-
-    def _get_not_implemented_error(
-        self, task_type: TASK_TYPE, batch: bool
-    ) -> NotImplementedError:
-        """Helper method to create a consistent NotImplementedError message."""
-        if batch:
-            return NotImplementedError(
-                f"Optimizer {self.optimizer_type} with implementation type {self.impl_type} "
-                f"is not supported for batch optimization of {task_type}."
-            )
-        else:
-            return NotImplementedError(
-                f"Optimizer {self.optimizer_type} with implementation type {self.impl_type} "
-                f"is not supported for single optimization of {task_type}."
-            )
 
     def _auto_optimize(self, task_data: TaskBase, return_sol: bool = False):
         """Optimize the given task data using auto implementation."""
@@ -148,6 +109,28 @@ class OptimizerBase:
         """Optimize the given task data using Torch."""
         raise self._get_not_implemented_error(batch=False)
 
+    #######################################
+    #      Batch Optimization Methods     #
+    #######################################
+
+    def batch_optimize(self, batch_task_data: List[TaskBase]):
+        """
+        Optimize the given batch task data.
+        """
+        # Check if solution is not None
+        if any(task_data.sol is None for task_data in batch_task_data):
+            raise ValueError("`sol` cannot be None!")
+
+        # Get the appropriate batch optimization method
+        batch_optimize_method = self._batch_optimize_methods.get(self.impl_type, None)
+        if batch_optimize_method is None:
+            raise ValueError(
+                f"Implementation type {self.impl_type} is not supported."
+            )
+        
+        # Optimize the batch task data
+        batch_optimize_method(batch_task_data)
+
     def _auto_batch_optimize(self, batch_task_data: List[TaskBase]):
         """Optimize the given batch task data using auto implementation."""
         raise self._get_not_implemented_error(batch=True)
@@ -172,18 +155,43 @@ class OptimizerBase:
         """Optimize the given batch task data using Torch."""
         raise self._get_not_implemented_error(batch=True)
 
+    #######################################
+    #            Helper Methods           #
+    #######################################
+
+    def _get_not_implemented_error(
+        self, task_type: TASK_TYPE, batch: bool
+    ) -> NotImplementedError:
+        """Helper method to create a consistent NotImplementedError message."""
+        if batch:
+            return NotImplementedError(
+                f"Optimizer {self.optimizer_type} with implementation type {self.impl_type} "
+                f"is not supported for batch optimization of {task_type}."
+            )
+        else:
+            return NotImplementedError(
+                f"Optimizer {self.optimizer_type} with implementation type {self.impl_type} "
+                f"is not supported for single optimization of {task_type}."
+            )
+
     def _pool_optimize(
-        self, 
-        batch_task_data: List[TaskBase], 
-        single_func: Callable[[TaskBase, bool], None]
+        self,
+        batch_task_data: List[TaskBase],
+        single_func: Callable[[TaskBase, bool], None],
     ):
-        """Optimize the given batch task data using Pool."""
+        """Optimize the given batch task data using ProcessPoolExecutor."""
+        if not batch_task_data:
+            return
+
         # Optimize parallelly
-        with Pool(len(batch_task_data)) as p1:
-            optimized_sols = p1.starmap(
-                single_func, 
-                [(task_data, True) for task_data in batch_task_data]
-            )    
+        with ProcessPoolExecutor(max_workers=len(batch_task_data)) as executor:
+            optimized_sols = list(
+                executor.map(
+                    single_func,
+                    batch_task_data,
+                    [True] * len(batch_task_data),
+                )
+            )
 
         # Update the original task data with the optimized solutions
         for task_data, sol in zip(batch_task_data, optimized_sols):
