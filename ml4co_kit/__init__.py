@@ -149,13 +149,12 @@ from .solver import (
 
 # Solvers for Graph Tasks
 from .solver import (
-    FEMSolver, ISCOSolver, KaMISSolver, LcDegreeSolver
+    GpDegreeSolver, ISCOSolver, KaMISSolver, LcDegreeSolver
 )
 
 # Solvers for Routing Tasks
 from .solver import (
-    ConcordeSolver, GAEAXSolver, GpDegreeSolver, 
-    HGSSolver, LKHSolver, NearestSolver
+    ConcordeSolver, GAEAXSolver, HGSSolver, LKHSolver, NearestSolver
 )
 
 # Solvers for SAT Tasks
