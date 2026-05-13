@@ -24,7 +24,6 @@ if env_checker.check_torch():
     from .qap.pygm import PyGMSolver, PyGMToolsQAPSolver
     from .routing.neurolkh import NeuroLKHSolver
 
-
 # Basic Class
 from .base import SolverBase, SOLVER_TYPE
 
