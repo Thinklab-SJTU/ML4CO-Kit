@@ -16,8 +16,8 @@ ISCO Algorithm for MIS
 import numpy as np
 from typing import Callable
 from ml4co_kit.task.graph.mis import MISTask
-from ml4co_kit.solver.lib.isco.mis_isco import MISEnergyFunction
-from ml4co_kit.solver.lib.isco.isco_base import (
+from ml4co_kit.solver.graph.lib.isco.mis_isco import MISEnergyFunction
+from ml4co_kit.solver.graph.lib.isco.isco_base import (
     PASMHSampler, LinearTemperatureScheduler, metropolis_hastings_accept
 )
 

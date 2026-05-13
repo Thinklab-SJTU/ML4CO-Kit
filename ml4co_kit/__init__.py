@@ -119,6 +119,9 @@ from .generator import SATPGenerator, SATAGenerator
 # Base Dataset
 from .dataset import DatasetBase
 
+# EDA Dataset
+from .dataset import ISPD2005Dataset
+
 # QAP Dataset
 from .dataset import GEDAIDS700nefDataset
 
@@ -130,21 +133,33 @@ from .dataset import GEDAIDS700nefDataset
 # Base Solver
 from .solver import SolverBase, SOLVER_TYPE
 
-# Solver (not use torch backend)
-from .solver import (
-    ConcordeSolver, GAEAXSolver, GpDegreeSolver, GurobiSolver, 
-    HGSSolver, ILSSolver, ISCOSolver, InsertionSolver, KaMISSolver, 
-    LcDegreeSolver,LKHSolver, NearestSolver, NullSolver, ORSolver, 
-    PySATSolver, RandomSolver, SCIPSolver
-)
-
 # Solver (use torch backend)
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
     from .solver import (
-        NeuroLKHSolver, RLSASolver, PyGMSolver, PyGMToolsQAPSolver, FEMSolver
+        FEMSolver, RLSASolver, PyGMSolver, PyGMToolsQAPSolver, NeuroLKHSolver
     )
+
+# Common Solvers
+from .solver import (
+    GurobiSolver, ILSSolver, InsertionSolver, NullSolver, 
+    ORSolver, RandomSolver, SCIPSolver,
+)
+
+# Solvers for Graph Tasks
+from .solver import (
+    FEMSolver, ISCOSolver, KaMISSolver, LcDegreeSolver
+)
+
+# Solvers for Routing Tasks
+from .solver import (
+    ConcordeSolver, GAEAXSolver, GpDegreeSolver, 
+    HGSSolver, LKHSolver, NearestSolver
+)
+
+# Solvers for SAT Tasks
+from .solver import PySATSolver
 
 
 ####################################################

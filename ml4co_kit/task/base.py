@@ -63,9 +63,9 @@ class TASK_TYPE(str, Enum):
     SATA = "SAT-A" # Satisfying Assignment Prediction
 
     # EDA Problems
-    MACRO_PLACEMENT = "MacroPlacement" # Macro Placement
-    STANDARD_CELL_PLACEMENT = "StandardCellPlacement" # Standard Cell Placement
-    GLOBAL_ROUTING = "GlobalRouting" # Global Routing
+    EDAP = "EDA-P" # EDA Placement
+    EDATDP = "EDA-TDP" # EDA Timing-Driven Placement
+    EDAR = "EDA-R" # EDA Routing
 
 
 class TaskBase(object):

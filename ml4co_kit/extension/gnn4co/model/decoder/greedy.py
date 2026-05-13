@@ -16,12 +16,12 @@ GNN4CO Greedy Decoder.
 
 
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.lib.greedy.tsp_greedy import tsp_greedy
-from ml4co_kit.solver.lib.greedy.mcl_greedy import mcl_greedy
-from ml4co_kit.solver.lib.greedy.mis_greedy import mis_greedy
-from ml4co_kit.solver.lib.greedy.mvc_greedy import mvc_greedy
-from ml4co_kit.solver.lib.greedy.mcut_greedy import mcut_greedy
-from ml4co_kit.solver.lib.greedy.atsp_greedy import atsp_greedy
+from ml4co_kit.solver.common.lib.greedy.tsp_greedy import tsp_greedy
+from ml4co_kit.solver.common.lib.greedy.mcl_greedy import mcl_greedy
+from ml4co_kit.solver.common.lib.greedy.mis_greedy import mis_greedy
+from ml4co_kit.solver.common.lib.greedy.mvc_greedy import mvc_greedy
+from ml4co_kit.solver.common.lib.greedy.mcut_greedy import mcut_greedy
+from ml4co_kit.solver.common.lib.greedy.atsp_greedy import atsp_greedy
 from .base import GNN4CODecoder
 
 

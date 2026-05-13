@@ -17,8 +17,8 @@ ISCO Algorithm for MCut
 import numpy as np
 from typing import Callable
 from ml4co_kit.task.graph.mcut import MCutTask
-from ml4co_kit.solver.lib.isco.mcut_isco import MCutEnergyFunction
-from ml4co_kit.solver.lib.isco.isco_base import (
+from ml4co_kit.solver.graph.lib.isco.mcut_isco import MCutEnergyFunction
+from ml4co_kit.solver.graph.lib.isco.isco_base import (
     PASMHSampler, LinearTemperatureScheduler, metropolis_hastings_accept
 )
 

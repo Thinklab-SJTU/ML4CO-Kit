@@ -17,30 +17,38 @@ Solver Module.
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_gnn4co():
-    from .gnn4co import GNN4COSolver
+    from .common.gnn4co import GNN4COSolver
 if env_checker.check_torch():
-    from .neurolkh import NeuroLKHSolver
-    from .rlsa import RLSASolver
-    from .pygm import PyGMSolver, PyGMToolsQAPSolver
-    from .fem import FEMSolver
+    from .graph.fem import FEMSolver
+    from .graph.rlsa import RLSASolver
+    from .qap.pygm import PyGMSolver, PyGMToolsQAPSolver
+    from .routing.neurolkh import NeuroLKHSolver
 
 
-# Load other solvers
+# Basic Class
 from .base import SolverBase, SOLVER_TYPE
-from .concorde import ConcordeSolver
-from .ga_eax import GAEAXSolver
-from .gp_degree import GpDegreeSolver
-from .gurobi import GurobiSolver
-from .hgs import HGSSolver
-from .ils import ILSSolver
-from .insertion import InsertionSolver
-from .isco import ISCOSolver
-from .kamis import KaMISSolver
-from .lc_degree import LcDegreeSolver
-from .lkh import LKHSolver
-from .nearest import NearestSolver
-from .null import NullSolver
-from .ortools import ORSolver
-from .pysat import PySATSolver
-from .random import RandomSolver
-from .scip import SCIPSolver
+
+# Common Solvers
+from .common.gurobi import GurobiSolver
+from .common.ils import ILSSolver
+from .common.insertion import InsertionSolver
+from .common.null import NullSolver
+from .common.ortools import ORSolver
+from .common.random import RandomSolver
+from .common.scip import SCIPSolver
+
+# Solvers for Graph Tasks
+from .graph.gp_degree import GpDegreeSolver
+from .graph.isco import ISCOSolver
+from .graph.kamis import KaMISSolver
+from .graph.lc_degree import LcDegreeSolver
+
+# Solvers for Routing Tasks
+from .routing.concorde import ConcordeSolver
+from .routing.ga_eax import GAEAXSolver
+from .routing.hgs import HGSSolver
+from .routing.lkh import LKHSolver
+from .routing.nearest import NearestSolver
+
+# Solvers for SAT Tasks
+from .sat.pysat import PySATSolver

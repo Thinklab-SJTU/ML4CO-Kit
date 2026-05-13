@@ -16,8 +16,8 @@ GNN4CO Beam Decoder.
 
 
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.lib.beam.mcl_beam import mcl_beam
-from ml4co_kit.solver.lib.beam.mis_beam import mis_beam
+from ml4co_kit.solver.common.lib.beam.mcl_beam import mcl_beam
+from ml4co_kit.solver.common.lib.beam.mis_beam import mis_beam
 from .base import GNN4CODecoder
 
 

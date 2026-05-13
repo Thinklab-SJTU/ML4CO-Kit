@@ -16,7 +16,7 @@ GNN4CO MCTS Decoder.
 
 
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.lib.mcts.tsp_mcts import tsp_mcts
+from ml4co_kit.solver.common.lib.mcts.tsp_mcts import tsp_mcts
 from .base import GNN4CODecoder
 
 

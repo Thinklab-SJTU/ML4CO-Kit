@@ -16,5 +16,8 @@ Dataset Module.
 # Base Dataset
 from .base import DatasetBase
 
+# EDA Dataset
+from .eda.eda_ispd2005 import ISPD2005Dataset
+
 # QAP Dataset
-from .qap.ged import GEDAIDS700nefDataset
+from .qap.ged_aids700nef import GEDAIDS700nefDataset

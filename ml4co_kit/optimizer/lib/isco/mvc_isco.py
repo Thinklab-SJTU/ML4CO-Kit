@@ -16,8 +16,8 @@ ISCO Algorithm for MVC
 import numpy as np
 from typing import Callable
 from ml4co_kit.task.graph.mvc import MVCTask
-from ml4co_kit.solver.lib.isco.mvc_isco import MVCEnergyFunction
-from ml4co_kit.solver.lib.isco.isco_base import (
+from ml4co_kit.solver.graph.lib.isco.mvc_isco import MVCEnergyFunction
+from ml4co_kit.solver.graph.lib.isco.isco_base import (
     PASMHSampler, LinearTemperatureScheduler, metropolis_hastings_accept
 )
 
