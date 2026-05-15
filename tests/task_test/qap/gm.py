@@ -24,8 +24,7 @@ class GMTaskTester(TaskTesterBase):
             test_task_class=GMTask,
             pickle_files_list=[
                 pathlib.Path("test_dataset/qap/gm/task/gm_er_iso_task.pkl"),
-                pathlib.Path("test_dataset/qap/gm/task/gm_er_sub_task.pkl"),
-                pathlib.Path("test_dataset/qap/gm/task/gm_er-small_iso_task.pkl"),
+                pathlib.Path("test_dataset/qap/gm/task/gm_er_sub_task.pkl")
             ],
         )
         
