@@ -23,9 +23,7 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.utils.file_utils import download, extract_archive
 from ml4co_kit.solver.eda.lib.dreamplace.edap_dreamplace import edap_dreamplace
-from ml4co_kit.extension.dreamplace.install_helper import (
-    DreamPlaceIntallHelper, DREAMPLACE_THIRDPARTY_PATH
-)
+from ml4co_kit.extension.dreamplace.install_helper import DREAMPLACE_THIRDPARTY_PATH
 
 
 class DreamPlaceSolver(SolverBase):
