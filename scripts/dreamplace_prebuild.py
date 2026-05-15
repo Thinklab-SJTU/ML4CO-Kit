@@ -1,5 +1,9 @@
 r"""
 Precompile DreamPlace (CPU-only) and package it into a zip file.
+
+The zip contains the ``dreamplace`` package files at the archive root (no
+extra wrapper directory or metadata files). Extract into
+``<site-packages>/dreamplace`` to install.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,14 +17,11 @@ Precompile DreamPlace (CPU-only) and package it into a zip file.
 # See the Mulan PSL v2 for more details.
 
 
-import json
 import site
 import sys
 import zipfile
 import argparse
-import platform
 from pathlib import Path
-from datetime import datetime, timezone
 
 
 def _find_dreamplace_dir() -> Path:
@@ -58,31 +59,15 @@ def main() -> None:
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
     dp = _find_dreamplace_dir()
-    try:
-        import torch
-
-        torch_ver = torch.__version__
-    except Exception:
-        torch_ver = "unknown"
-
-    meta = {
-        "built_at": datetime.now(timezone.utc).isoformat(),
-        "python": sys.version.split("\n")[0],
-        "executable": sys.executable,
-        "platform": platform.platform(),
-        "torch": torch_ver,
-        "dreamplace_dir": str(dp),
-    }
 
     py_tag = f"{sys.version_info.major}{sys.version_info.minor}"
     zip_name = f"dreamplace-{_platform_tag()}-py{py_tag}-cpu.zip"
     out_zip = args.out_dir / zip_name
 
     with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("BUILD_INFO.json", (json.dumps(meta, indent=2) + "\n").encode("utf-8"))
         for path in sorted(dp.rglob("*")):
             if path.is_file():
-                arcname = path.relative_to(dp.parent).as_posix()
+                arcname = path.relative_to(dp).as_posix()
                 zf.write(path, arcname)
 
     print(f"Wrote {out_zip.resolve()}")

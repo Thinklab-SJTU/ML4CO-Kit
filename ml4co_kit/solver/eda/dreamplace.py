@@ -13,6 +13,7 @@ DreamPlace solver for EDA problems.
 # See the Mulan PSL v2 for more details.
 
 
+import os
 import yaml
 import pathlib
 import importlib.util
@@ -107,6 +108,7 @@ class DreamPlaceSolver(SolverBase):
 
     def install(self, cpu_only: bool = False):
         """Install DreamPlace solver."""
+        # Download and extract DreamPlace thirdparty
         if not DREAMPLACE_THIRDPARTY_PATH.exists():
             thirdparty_url = (
                 "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/"
@@ -117,7 +119,9 @@ class DreamPlaceSolver(SolverBase):
                 archive_path="dreamplace_thirdparty.zip",
                 extract_path=DREAMPLACE_THIRDPARTY_PATH.as_posix(),
             )
+            os.remove("dreamplace_thirdparty.zip")
 
+        # Compile DreamPlace
         install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
         install_helper.install()
 
