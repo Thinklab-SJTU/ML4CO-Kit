@@ -26,12 +26,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install make
         sudo apt-get install cmake
-        sudo apt-get install zlib1g-dev flex bison 
-        sudo apt-get install libboost-thread-dev 
-        sudo apt-get install libboost-system-dev 
-        sudo apt-get install libboost-filesystem-dev 
-        sudo apt-get install libboost-graph-dev
-        sudo apt-get install libboost-regex-dev
+        sudo apt-get install flex 
+        sudo apt-get install bison 
+        sudo apt-get install zlib1g-dev 
+        sudo apt-get install libbz2-dev
+        sudo apt-get install libfl-dev
+        sudo apt-get install libboost-all-dev
         sudo apt-get install libcairo2
         sudo apt install clang
     - name: Install dependencies

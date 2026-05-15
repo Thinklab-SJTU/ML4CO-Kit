@@ -1,0 +1,70 @@
+# Build CPU-only DreamPlace via DreamPlaceSolver.install() (same path as tests/install_env.py),
+# then zip the installed ``dreamplace`` tree from the conda env's site-packages.
+#
+# Trigger: Actions tab -> "Build DreamPlace prebuilt (conda)" -> Run workflow
+#
+# Artifacts: dreamplace-<linux|macos>-py<XY>-cpu.zip — unpack into that Python's site-packages.
+# Must match the PyTorch / Python ABI used here (see BUILD_INFO.json inside each zip).
+
+name: Build DreamPlace prebuilt (conda)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.os }} / py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          activate-environment: ml4co-dp-build
+          channel-priority: strict
+
+      - name: Linux — native build deps (align with python-package.yml)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make cmake zlib1g-dev flex bison clang \
+            libboost-thread-dev libboost-system-dev libboost-filesystem-dev \
+            libboost-graph-dev libboost-regex-dev libcairo2
+
+      - name: macOS — Homebrew deps
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install cmake boost flex bison
+
+      - name: Install Python deps and build DreamPlace (DreamPlaceSolver.install)
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          python -m pip install --upgrade pip
+          pip install packaging
+          pip install -r tests/requirements.txt
+          python tests/install_env.py
+
+      - name: Zip dreamplace from conda site-packages
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/dreamplace_prebuild.py --out-dir dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreamplace-${{ runner.os }}-py${{ matrix.python-version }}-cpu
+          path: dist/*.zip
+          if-no-files-found: error
