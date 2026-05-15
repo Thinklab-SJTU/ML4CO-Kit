@@ -23,7 +23,9 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.utils.file_utils import download, extract_archive
 from ml4co_kit.solver.eda.lib.dreamplace.edap_dreamplace import edap_dreamplace
-from ml4co_kit.extension.dreamplace.install_helper import DREAMPLACE_THIRDPARTY_PATH
+from ml4co_kit.extension.dreamplace.install_helper import (
+    DreamPlaceInstallHelper, DREAMPLACE_THIRDPARTY_PATH
+)
 
 
 class DreamPlaceSolver(SolverBase):
@@ -51,7 +53,8 @@ class DreamPlaceSolver(SolverBase):
         self.dreamplace_support = importlib.util.find_spec("dreamplace") is not None
         if not self.dreamplace_support:
             raise ImportError(
-                "DreamPlace is not installed. Please install DreamPlace first."
+                "DreamPlace is not installed. Please install DreamPlace first. "
+                "You can quickly install it by calling install()."
             )
     
     def _solve(self, task_data: TaskBase):
@@ -111,5 +114,5 @@ class DreamPlaceSolver(SolverBase):
                 extract_path=DREAMPLACE_THIRDPARTY_PATH.as_posix(),
             )
 
-        install_helper = DreamPlaceIntallHelper(cpu_only=cpu_only)
+        install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
         install_helper.install()

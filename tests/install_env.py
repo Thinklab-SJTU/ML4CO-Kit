@@ -19,7 +19,6 @@ root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
 from packaging import version
 from ml4co_kit import EnvInstallHelper
-from ml4co_kit.extension.dreamplace.install_helper import DreamPlaceInstallHelper
 
 
 if __name__ == "__main__":
@@ -39,5 +38,6 @@ if __name__ == "__main__":
     env_install_helper.install()
     
     # Install DreamPlace
-    dreamplace_install_helper = DreamPlaceInstallHelper(cpu_only=True)
-    dreamplace_install_helper.install()
+    from ml4co_kit.solver.eda.dreamplace import DreamPlaceSolver
+    dreamplace_solver = DreamPlaceSolver()
+    dreamplace_solver.install(cpu_only=True)
