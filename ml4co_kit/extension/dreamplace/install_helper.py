@@ -11,6 +11,7 @@ import subprocess
 import ctypes.util
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
+from ml4co_kit.utils.file_utils import download, extract_archive
 
 
 ###########################
@@ -112,7 +113,7 @@ class DreamPlaceBuildEnvChecker(object):
 
     LINUX_APT_PACKAGES = (
         "make cmake flex bison zlib1g-dev libbz2-dev libfl-dev "
-        "libboost-all-dev libcairo2 clang"
+        "libboost-all-dev clang"
     )
     MACOS_BREW_PACKAGES = "cmake boost flex bison libomp"
 
@@ -156,12 +157,12 @@ class DreamPlaceBuildEnvChecker(object):
                 missing.append(f"command not found: {command}")
 
         include_dirs = _linux_include_dirs()
+        # Cairo headers are not required: DreamPlace sets CMAKE_DISABLE_FIND_PACKAGE_Cairo=ON.
         linux_headers = (
             ("zlib.h", "zlib1g-dev"),
             ("bzlib.h", "libbz2-dev"),
             ("FlexLexer.h", "libfl-dev"),
             ("boost/version.hpp", "libboost-all-dev"),
-            ("cairo/cairo.h", "libcairo2"),
         )
         for header, package in linux_headers:
             if not _header_in_dirs(header, include_dirs):
@@ -283,38 +284,49 @@ class DreamPlacePrebuilt(object):
         raise RuntimeError("\n".join(lines))
 
     def install(self) -> pathlib.Path:
-        from ml4co_kit.utils.file_utils import download, extract_archive
-
+        # Check if the prebuilt package exists
         self.check_environment()
 
+        # Get the archive name and URL
         archive_name = self.archive_name()
         archive_url = self.archive_url
         final_path = self.final_path
 
+        # Download and extract the prebuilt package
         with tempfile.TemporaryDirectory(prefix="dreamplace_prebuilt_") as tmp_dir:
+            
+            # Get the temporary directory
             tmp = pathlib.Path(tmp_dir)
+
+            # Get the archive path and extract path
             archive_path = tmp / archive_name
             extract_path = tmp / "extracted"
 
+            # Download the prebuilt package
             download(file_path=archive_path.as_posix(), url=archive_url)
+
+            # Extract the prebuilt package
             extract_path.mkdir(parents=True, exist_ok=True)
             extract_archive(
                 archive_path=archive_path.as_posix(),
                 extract_path=extract_path.as_posix(),
             )
 
+            # Check if the extracted package is empty
             if not any(extract_path.iterdir()):
                 raise RuntimeError(
                     f"Prebuilt archive is empty: {archive_name}. "
                     f"Check that {archive_url} exists for this platform/Python version."
                 )
 
+            # Remove the final path if it exists
             if final_path.exists():
                 shutil.rmtree(final_path)
-            import pdb
-            pdb.set_trace()
+
+            # Move the extracted package to the final path
             shutil.move(extract_path.as_posix(), final_path.as_posix())
 
+        # Return the final path
         return final_path
 
 

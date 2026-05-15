@@ -45,7 +45,6 @@ jobs:
         sudo apt-get install libbz2-dev
         sudo apt-get install libfl-dev
         sudo apt-get install libboost-all-dev
-        sudo apt-get install libcairo2
         sudo apt install clang
     - name: Install dependencies
       run: |
