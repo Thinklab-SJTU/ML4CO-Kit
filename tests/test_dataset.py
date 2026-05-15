@@ -20,13 +20,14 @@ sys.path.insert(0, root_folder)
 
 
 # Checker
-from ml4co_kit import GEDAIDS700nefDataset
+from ml4co_kit import GEDAIDS700nefDataset, ISPD2005Dataset
 
 
 # Test Dataset
 def test_dataset():
     dataset_list = [
-        GEDAIDS700nefDataset()
+        GEDAIDS700nefDataset(),
+        ISPD2005Dataset()
     ]
     for dataset in dataset_list:
         dataset.load(0)

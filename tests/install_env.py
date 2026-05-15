@@ -36,3 +36,5 @@ if __name__ == "__main__":
     # Install pytorch environment
     env_install_helper = EnvInstallHelper(pytorch_version=pytorch_version)
     env_install_helper.install()
+    
+    # Install 
