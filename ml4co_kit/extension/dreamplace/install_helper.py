@@ -6,16 +6,316 @@ import site
 import shlex
 import shutil
 import pathlib
+import tempfile
 import subprocess
+import ctypes.util
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
 
 ###########################
-#     ThirdParty Path     #
+#     Basic Constants     #
 ###########################
 
+# Path for DreamPlace thirdparty
 DREAMPLACE_THIRDPARTY_PATH = pathlib.Path(__file__).parent / "source/thirdparty"
+
+# Base URL for DreamPlace prebuilt packages
+DREAMPLACE_PREBUILT_BASE_URL = (
+    "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/resolve/main/dreamplace/"
+)
+
+
+# Run a command and return the output
+def _run_output(command: List[str]) -> Optional[str]:
+    try:
+        return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT).strip()
+    except Exception:
+        return None
+
+
+# Get the prefix of a Homebrew tool
+def _darwin_homebrew_tool_prefix(formula: str, marker: pathlib.Path) -> Optional[pathlib.Path]:
+    if sys.platform != "darwin":
+        return None
+    out = _run_output(["brew", "--prefix", formula])
+    if not out:
+        return None
+    prefix = pathlib.Path(out.strip())
+    return prefix if (prefix / marker).is_file() else None
+
+
+# Get the prefix of the Homebrew libomp
+def _darwin_homebrew_libomp_prefix() -> Optional[pathlib.Path]:
+    if sys.platform != "darwin":
+        return None
+    out = _run_output(["brew", "--prefix", "libomp"])
+    if not out:
+        return None
+    prefix = pathlib.Path(out.strip())
+    dylib = prefix / "lib" / "libomp.dylib"
+    return prefix if dylib.is_file() else None
+
+
+# Parse the version of Bison
+def _parse_bison_version(output: Optional[str]) -> Optional[Tuple[int, int]]:
+    if not output:
+        return None
+    match = re.search(r"bison\s*\(?GNU Bison\)?\s*(\d+)\.(\d+)", output, re.IGNORECASE)
+    if not match:
+        match = re.search(r"(\d+)\.(\d+)", output)
+    if not match:
+        return None
+    return int(match.group(1)), int(match.group(2))
+
+
+# Check if a header file is in the include directories
+def _header_in_dirs(rel_path: str, include_dirs: List[pathlib.Path]) -> bool:
+    return any((directory / rel_path).is_file() for directory in include_dirs)
+
+
+# Get the include directories for Linux
+def _linux_include_dirs() -> List[pathlib.Path]:
+    dirs = [pathlib.Path("/usr/include"), pathlib.Path("/usr/local/include")]
+    return [directory for directory in dirs if directory.is_dir()]
+
+
+# Check if the Linux system has the libcairo library
+def _linux_has_libcairo() -> bool:
+    if ctypes.util.find_library("cairo") is not None:
+        return True
+    for lib_name in ("libcairo.so.2", "libcairo.so"):
+        try:
+            ctypes.CDLL(lib_name)
+            return True
+        except OSError:
+            continue
+    return False
+
+
+# Get the default site-packages path for DreamPlace
+def _default_dreamplace_site_packages_path() -> pathlib.Path:
+    return pathlib.Path(site.getsitepackages()[0]) / "dreamplace"
+
+
+###########################
+#    Build Env Checker    #
+###########################
+
+
+class DreamPlaceBuildEnvChecker(object):
+    """
+    Verify native build dependencies before compiling DreamPlace from source.
+
+    Package lists align with ``.github/workflows/dreamplace-prebuilt.yml``.
+    """
+
+    LINUX_APT_PACKAGES = (
+        "make cmake flex bison zlib1g-dev libbz2-dev libfl-dev "
+        "libboost-all-dev libcairo2 clang"
+    )
+    MACOS_BREW_PACKAGES = "cmake boost flex bison libomp"
+
+    @classmethod
+    def check(cls) -> None:
+        missing = cls.collect_missing()
+        if not missing:
+            return
+        cls.raise_for_missing(missing)
+
+    @classmethod
+    def collect_missing(cls) -> List[str]:
+        missing: List[str] = []
+
+        for command in ("cmake", "make"):
+            if shutil.which(command) is None:
+                missing.append(f"command not found: {command}")
+
+        if not (
+            shutil.which("clang")
+            or shutil.which("clang++")
+            or shutil.which("g++")
+            or shutil.which("gcc")
+        ):
+            missing.append("C++ compiler not found (clang or g++)")
+
+        if sys.platform.startswith("linux"):
+            missing.extend(cls._collect_linux_missing())
+        elif sys.platform == "darwin":
+            missing.extend(cls._collect_macos_missing())
+        else:
+            missing.append(f"unsupported platform for DreamPlace build: {sys.platform}")
+
+        return missing
+
+    @classmethod
+    def _collect_linux_missing(cls) -> List[str]:
+        missing: List[str] = []
+        for command in ("flex", "bison"):
+            if shutil.which(command) is None:
+                missing.append(f"command not found: {command}")
+
+        include_dirs = _linux_include_dirs()
+        linux_headers = (
+            ("zlib.h", "zlib1g-dev"),
+            ("bzlib.h", "libbz2-dev"),
+            ("FlexLexer.h", "libfl-dev"),
+            ("boost/version.hpp", "libboost-all-dev"),
+            ("cairo/cairo.h", "libcairo2"),
+        )
+        for header, package in linux_headers:
+            if not _header_in_dirs(header, include_dirs):
+                missing.append(f"header not found: {header} (apt install {package})")
+        return missing
+
+    @classmethod
+    def _collect_macos_missing(cls) -> List[str]:
+        missing: List[str] = []
+        if shutil.which("brew") is None:
+            missing.append("Homebrew not found (https://brew.sh)")
+            return missing
+
+        flex_prefix = _darwin_homebrew_tool_prefix("flex", pathlib.Path("include/FlexLexer.h"))
+        if flex_prefix is None:
+            missing.append("Homebrew flex with FlexLexer.h missing (brew install flex)")
+
+        bison_prefix = _darwin_homebrew_tool_prefix("bison", pathlib.Path("bin/bison"))
+        if bison_prefix is None:
+            missing.append("Homebrew bison missing (brew install bison)")
+        else:
+            bison_bin = bison_prefix / "bin" / "bison"
+            bison_version = _parse_bison_version(_run_output([str(bison_bin), "--version"]))
+            if bison_version is None or bison_version < (3, 3):
+                missing.append(
+                    "bison >= 3.3 required (system /usr/bin/bison is too old; "
+                    "brew install bison)"
+                )
+
+        boost_prefix = _run_output(["brew", "--prefix", "boost"])
+        if not boost_prefix or not (
+            pathlib.Path(boost_prefix.strip()) / "include/boost/version.hpp"
+        ).is_file():
+            missing.append("Homebrew boost headers missing (brew install boost)")
+
+        if _darwin_homebrew_libomp_prefix() is None:
+            missing.append("Homebrew libomp missing (brew install libomp)")
+        return missing
+
+    @classmethod
+    def raise_for_missing(cls, missing: List[str]) -> None:
+        lines = ["DreamPlace native build dependencies are missing:"]
+        lines.extend(f"  - {item}" for item in missing)
+        if sys.platform.startswith("linux"):
+            lines.append("")
+            lines.append("On Ubuntu/Debian, install with:")
+            lines.append(f"  sudo apt-get install {cls.LINUX_APT_PACKAGES}")
+        elif sys.platform == "darwin":
+            lines.append("")
+            lines.append("On macOS, install with:")
+            lines.append(f"  brew install {cls.MACOS_BREW_PACKAGES}")
+        raise RuntimeError("\n".join(lines))
+
+
+###########################
+#        Pre-Built        #
+###########################
+
+class DreamPlacePrebuilt(object):
+    """
+    Download and install a CPU-only prebuilt ``dreamplace`` package from HuggingFace.
+
+    The archive layout matches ``scripts/dreamplace_prebuild.py``: package files live
+    at the zip root and are moved into ``final_path`` (default: site-packages/dreamplace).
+    """
+
+    BASE_URL = DREAMPLACE_PREBUILT_BASE_URL
+
+    def __init__(self, final_path: Optional[Union[str, pathlib.Path]] = None) -> None:
+        if final_path is None:
+            self.final_path = _default_dreamplace_site_packages_path()
+        else:
+            self.final_path = pathlib.Path(final_path)
+
+    @classmethod
+    def platform_tag(cls) -> str:
+        if sys.platform.startswith("linux"):
+            return "linux"
+        if sys.platform == "darwin":
+            return "macos"
+        raise RuntimeError(
+            f"Prebuilt DreamPlace is not available on platform: {sys.platform}"
+        )
+
+    @classmethod
+    def archive_name(cls) -> str:
+        py_tag = f"{sys.version_info.major}{sys.version_info.minor}"
+        return f"dreamplace-{cls.platform_tag()}-py{py_tag}-cpu.zip"
+
+    @property
+    def archive_url(self) -> str:
+        return f"{self.BASE_URL}{self.archive_name()}"
+
+    @classmethod
+    def collect_missing_runtime_deps(cls) -> List[str]:
+        missing: List[str] = []
+        if sys.platform.startswith("linux"):
+            if not _linux_has_libcairo():
+                missing.append(
+                    "libcairo2 runtime library not found (apt install libcairo2)"
+                )
+        elif sys.platform != "darwin":
+            missing.append(
+                f"unsupported platform for prebuilt DreamPlace: {sys.platform}"
+            )
+        return missing
+
+    @classmethod
+    def check_environment(cls) -> None:
+        missing = cls.collect_missing_runtime_deps()
+        if not missing:
+            return
+        lines = ["DreamPlace prebuilt install requirements are missing:"]
+        lines.extend(f"  - {item}" for item in missing)
+        if sys.platform.startswith("linux"):
+            lines.append("")
+            lines.append("On Ubuntu/Debian, install with:")
+            lines.append("  sudo apt-get install libcairo2")
+        raise RuntimeError("\n".join(lines))
+
+    def install(self) -> pathlib.Path:
+        from ml4co_kit.utils.file_utils import download, extract_archive
+
+        self.check_environment()
+
+        archive_name = self.archive_name()
+        archive_url = self.archive_url
+        final_path = self.final_path
+
+        with tempfile.TemporaryDirectory(prefix="dreamplace_prebuilt_") as tmp_dir:
+            tmp = pathlib.Path(tmp_dir)
+            archive_path = tmp / archive_name
+            extract_path = tmp / "extracted"
+
+            download(file_path=archive_path.as_posix(), url=archive_url)
+            extract_path.mkdir(parents=True, exist_ok=True)
+            extract_archive(
+                archive_path=archive_path.as_posix(),
+                extract_path=extract_path.as_posix(),
+            )
+
+            if not any(extract_path.iterdir()):
+                raise RuntimeError(
+                    f"Prebuilt archive is empty: {archive_name}. "
+                    f"Check that {archive_url} exists for this platform/Python version."
+                )
+
+            if final_path.exists():
+                shutil.rmtree(final_path)
+            import pdb
+            pdb.set_trace()
+            shutil.move(extract_path.as_posix(), final_path.as_posix())
+
+        return final_path
 
 
 ###########################
@@ -76,13 +376,6 @@ class DreamPlaceInstallHelper(object):
         rhs_version = cls._parse_version(rhs)
         return bool(lhs_version and rhs_version and lhs_version < rhs_version)
 
-    @staticmethod
-    def _run_output(command: List[str]) -> Optional[str]:
-        try:
-            return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT).strip()
-        except Exception:
-            return None
-
     @classmethod
     def _rule_for_gpu_name(cls, name: str) -> Optional[GpuRule]:
         lowered = name.lower()
@@ -125,7 +418,7 @@ class DreamPlaceInstallHelper(object):
         return gpus, torch.__version__, torch.version.cuda
 
     def _query_nvidia_smi(self) -> List[Dict[str, str]]:
-        output = self._run_output(["nvidia-smi", "--query-gpu=name,compute_cap", "--format=csv,noheader"])
+        output = _run_output(["nvidia-smi", "--query-gpu=name,compute_cap", "--format=csv,noheader"])
         if not output:
             return []
 
@@ -138,7 +431,7 @@ class DreamPlaceInstallHelper(object):
         return gpus
 
     def _query_nvcc_version(self) -> Optional[str]:
-        output = self._run_output(["nvcc", "--version"])
+        output = _run_output(["nvcc", "--version"])
         if not output:
             return None
         match = re.search(r"release\s+(\d+\.\d+)", output)
@@ -195,42 +488,12 @@ class DreamPlaceInstallHelper(object):
 
         return arch
 
-    @staticmethod
-    def _darwin_homebrew_tool_prefix(formula: str, marker: pathlib.Path) -> Optional[pathlib.Path]:
-        """Homebrew keg-only prefix if ``marker`` exists under ``brew --prefix <formula>``."""
-        if sys.platform != "darwin":
-            return None
-        out = DreamPlaceInstallHelper._run_output(["brew", "--prefix", formula])
-        if not out:
-            return None
-        prefix = pathlib.Path(out.strip())
-        return prefix if (prefix / marker).is_file() else None
-
-    @staticmethod
-    def _darwin_homebrew_libomp_prefix() -> Optional[pathlib.Path]:
-        """
-        Homebrew ``libomp`` install prefix on macOS.
-
-        Apple Clang does not ship OpenMP; CMake's ``FindOpenMP`` needs explicit
-        flags and ``libomp`` from Homebrew (``brew install libomp``).
-        """
-        if sys.platform != "darwin":
-            return None
-        out = DreamPlaceInstallHelper._run_output(["brew", "--prefix", "libomp"])
-        if not out:
-            return None
-        prefix = pathlib.Path(out.strip())
-        dylib = prefix / "lib" / "libomp.dylib"
-        if dylib.is_file():
-            return prefix
-        return None
-
     def _darwin_openmp_cmake_cache(self) -> List[str]:
         """
         CMake cache entries so ``find_package(OpenMP)``
         succeeds with Apple Clang + Homebrew libomp.
         """
-        base = self._darwin_homebrew_libomp_prefix()
+        base = _darwin_homebrew_libomp_prefix()
         if base is None:
             return []
         inc = base / "include"
@@ -252,7 +515,7 @@ class DreamPlaceInstallHelper(object):
         too old for Limbo (needs bison >= 3.3).
         """
         args: List[str] = []
-        flex_prefix = self._darwin_homebrew_tool_prefix(
+        flex_prefix = _darwin_homebrew_tool_prefix(
             "flex", pathlib.Path("include/FlexLexer.h")
         )
         if flex_prefix is not None:
@@ -268,7 +531,7 @@ class DreamPlaceInstallHelper(object):
             )
             if flex_lib.is_file():
                 args.append(f"-DFL_LIBRARY={flex_lib}")
-        bison_prefix = self._darwin_homebrew_tool_prefix(
+        bison_prefix = _darwin_homebrew_tool_prefix(
             "bison", pathlib.Path("bin/bison")
         )
         if bison_prefix is not None:

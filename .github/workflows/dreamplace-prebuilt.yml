@@ -19,7 +19,9 @@ on:
 jobs:
   linux:
 
-    runs-on: ubuntu-latest
+    # Match minimum supported Linux baseline (glibc 2.35, Ubuntu 22.04).
+    # ubuntu-latest (24.04+) links against GLIBC_2.38+ and breaks older systems.
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}
@@ -39,7 +41,7 @@ jobs:
           activate-environment: ml4co-dp-build
           channel-priority: strict
 
-      - name: Linux — native build deps (align with python-package.yml)
+      - name: Linux — native build deps
         run: |
           sudo apt-get update
           sudo apt-get install make
@@ -53,18 +55,13 @@ jobs:
           sudo apt-get install libcairo2
           sudo apt install clang
 
-      - name: Install Python deps and build DreamPlace (DreamPlaceSolver.install)
+      - name: Install Python deps and build DreamPlace
         run: |
           cd "${GITHUB_WORKSPACE}"
           python -m pip install --upgrade pip
           pip install packaging
           pip install -r tests/requirements.txt
-          python tests/install_env.py
-
-      - name: Zip dreamplace from conda site-packages
-        run: |
-          cd "${GITHUB_WORKSPACE}"
-          python scripts/dreamplace_prebuild.py --out-dir dist
+          python scripts/dreamplace_prebuild.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -100,21 +97,16 @@ jobs:
           brew update
           brew install cmake boost flex bison libomp
 
-      - name: Install Python deps and build DreamPlace (DreamPlaceSolver.install)
+      - name: Install Python deps and build DreamPlace
         run: |
           cd "${GITHUB_WORKSPACE}"
           python -m pip install --upgrade pip
           pip install packaging
           pip install -r tests/requirements.txt
-          python tests/install_env.py
+          python scripts/dreamplace_prebuild.py
           if [[ "${{ matrix.python-version }}" =~ ^3\.(9|10|11)$ ]]; then
             pip install setuptools==80.9.0
           fi
-
-      - name: Zip dreamplace from conda site-packages
-        run: |
-          cd "${GITHUB_WORKSPACE}"
-          python scripts/dreamplace_prebuild.py --out-dir dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
