@@ -1,5 +1,6 @@
 #include "timing_cpp.h"
 
+#include <omp.h>
 #include <flute.hpp>
 
 DREAMPLACE_BEGIN_NAMESPACE

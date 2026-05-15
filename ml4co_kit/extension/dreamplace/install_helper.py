@@ -196,6 +196,17 @@ class DreamPlaceInstallHelper(object):
         return arch
 
     @staticmethod
+    def _darwin_homebrew_tool_prefix(formula: str, marker: pathlib.Path) -> Optional[pathlib.Path]:
+        """Homebrew keg-only prefix if ``marker`` exists under ``brew --prefix <formula>``."""
+        if sys.platform != "darwin":
+            return None
+        out = DreamPlaceInstallHelper._run_output(["brew", "--prefix", formula])
+        if not out:
+            return None
+        prefix = pathlib.Path(out.strip())
+        return prefix if (prefix / marker).is_file() else None
+
+    @staticmethod
     def _darwin_homebrew_libomp_prefix() -> Optional[pathlib.Path]:
         """
         Homebrew ``libomp`` install prefix on macOS.
@@ -233,6 +244,37 @@ class DreamPlaceInstallHelper(object):
             "-DOpenMP_C_LIB_NAMES=omp",
         ]
 
+    def _darwin_flex_bison_cmake_cache(self) -> List[str]:
+        """
+        CMake cache entries for keg-only Homebrew flex/bison on macOS.
+
+        Apple's ``/usr/bin/flex`` lacks ``FlexLexer.h``; ``/usr/bin/bison`` is
+        too old for Limbo (needs bison >= 3.3).
+        """
+        args: List[str] = []
+        flex_prefix = self._darwin_homebrew_tool_prefix(
+            "flex", pathlib.Path("include/FlexLexer.h")
+        )
+        if flex_prefix is not None:
+            flex_lib = flex_prefix / "lib" / "libfl.dylib"
+            if not flex_lib.is_file():
+                flex_lib = flex_prefix / "lib" / "libfl.a"
+            args.extend(
+                [
+                    f"-DFLEX_EXECUTABLE={flex_prefix / 'bin' / 'flex'}",
+                    f"-DFLEX_INCLUDE_DIR={flex_prefix / 'include'}",
+                    f"-DFLEX_INCLUDE_DIRS={flex_prefix / 'include'}",
+                ]
+            )
+            if flex_lib.is_file():
+                args.append(f"-DFL_LIBRARY={flex_lib}")
+        bison_prefix = self._darwin_homebrew_tool_prefix(
+            "bison", pathlib.Path("bin/bison")
+        )
+        if bison_prefix is not None:
+            args.append(f"-DBISON_EXECUTABLE={bison_prefix / 'bin' / 'bison'}")
+        return args
+
     def cmake_arguments(self) -> List[str]:
         args = [
             "-U",
@@ -245,6 +287,9 @@ class DreamPlaceInstallHelper(object):
             f"-DCMAKE_DISABLE_FIND_PACKAGE_CPLEX=ON",
             f"-DCMAKE_DISABLE_FIND_PACKAGE_LPSOLVE=ON",
         ]
+        if sys.platform == "darwin":
+            # HeteroSTA releases ship Linux x86-64 ELF .so files only.
+            args.append("-DBUILD_HETEROSTA=OFF")
         if self.cpu_only:
             args.append("-DCMAKE_DISABLE_FIND_PACKAGE_CUDA=ON")
         else:
@@ -252,6 +297,7 @@ class DreamPlaceInstallHelper(object):
             if cuda_arch:
                 args.append(f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch}")
         args.extend(self._darwin_openmp_cmake_cache())
+        args.extend(self._darwin_flex_bison_cmake_cache())
         return args
 
     def build_script_text(self) -> str:
@@ -284,12 +330,12 @@ class DreamPlaceInstallHelper(object):
     def install(self):
         # Step1: Remove previous build/install outputs to avoid stale extensions.
         build_path = self.src_path / "build"
-        if build_path.exists():
-            shutil.rmtree(build_path)
-        if self.install_path.exists():
-            shutil.rmtree(self.install_path)
-        if self.final_path.exists():
-            shutil.rmtree(self.final_path)
+        # if build_path.exists():
+        #     shutil.rmtree(build_path)
+        # if self.install_path.exists():
+        #     shutil.rmtree(self.install_path)
+        # if self.final_path.exists():
+        #     shutil.rmtree(self.final_path)
 
         # Step2: Create the build directory
         build_path.mkdir(parents=True, exist_ok=True)
@@ -310,8 +356,9 @@ class DreamPlaceInstallHelper(object):
                 "CMake Error or build failure occurred. This may be due "
                 "to missing dependencies. On Linux you may need: "
                 "flex bison zlib1g-dev libbz2-dev libfl-dev libboost-all-dev libcairo2. "
-                "On macOS with Apple Clang, install OpenMP via Homebrew: "
-                "`brew install libomp` (then re-run install). "
+                "On macOS with Apple Clang, install via Homebrew: "
+                "`brew install libomp flex bison` (then re-run install). "
+                "HeteroSTA timing is Linux-only; macOS builds use OpenTimer. "
                 "If installation still fails, refer to the CMake log above."
             )
         finally:

@@ -5,6 +5,7 @@
  */
 #include <algorithm>
 #include <chrono>
+#include <random>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -607,9 +608,10 @@ int globalSwapCPULauncher(DetailedPlaceDB<T> db, int batch_size, int max_iters,
   std::vector<T> hpwls(max_iters + 1);
   hpwls[0] = compute_total_hpwl(db, state, db.x, db.y, state.net_hpwls.data());
   dreamplacePrint(kINFO, "initial hpwl = %.3f\n", hpwls[0]);
+  std::mt19937 shuffle_rng(std::random_device{}());
   for (int iter = 0; iter < max_iters; ++iter) {
     iter_time_start = CPUTimer::getGlobaltime();
-    std::random_shuffle(state.ordered_nodes.begin(), state.ordered_nodes.end());
+    std::shuffle(state.ordered_nodes.begin(), state.ordered_nodes.end(), shuffle_rng);
     global_swap(db, state);
     iter_time_stop = CPUTimer::getGlobaltime();
     dreamplacePrint(

@@ -15,7 +15,7 @@ set(LINK_LIBS utility_cxx
   programoptions
   flute
   OpenTimer
-  stdc++fs
+  ${DREAMPLACE_STDCXXFS_LIBS}
   )
 
 file(GLOB CPP_SOURCES

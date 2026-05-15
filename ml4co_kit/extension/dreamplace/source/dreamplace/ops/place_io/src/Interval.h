@@ -145,7 +145,7 @@ class Interval
         };
         struct CompareByCenter
         {
-            bool operator()(Interval const& i1, Interval const& i2) const {return i1.center() < i2.center();}
+            bool operator()(Interval const& i1, Interval const& i2) const {return center(i1) < center(i2);}
         };
 
     protected:

@@ -25,7 +25,7 @@ set(LINK_LIBS utility_cxx
   programoptions
   ${ZLIB_LIBRARIES}
   ${CUDA_CUDA_LIBRARY}
-  stdc++fs
+  ${DREAMPLACE_STDCXXFS_LIBS}
   )
 
 file(GLOB CPP_SOURCES

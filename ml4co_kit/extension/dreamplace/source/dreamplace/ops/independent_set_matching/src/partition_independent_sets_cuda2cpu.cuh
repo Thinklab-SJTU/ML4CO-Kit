@@ -6,6 +6,8 @@
 #ifndef _DREAMPLACE_INDEPENDENT_SET_MATCHING_PARTITION_INDEPENDENT_SETS_CUDA2CPU_CUH
 #define _DREAMPLACE_INDEPENDENT_SET_MATCHING_PARTITION_INDEPENDENT_SETS_CUDA2CPU_CUH
 
+#include <algorithm>
+#include <random>
 #include "independent_set_matching/src/construct_selected_node2bin_map.h"
 
 DREAMPLACE_BEGIN_NAMESPACE
@@ -395,7 +397,8 @@ void update_cpu_state(const DetailedPlaceDBType& db, const IndependentSetMatchin
     checkCUDA(cudaMemcpy(host_state.selected_nodes.data(), state.selected_maximal_independent_set, sizeof(int)*state.num_selected, cudaMemcpyDeviceToHost));
     checkCUDA(cudaMemcpy(host_state.selected_markers.data(), state.selected_markers, sizeof(unsigned char)*db.num_movable_nodes, cudaMemcpyDeviceToHost));
 
-    std::random_shuffle(host_state.selected_nodes.begin(), host_state.selected_nodes.end());
+    std::mt19937 shuffle_rng(std::random_device{}());
+    std::shuffle(host_state.selected_nodes.begin(), host_state.selected_nodes.end(), shuffle_rng);
 }
 
 template <typename DetailedPlaceDBType, typename IndependentSetMatchingStateType>

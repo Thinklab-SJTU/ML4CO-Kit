@@ -48,6 +48,7 @@ include(cmake/TorchExtension.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+include(cmake/FilesystemLibrary.cmake)
 
 # without this, clang will complain about linking 
 #set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -61,7 +62,12 @@ find_package(Boost 1.55.0 REQUIRED)
 message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 
 set(BUILD_DRAW_PLACE ON CACHE BOOL "Build drawing support for placement plots" FORCE)
-set(BUILD_HETEROSTA ON CACHE BOOL "Build HeteroSTA and the HeteroSTA timing operator" FORCE)
+if(APPLE)
+  set(_BUILD_HETEROSTA_DEFAULT OFF)
+else()
+  set(_BUILD_HETEROSTA_DEFAULT ON)
+endif()
+set(BUILD_HETEROSTA ${_BUILD_HETEROSTA_DEFAULT} CACHE BOOL "Build HeteroSTA and the HeteroSTA timing operator")
 set(BUILD_NCTUGR ON CACHE BOOL "Install NCTUgr wrapper scripts and optional router data" FORCE)
 set(INSTALL_NCTUGR ON CACHE BOOL "Install thirdparty/NCTUgr.ICCAD2012" FORCE)
 set(BUILD_DREAMPLACE_UNITTESTS OFF CACHE BOOL "Build DREAMPlace unit tests" FORCE)
