@@ -17,6 +17,13 @@ namespace py = pybind11;
 
 namespace {
 
+struct ParsedPin {
+    ssize_t cell_idx;
+    std::string cell_name;
+    double offset_x;
+    double offset_y;
+};
+
 std::string trim(const std::string& value) {
     size_t first = 0;
     while (first < value.size() && std::isspace(static_cast<unsigned char>(value[first]))) {
@@ -69,6 +76,7 @@ public:
         }
 
         name_to_idx_.clear();
+        node_sizes_.clear();
         std::vector<double> sizes;
         std::vector<bool> terminal_mask;
 
@@ -93,6 +101,8 @@ public:
             name_to_idx_[name] = idx;
             sizes.push_back(width);
             sizes.push_back(height);
+            node_sizes_.push_back(width);
+            node_sizes_.push_back(height);
             terminal_mask.push_back(starts_with(node_type, "terminal"));
         }
 
@@ -146,7 +156,8 @@ public:
             }
             net_iss >> net_name;
 
-            std::vector<double> pins(static_cast<size_t>(degree) * 3);
+            std::vector<ParsedPin> pins;
+            pins.reserve(static_cast<size_t>(degree));
 
             for (ssize_t pin_idx = 0; pin_idx < degree; ++pin_idx) {
                 if (!std::getline(fin, raw_line)) {
@@ -164,13 +175,47 @@ public:
                     throw std::runtime_error("failed to parse pin line: " + pin_line);
                 }
 
-                pins[static_cast<size_t>(pin_idx) * 3] = static_cast<double>(cell_index(cell_name));
-                pins[static_cast<size_t>(pin_idx) * 3 + 1] = offset_x;
-                pins[static_cast<size_t>(pin_idx) * 3 + 2] = offset_y;
+                const ssize_t idx = cell_index(cell_name);
+                const size_t size_offset = static_cast<size_t>(idx) * 2;
+                if (size_offset + 1 >= node_sizes_.size()) {
+                    throw std::runtime_error(
+                        "cell size for '" + cell_name + "' is unavailable. "
+                        "Call from_nodes before from_nets."
+                    );
+                }
+
+                // Bookshelf pin offsets are relative to the node center; the
+                // evaluator uses offsets from the node lower-left corner.
+                pins.push_back(ParsedPin{
+                    idx,
+                    cell_name,
+                    offset_x + 0.5 * node_sizes_[size_offset],
+                    offset_y + 0.5 * node_sizes_[size_offset + 1]
+                });
             }
 
-            py::array_t<double> net_array(std::vector<ssize_t>{degree, static_cast<ssize_t>(3)});
-            std::copy(pins.begin(), pins.end(), static_cast<double*>(net_array.mutable_data()));
+            std::sort(pins.begin(), pins.end(), [](const ParsedPin& a, const ParsedPin& b) {
+                return a.cell_name < b.cell_name;
+            });
+            const auto last = std::unique(
+                pins.begin(),
+                pins.end(),
+                [](const ParsedPin& a, const ParsedPin& b) {
+                    return a.cell_name == b.cell_name;
+                }
+            );
+            pins.erase(last, pins.end());
+
+            py::array_t<double> net_array(std::vector<ssize_t>{
+                static_cast<ssize_t>(pins.size()),
+                static_cast<ssize_t>(3)
+            });
+            double* net_ptr = static_cast<double*>(net_array.mutable_data());
+            for (size_t pin_idx = 0; pin_idx < pins.size(); ++pin_idx) {
+                net_ptr[pin_idx * 3] = static_cast<double>(pins[pin_idx].cell_idx);
+                net_ptr[pin_idx * 3 + 1] = pins[pin_idx].offset_x;
+                net_ptr[pin_idx * 3 + 2] = pins[pin_idx].offset_y;
+            }
             nets.append(net_array);
         }
 
@@ -242,6 +287,7 @@ private:
     }
 
     std::unordered_map<std::string, ssize_t> name_to_idx_;
+    std::vector<double> node_sizes_;
 };
 
 PYBIND11_MODULE(ispd2005_io_impl, m) {

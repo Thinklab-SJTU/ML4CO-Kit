@@ -67,7 +67,7 @@ ml4co_kit/solver/routing/lib/ga_eax/c_ga_eax_normal/ga_eax_normal_solver
 ml4co_kit/solver/routing/lib/hgs/c_hgs/cvrp_hgs_solver
 
 # greedy
-ml4co_kit/solver/routing/lib/greedy/cython_tsp_greedy/source/cython_tsp_greedy.c
+ml4co_kit/solver/common/lib/greedy/cython_tsp_greedy/source/cython_tsp_greedy.c
 
 # ils
 ml4co_kit/solver/common/lib/ils/c_pctsp_ils/pctsp_ils

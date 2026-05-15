@@ -22,44 +22,44 @@ from ml4co_kit.optimizer.base import OptimizerBase
 
 class SOLVER_TYPE(str, Enum):
     """Define the solver types as an enumeration."""
-    # Does not need any dependencies
-    CONCORDE = "concorde"
-    GA_EAX = "ga_eax"
-    GP_DEGREE = "gp_degree"
-    HGS = "hgs"
+    # Common Solvers
+    GNN4CO = "gnn4co"
+    GUROBI = "gurobi"
     ILS = "ils"
     INSERTION = "insertion"
+    NULL = "null"
+    ORTOOLS = "ortools"
+    RANDOM = "random"
+    SCIP = "scip"
+    
+    # Solvers for EDA Problems
+    DREAMPLACE = "dreamplace"
+
+    # Solvers for Graph Problems
+    FEM = "fem"
+    GP_DEGREE = "gp_degree"
     ISCO = "isco"
     KAMIS = "kamis"
     LC_DEGREE = "lc_degree"
+    RLSA = "rlsa"
+
+    # Solvers for QAP Problems
+    PYGM = "pygm"
+
+    # Solvers for Routing Problems
+    CONCORDE = "concorde"
+    GA_EAX = "ga_eax"
+    HGS = "hgs"
     LKH = "lkh"
     NEAREST = "nearest"
-    ORTOOLS = "ortools"
-    PYSAT = "pysat"
-    PYVRP = "pyvrp"
-    RANDOM = "random"
-    SCIP = "scip"
-
-    # Need Gurobi License
-    GUROBI = "gurobi"
-
-    # Need Torch
-    BEAM = "beam"
-    GNN4CO = "gnn4co"
-    MCTS = "mcts"
     NEUROLKH = "neurolkh"
-    RLSA = "rlsa"
-    ASTAR = 'astar'
-    NGM = 'ngm'
-    GENN_ASTAR = 'genn_astar'
-    PYGM = 'pygm'
-    FEM = "fem"
+    PYVRP = "pyvrp"
 
-    # ML4CO
+    # Solvers for SAT Problems
+    PYSAT = "pysat"
+
+    # Solvers for development
     ML4CO = "ml4co"
-
-    # DIY or Null
-    NULL = "null"
     DIY = "diy"
 
 

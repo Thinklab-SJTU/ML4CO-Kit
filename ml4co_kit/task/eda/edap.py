@@ -8,6 +8,7 @@ EDA Placement.
 
 import numpy as np
 from typing import Union, List, Tuple
+from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.task.base import TASK_TYPE, TaskBase
 from ml4co_kit.task.eda.c_edap_helper import EDAHelper
 
@@ -19,6 +20,7 @@ class EDAPTask(TaskBase):
         grid_bins: tuple = (224, 224),
         wirelength_weight: float = 1.0,
         congestion_weight: float = 1.0,
+        benchmark_name: EDA_BENCH = None,
     ):
         # Super Initialization
         super(EDAPTask, self).__init__(
@@ -43,6 +45,17 @@ class EDAPTask(TaskBase):
         # [Np, (macro_idx, offset_x, offset_y)]
         self.nets: List[np.ndarray] = None
 
+        # Unlike many other optimization problems where synthetic or 
+        # randomly generated data is commonly used, EDA placement tasks 
+        # rarely rely on synthetic data. Instead, datasets for EDA problems 
+        # are almost exclusively derived from well-established benchmarks.
+        # Each benchmark may have its own unique directory structure and 
+        # file formats (e.g., ISPD, ICCAD, Bookshelf), which must be parsed 
+        # and interpreted according to specific conventions for each dataset.
+        # As a result, handling EDA problem data typically requires careful 
+        # attention to benchmark-specific formats.
+        self.benchmark_name = benchmark_name
+        
     def _check_die_dim(self):
         if self.die.ndim != 2 or self.die.shape[1] != 4:
             raise ValueError("``die`` should be a 2D array of shape (block number, 4).")

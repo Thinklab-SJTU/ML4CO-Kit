@@ -37,6 +37,12 @@ class EnvChecker(object):
         self.wandb_support = self._check_package("wandb")
         self.pytorch_lightning_support = self._check_package("pytorch_lightning")
         self.pyg_support = self._check_package("torch_geometric")
+
+        # DreamPlace (torch_optimizer, ncg_optimizer)
+        self.cairocffi_support = self._check_package("cairocffi")
+        self.shapely_support = self._check_package("shapely")
+        self.torch_optimizer_support = self._check_package("torch_optimizer")
+        self.ncg_optimizer_support = self._check_package("ncg_optimizer")
         
         # Gurobi
         try:
@@ -63,6 +69,17 @@ class EnvChecker(object):
             self.wandb_support,
             self.pytorch_lightning_support,
             self.pyg_support
+        ]
+        return all(check_list)
+
+    def check_dreamplace(self) -> bool:
+        check_list = [
+            self.torch_support,
+            self.scipy_support,
+            self.cairocffi_support,
+            self.shapely_support,
+            self.torch_optimizer_support,
+            self.ncg_optimizer_support
         ]
         return all(check_list)
     
@@ -121,3 +138,9 @@ class EnvInstallHelper(object):
 
         # pytorch-geometric
         os.system(f"pip install 'torch_geometric=={self.pytorch_version}'")
+
+        # packages for dreamplace
+        os.system(f"pip install 'cairocffi>=0.9.0'")
+        os.system(f"pip install 'shapely>=1.7.0'")
+        os.system(f"pip install 'torch_optimizer>=0.3.0'")
+        os.system(f"pip install 'ncg_optimizer>=0.2.2'")

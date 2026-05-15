@@ -14,18 +14,28 @@ ISPD2005 Dataset for EDA.
 # See the Mulan PSL v2 for more details.
 
 
-import os
 import pathlib
 import numpy as np
 from typing import Union, List
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
+from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 from ml4co_kit.dataset.eda.c_ispd2005_reader import ISPD2005Reader
 
 
 class ISPD2005Dataset(DatasetBase):
-    """ISPD2005 Dataset for EDA."""
+    """
+    ISPD2005: https://www.ispd.cc/contests/05/contest.htm
+    @inproceedings{
+        nam2005ispd2005,
+        title={The ISPD2005 placement contest and benchmark suite},
+        author={Nam, Gi-Joon and Alpert, Charles J and Villarrubia, Paul and Winter, Bruce and Yildiz, Mehmet},
+        booktitle={Proceedings of the 2005 international symposium on Physical design},
+        pages={216--220},
+        year={2005}
+    }
+    """
     
     def __init__(
         self, 
@@ -112,18 +122,22 @@ class ISPD2005Dataset(DatasetBase):
         die = self.die_list[idx]
         nodes_file_path = self.extracted_save_path / f"{name}/{name}.nodes"
         nets_file_path = self.extracted_save_path / f"{name}/{name}.nets"
-        lg_pl_file_path = self.extracted_save_path / f"{name}/{name}.lg.pl"
 
         # Read data from files
         cells, macro_mask = self._from_nodes(nodes_file_path)
         cells_num = cells.shape[0]
         nets = self._from_nets(nets_file_path)
-        ref_sol = self._from_lg_pl(lg_pl_file_path)
 
         # Create and return EDAPTask
-        task_data = EDAPTask(precision=self.precision)
-        task_data.from_data(
-            die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask,
-            nets=nets, sol=ref_sol, ref=True, name=name,
+        task_data = EDAPTask(
+            precision=self.precision, benchmark_name=EDA_BENCH.ISPD2005
         )
+        task_data.from_data(
+            die=die, cells=cells, cells_num=cells_num, 
+            macro_mask=macro_mask, nets=nets, name=name
+        )
+
+        # Add to cache
+        aux_file_path = self.extracted_save_path / f"{name}/{name}.aux"
+        task_data.cache["ispd2005_aux"] = aux_file_path
         return task_data
