@@ -47,7 +47,9 @@ REQUIRED = [
     "PySCIPOpt>=5.6.0",
     "pybind11>=3.0.1",
     "cnfgen>=0.9.5",
-    "python-sat"
+    "python-sat",
+    "PyYAML>=6.0.3",
+    "hydra-core>=1.3.2"
 ]
 
 EXTRAS = {}

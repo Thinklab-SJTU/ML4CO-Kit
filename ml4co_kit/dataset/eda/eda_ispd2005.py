@@ -21,7 +21,6 @@ from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
-from ml4co_kit.dataset.eda.c_ispd2005_reader import ISPD2005Reader
 
 
 class ISPD2005Dataset(DatasetBase):
@@ -47,7 +46,6 @@ class ISPD2005Dataset(DatasetBase):
             dataset_name="ISPD2005",
             precision=precision
         )
-        self.reader = ISPD2005Reader()
 
     def _preprocess(self):
        # Name list
@@ -106,38 +104,12 @@ class ISPD2005Dataset(DatasetBase):
                 [335, 32098, 335+31592, 32386],
             ]), 
         ]
-
-    def _from_nodes(self, file_path: pathlib.Path) -> List[np.ndarray]:
-        return self.reader.from_nodes(str(file_path))
-
-    def _from_nets(self, file_path: pathlib.Path) -> List[np.ndarray]:
-        return self.reader.from_nets(str(file_path))
-
-    def _from_lg_pl(self, file_path: pathlib.Path) -> np.ndarray:
-        return self.reader.from_lg_pl(str(file_path))
         
     def _load(self, idx) -> EDAPTask:
-        # Get basic information
         name = self.name_list[idx]
         die = self.die_list[idx]
-        nodes_file_path = self.extracted_save_path / f"{name}/{name}.nodes"
-        nets_file_path = self.extracted_save_path / f"{name}/{name}.nets"
-
-        # Read data from files
-        cells, macro_mask = self._from_nodes(nodes_file_path)
-        cells_num = cells.shape[0]
-        nets = self._from_nets(nets_file_path)
-
-        # Create and return EDAPTask
-        task_data = EDAPTask(
-            precision=self.precision, benchmark_name=EDA_BENCH.ISPD2005
+        task_data = EDAPTask(precision=self.precision)
+        task_data.from_ispd2005(
+            name=name, die=die, root_path=self.extracted_save_path
         )
-        task_data.from_data(
-            die=die, cells=cells, cells_num=cells_num, 
-            macro_mask=macro_mask, nets=nets, name=name
-        )
-
-        # Add to cache
-        aux_file_path = self.extracted_save_path / f"{name}/{name}.aux"
-        task_data.cache["ispd2005_aux"] = aux_file_path
         return task_data

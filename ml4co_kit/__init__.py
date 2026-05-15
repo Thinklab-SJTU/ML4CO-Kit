@@ -52,6 +52,9 @@ if env_checker.check_torch():
 # Base Task
 from .task import TaskBase, TASK_TYPE
 
+# EDA Task
+from .task import EDA_BENCH, EDAPTask
+
 # Graph Task
 from .task import GraphTaskBase 
 from .task import MClTask, MCutTask, MISTask, MVCTask
@@ -134,6 +137,8 @@ from .dataset import GEDAIDS700nefDataset
 from .solver import SolverBase, SOLVER_TYPE
 
 # Solver (use torch backend)
+if env_checker.check_dreamplace():
+    from .solver import DreamPlaceSolver
 if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():

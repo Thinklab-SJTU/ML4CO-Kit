@@ -6,11 +6,14 @@ EDA Placement.
 # ML4CO-Kit is licensed under Mulan PSL v2.
 
 
+import os
+import pathlib
 import numpy as np
 from typing import Union, List, Tuple
 from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.task.base import TASK_TYPE, TaskBase
 from ml4co_kit.task.eda.c_edap_helper import EDAHelper
+from ml4co_kit.task.eda.c_edap_reader import ISPD2005Reader
 
 
 class EDAPTask(TaskBase):
@@ -81,6 +84,75 @@ class EDAPTask(TaskBase):
     def _check_ref_sol_dim(self):
         if self.ref_sol.ndim != 2:
             raise ValueError("Reference solution should be a 2D array.")
+    
+    def _check_folder_path(
+        self, 
+        name: str,
+        folder_path: pathlib.Path,
+        benchmark_name: EDA_BENCH,
+    ):
+        # Get valid extensions
+        if benchmark_name == EDA_BENCH.ISPD2005:
+            valid_exts = [".aux", ".nets", ".nodes", ".pl", ".scl", ".wts"]
+        elif benchmark_name == EDA_BENCH.MMS:
+            valid_exts = [".aux", ".nets", ".nodes", ".pl", ".scl", ".wts"]
+        else:
+            raise ValueError(f"Unsupported benchmark name: {benchmark_name}")
+
+        # Check file name prefix consistency and the existence of all required files
+        files = os.listdir(folder_path)
+        exts_found = []
+        for f in files:
+            _name, ext = os.path.splitext(os.path.basename(f))
+            if _name != name:
+                raise ValueError(f"Inconsistent {benchmark_name} file name: {_name}")
+            if ext in valid_exts:
+                exts_found.append(ext)
+        missing = set(valid_exts) - set(exts_found)
+        if missing:
+            raise FileNotFoundError(
+                f"Missing required benchmark files: {sorted(missing)} in {folder_path}"
+            )
+
+    def from_ispd2005(
+        self, 
+        name: str, 
+        die: np.ndarray,
+        root_path: pathlib.Path
+    ): 
+        # Check folder path
+        folder_path = root_path / name
+        self._check_folder_path(
+            name=name, 
+            folder_path=folder_path, 
+            benchmark_name=EDA_BENCH.ISPD2005
+        )
+        
+        # Get data path
+        aux_file_path = folder_path / f"{name}.aux"
+        nets_file_path = folder_path / f"{name}.nets"
+        nodes_file_path = folder_path / f"{name}.nodes"
+
+        # Read data from files
+        reader = ISPD2005Reader()
+        cells, macro_mask = reader.from_nodes(str(nodes_file_path))
+        cells: np.ndarray
+        cells_num: int = cells.shape[0]
+        nets = reader.from_nets(str(nets_file_path))
+
+        # Call ``from_data`` to set attributes
+        self.from_data(
+            die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask, 
+            nets=nets, name=name, benchmark_name=EDA_BENCH.ISPD2005
+        )
+        self.cache["ispd2005_aux"] = aux_file_path
+        self.cache["ispd2005_result_dir"] = root_path / "dreamplace_results"
+        self.cache["ispd2005_result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
+
+        # If result path exists, read the result
+        if self.cache["ispd2005_result_path"].exists():
+            sol = reader.from_lg_pl(str(self.cache["ispd2005_result_path"]))
+            self.from_data(sol=sol, ref=True)
 
     def from_data(
         self,
@@ -92,6 +164,7 @@ class EDAPTask(TaskBase):
         sol: np.ndarray = None,
         ref: bool = False,
         name: str = None,
+        benchmark_name: EDA_BENCH = None,
     ):
         # Set Attributes and Check Dimensions
         if cells_num is not None:
@@ -120,6 +193,8 @@ class EDAPTask(TaskBase):
         # Set Name if Provided
         if name is not None:
             self.name = name
+        if benchmark_name is not None:
+            self.benchmark_name = benchmark_name
 
     def check_constraints(self, sol: np.ndarray) -> bool:
         # Check if die and cells are None

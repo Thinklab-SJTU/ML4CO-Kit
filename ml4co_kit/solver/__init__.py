@@ -16,6 +16,8 @@ Solver Module.
 # Check if torch is supported
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
+if env_checker.check_dreamplace():
+    from .eda.dreamplace import DreamPlaceSolver
 if env_checker.check_gnn4co():
     from .common.gnn4co import GNN4COSolver
 if env_checker.check_torch():

@@ -4,7 +4,6 @@ DreamPlace Solver for EDA Problems
 
 # Copyright (c) 2024 Thinklab@SJTU
 # ML4CO-Kit is licensed under Mulan PSL v2.
-# You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 # http://license.coscl.org.cn/MulanPSL2
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
@@ -16,39 +15,47 @@ DreamPlace Solver for EDA Problems
 import os
 import sys
 import time
+import pathlib
 import logging
-from dreamplace.Params import Params
 from dreamplace.Placer import place
+from dreamplace.Params import Params as DreamPlaceParams
 from ml4co_kit.task.eda.edap import EDAPTask
+from ml4co_kit.task.eda.c_edap_reader import ISPD2005Reader
 
 
-def edap_dreamplace(task_data: EDAPTask):
-    """
-    Solve the EDA problem using DreamPlace solver.
-    """
-    # Set up logging
-    logging.root.name = 'DREAMPlace'
+def edap_dreamplace(task_data: EDAPTask, params: DreamPlaceParams):
+    """Run DREAMPlace global placement using DreamPlaceParams."""
+    # Initialize logging
+    logging.root.name = "DREAMPlace"
     logging.basicConfig(
         level=logging.INFO,
-        format='[%(levelname)-7s] %(name)s - %(message)s',
-        stream=sys.stdout
+        format="[%(levelname)-7s] %(name)s - %(message)s",
+        stream=sys.stdout,
     )
+    logging.info(
+        "EDAP task: benchmark_name=%s",
+        getattr(task_data, "benchmark_name", None),
+    )
+    logging.info("parameters = %s" % (params,))
 
-    # Get parameters path
-    params_path = "ml4co_kit/extension/dreamplace/source/test/ispd2005/adaptec1.json"
-
-    # Load parameters
-    params = Params()
-    params.printWelcome()
-    params.load(params_path)
-    logging.info("parameters = %s" % (params))
+    # Set number of threads
     os.environ["OMP_NUM_THREADS"] = "%d" % (params.num_threads)
 
-    # Extract the learning rate value from the json file 
-    # to assign it to the optimizer of the "torch_optimizer" package
-    lr = params.__dict__.get('global_place_stages')[0].get('learning_rate')
-    
-    # Run placement
+    # Get learning rate
+    lr = params.__dict__.get("global_place_stages")[0].get("learning_rate")
+
+    # Call DreamPlace
     tt = time.time()
     place(params, lr)
     logging.info("placement takes %.3f seconds" % (time.time() - tt))
+
+    # Get result path
+    name = task_data.name
+    result_dir: pathlib.Path = task_data.cache["ispd2005_result_dir"]
+    result_path = result_dir / f"{name}/{name}.gp.pl"
+    logging.info("Result is saved to %s" % (result_path.as_posix()))
+
+    # Read the placement result
+    reader = ISPD2005Reader()
+    sol = reader.from_lg_pl(str(result_path))
+    task_data.from_data(sol=sol, ref=False)
