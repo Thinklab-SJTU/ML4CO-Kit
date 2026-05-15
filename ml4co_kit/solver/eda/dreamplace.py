@@ -114,11 +114,7 @@ class DreamPlaceSolver(SolverBase):
         # Create DreamPlaceInstallHelper
         install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
 
-        # To provide a convenient installation experience, we offer 
-        # prebuilt packages for DreamPlace on CPU, allowing for fast 
-        # and easy installation. Note that currently, GPU prebuilt 
-        # packages are not available. For CUDA environments, please 
-        # use the DreamPlaceInstallHelpe to build DreamPlace.
+        # Using Prebuilt DreamPlace
         if using_prebuilt:
             if not cpu_only:
                 raise ValueError(
@@ -126,6 +122,14 @@ class DreamPlaceSolver(SolverBase):
                     "Call install(cpu_only=True, using_prebuilt=True)."
                 )
             else:
+                print(
+                    "Note: We do not recommend using the prebuilt DreamPlace package. "
+                    "The prebuilt files are mainly provided for our development workflow "
+                    "on GitHub Actions, to avoid unnecessary repeated compilation. "
+                    "To use prebuilt packages, your environment must match exactly with "
+                    "the build environment on GitHub. In practice, this is difficult to "
+                    "guarantee, so compiling through DreamPlaceInstallHelper is preferred."
+                )
                 return DreamPlacePrebuilt(install_helper.final_path).install()
 
         # Step1: Check DreamPlace build environment
