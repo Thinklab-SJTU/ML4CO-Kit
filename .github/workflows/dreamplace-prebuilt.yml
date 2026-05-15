@@ -17,9 +17,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: ${{ matrix.os }} / py${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
+  linux:
+    name: ubuntu-latest / py${{ matrix.python-version }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash -el {0}
@@ -27,7 +27,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
@@ -41,15 +40,55 @@ jobs:
           channel-priority: strict
 
       - name: Linux — native build deps (align with python-package.yml)
-        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y make cmake zlib1g-dev flex bison clang \
             libboost-thread-dev libboost-system-dev libboost-filesystem-dev \
             libboost-graph-dev libboost-regex-dev libcairo2
 
+      - name: Install Python deps and build DreamPlace (DreamPlaceSolver.install)
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          python -m pip install --upgrade pip
+          pip install packaging
+          pip install -r tests/requirements.txt
+          python tests/install_env.py
+
+      - name: Zip dreamplace from conda site-packages
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          python scripts/dreamplace_prebuild.py --out-dir dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreamplace-${{ runner.os }}-py${{ matrix.python-version }}-cpu
+          path: dist/*.zip
+          if-no-files-found: error
+
+  macos:
+    name: macos-latest / py${{ matrix.python-version }}
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          activate-environment: ml4co-dp-build
+          channel-priority: strict
+
       - name: macOS — Homebrew deps
-        if: runner.os == 'macOS'
         run: |
           brew update
           brew install cmake boost flex bison
@@ -61,6 +100,9 @@ jobs:
           pip install packaging
           pip install -r tests/requirements.txt
           python tests/install_env.py
+          if [[ "${{ matrix.python-version }}" =~ ^3\.(9|10|11)$ ]]; then
+            pip install setuptools==80.9.0
+          fi
 
       - name: Zip dreamplace from conda site-packages
         run: |

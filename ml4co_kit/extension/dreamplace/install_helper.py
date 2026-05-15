@@ -8,6 +8,7 @@ import shutil
 import pathlib
 import subprocess
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple, Union
 
 
 ###########################
@@ -61,7 +62,7 @@ class DreamPlaceInstallHelper(object):
         self.final_path = pathlib.Path(site_packages_dirs[0]) / "dreamplace"
 
     @staticmethod
-    def _parse_version(value: str | None) -> tuple[int, int] | None:
+    def _parse_version(value: Optional[str]) -> Optional[Tuple[int, int]]:
         if not value:
             return None
         match = re.search(r"(\d+)(?:\.(\d+))?", value)
@@ -70,20 +71,20 @@ class DreamPlaceInstallHelper(object):
         return int(match.group(1)), int(match.group(2) or 0)
 
     @classmethod
-    def _version_lt(cls, lhs: str | None, rhs: str | None) -> bool:
+    def _version_lt(cls, lhs: Optional[str], rhs: Optional[str]) -> bool:
         lhs_version = cls._parse_version(lhs)
         rhs_version = cls._parse_version(rhs)
         return bool(lhs_version and rhs_version and lhs_version < rhs_version)
 
     @staticmethod
-    def _run_output(command: list[str]) -> str | None:
+    def _run_output(command: List[str]) -> Optional[str]:
         try:
             return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT).strip()
         except Exception:
             return None
 
     @classmethod
-    def _rule_for_gpu_name(cls, name: str) -> GpuRule | None:
+    def _rule_for_gpu_name(cls, name: str) -> Optional[GpuRule]:
         lowered = name.lower()
         for rule in GPU_RULES:
             if re.search(rule.pattern, lowered):
@@ -91,13 +92,13 @@ class DreamPlaceInstallHelper(object):
         return None
 
     @classmethod
-    def _min_cuda_for_arch(cls, arch: str) -> str | None:
+    def _min_cuda_for_arch(cls, arch: str) -> Optional[str]:
         for rule in GPU_RULES:
             if rule.arch == arch:
                 return rule.min_cuda
         return None
 
-    def _query_torch(self) -> tuple[list[dict[str, str]], str | None, str | None]:
+    def _query_torch(self) -> Tuple[List[Dict[str, str]], Optional[str], Optional[str]]:
         try:
             import torch
         except Exception as exc:
@@ -108,7 +109,7 @@ class DreamPlaceInstallHelper(object):
         print(f"PyTorch version: {torch.__version__}", file=sys.stderr)
         print(f"PyTorch CUDA version: {torch.version.cuda}", file=sys.stderr)
 
-        gpus: list[dict[str, str]] = []
+        gpus: List[Dict[str, str]] = []
         if torch.cuda.is_available():
             for device_id in range(torch.cuda.device_count()):
                 major, minor = torch.cuda.get_device_capability(device_id)
@@ -123,12 +124,12 @@ class DreamPlaceInstallHelper(object):
             print("PyTorch reports CUDA is not available.", file=sys.stderr)
         return gpus, torch.__version__, torch.version.cuda
 
-    def _query_nvidia_smi(self) -> list[dict[str, str]]:
+    def _query_nvidia_smi(self) -> List[Dict[str, str]]:
         output = self._run_output(["nvidia-smi", "--query-gpu=name,compute_cap", "--format=csv,noheader"])
         if not output:
             return []
 
-        gpus: list[dict[str, str]] = []
+        gpus: List[Dict[str, str]] = []
         for line in output.splitlines():
             if not line.strip():
                 continue
@@ -136,7 +137,7 @@ class DreamPlaceInstallHelper(object):
             gpus.append({"name": name, "compute_cap": compute_cap, "source": "nvidia-smi"})
         return gpus
 
-    def _query_nvcc_version(self) -> str | None:
+    def _query_nvcc_version(self) -> Optional[str]:
         output = self._run_output(["nvcc", "--version"])
         if not output:
             return None
@@ -151,7 +152,7 @@ class DreamPlaceInstallHelper(object):
             print(f"Failed to query PyTorch C++ ABI; falling back to ABI=0: {exc}", file=sys.stderr)
             return 0
 
-    def resolve_cuda_architecture(self) -> str | None:
+    def resolve_cuda_architecture(self) -> Optional[str]:
         """Return one CUDA architecture like '12.0', or None for CPU-only builds."""
         if self.cpu_only:
             print("cpu_only=True; configuring DREAMPlace without CUDA support.", file=sys.stderr)
@@ -194,7 +195,7 @@ class DreamPlaceInstallHelper(object):
 
         return arch
 
-    def cmake_arguments(self) -> list[str]:
+    def cmake_arguments(self) -> List[str]:
         args = [
             "-U",
             "CMAKE_CUDA_FLAGS",
@@ -233,7 +234,9 @@ class DreamPlaceInstallHelper(object):
             '  "${SOURCE_DIR}"\n'
         )
 
-    def write_build_script(self, path: str | os.PathLike[str] | None = None) -> pathlib.Path:
+    def write_build_script(
+        self, path: Optional[Union[str, pathlib.Path]] = None
+    ) -> pathlib.Path:
         output_path = pathlib.Path(path) if path else self.src_path / "build.sh"
         output_path.write_text(self.build_script_text(), encoding="utf-8")
         output_path.chmod(output_path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
