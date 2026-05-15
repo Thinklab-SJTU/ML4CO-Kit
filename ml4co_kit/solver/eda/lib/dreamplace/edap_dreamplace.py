@@ -17,14 +17,18 @@ import sys
 import time
 import pathlib
 import logging
-from dreamplace.Placer import place
-from dreamplace.Params import Params as DreamPlaceParams
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.task.eda.c_edap_reader import ISPD2005Reader
 
 
-def edap_dreamplace(task_data: EDAPTask, params: DreamPlaceParams):
+def edap_dreamplace(task_data: EDAPTask, params):
     """Run DREAMPlace global placement using DreamPlaceParams."""
+
+    # Import DreamPlace modules
+    from dreamplace.Placer import place
+    from dreamplace.Params import Params as DreamPlaceParams
+    params: DreamPlaceParams
+
     # Initialize logging
     logging.root.name = "DREAMPlace"
     logging.basicConfig(

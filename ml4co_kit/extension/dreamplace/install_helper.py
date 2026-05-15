@@ -46,7 +46,13 @@ GPU_RULES = (
 #     Install Helper      #
 ###########################
 
-class DreamPlaceIntallHelper:
+class DreamPlaceInstallHelper(object):
+    """
+    In order to integrate DreamPlace and achieve automated installation, 
+    we used the codebase as of 2026-05-14 (with appropriate modifications/fixes).
+    DreamPlace project: https://github.com/limbo018/DREAMPlace
+    """
+
     def __init__(self, cpu_only: bool = False) -> None:
         self.src_path = pathlib.Path(__file__).parent / "source"
         self.install_path = pathlib.Path(__file__).parent / "install"

@@ -19,6 +19,7 @@ root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
 from packaging import version
 from ml4co_kit import EnvInstallHelper
+from ml4co_kit.extension.dreamplace.install_helper import DreamPlaceInstallHelper
 
 
 if __name__ == "__main__":
@@ -33,8 +34,10 @@ if __name__ == "__main__":
     else:
         pytorch_version = "2.7.0"
     
-    # Install pytorch environment
+    # Install basic environment
     env_install_helper = EnvInstallHelper(pytorch_version=pytorch_version)
     env_install_helper.install()
     
-    # Install 
+    # Install DreamPlace
+    dreamplace_install_helper = DreamPlaceInstallHelper(cpu_only=True)
+    dreamplace_install_helper.install()

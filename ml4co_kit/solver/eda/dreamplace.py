@@ -15,8 +15,8 @@ DreamPlace solver for EDA problems.
 
 import yaml
 import pathlib
+import importlib.util
 from typing import Any, Dict
-from dreamplace.Params import Params as DreamPlaceParams
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
@@ -48,8 +48,14 @@ class DreamPlaceSolver(SolverBase):
 
         # Path for DreamPlace YAML files
         self.conf_path = pathlib.Path(__file__).parent / "lib/dreamplace/conf"
-    
 
+        # Check if DreamPlace is installed
+        self.dreamplace_support = importlib.util.find_spec("dreamplace") is not None
+        if not self.dreamplace_support:
+            raise ImportError(
+                "DreamPlace is not installed. Please install DreamPlace first."
+            )
+    
     def _solve(self, task_data: TaskBase):
         """Solve the task data using DreamPlace solver."""
         if task_data.task_type == TASK_TYPE.EDAP:
@@ -60,7 +66,7 @@ class DreamPlaceSolver(SolverBase):
                 f"Solver {self.solver_type} is not supported for {task_data.task_type}."
             )
 
-    def get_params(self, task_data: EDAPTask) -> DreamPlaceParams:
+    def get_params(self, task_data: EDAPTask):
         # Get YAML file path
         benchmark_name = task_data.benchmark_name.value
         name = task_data.name
@@ -89,6 +95,7 @@ class DreamPlaceSolver(SolverBase):
         })
 
         # Create DreamPlaceParams
+        from dreamplace.Params import Params as DreamPlaceParams
         params = DreamPlaceParams()
         params.fromJson(data)
         return params
