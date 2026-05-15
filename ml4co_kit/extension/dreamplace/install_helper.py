@@ -267,7 +267,7 @@ class DreamPlaceInstallHelper(object):
             raise ModuleNotFoundError(
                 "CMake Error or build failure occurred. This may be due "
                 "to missing dependencies. You may need to install the packages: "
-                "zlib1g-dev libboost-system-dev libboost-thread-dev flex bison "
+                "zlib1g-dev flex bison libcairo2 libboost-system-dev libboost-thread-dev "
                 "libboost-filesystem-dev libboost-graph-dev libboost-regex-dev. "
                 "If installation still fails, please refer to the error messages for "
                 "any additional packages that may be required and install them accordingly."
