@@ -35,6 +35,7 @@ class DreamPlaceSolver(SolverBase):
 
     def __init__(
         self,
+        device: str = "cpu",
         optimizer: OptimizerBase = None,
         hyper_params: Dict[str, Any] = {},
     ):
@@ -42,6 +43,9 @@ class DreamPlaceSolver(SolverBase):
         super(DreamPlaceSolver, self).__init__(
             SOLVER_TYPE.DREAMPLACE, optimizer=optimizer
         )
+
+        # Set device
+        self.device = device
 
         # Extra DreamPlace keys merged on top of YAML (last-wins at top level)
         self.hyper_params = hyper_params
@@ -83,12 +87,16 @@ class DreamPlaceSolver(SolverBase):
         if not isinstance(data, dict):
             raise ValueError(f"YAML root must be a mapping: {yaml_path}")
 
+        # Device
+        gpu = 0 if self.device == "cpu" else 1
+
         # Merge extra DreamPlace keys
         if self.hyper_params:
             data = {**data, **self.hyper_params}
         data.update({
             "aux_input": task_data.cache["ispd2005_aux"],
             "result_dir": task_data.cache["ispd2005_result_dir"],
+            "gpu": gpu,
         })
 
         # Create DreamPlaceParams
