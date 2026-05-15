@@ -263,6 +263,15 @@ class DreamPlaceInstallHelper(object):
             subprocess.run(["bash", "build.sh"], check=True)
             subprocess.run(["make"], check=True)
             subprocess.run(["make", "install"], check=True)
+        except:
+            raise ModuleNotFoundError(
+                "CMake Error or build failure occurred. This may be due "
+                "to missing dependencies. You may need to install the packages: "
+                "zlib1g-dev libboost-system-dev libboost-thread-dev flex bison "
+                "libboost-filesystem-dev libboost-graph-dev libboost-regex-dev. "
+                "If installation still fails, please refer to the error messages for "
+                "any additional packages that may be required and install them accordingly."
+            )
         finally:
             os.chdir(original_path)
 
