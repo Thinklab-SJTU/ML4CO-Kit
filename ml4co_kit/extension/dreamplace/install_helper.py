@@ -253,15 +253,14 @@ class DreamPlaceInstallHelper(object):
         build_path.mkdir(parents=True, exist_ok=True)
 
         # Step3: Write the build script
-        self.write_build_script(self.src_path / "build/build.sh")
+        self.write_build_script(build_path / "build.sh")
 
         # Step4: Configure the project
         original_path = os.getcwd()
         try:
+            # Build and Install the project
             os.chdir(build_path)
             subprocess.run(["bash", "build.sh"], check=True)
-
-            # Step5: Build and Install the project
             subprocess.run(["make"], check=True)
             subprocess.run(["make", "install"], check=True)
         finally:

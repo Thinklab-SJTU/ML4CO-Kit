@@ -48,17 +48,13 @@ class DreamPlaceSolver(SolverBase):
 
         # Path for DreamPlace YAML files
         self.conf_path = pathlib.Path(__file__).parent / "lib/dreamplace/conf"
-
-        # Check if DreamPlace is installed
-        self.dreamplace_support = importlib.util.find_spec("dreamplace") is not None
-        if not self.dreamplace_support:
-            raise ImportError(
-                "DreamPlace is not installed. Please install DreamPlace first. "
-                "You can quickly install it by calling install()."
-            )
     
     def _solve(self, task_data: TaskBase):
         """Solve the task data using DreamPlace solver."""
+        # Check if DreamPlace is installed
+        self._check_install()
+        
+        # Solve task_data using DreamPlace
         if task_data.task_type == TASK_TYPE.EDAP:
             params = self.get_params(task_data)
             return edap_dreamplace(task_data=task_data, params=params)
@@ -116,3 +112,11 @@ class DreamPlaceSolver(SolverBase):
 
         install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
         install_helper.install()
+
+    def _check_install(self):
+        self.dreamplace_support = importlib.util.find_spec("dreamplace") is not None
+        if not self.dreamplace_support:
+            raise ImportError(
+                "DreamPlace is not installed. Please install DreamPlace first. "
+                "You can quickly install it by calling install()."
+            )

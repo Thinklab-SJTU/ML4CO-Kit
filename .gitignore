@@ -80,4 +80,5 @@ ml4co_kit/solver/graph/lib/kamis/KaMIS/**
 ml4co_kit/extension/pygmtools/c_astar/source/c_astar.cpp
 
 # dreamplace
-/home/heatingma/project/ML4CO-Kit/ml4co_kit/extension/dreamplace/source/thirdparty/**
+ml4co_kit/extension/dreamplace/source/build/**
+ml4co_kit/extension/dreamplace/source/thirdparty/**
