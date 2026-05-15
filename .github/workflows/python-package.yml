@@ -81,7 +81,7 @@ jobs:
     - name: Install native build dependencies (Homebrew)
       run: |
         brew update
-        brew install cmake boost flex bison
+        brew install cmake boost flex bison libomp
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

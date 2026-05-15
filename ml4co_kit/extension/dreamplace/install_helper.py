@@ -195,6 +195,44 @@ class DreamPlaceInstallHelper(object):
 
         return arch
 
+    @staticmethod
+    def _darwin_homebrew_libomp_prefix() -> Optional[pathlib.Path]:
+        """
+        Homebrew ``libomp`` install prefix on macOS.
+
+        Apple Clang does not ship OpenMP; CMake's ``FindOpenMP`` needs explicit
+        flags and ``libomp`` from Homebrew (``brew install libomp``).
+        """
+        if sys.platform != "darwin":
+            return None
+        out = DreamPlaceInstallHelper._run_output(["brew", "--prefix", "libomp"])
+        if not out:
+            return None
+        prefix = pathlib.Path(out.strip())
+        dylib = prefix / "lib" / "libomp.dylib"
+        if dylib.is_file():
+            return prefix
+        return None
+
+    def _darwin_openmp_cmake_cache(self) -> List[str]:
+        """
+        CMake cache entries so ``find_package(OpenMP)``
+        succeeds with Apple Clang + Homebrew libomp.
+        """
+        base = self._darwin_homebrew_libomp_prefix()
+        if base is None:
+            return []
+        inc = base / "include"
+        dylib = base / "lib" / "libomp.dylib"
+        omp_flags = f"-Xpreprocessor -fopenmp -I{inc}"
+        return [
+            f"-DOpenMP_CXX_FLAGS={omp_flags}",
+            "-DOpenMP_CXX_LIB_NAMES=omp",
+            f"-DOpenMP_omp_LIBRARY={dylib}",
+            f"-DOpenMP_C_FLAGS={omp_flags}",
+            "-DOpenMP_C_LIB_NAMES=omp",
+        ]
+
     def cmake_arguments(self) -> List[str]:
         args = [
             "-U",
@@ -213,6 +251,7 @@ class DreamPlaceInstallHelper(object):
             cuda_arch = self.resolve_cuda_architecture()
             if cuda_arch:
                 args.append(f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch}")
+        args.extend(self._darwin_openmp_cmake_cache())
         return args
 
     def build_script_text(self) -> str:
@@ -269,10 +308,11 @@ class DreamPlaceInstallHelper(object):
         except:
             raise ModuleNotFoundError(
                 "CMake Error or build failure occurred. This may be due "
-                "to missing dependencies. You may need to install the packages: "
+                "to missing dependencies. On Linux you may need: "
                 "flex bison zlib1g-dev libbz2-dev libfl-dev libboost-all-dev libcairo2. "
-                "If installation still fails, please refer to the error messages for "
-                "any additional packages that may be required and install them accordingly."
+                "On macOS with Apple Clang, install OpenMP via Homebrew: "
+                "`brew install libomp` (then re-run install). "
+                "If installation still fails, refer to the CMake log above."
             )
         finally:
             os.chdir(original_path)
