@@ -330,12 +330,12 @@ class DreamPlaceInstallHelper(object):
     def install(self):
         # Step1: Remove previous build/install outputs to avoid stale extensions.
         build_path = self.src_path / "build"
-        # if build_path.exists():
-        #     shutil.rmtree(build_path)
-        # if self.install_path.exists():
-        #     shutil.rmtree(self.install_path)
-        # if self.final_path.exists():
-        #     shutil.rmtree(self.final_path)
+        if build_path.exists():
+            shutil.rmtree(build_path)
+        if self.install_path.exists():
+            shutil.rmtree(self.install_path)
+        if self.final_path.exists():
+            shutil.rmtree(self.final_path)
 
         # Step2: Create the build directory
         build_path.mkdir(parents=True, exist_ok=True)
