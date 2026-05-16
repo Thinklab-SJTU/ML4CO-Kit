@@ -25,7 +25,8 @@ from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.utils.file_utils import download, extract_archive
 from ml4co_kit.solver.eda.lib.dreamplace.edap_dreamplace import edap_dreamplace
 from ml4co_kit.extension.dreamplace.install_helper import (
-    DreamPlaceInstallHelper, DREAMPLACE_THIRDPARTY_PATH
+    DreamPlaceInstallHelper, DreamPlaceBuildEnvChecker,
+    DreamPlacePrebuilt, DREAMPLACE_THIRDPARTY_PATH,
 )
 
 
@@ -106,9 +107,35 @@ class DreamPlaceSolver(SolverBase):
         params.fromJson(data)
         return params
 
-    def install(self, cpu_only: bool = False):
-        """Install DreamPlace solver."""
-        # Download and extract DreamPlace thirdparty
+    def install(self, cpu_only: bool = False, using_prebuilt: bool = False):
+        """
+        Install DreamPlace solver.
+        """
+        # Create DreamPlaceInstallHelper
+        install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
+
+        # Using Prebuilt DreamPlace
+        if using_prebuilt:
+            if not cpu_only:
+                raise ValueError(
+                    "Prebuilt DreamPlace packages are CPU-only. "
+                    "Call install(cpu_only=True, using_prebuilt=True)."
+                )
+            else:
+                print(
+                    "Note: We do not recommend using the prebuilt DreamPlace package. "
+                    "The prebuilt files are mainly provided for our development workflow "
+                    "on GitHub Actions, to avoid unnecessary repeated compilation. "
+                    "To use prebuilt packages, your environment must match exactly with "
+                    "the build environment on GitHub. In practice, this is difficult to "
+                    "guarantee, so compiling through DreamPlaceInstallHelper is preferred."
+                )
+                return DreamPlacePrebuilt(install_helper.final_path).install()
+
+        # Step1: Check DreamPlace build environment
+        DreamPlaceBuildEnvChecker.check()
+
+        # Step2: Download and extract DreamPlace thirdparty
         if not DREAMPLACE_THIRDPARTY_PATH.exists():
             thirdparty_url = (
                 "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/"
@@ -121,8 +148,7 @@ class DreamPlaceSolver(SolverBase):
             )
             os.remove("dreamplace_thirdparty.zip")
 
-        # Compile DreamPlace
-        install_helper = DreamPlaceInstallHelper(cpu_only=cpu_only)
+        # Step3: Compile DreamPlace
         install_helper.install()
 
     def _check_install(self):

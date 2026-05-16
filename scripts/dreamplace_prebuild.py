@@ -17,11 +17,16 @@ extra wrapper directory or metadata files). Extract into
 # See the Mulan PSL v2 for more details.
 
 
-import site
+import os
 import sys
+root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, root_folder)
+import site
 import zipfile
-import argparse
+import pathlib
 from pathlib import Path
+from packaging import version
+from ml4co_kit import EnvInstallHelper
 
 
 def _find_dreamplace_dir() -> Path:
@@ -47,31 +52,40 @@ def _platform_tag() -> str:
     return sys.platform.replace("/", "-")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--out-dir",
-        type=Path,
-        default=Path("dist"),
-        help="Directory for the output zip (default: dist)",
-    )
-    args = parser.parse_args()
-    args.out_dir.mkdir(parents=True, exist_ok=True)
+if __name__ == "__main__":
+    # Get pytorch version
+    python_version = sys.version.split()[0]
+    
+    # Get pytorch version
+    if version.parse(python_version) < version.parse("3.12"):
+        pytorch_version = "2.1.0"
+    elif version.parse(python_version) < version.parse("3.13"):
+        pytorch_version = "2.4.0"
+    else:
+        pytorch_version = "2.7.0"
+    
+    # Install basic environment
+    env_install_helper = EnvInstallHelper(pytorch_version=pytorch_version)
+    env_install_helper.install()
+    
+    # Install DreamPlace
+    from ml4co_kit.solver.eda.dreamplace import DreamPlaceSolver
+    dreamplace_solver = DreamPlaceSolver()
+    dreamplace_solver.install(cpu_only=True)
 
+    # Get output zip name
+    os.makedirs("dist", exist_ok=True)
     dp = _find_dreamplace_dir()
-
     py_tag = f"{sys.version_info.major}{sys.version_info.minor}"
-    zip_name = f"dreamplace-{_platform_tag()}-py{py_tag}-cpu.zip"
-    out_zip = args.out_dir / zip_name
+    out_zip = f"dist/dreamplace-{_platform_tag()}-py{py_tag}-cpu.zip"
+    out_zip = pathlib.Path(out_zip)
 
+    # Zip the dreamplace directory
     with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for path in sorted(dp.rglob("*")):
             if path.is_file():
                 arcname = path.relative_to(dp).as_posix()
                 zf.write(path, arcname)
 
+    # Print the output zip name
     print(f"Wrote {out_zip.resolve()}")
-
-
-if __name__ == "__main__":
-    main()
