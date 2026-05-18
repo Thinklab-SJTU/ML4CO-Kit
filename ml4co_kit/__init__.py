@@ -159,7 +159,7 @@ from .solver import (
 
 # Solvers for Routing Tasks
 from .solver import (
-    ConcordeSolver, GAEAXSolver, HGSSolver, LKHSolver, NearestSolver
+    ConcordeSolver, GAEAXSolver, HGSSolver, LKHSolver, NearestSolver, PyVRPSolver
 )
 
 # Solvers for SAT Tasks
