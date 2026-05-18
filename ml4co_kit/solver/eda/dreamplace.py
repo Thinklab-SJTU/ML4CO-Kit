@@ -21,6 +21,7 @@ from typing import Any, Dict
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
+from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.utils.file_utils import download, extract_archive
 from ml4co_kit.solver.eda.lib.dreamplace.edap_dreamplace import edap_dreamplace
@@ -95,11 +96,19 @@ class DreamPlaceSolver(SolverBase):
         # Merge extra DreamPlace keys
         if self.hyper_params:
             data = {**data, **self.hyper_params}
-        data.update({
-            "aux_input": task_data.cache["ispd2005_aux"],
-            "result_dir": task_data.cache["ispd2005_result_dir"],
-            "gpu": gpu,
-        })
+        
+        # Update data according to different benchmark
+        bn = task_data.benchmark_name
+        if bn in [EDA_BENCH.ISPD2005, EDA_BENCH.MMS]:
+            data.update({
+                "aux_input": task_data.cache["aux"],
+                "result_dir": task_data.cache["result_dir"],
+                "gpu": gpu,
+            })
+        else:
+            raise NotImplementedError(
+                f"{bn.value} is not supported for DreamPlace solver. "
+            )
 
         # Create DreamPlaceParams
         from dreamplace.Params import Params as DreamPlaceParams

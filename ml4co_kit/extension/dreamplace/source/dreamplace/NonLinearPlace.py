@@ -448,7 +448,7 @@ class NonLinearPlace(BasicPlace.BasicPlace):
 
                     logging.info("optimizer step %.3f ms" % ((time.time() - t3) * 1000))
 
-                      # Perform timing-opt.
+                    # Perform timing-opt.
                     if params.global_place_flag and params.timing_opt_flag and \
                         params.enable_net_weighting and \
                         iteration > 500 and iteration % 15 == 0:

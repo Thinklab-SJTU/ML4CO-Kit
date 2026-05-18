@@ -123,7 +123,7 @@ from .generator import SATPGenerator, SATAGenerator
 from .dataset import DatasetBase
 
 # EDA Dataset
-from .dataset import ISPD2005Dataset
+from .dataset import ISPD2005Dataset, MMSDataset
 
 # QAP Dataset
 from .dataset import GEDAIDS700nefDataset

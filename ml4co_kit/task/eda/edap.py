@@ -43,6 +43,7 @@ class EDAPTask(TaskBase):
         self.cells_num: int = None
         self.macro_mask: np.ndarray = None # [N,]
         self.helper = EDAHelper()
+        self.reader = None
 
         # List of nets, each net is a 2D array of shape
         # [Np, (macro_idx, offset_x, offset_y)]
@@ -134,24 +135,65 @@ class EDAPTask(TaskBase):
         nodes_file_path = folder_path / f"{name}.nodes"
 
         # Read data from files
-        reader = ISPD2005Reader()
-        cells, macro_mask = reader.from_nodes(str(nodes_file_path))
+        self.reader = ISPD2005Reader()
+        cells, macro_mask = self.reader.from_nodes(str(nodes_file_path))
         cells: np.ndarray
         cells_num: int = cells.shape[0]
-        nets = reader.from_nets(str(nets_file_path))
+        nets = self.reader.from_nets(str(nets_file_path))
 
         # Call ``from_data`` to set attributes
         self.from_data(
             die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask, 
             nets=nets, name=name, benchmark_name=EDA_BENCH.ISPD2005
         )
-        self.cache["ispd2005_aux"] = aux_file_path
-        self.cache["ispd2005_result_dir"] = root_path / "dreamplace_results"
-        self.cache["ispd2005_result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
+        self.cache["aux"] = aux_file_path
+        self.cache["nodes"] = nodes_file_path
+        self.cache["result_dir"] = root_path / "dreamplace_results"
+        self.cache["result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
 
         # If result path exists, read the result
-        if self.cache["ispd2005_result_path"].exists():
-            sol = reader.from_lg_pl(str(self.cache["ispd2005_result_path"]))
+        if self.cache["result_path"].exists():
+            sol = self.reader.from_lg_pl(str(self.cache["result_path"]))
+            self.from_data(sol=sol, ref=True)
+
+    def from_mms(
+        self,
+        name: str,
+        die: np.ndarray,
+        root_path: pathlib.Path
+    ):
+        # Check folder path
+        folder_path = root_path / name
+        self._check_folder_path(
+            name=name, 
+            folder_path=folder_path, 
+            benchmark_name=EDA_BENCH.ISPD2005
+        )
+        
+        # Get data path
+        aux_file_path = folder_path / f"{name}.aux"
+        nets_file_path = folder_path / f"{name}.nets"
+        nodes_file_path = folder_path / f"{name}.nodes"
+
+        # Read data from files
+        self.reader = ISPD2005Reader()
+        cells, macro_mask = self.reader.from_nodes(str(nodes_file_path))
+        cells: np.ndarray
+        cells_num: int = cells.shape[0]
+        nets = self.reader.from_nets(str(nets_file_path))
+
+        # Call ``from_data`` to set attributes
+        self.from_data(
+            die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask, 
+            nets=nets, name=name, benchmark_name=EDA_BENCH.MMS
+        )
+        self.cache["aux"] = aux_file_path
+        self.cache["result_dir"] = root_path / "dreamplace_results"
+        self.cache["result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
+
+        # If result path exists, read the result
+        if self.cache["result_path"].exists():
+            sol = self.reader.from_lg_pl(str(self.cache["result_path"]))
             self.from_data(sol=sol, ref=True)
 
     def from_data(
@@ -213,17 +255,26 @@ class EDAPTask(TaskBase):
         self, sol: np.ndarray, check_constr: bool = True
     ) -> Tuple[np.floating, np.ndarray, np.ndarray]:
         # Check Constraints
-        if check_constr and not self.check_constraints(sol):
-            raise ValueError("Invalid solution!")
 
+        # Note: MMS is a special dataset where some macros from the ISPD2005 
+        # dataset are released as movable cells. However, MMS does not provide 
+        # the coordinate ranges for these macros. The die constraints of ISPD2005   
+        # dataset only apply to the small cells, not to these movable macros.  
+        # As a result, we cannot perform constraint checking for MMS to ensure 
+        # all objects are inside legal regions.
+
+        if self.benchmark_name in [EDA_BENCH.ISPD2005]:
+           if check_constr and not self.check_constraints(sol):
+                raise ValueError("Invalid solution!")
+        
         # Evaluate
-        wirelength, congestion = self.helper.evaluate(
+        hpwl, congestion_map = self.helper.evaluate(
             sol, self.nets, self.die, self.bin_cols, self.bin_rows
         )
-        congestion: np.ndarray
-        max_congestion = np.max(congestion).item()
-        avg_congestion = np.mean(congestion).item()
-        return wirelength, max_congestion, avg_congestion
+        congestion_map: np.ndarray
+        max_congestion = np.max(congestion_map).item()
+        avg_congestion = np.mean(congestion_map).item()
+        return hpwl, max_congestion, avg_congestion
 
     def evaluate_w_gap(self, check_constr: bool = True):
         info = (

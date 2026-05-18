@@ -18,6 +18,7 @@ from .base import DatasetBase
 
 # EDA Dataset
 from .eda.eda_ispd2005 import ISPD2005Dataset
+from .eda.eda_mms import MMSDataset
 
 # QAP Dataset
 from .qap.ged_aids700nef import GEDAIDS700nefDataset
