@@ -22,7 +22,7 @@ from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 
 
-class ISPD2005Dataset(DatasetBase):
+class ISPD2005FreeDataset(DatasetBase):
     """
     ISPD2005: https://www.ispd.cc/contests/05/contest.htm
     @inproceedings{
@@ -41,9 +41,9 @@ class ISPD2005Dataset(DatasetBase):
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
-        super(ISPD2005Dataset, self).__init__(
+        super(ISPD2005FreeDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
-            dataset_name="ISPD2005",
+            dataset_name="ISPD2005Free",
             precision=precision
         )
 
@@ -53,8 +53,10 @@ class ISPD2005Dataset(DatasetBase):
     def _preprocess(self):
        # Name list
         self.name_list = [
-            "adaptec1", "adaptec2", "adaptec3", "adaptec4",
-            "bigblue1", "bigblue2", "bigblue3", "bigblue4",
+            "adaptec1_allfree", "adaptec2_allfree", 
+            "adaptec3_allfree", "adaptec4_allfree",
+            "bigblue1_allfree", "bigblue2_allfree", 
+            "bigblue3_allfree", "bigblue4_allfree",
         ]
 
         # Die size
@@ -127,6 +129,6 @@ class ISPD2005Dataset(DatasetBase):
         task_data.from_ispd2005_like(
             name=name, die=die, 
             root_path=self.extracted_save_path,
-            benchmark_name=EDA_BENCH.ISPD2005
+            benchmark_name=EDA_BENCH.ISPD2005FREE
         )
         return task_data

@@ -93,9 +93,9 @@ class EDAPTask(TaskBase):
         benchmark_name: EDA_BENCH,
     ):
         # Get valid extensions
-        if benchmark_name == EDA_BENCH.ISPD2005:
-            valid_exts = [".aux", ".nets", ".nodes", ".pl", ".scl", ".wts"]
-        elif benchmark_name == EDA_BENCH.MMS:
+        if benchmark_name in [
+            EDA_BENCH.ISPD2005, EDA_BENCH.ISPD2005FREE, EDA_BENCH.MMS
+        ]:
             valid_exts = [".aux", ".nets", ".nodes", ".pl", ".scl", ".wts"]
         else:
             raise ValueError(f"Unsupported benchmark name: {benchmark_name}")
@@ -115,18 +115,19 @@ class EDAPTask(TaskBase):
                 f"Missing required benchmark files: {sorted(missing)} in {folder_path}"
             )
 
-    def from_ispd2005(
+    def from_ispd2005_like(
         self, 
         name: str, 
         die: np.ndarray,
-        root_path: pathlib.Path
+        root_path: pathlib.Path,
+        benchmark_name: EDA_BENCH
     ): 
         # Check folder path
         folder_path = root_path / name
         self._check_folder_path(
             name=name, 
             folder_path=folder_path, 
-            benchmark_name=EDA_BENCH.ISPD2005
+            benchmark_name=benchmark_name
         )
         
         # Get data path
@@ -144,50 +145,10 @@ class EDAPTask(TaskBase):
         # Call ``from_data`` to set attributes
         self.from_data(
             die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask, 
-            nets=nets, name=name, benchmark_name=EDA_BENCH.ISPD2005
+            nets=nets, name=name, benchmark_name=benchmark_name
         )
         self.cache["aux"] = aux_file_path
         self.cache["nodes"] = nodes_file_path
-        self.cache["result_dir"] = root_path / "dreamplace_results"
-        self.cache["result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
-
-        # If result path exists, read the result
-        if self.cache["result_path"].exists():
-            sol = self.reader.from_lg_pl(str(self.cache["result_path"]))
-            self.from_data(sol=sol, ref=True)
-
-    def from_mms(
-        self,
-        name: str,
-        die: np.ndarray,
-        root_path: pathlib.Path
-    ):
-        # Check folder path
-        folder_path = root_path / name
-        self._check_folder_path(
-            name=name, 
-            folder_path=folder_path, 
-            benchmark_name=EDA_BENCH.ISPD2005
-        )
-        
-        # Get data path
-        aux_file_path = folder_path / f"{name}.aux"
-        nets_file_path = folder_path / f"{name}.nets"
-        nodes_file_path = folder_path / f"{name}.nodes"
-
-        # Read data from files
-        self.reader = ISPD2005Reader()
-        cells, macro_mask = self.reader.from_nodes(str(nodes_file_path))
-        cells: np.ndarray
-        cells_num: int = cells.shape[0]
-        nets = self.reader.from_nets(str(nets_file_path))
-
-        # Call ``from_data`` to set attributes
-        self.from_data(
-            die=die, cells=cells, cells_num=cells_num, macro_mask=macro_mask, 
-            nets=nets, name=name, benchmark_name=EDA_BENCH.MMS
-        )
-        self.cache["aux"] = aux_file_path
         self.cache["result_dir"] = root_path / "dreamplace_results"
         self.cache["result_path"] = root_path / f"dreamplace_results/{name}/{name}.gp.pl"
 
@@ -243,7 +204,8 @@ class EDAPTask(TaskBase):
         if self.die is None or self.cells is None:
             return False
         
-        # Boundary uses the row/subrow rectangles; overlap is checked geometrically.
+        # Boundary uses the row/subrow rectangles; 
+        # overlap is checked geometrically.
         inside_die, overlap = self.helper.check_constraints(
             sol, self.die, self.cells, self.macro_mask
         )
@@ -255,9 +217,8 @@ class EDAPTask(TaskBase):
         self, sol: np.ndarray, check_constr: bool = True
     ) -> Tuple[np.floating, np.ndarray, np.ndarray]:
         # Check Constraints
-        if self.benchmark_name in [EDA_BENCH.ISPD2005, EDA_BENCH.MMS]:
-            if check_constr and not self.check_constraints(sol):
-                raise ValueError("Invalid solution!")
+        if check_constr and not self.check_constraints(sol):
+            raise ValueError("Invalid solution!")
         
         # Evaluate
         hpwl, congestion_map = self.helper.evaluate(

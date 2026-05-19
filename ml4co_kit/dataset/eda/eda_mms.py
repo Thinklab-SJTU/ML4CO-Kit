@@ -18,6 +18,7 @@ import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
+from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 
 
@@ -169,7 +170,9 @@ class MMSDataset(DatasetBase):
      
         # Create task data
         task_data = EDAPTask(precision=self.precision)
-        task_data.from_mms(
-            name=name, die=die, root_path=self.extracted_save_path
+        task_data.from_ispd2005_like(
+            name=name, die=die, 
+            root_path=self.extracted_save_path,
+            benchmark_name=EDA_BENCH.MMS
         )
         return task_data

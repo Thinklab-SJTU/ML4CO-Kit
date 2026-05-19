@@ -53,17 +53,20 @@ class DatasetBase(object):
                 os.remove(self.download_save_path)
                 shutil.rmtree(self.extracted_save_path)
         
-        # Download the dataset
-        if not self.download_save_path.exists():
-            pull_file_from_huggingface(
-                repo_id="ML4CO/ML4CO-Kit", 
-                repo_type="dataset", 
-                filename=f"{self.dataset_name}.zip",
-                save_path=self.download_save_path.as_posix()
-            )
-        
-        # Extract the dataset
+
+        # Check if the dataset exists
         if not self.extracted_save_path.exists():
+
+            # Download the dataset
+            if not self.download_save_path.exists():
+                pull_file_from_huggingface(
+                    repo_id="ML4CO/ML4CO-Kit", 
+                    repo_type="dataset", 
+                    filename=f"{self.dataset_name}.zip",
+                    save_path=self.download_save_path.as_posix()
+                )
+
+            # Extract the dataset
             extract_archive(
                 archive_path=self.download_save_path.as_posix(), 
                 extract_path=self.extracted_save_path.as_posix()

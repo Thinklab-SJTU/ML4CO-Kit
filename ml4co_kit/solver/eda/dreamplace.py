@@ -99,7 +99,7 @@ class DreamPlaceSolver(SolverBase):
         
         # Update data according to different benchmark
         bn = task_data.benchmark_name
-        if bn in [EDA_BENCH.ISPD2005, EDA_BENCH.MMS]:
+        if bn in [EDA_BENCH.ISPD2005, EDA_BENCH.ISPD2005FREE, EDA_BENCH.MMS]:
             data.update({
                 "aux_input": task_data.cache["aux"],
                 "result_dir": task_data.cache["result_dir"],
