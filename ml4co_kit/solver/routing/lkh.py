@@ -17,13 +17,13 @@ LKH (Lin-Kernighan-Helsgaun)
 import os
 import sys
 import shutil
-from ml4co_kit.utils.file_utils import download
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.solver.routing.lib.lkh.tsp_lkh import tsp_lkh
 from ml4co_kit.solver.routing.lib.lkh.atsp_lkh import atsp_lkh
 from ml4co_kit.solver.routing.lib.lkh.cvrp_lkh import cvrp_lkh
+from ml4co_kit.utils.file_utils import download, pull_file_from_huggingface
 
 
 class LKHSolver(SolverBase):
@@ -95,9 +95,19 @@ class LKHSolver(SolverBase):
     def install(self):
         """Install LKH solver."""
         # Step1: Download LKH
-        lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-        download(file_path="LKH-3.0.13.tgz", url=lkh_url)
-        
+        try:
+            # from original website
+            lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
+            download(file_path="LKH-3.0.13.tgz", url=lkh_url)
+        except:
+            # from huggingface
+            pull_file_from_huggingface(
+                repo_id="ML4CO/ML4CO-Kit",
+                repo_type="dataset",
+                filename="lkh/LKH-3.0.13.tgz",
+                save_path="LKH-3.0.13.tgz"
+            )
+
         # Step2: tar .tgz file
         os.system("tar xvfz LKH-3.0.13.tgz")
         
