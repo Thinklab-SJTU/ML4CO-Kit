@@ -35,6 +35,7 @@ class MMSDataset(DatasetBase):
     
     def __init__(
         self, 
+        extend_die: bool = True,
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
@@ -44,6 +45,9 @@ class MMSDataset(DatasetBase):
             precision=precision
         )
 
+        # Initialize Attributes
+        self.extend_die = extend_die
+        
     def _preprocess(self):
        # Name list
         self.name_list = [
@@ -150,8 +154,20 @@ class MMSDataset(DatasetBase):
         ]
         
     def _load(self, idx) -> EDAPTask:
+        # Get original die
         name = self.name_list[idx]
         die = self.die_list[idx]
+
+        # Extend die if required
+        if self.extend_die:
+            die = np.array([[
+                die[:, 0].min(),
+                die[:, 1].min(),
+                die[:, 2].max(),
+                die[:, 3].max(),
+            ]], dtype=self.precision)
+     
+        # Create task data
         task_data = EDAPTask(precision=self.precision)
         task_data.from_mms(
             name=name, die=die, root_path=self.extracted_save_path
