@@ -255,16 +255,8 @@ class EDAPTask(TaskBase):
         self, sol: np.ndarray, check_constr: bool = True
     ) -> Tuple[np.floating, np.ndarray, np.ndarray]:
         # Check Constraints
-
-        # Note: MMS is a special dataset where some macros from the ISPD2005 
-        # dataset are released as movable cells. However, MMS does not provide 
-        # the coordinate ranges for these macros. The die constraints of ISPD2005   
-        # dataset only apply to the small cells, not to these movable macros.  
-        # As a result, we cannot perform constraint checking for MMS to ensure 
-        # all objects are inside legal regions.
-
-        if self.benchmark_name in [EDA_BENCH.ISPD2005]:
-           if check_constr and not self.check_constraints(sol):
+        if self.benchmark_name in [EDA_BENCH.ISPD2005, EDA_BENCH.MMS]:
+            if check_constr and not self.check_constraints(sol):
                 raise ValueError("Invalid solution!")
         
         # Evaluate

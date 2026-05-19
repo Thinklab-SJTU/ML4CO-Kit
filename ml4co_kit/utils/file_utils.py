@@ -28,7 +28,7 @@ import async_timeout
 import urllib.request
 from tqdm import tqdm
 from typing import Union
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, hf_hub_download
 
 
 ###############################################
@@ -105,36 +105,36 @@ def get_md5(file_path: str):
 
 
 def pull_file_from_huggingface(
-    repo_id: str, repo_type: str, filename: str, save_path: str, hf_token: str = None
+    repo_id: str, repo_type: str, filename: str, save_path: str
 ):
-    # cache and local
-    name = uuid.uuid4().hex
-    root_dir = f"tmp/{name}"
-    local_dir = f"tmp/{name}/local"
-    cache_dir = f"tmp/{name}/cache"
-    download_path = os.path.join(local_dir, filename)
-    
-    # download
-    hf_api = HfApi(token=hf_token)
-    hf_api.hf_hub_download(
+    """
+    Download a file from Hugging Face Hub directly to a specified path
+    without using symlinks and with improved speed.
+    """
+    # Ensure save directory exists
+    save_dir = os.path.dirname(save_path)
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Temporary file path
+    temp_name = uuid.uuid4().hex
+    temp_path = os.path.join(save_dir, temp_name)
+
+    # Download the file directly to the temp path
+    hf_hub_download(
         repo_id=repo_id,
         repo_type=repo_type,
         filename=filename,
-        cache_dir=cache_dir,
-        local_dir=local_dir,
+        cache_dir=None,  # Don't use a cache to avoid extra copying
+        local_dir=temp_path,  # Download directly to temp path
         local_dir_use_symlinks=False
     )
-    
-    # check save path
-    save_path_dir = os.path.dirname(save_path)
-    if not os.path.exists(save_path_dir):
-        os.makedirs(save_path_dir)
 
-    # move file
-    shutil.move(download_path, save_path)
-    
-    # delete root dir
-    shutil.rmtree(root_dir)
+    # Rename/move to the final save_path
+    # If hf_hub_download returns the exact file path, we can just move it
+    if os.path.exists(temp_path):
+        shutil.move(temp_path, save_path)
+    else:
+        raise FileNotFoundError(f"Downloaded file not found at {temp_path}")
 
 
 ###############################################
