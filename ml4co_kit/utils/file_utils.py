@@ -28,7 +28,7 @@ import async_timeout
 import urllib.request
 from tqdm import tqdm
 from typing import Union
-from huggingface_hub import HfApi
+from huggingface_hub import snapshot_download
 
 
 ###############################################
@@ -108,40 +108,37 @@ def pull_file_from_huggingface(
     repo_id: str, repo_type: str, filename: str, 
     save_path: str, hf_token: str = None
 ):
-    # cache and local
+    # tmp dir
     name = uuid.uuid4().hex
     root_dir = f"tmp/{name}"
-    local_dir = f"tmp/{name}/local"
-    cache_dir = f"tmp/{name}/cache"
-    download_path = os.path.join(local_dir, filename)
-    
-    # download
-    hf_api = HfApi(token=hf_token)
-    hf_api.hf_hub_download(
+
+    # download only target file
+    snapshot_download(
         repo_id=repo_id,
         repo_type=repo_type,
-        filename=filename,
-        cache_dir=cache_dir,
-        local_dir=local_dir,
-        local_dir_use_symlinks=False
+        allow_patterns=filename,
+        local_dir=root_dir,
+        token=hf_token,
     )
-    
-    # check save path
+
+    # downloaded file path
+    download_path = os.path.join(root_dir, filename)
+
+    # create save dir
     save_path_dir = os.path.dirname(save_path)
-    if not os.path.exists(save_path_dir):
-        os.makedirs(save_path_dir)
+    if save_path_dir and not os.path.exists(save_path_dir):
+        os.makedirs(save_path_dir, exist_ok=True)
 
     # move file
     shutil.move(download_path, save_path)
-    
-    # delete root dir
-    shutil.rmtree(root_dir)
+
+    # cleanup
+    shutil.rmtree(root_dir, ignore_errors=True)
 
 
 ###############################################
 #            Compress and Extract             #
 ###############################################
-
 
 def compress_folder(
     folder: str, compress_path: str,
