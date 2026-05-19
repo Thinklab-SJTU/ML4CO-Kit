@@ -22,7 +22,7 @@ from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 
 
-class ISPD2005FreeDataset(DatasetBase):
+class EDAP_ISPD2005FreeDataset(DatasetBase):
     """
     ISPD2005: https://www.ispd.cc/contests/05/contest.htm
     @inproceedings{
@@ -41,7 +41,7 @@ class ISPD2005FreeDataset(DatasetBase):
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
-        super(ISPD2005FreeDataset, self).__init__(
+        super(EDAP_ISPD2005FreeDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
             dataset_name="ISPD2005Free",
             precision=precision

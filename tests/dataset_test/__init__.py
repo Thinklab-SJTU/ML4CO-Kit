@@ -1,5 +1,5 @@
 r"""
-Dataset Module.
+Dataset Test Module.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -7,19 +7,21 @@ Dataset Module.
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 # http://license.coscl.org.cn/MulanPSL2
-#
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-# Base Dataset
-from .base import DatasetBase
 
-# EDA Dataset
-from .eda.edap_ispd2005 import EDAP_ISPD2005Dataset
-from .eda.edap_ispd2005_free import EDAP_ISPD2005FreeDataset
-from .eda.edap_mms import EDAP_MMSDataset
+# Base Class
+from .base import DatasetTesterBase
 
-# QAP Dataset
-from .qap.ged_aids700nef import GED_AIDS700nefDataset
+
+# EDA Problems
+from .eda.edap_ispd2005 import EDAP_ISPD2005DatasetTester
+from .eda.edap_ispd2005free import EDAP_ISPD2005FreeDatasetTester
+from .eda.edap_mms import EDAP_MMSDatasetTester
+
+
+# QAP Problems
+from .qap.ged_aids700nef import GED_AIDS700nefDatasetTester

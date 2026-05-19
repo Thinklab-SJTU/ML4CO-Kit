@@ -1,5 +1,5 @@
 r"""
-Base class for solver testers.
+Base class for solver and optimizer testers.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

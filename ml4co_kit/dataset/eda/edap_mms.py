@@ -22,7 +22,7 @@ from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 
 
-class MMSDataset(DatasetBase):
+class EDAP_MMSDataset(DatasetBase):
     """
     @inproceedings{
         yan2009handling,
@@ -40,7 +40,7 @@ class MMSDataset(DatasetBase):
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
-        super(MMSDataset, self).__init__(
+        super(EDAP_MMSDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
             dataset_name="MMS",
             precision=precision

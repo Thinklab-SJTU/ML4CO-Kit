@@ -115,6 +115,14 @@ class EDAPTask(TaskBase):
                 f"Missing required benchmark files: {sorted(missing)} in {folder_path}"
             )
 
+    def to_pickle(self, file_path: pathlib.Path):
+        # Delete attributes that are not needed for pickle
+        self.helper = None
+        self.reader = None
+
+        # Save task data to ``.pkl`` file
+        super(EDAPTask, self).to_pickle(file_path)
+        
     def from_ispd2005_like(
         self, 
         name: str, 
@@ -236,4 +244,3 @@ class EDAPTask(TaskBase):
             "we do not recommend using gap as an evaluation method."
         )
         raise NotImplementedError(info)
-   

@@ -25,7 +25,7 @@ from ml4co_kit.task.qap.base import QAPGraphBase
 from ml4co_kit.dataset.base import DatasetBase
 
 
-class GEDAIDS700nefDataset(DatasetBase):
+class GED_AIDS700nefDataset(DatasetBase):
     """AIDS700nef Dataset for GED."""
     
     def __init__(
@@ -33,7 +33,7 @@ class GEDAIDS700nefDataset(DatasetBase):
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
-        super(GEDAIDS700nefDataset, self).__init__(
+        super(GED_AIDS700nefDataset, self).__init__(
             task_type=TASK_TYPE.GED,
             dataset_name="AIDS700nef",
             precision=precision

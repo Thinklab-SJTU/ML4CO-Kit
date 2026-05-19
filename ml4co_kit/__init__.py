@@ -123,10 +123,12 @@ from .generator import SATPGenerator, SATAGenerator
 from .dataset import DatasetBase
 
 # EDA Dataset
-from .dataset import ISPD2005Dataset, ISPD2005FreeDataset, MMSDataset
+from .dataset import (
+    EDAP_ISPD2005Dataset, EDAP_ISPD2005FreeDataset, EDAP_MMSDataset
+)
 
 # QAP Dataset
-from .dataset import GEDAIDS700nefDataset
+from .dataset import GED_AIDS700nefDataset
 
 
 ####################################################
