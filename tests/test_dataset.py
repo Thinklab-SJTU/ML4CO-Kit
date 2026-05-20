@@ -15,22 +15,32 @@ Test Dataset Module.
 
 import os
 import sys
+from typing import Type
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_folder)
 
 
-# Checker
-from ml4co_kit import GEDAIDS700nefDataset, ISPD2005Dataset
+# Dataset Testers
+from tests.dataset_test import (
+    DatasetTesterBase,
+    EDAP_ISPD2005DatasetTester,
+    EDAP_ISPD2005FreeDatasetTester,
+    EDAP_MMSDatasetTester,
+    GED_AIDS700nefDatasetTester
+)
+dataset_tester_list = [
+    EDAP_ISPD2005DatasetTester,
+    EDAP_ISPD2005FreeDatasetTester,
+    EDAP_MMSDatasetTester,
+    GED_AIDS700nefDatasetTester
+]
 
 
 # Test Dataset
 def test_dataset():
-    dataset_list = [
-        GEDAIDS700nefDataset(),
-        ISPD2005Dataset()
-    ]
-    for dataset in dataset_list:
-        dataset.load(0)
+    for test_class in dataset_tester_list:
+        test_class: Type[DatasetTesterBase]
+        test_class().test()
     
 
 # Main

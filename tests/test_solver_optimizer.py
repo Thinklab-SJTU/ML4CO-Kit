@@ -131,7 +131,7 @@ def test_solver_optimizer():
         tester_class(device="cpu").test()
         if env_checker.check_cuda():
             tester_class(device="cuda").test()
-            
+
 # Main
 if __name__ == "__main__":
     test_solver_optimizer()

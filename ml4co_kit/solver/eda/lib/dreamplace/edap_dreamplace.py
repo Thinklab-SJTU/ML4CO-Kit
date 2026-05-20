@@ -18,7 +18,6 @@ import time
 import pathlib
 import logging
 from ml4co_kit.task.eda.edap import EDAPTask
-from ml4co_kit.task.eda.c_edap_reader import ISPD2005Reader
 
 
 def edap_dreamplace(task_data: EDAPTask, params):
@@ -55,11 +54,16 @@ def edap_dreamplace(task_data: EDAPTask, params):
 
     # Get result path
     name = task_data.name
-    result_dir: pathlib.Path = task_data.cache["ispd2005_result_dir"]
+    result_dir: pathlib.Path = task_data.cache["result_dir"]
     result_path = result_dir / f"{name}/{name}.gp.pl"
     logging.info("Result is saved to %s" % (result_path.as_posix()))
 
     # Read the placement result
-    reader = ISPD2005Reader()
-    sol = reader.from_lg_pl(str(result_path))
+    sol = task_data.reader.from_lg_pl(str(result_path))
     task_data.from_data(sol=sol, ref=False)
+
+    # Delete intermediate files
+    intermediate_files = ["hcg.lp", "vcg.lp"]
+    for _file in intermediate_files:
+        if os.path.exists(_file):
+            os.remove(_file)

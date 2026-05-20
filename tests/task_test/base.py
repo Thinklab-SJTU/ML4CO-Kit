@@ -1,5 +1,5 @@
 r"""
-Base class for wrapper testers.
+Base class for task testers.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU

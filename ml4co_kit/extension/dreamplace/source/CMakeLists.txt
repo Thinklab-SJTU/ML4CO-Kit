@@ -105,7 +105,12 @@ message(STATUS "LIMBO_SOURCE_DIR ${LIMBO_SOURCE_DIR}")
 set(LIMBO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Limbo)
 message(STATUS "LIMBO_BINARY_DIR ${LIMBO_BINARY_DIR}")
 if(CUDA_FOUND)
-  if (${CUDA_VERSION_MAJOR} VERSION_GREATER_EQUAL "11")
+  # CUDA 12+ ships CCCL CUB headers that use cuda::std and break DreamPlace's
+  # DREAMPLACE_NAMESPACE::cub wrapper (see pin_pos_cuda_segment_kernel.cu).
+  # Use the bundled CUB release for CUDA 12+; toolkit CUB is fine on CUDA 11.x.
+  if (${CUDA_VERSION_MAJOR} VERSION_GREATER_EQUAL "12")
+    set(CUB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cub)
+  elseif (${CUDA_VERSION_MAJOR} VERSION_GREATER_EQUAL "11")
     set(CUB_DIR ${CUDA_INCLUDE_DIRS})
   else()
     set(CUB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cub)

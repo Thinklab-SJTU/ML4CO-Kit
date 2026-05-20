@@ -33,6 +33,8 @@ class SCIPSolver(SolverBase):
     def __init__(
         self,
         scip_time_limit: float = 10.0,
+        soplex_version: str = "8.0.2",
+        scip_version: str = "10.0.2",
         optimizer: OptimizerBase = None
     ):
         # Super Initialization
@@ -43,6 +45,14 @@ class SCIPSolver(SolverBase):
         
         # Set Attributes
         self.scip_time_limit = scip_time_limit
+        self.soplex_version = soplex_version
+        self.scip_version = scip_version
+
+        # SOPLEX Path Check
+        self.soplex_store_path = sys.prefix
+        self.soplex_bin_path = os.path.join(self.soplex_store_path, "bin", "soplex")
+        if not os.path.exists(self.soplex_bin_path):
+            self.install_soplex()
 
         # SCIP Path Check
         self.scip_store_path = sys.prefix
@@ -73,27 +83,68 @@ class SCIPSolver(SolverBase):
                 f"Supported types: MaxRetPO, MinVarPO, MOPO"
             )
 
-    def install(self):
-        """Install SCIP Solver."""
+    def install_soplex(self):
+        """
+        Install SOPLEX.
+        SoPlex: https://github.com/soplexopt/soplex
+        """
         # Step1: Download SCIP
-        scip_url = "https://codeload.github.com/scipopt/scip/tar.gz/refs/tags/v923"
-        download(file_path="SCIP-9.2.3.tgz", url=scip_url)
+        soplex_url = (
+            f"https://codeload.github.com/scipopt/soplex/"
+            f"tar.gz/refs/tags/v{self.soplex_version}"
+        )
+        download(file_path=f"soplex-{self.soplex_version}.tgz", url=soplex_url)
         
         # Step2: tar .tgz file
-        os.system("tar xvfz SCIP-9.2.3.tgz")
-        os.makedirs("scip-923/build", exist_ok=True)
+        os.system(f"tar xvfz soplex-{self.soplex_version}.tgz")
+        os.makedirs(f"soplex-{self.soplex_version}/build", exist_ok=True)
         
         # Step3: build SCIP
         ori_dir = os.getcwd()
-        os.chdir("scip-923/build")
-        os.system(f"cmake .. -DAUTOBUILD=on -DCMAKE_INSTALL_PREFIX={self.scip_store_path}")
+        os.chdir(f"soplex-{self.soplex_version}/build")
+        cmake_cmd = (
+            f"cmake .. "
+            f"-DCMAKE_BUILD_TYPE=Release "
+            f"-DCMAKE_INSTALL_PREFIX={self.soplex_store_path}"
+        )
+        os.system(cmake_cmd)
         os.system("make")
         os.system("make install")
         os.chdir(ori_dir)
         
         # Step4: clean up
-        os.remove("SCIP-9.2.3.tgz")
-        shutil.rmtree("scip-923")
+        os.remove(f"soplex-{self.soplex_version}.tgz")
+        shutil.rmtree(f"soplex-{self.soplex_version}")
+
+    def install(self):
+        """Install SCIP Solver."""
+        # Step1: Download SCIP
+        scip_url = (
+            f"https://codeload.github.com/scipopt/scip/"
+            f"tar.gz/refs/tags/v{self.scip_version}"
+        )
+        download(file_path=f"SCIP-{self.scip_version}.tgz", url=scip_url)
+        
+        # Step2: tar .tgz file
+        os.system(f"tar xvfz SCIP-{self.scip_version}.tgz")
+        os.makedirs(f"scip-{self.scip_version}/build", exist_ok=True)
+        
+        # Step3: build SCIP
+        ori_dir = os.getcwd()
+        os.chdir(f"scip-{self.scip_version}/build")
+        cmake_cmd = (
+            f"cmake .. "
+            f"-DAUTOBUILD=on "
+            f"-DCMAKE_INSTALL_PREFIX={self.scip_store_path}"
+        )
+        os.system(cmake_cmd)
+        os.system("make")
+        os.system("make install")
+        os.chdir(ori_dir)
+        
+        # Step4: clean up
+        os.remove(f"SCIP-{self.scip_version}.tgz")
+        shutil.rmtree(f"scip-{self.scip_version}")
         msg = (
             f"SCIP Solver installed successfully at {self.scip_store_path}. "
             f"The executable is at {self.scip_bin_path}.\n"

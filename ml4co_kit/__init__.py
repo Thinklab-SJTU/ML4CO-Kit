@@ -123,10 +123,12 @@ from .generator import SATPGenerator, SATAGenerator
 from .dataset import DatasetBase
 
 # EDA Dataset
-from .dataset import ISPD2005Dataset
+from .dataset import (
+    EDAP_ISPD2005Dataset, EDAP_ISPD2005FreeDataset, EDAP_MMSDataset
+)
 
 # QAP Dataset
-from .dataset import GEDAIDS700nefDataset
+from .dataset import GED_AIDS700nefDataset
 
 
 ####################################################
@@ -229,5 +231,5 @@ if env_checker.pytorch_lightning_support:
     )
     
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __author__ = "SJTU-ReThinkLab"

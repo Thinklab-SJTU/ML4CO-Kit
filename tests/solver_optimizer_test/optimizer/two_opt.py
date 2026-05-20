@@ -68,6 +68,7 @@ gnn4tsp500_model = GNN4COModel(
 )
 
 # Optimizers
+optimizer_auto = TwoOptOptimizer(impl_type=IMPL_TYPE.AUTO)
 optimizer_ctypes = TwoOptOptimizer(impl_type=IMPL_TYPE.CTYPES)
 optimizer_pybind11_v1 = TwoOptOptimizer(impl_type=IMPL_TYPE.PYBIND11, type_2opt=1)
 optimizer_pybind11_v2 = TwoOptOptimizer(impl_type=IMPL_TYPE.PYBIND11, type_2opt=2)
@@ -81,6 +82,9 @@ class TwoOptOptimizerTester(SolverTesterBase):
             test_solver_class=GNN4COSolver,
             test_task_type_list=[
                 TASK_TYPE.ATSP, 
+                TASK_TYPE.ATSP, 
+                TASK_TYPE.TSP, 
+                TASK_TYPE.TSP, 
                 TASK_TYPE.TSP, 
                 TASK_TYPE.TSP, 
                 TASK_TYPE.TSP, 
@@ -90,17 +94,23 @@ class TwoOptOptimizerTester(SolverTesterBase):
             ],
             test_args_list=[
                 # ATSP-50 (dense)
+                {"model": gnn4atsp50_model, "device": device, "optimizer": optimizer_auto},
                 {"model": gnn4atsp50_model, "device": device, "optimizer": optimizer_ctypes},
                 # TSP-50 (dense)
+                {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer_auto},
                 {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer_pybind11_v1},
                 {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer_pybind11_v2},
                 {"model": gnn4tsp50_model, "device": device, "optimizer": optimizer_torch},
                 # TSP-500 (sparse)
+                {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer_auto},
                 {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer_pybind11_v1},
                 {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer_pybind11_v2},
                 {"model": gnn4tsp500_model, "device": device, "optimizer": optimizer_torch},
             ],
             exclude_test_files_list=[
+                [
+                    pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.pkl"),
+                ], # ATSP-50 (dense)
                 [
                     pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.pkl"),
                 ], # ATSP-50 (dense)
@@ -116,6 +126,16 @@ class TwoOptOptimizerTester(SolverTesterBase):
                     pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"), 
                     pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.pkl"), 
                 ],  # TSP-50 (dense)
+                [
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.pkl"), 
+                ],  # TSP-50 (dense)
+                [
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
+                ],  # TSP-500 (sparse)
                 [
                     pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
                     pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),

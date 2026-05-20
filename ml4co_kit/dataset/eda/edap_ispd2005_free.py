@@ -14,16 +14,15 @@ ISPD2005 Dataset for EDA.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
 import numpy as np
-from typing import Union, List
+from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.task.eda.edap import EDAPTask
 from ml4co_kit.task.eda.base import EDA_BENCH
 from ml4co_kit.dataset.base import DatasetBase
 
 
-class ISPD2005Dataset(DatasetBase):
+class EDAP_ISPD2005FreeDataset(DatasetBase):
     """
     ISPD2005: https://www.ispd.cc/contests/05/contest.htm
     @inproceedings{
@@ -38,20 +37,26 @@ class ISPD2005Dataset(DatasetBase):
     
     def __init__(
         self, 
+        extend_die: bool = True,
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         # Super Initialization  
-        super(ISPD2005Dataset, self).__init__(
+        super(EDAP_ISPD2005FreeDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
-            dataset_name="ISPD2005",
+            dataset_name="ISPD2005Free",
             precision=precision
         )
+
+        # Initialize Attributes
+        self.extend_die = extend_die
 
     def _preprocess(self):
        # Name list
         self.name_list = [
-            "adaptec1", "adaptec2", "adaptec3", "adaptec4",
-            "bigblue1", "bigblue2", "bigblue3", "bigblue4",
+            "adaptec1_allfree", "adaptec2_allfree", 
+            "adaptec3_allfree", "adaptec4_allfree",
+            "bigblue1_allfree", "bigblue2_allfree", 
+            "bigblue3_allfree", "bigblue4_allfree",
         ]
 
         # Die size
@@ -106,10 +111,24 @@ class ISPD2005Dataset(DatasetBase):
         ]
         
     def _load(self, idx) -> EDAPTask:
+        # Get original die
         name = self.name_list[idx]
         die = self.die_list[idx]
+
+        # Extend die if required
+        if self.extend_die:
+            die = np.array([[
+                die[:, 0].min(),
+                die[:, 1].min(),
+                die[:, 2].max(),
+                die[:, 3].max(),
+            ]], dtype=self.precision)
+
+        # Create task data
         task_data = EDAPTask(precision=self.precision)
-        task_data.from_ispd2005(
-            name=name, die=die, root_path=self.extracted_save_path
+        task_data.from_ispd2005_like(
+            name=name, die=die, 
+            root_path=self.extracted_save_path,
+            benchmark_name=EDA_BENCH.ISPD2005FREE
         )
         return task_data
