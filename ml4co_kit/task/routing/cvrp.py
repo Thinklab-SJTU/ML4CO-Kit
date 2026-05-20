@@ -21,10 +21,9 @@ import vrplib
 import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Any, List, Optional, Sequence, Union
+from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
-import ml4co_kit.task.routing.vrp_base as vrp_utils
 from ml4co_kit.task.routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 
 
@@ -140,152 +139,6 @@ class CVRPTask(RoutingTaskBase):
             dists = self.dist_eval.cal_dist_matrix(self.coords)
             self.dists = dists.astype(self.precision)
         return self.dists
-
-    def _get_prl_solution(self, sol: Optional[np.ndarray] = None) -> np.ndarray:
-        """Get the provided solution or the task solution for PRL utilities."""
-        if sol is None:
-            self._check_sol_not_none()
-            sol = self.sol
-        return sol
-
-    def _get_prl_num_nodes(self) -> int:
-        """Get the number of nodes including the depot."""
-        if self.nodes_num is None:
-            raise ValueError("``nodes_num`` cannot be None!")
-        return self.nodes_num + 1
-
-    def _get_demands_with_depot(self) -> np.ndarray:
-        """Get CVRP demands indexed by node id, including depot demand."""
-        self._check_demands_not_none()
-        return np.insert(self.demands, 0, 0)
-
-    def split_routes(
-        self, sol: Optional[np.ndarray] = None
-    ) -> List[List[int]]:
-        """Split a flat CVRP solution into routes without depot nodes."""
-        sol = self._get_prl_solution(sol=sol)
-        return vrp_utils.split_routes(solution=sol, depot=0)
-
-    def routes_to_flat(self, routes: Sequence[Sequence[int]]) -> List[int]:
-        """Convert route lists into the standard flat CVRP solution format."""
-        return vrp_utils.routes_to_flat(routes=routes, depot=0)
-
-    def sol_to_edges(
-        self,
-        sol: Optional[np.ndarray] = None,
-        include_depot_edges: bool = True,
-    ) -> List[tuple]:
-        """Convert a CVRP solution into directed edges."""
-        sol = self._get_prl_solution(sol=sol)
-        return vrp_utils.sol_to_edges(
-            solution=sol,
-            depot=0,
-            include_depot_edges=include_depot_edges,
-        )
-
-    def sol_to_heatmap(
-        self,
-        sol: Optional[np.ndarray] = None,
-        include_depot_edges: bool = True,
-        dtype: Any = None,
-    ) -> np.ndarray:
-        """Convert a CVRP solution into a directed heatmap."""
-        sol = self._get_prl_solution(sol=sol)
-        if dtype is None:
-            dtype = self.precision
-        return vrp_utils.sol_to_heatmap(
-            solution=sol,
-            num_nodes=self._get_prl_num_nodes(),
-            depot=0,
-            include_depot_edges=include_depot_edges,
-            dtype=dtype,
-        )
-
-    def sol_to_successor(
-        self,
-        sol: Optional[np.ndarray] = None,
-        missing_value: int = -1,
-    ) -> dict:
-        """Convert a CVRP solution into customer and depot successors."""
-        sol = self._get_prl_solution(sol=sol)
-        return vrp_utils.sol_to_successor(
-            solution=sol,
-            num_nodes=self._get_prl_num_nodes(),
-            depot=0,
-            missing_value=missing_value,
-        )
-
-    def check_visit_once(self, sol: Optional[np.ndarray] = None) -> bool:
-        """Check whether every customer is visited exactly once."""
-        sol = self._get_prl_solution(sol=sol)
-        if self.nodes_num is None:
-            raise ValueError("``nodes_num`` cannot be None!")
-        return vrp_utils.check_visit_once(
-            solution=sol,
-            num_customers=self.nodes_num,
-            depot=0,
-        )
-
-    def get_route_demands(self, sol: Optional[np.ndarray] = None) -> np.ndarray:
-        """Return the demand sum of each route."""
-        sol = self._get_prl_solution(sol=sol)
-        return vrp_utils.get_route_demands(
-            solution=sol,
-            demands=self._get_demands_with_depot(),
-            depot=0,
-        )
-
-    def get_capacity_violation(
-        self, sol: Optional[np.ndarray] = None
-    ) -> np.ndarray:
-        """Return per-route capacity violation amounts."""
-        sol = self._get_prl_solution(sol=sol)
-        self._check_capacity_not_none()
-        return vrp_utils.get_capacity_violation(
-            solution=sol,
-            demands=self._get_demands_with_depot(),
-            capacity=self.capacity,
-            depot=0,
-        )
-
-    def check_capacity(self, sol: Optional[np.ndarray] = None) -> bool:
-        """Check whether every route satisfies the CVRP capacity constraint."""
-        sol = self._get_prl_solution(sol=sol)
-        self._check_capacity_not_none()
-        return vrp_utils.check_capacity(
-            solution=sol,
-            demands=self._get_demands_with_depot(),
-            capacity=self.capacity,
-            depot=0,
-            threshold=self.threshold,
-        )
-
-    def evaluate_distance(
-        self,
-        sol: Optional[np.ndarray] = None,
-        check_constr: bool = True,
-    ) -> np.floating:
-        """Evaluate a CVRP solution distance using the task evaluator."""
-        sol = self._get_prl_solution(sol=sol)
-        return self.evaluate(sol=sol, check_constr=check_constr)
-
-    def make_prior(
-        self,
-        sol: Optional[np.ndarray] = None,
-        confidence: Optional[Union[float, Sequence[float], np.ndarray]] = None,
-        dtype: Any = None,
-    ) -> dict:
-        """Build PRL prior data from a CVRP solution."""
-        sol = self._get_prl_solution(sol=sol)
-        if dtype is None:
-            dtype = self.precision
-        return vrp_utils.make_prior(
-            solution=sol,
-            num_nodes=self._get_prl_num_nodes(),
-            depot=0,
-            confidence=confidence,
-            dtype=dtype,
-        )
     
     def from_data(
         self,

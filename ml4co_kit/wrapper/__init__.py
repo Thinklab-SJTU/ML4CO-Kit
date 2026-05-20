@@ -19,10 +19,13 @@ from .base import WrapperBase
 # Routing Problems
 from .routing.atsp import ATSPWrapper
 from .routing.cvrp import CVRPWrapper
+from .routing.ovrp import OVRPWrapper
 from .routing.op import OPWrapper
 from .routing.pctsp import PCTSPWrapper
 from .routing.spctsp import SPCTSPWrapper
 from .routing.tsp import TSPWrapper
+from .routing.vrpl import VRPLWrapper
+from .routing.vrptw import VRPTWWrapper
 
 # Graph Problems
 from .graph.mcl import MClWrapper

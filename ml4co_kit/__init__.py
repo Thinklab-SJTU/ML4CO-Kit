@@ -61,7 +61,10 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
-from .task import ATSPTask, CVRPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask
+from .task import (
+    ATSPTask, CVRPTask, OVRPTask, OPTask, PCTSPTask, 
+    SPCTSPTask, TSPTask, VRPLTask, VRPTWTask
+)
 
 # Portfolio Task
 from .task import PortfolioTaskBase
@@ -98,12 +101,13 @@ from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
 # Routing Generator
 from .generator import RoutingGeneratorBase
 from .generator import (
-    ATSP_TYPE, CVRP_TYPE, OP_TYPE, 
-    PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE
+    ATSP_TYPE, CVRP_TYPE, OVRP_TYPE, OP_TYPE, 
+    PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE, VRPL_TYPE, VRPTW_TYPE
 )
 from .generator import (
-    ATSPGenerator, CVRPGenerator, OPGenerator,  
+    ATSPGenerator, CVRPGenerator, OVRPGenerator, OPGenerator,  
     PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
+    VRPLGenerator, VRPTWGenerator
 )
 
 # QAP Generator
@@ -196,8 +200,8 @@ from .wrapper import WrapperBase
 
 # Routing Problems
 from .wrapper import (
-    ATSPWrapper, CVRPWrapper, OPWrapper, 
-    PCTSPWrapper, SPCTSPWrapper, TSPWrapper
+    ATSPWrapper, CVRPWrapper, OVRPWrapper, OPWrapper, 
+    PCTSPWrapper, SPCTSPWrapper, TSPWrapper, VRPLWrapper, VRPTWWrapper
 )
 
 # Graph Problems

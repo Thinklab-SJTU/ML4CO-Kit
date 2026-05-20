@@ -45,7 +45,10 @@ from .graph.kamis import KaMISSolver
 from .graph.lc_degree import LcDegreeSolver
 
 # Solvers for Routing Tasks
-from .routing.concorde import ConcordeSolver
+try:
+    from .routing.concorde import ConcordeSolver
+except Exception:
+    ConcordeSolver = None
 from .routing.ga_eax import GAEAXSolver
 from .routing.hgs import HGSSolver
 from .routing.lkh import LKHSolver
