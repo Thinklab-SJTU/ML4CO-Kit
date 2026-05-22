@@ -44,10 +44,13 @@ from .qap.kqap import KQAPTask
 from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .routing.atsp import ATSPTask
 from .routing.cvrp import CVRPTask
+from .routing.ovrp import OVRPTask
 from .routing.op import OPTask
 from .routing.pctsp import PCTSPTask
 from .routing.spctsp import SPCTSPTask
 from .routing.tsp import TSPTask
+from .routing.vrpl import VRPLTask
+from .routing.vrptw import VRPTWTask
 
 # SAT Task
 from .sat.base import SATTaskBase

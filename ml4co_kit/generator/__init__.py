@@ -38,10 +38,13 @@ from .portfolio.mopo import MOPOGenerator
 from .routing.base import RoutingGeneratorBase
 from .routing.atsp import ATSPGenerator, ATSP_TYPE
 from .routing.cvrp import CVRPGenerator, CVRP_TYPE
+from .routing.ovrp import OVRPGenerator, OVRP_TYPE
 from .routing.op import OPGenerator, OP_TYPE
 from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
 from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
 from .routing.tsp import TSPGenerator, TSP_TYPE
+from .routing.vrpl import VRPLGenerator, VRPL_TYPE
+from .routing.vrptw import VRPTWGenerator, VRPTW_TYPE
 
 # QAP Generator
 from .qap.base import QAPGraphGenerator

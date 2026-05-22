@@ -31,9 +31,12 @@ class TASK_TYPE(str, Enum):
     ATSP = "ATSP" # Asymmetric Traveling Salesman Problem 
     CVRP = "CVRP" # Capacitated Vehicle Routing Problem
     OP = "OP" # Orienteering Problem 
+    OVRP = "OVRP" # Open Vehicle Routing Problem
     PCTSP = "PCTSP" # Prize Collection Traveling Salesman Problem
     SPCTSP = "SPCTSP" # Stochastic Prize Collection Traveling Salesman Problem
     TSP = "TSP" # Traveling Salesman Problem
+    VRPL = "VRPL" # Vehicle Routing Problem with Route Length Limit
+    VRPTW = "VRPTW" # Vehicle Routing Problem with Time Windows
 
     # Graph Problems
     MCL = "MCl" # Maximum Clique

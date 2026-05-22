@@ -34,6 +34,7 @@ class CVRPWrapper(WrapperBase):
             task_type=TASK_TYPE.CVRP, precision=precision
         )
         self.task_list: List[CVRPTask] = list()
+        self.task_class = CVRPTask
         
     def from_txt(
         self, 
@@ -94,7 +95,7 @@ class CVRPWrapper(WrapperBase):
                 
                 # Create a new task and add it to ``self.task_list``
                 if overwrite:
-                    cvrp_task = CVRPTask(
+                    cvrp_task = self.task_class(
                         distance_type=distance_type,
                         round_type=round_type,
                         precision=self.precision
@@ -222,7 +223,7 @@ class CVRPWrapper(WrapperBase):
             enumerate(zip(vrp_files_path, sol_files_path)), load_msg, show_time
         ):
             if overwrite:
-                cvrp_task = CVRPTask(round_type=round_type, precision=self.precision)
+                cvrp_task = self.task_class(round_type=round_type, precision=self.precision)
             else:
                 cvrp_task = self.task_list[idx]
             cvrp_task.from_vrplib(

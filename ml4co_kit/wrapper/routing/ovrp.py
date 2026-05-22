@@ -1,0 +1,31 @@
+r"""
+OVRP Wrapper.
+"""
+
+# Copyright (c) 2024 Thinklab@SJTU
+# ML4CO-Kit is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+# http://license.coscl.org.cn/MulanPSL2
+#
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+
+
+import numpy as np
+from typing import Union, List
+from ml4co_kit.task.base import TASK_TYPE
+from ml4co_kit.task.routing.ovrp import OVRPTask
+from ml4co_kit.wrapper.routing.cvrp import CVRPWrapper
+
+
+class OVRPWrapper(CVRPWrapper):
+    def __init__(
+        self, precision: Union[np.float32, np.float64] = np.float32
+    ):
+        super(OVRPWrapper, self).__init__(precision=precision)
+        self.task_type = TASK_TYPE.OVRP
+        self.task_list: List[OVRPTask] = list()
+        self.task_class = OVRPTask
