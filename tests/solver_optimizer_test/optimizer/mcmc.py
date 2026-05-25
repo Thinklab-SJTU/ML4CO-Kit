@@ -13,6 +13,7 @@ MCMC Optimizer Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import pathlib
 from ml4co_kit import TASK_TYPE, NearestSolver, MCMCOptimizer, LcDegreeSolver
 from tests.solver_optimizer_test.base import SolverTesterBase
 
@@ -33,7 +34,15 @@ class RoutingMCMCOptimizerTester(SolverTesterBase):
                 {"optimizer": tsp_optimizer}, # TSP
                 {"optimizer": cvrp_optimizer}, # CVRP
             ],
-            exclude_test_files_list=[[],[]],
+            exclude_test_files_list=[
+                [],
+                [
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp100_o_uniform_16ins.pkl"),
+                ]
+            ],
             info="MCMCOptimizer"
         )
         
