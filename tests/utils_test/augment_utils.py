@@ -36,7 +36,7 @@ class AugmentUtilsTester(object):
         
         # 1.1 get tsp task
         tsp_task = TSPTask()
-        tsp_task.from_pickle(file_path="test_dataset/routing/tsp/task/tsp50_uniform_task.pkl")
+        tsp_task.from_pickle(file_path="test_dataset/routing/tsp/tsp/task/tsp50_uniform_task.pkl")
         
         # 1.2 augment the points
         augmented_points = points_augment(tsp_task.points.copy())

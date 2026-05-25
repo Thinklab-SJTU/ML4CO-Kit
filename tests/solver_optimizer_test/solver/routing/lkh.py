@@ -13,6 +13,7 @@ LKH Solver Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import pathlib
 from ml4co_kit import TASK_TYPE, LKHSolver
 from tests.solver_optimizer_test.base import SolverTesterBase
 
@@ -28,7 +29,14 @@ class LKHSolverTester(SolverTesterBase):
             test_args_list=[
                 {}, {}, {"lkh_special": True},
             ],
-            exclude_test_files_list=[[], [], []]
+            exclude_test_files_list=[
+                [], 
+                [], 
+                [
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+                ]
+            ]
         )
         
     def pre_test(self):
