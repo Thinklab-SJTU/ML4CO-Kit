@@ -103,6 +103,12 @@ class EnvChecker(object):
                 self.cuda_support = False
         return self.cuda_support
 
+    def check_cp39_or_later(self) -> bool:
+        if self.python_major >= 3 and self.python_minor >= 9:
+            return True
+        else:
+            return False
+
     def check_cp310_or_later(self) -> bool:
         if self.python_major >= 3 and self.python_minor >= 10:
             return True

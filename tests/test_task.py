@@ -20,6 +20,7 @@ sys.path.insert(0, root_folder)
 
 
 # Routing Problems
+from ml4co_kit import env_checker
 from tests.task_test import (
     ATSPTaskTester, 
     TSPTaskTester, 
@@ -70,13 +71,16 @@ def test_task():
     PCTSPTaskTester().test()
     TSPTaskTester().test()
     CVRPTaskTester().test()
-    CVRPBTaskTester().test()
-    CVRPBLTaskTester().test()
-    CVRPBLTWTaskTester().test()
-    CVRPBTWTaskTester().test()
-    CVRPLTaskTester().test()
-    CVRPLTWTaskTester().test()
-    CVRPTWTaskTester().test()
+
+    # Python Version
+    if env_checker.check_cp39_or_later():
+        CVRPBTaskTester().test()
+        CVRPBLTaskTester().test()
+        CVRPBLTWTaskTester().test()
+        CVRPBTWTaskTester().test()
+        CVRPLTaskTester().test()
+        CVRPLTWTaskTester().test()
+        CVRPTWTaskTester().test()
     
     # Graph Problems
     MClTaskTester().test()
