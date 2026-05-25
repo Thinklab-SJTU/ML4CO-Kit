@@ -30,7 +30,7 @@ class CVRPLTask(CVRPTask):
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         precision: Union[np.float32, np.float64] = np.float32,
-        threshold: float = 1e-5,
+        threshold: float = 1e-4,
     ):
         # Super Initialization
         super(CVRPLTask, self).__init__(
