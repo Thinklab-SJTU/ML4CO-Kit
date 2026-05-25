@@ -17,9 +17,9 @@ GP-Degree (Manual Heuristic)
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.gp_degree.mcl_gp_degree import mcl_gp_degree_decoder
-from ml4co_kit.solver.graph.lib.gp_degree.mis_gp_degree import mis_gp_degree_decoder
-from ml4co_kit.solver.graph.lib.gp_degree.mvc_gp_degree import mvc_gp_degree_decoder
+from .lib.gp_degree.mcl_gp_degree import mcl_gp_degree_decoder
+from .lib.gp_degree.mis_gp_degree import mis_gp_degree_decoder
+from .lib.gp_degree.mvc_gp_degree import mvc_gp_degree_decoder
 
 
 class GpDegreeSolver(SolverBase):

@@ -17,11 +17,11 @@ Insertion (Manual Heuristic)
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.insertion.tsp_insertion import tsp_insertion
-from ml4co_kit.solver.common.lib.insertion.mcl_insertion import mcl_insertion
-from ml4co_kit.solver.common.lib.insertion.mis_insertion import mis_insertion
-from ml4co_kit.solver.common.lib.insertion.mvc_insertion import mvc_insertion
-from ml4co_kit.solver.common.lib.insertion.mcut_insertion import mcut_insertion
+from .lib.insertion.tsp_insertion import tsp_insertion
+from .lib.insertion.mcl_insertion import mcl_insertion
+from .lib.insertion.mis_insertion import mis_insertion
+from .lib.insertion.mvc_insertion import mvc_insertion
+from .lib.insertion.mcut_insertion import mcut_insertion
 
 
 class InsertionSolver(SolverBase):

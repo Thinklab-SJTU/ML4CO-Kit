@@ -23,10 +23,10 @@ class ATSPTaskTester(TaskTesterBase):
         super(ATSPTaskTester, self).__init__(
             test_task_class=ATSPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/atsp/task/atsp50_hcp_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp54_sat_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp50_hcp_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp54_sat_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp500_uniform_task.pkl"),
             ],
         )
         

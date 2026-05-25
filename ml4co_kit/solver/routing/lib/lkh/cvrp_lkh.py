@@ -19,7 +19,7 @@ import tempfile
 import subprocess
 import numpy as np
 from ml4co_kit.extension import tsplib95
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 
 
 def cvrp_lkh(

@@ -14,7 +14,7 @@ Random Initialization Algorithm for ATSP
 
 
 import numpy as np
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 
 
 def _atsp_random(nodes_num: int) -> np.ndarray:

@@ -14,9 +14,9 @@ MCMC Algorithm for CVRP
 
 
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 from ml4co_kit.optimizer.lib.cvrp_ls.cvrp_ls import cvrp_ls
-from ml4co_kit.optimizer.lib.mcmc.pybind11_impl.c_cvrp_mcmc import pybind11_cvrp_mcmc_impl
+from .pybind11_impl.c_cvrp_mcmc import pybind11_cvrp_mcmc_impl
 
 
 def cvrp_mcmc_ls(

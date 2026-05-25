@@ -17,8 +17,8 @@ ILS (Iterated Local Search).
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.ils.pctsp_ils import pctsp_ils
-from ml4co_kit.solver.common.lib.ils.spctsp_ils import spctsp_ils
+from .lib.ils.pctsp_ils import pctsp_ils
+from .lib.ils.spctsp_ils import spctsp_ils
 
 
 class ILSSolver(SolverBase):

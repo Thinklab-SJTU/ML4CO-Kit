@@ -23,7 +23,7 @@ class PCTSPTaskTester(TaskTesterBase):
         super(PCTSPTaskTester, self).__init__(
             test_task_class=PCTSPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/pctsp/task/pctsp50_uniform_task.pkl")
+                pathlib.Path("test_dataset/routing/tsp/pctsp/task/pctsp50_uniform_task.pkl")
             ],
         )
         

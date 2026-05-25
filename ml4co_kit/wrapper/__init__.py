@@ -16,16 +16,22 @@ Wrapper Module.
 
 from .base import WrapperBase
 
-# Routing Problems
-from .routing.atsp import ATSPWrapper
-from .routing.cvrp import CVRPWrapper
-from .routing.ovrp import OVRPWrapper
-from .routing.op import OPWrapper
-from .routing.pctsp import PCTSPWrapper
-from .routing.spctsp import SPCTSPWrapper
-from .routing.tsp import TSPWrapper
-from .routing.vrpl import VRPLWrapper
-from .routing.vrptw import VRPTWWrapper
+# Routing Problems (TSP)
+from .routing.tsp.atsp import ATSPWrapper
+from .routing.tsp.op import OPWrapper
+from .routing.tsp.pctsp import PCTSPWrapper
+from .routing.tsp.spctsp import SPCTSPWrapper
+from .routing.tsp.tsp import TSPWrapper
+
+# Routing Problems (VRP)
+from .routing.vrp.cvrp import CVRPWrapper
+from .routing.vrp.cvrpb import CVRPBWrapper
+from .routing.vrp.cvrpbl import CVRPBLWrapper
+from .routing.vrp.cvrpbltw import CVRPBLTWWrapper
+from .routing.vrp.cvrpbtw import CVRPBTWWrapper
+from .routing.vrp.cvrpl import CVRPLWrapper
+from .routing.vrp.cvrpltw import CVRPLTWWrapper
+from .routing.vrp.cvrptw import CVRPTWWrapper
 
 # Graph Problems
 from .graph.mcl import MClWrapper

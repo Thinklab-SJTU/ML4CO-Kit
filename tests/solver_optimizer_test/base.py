@@ -111,8 +111,6 @@ class SolverTesterBase(object):
         # Routing Problems
         if test_task_type == TASK_TYPE.ATSP:
             return self._get_atsp_tasks(mode, exclude_test_files)
-        elif test_task_type == TASK_TYPE.CVRP:
-            return self._get_cvrp_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.OP:
             return self._get_op_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.PCTSP:
@@ -121,7 +119,23 @@ class SolverTesterBase(object):
             return self._get_spctsp_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.TSP:
             return self._get_tsp_tasks(mode, exclude_test_files)
-        
+        elif test_task_type == TASK_TYPE.CVRP:
+            return self._get_cvrp_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPB:
+            return self._get_cvrpb_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPBL:
+            return self._get_cvrpbl_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPBLTW:
+            return self._get_cvrpbltw_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPBTW:
+            return self._get_cvrpbtw_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPL:
+            return self._get_cvrpl_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPLTW:
+            return self._get_cvrpltw_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.CVRPTW:
+            return self._get_cvrptw_tasks(mode, exclude_test_files)
+
         # Graph Problems
         elif test_task_type == TASK_TYPE.MCL:
             return self._get_mcl_tasks(mode, exclude_test_files)
@@ -152,12 +166,6 @@ class SolverTesterBase(object):
         elif test_task_type == TASK_TYPE.SATA:
             return self._get_sata_tasks(mode, exclude_test_files)
         
-        # QAP Problems
-        elif test_task_type == TASK_TYPE.GM:
-            return self._get_gm_tasks(mode, exclude_test_files)
-        elif test_task_type == TASK_TYPE.GED:
-            return self._get_ged_tasks(mode, exclude_test_files)
-
         # Others
         else:
             raise ValueError(
@@ -174,10 +182,10 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             atsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/atsp/task/atsp50_hcp_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp54_sat_task.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/task/atsp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp50_hcp_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp54_sat_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/task/atsp500_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in atsp_test_files_list:
@@ -190,44 +198,13 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             atsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/atsp/wrapper/atsp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/wrapper/atsp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/atsp/wrapper/atsp500_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in atsp_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = ATSPWrapper()
-                    wrapper.from_pickle(test_file)
-                    bacth_task_list.append(wrapper.task_list)
-            return bacth_task_list
-        
-    def _get_cvrp_tasks(
-        self, mode: str, exclude_test_files: List[pathlib.Path]
-    ) -> List[CVRPTask]:
-        # ``Solve`` mode
-        if mode == "solve":
-            cvrp_test_files_list = [
-                pathlib.Path("test_dataset/routing/cvrp/task/cvrp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/cvrp/task/cvrp500_uniform_task.pkl"),
-            ]
-            task_list = list()
-            for test_file in cvrp_test_files_list:
-                if test_file not in exclude_test_files:
-                    task = CVRPTask()
-                    task.from_pickle(test_file)
-                    task_list.append(task)
-            return task_list
-        
-        # ``Batch Solve`` mode
-        if mode == "batch_solve":
-            cvrp_test_files_list = [
-                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
-            ]
-            bacth_task_list = list()
-            for test_file in cvrp_test_files_list:
-                if test_file not in exclude_test_files:
-                    wrapper = CVRPWrapper()
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
@@ -238,7 +215,7 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             op_test_files_list = [
-                pathlib.Path("test_dataset/routing/op/task/op50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/op/task/op50_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in op_test_files_list:
@@ -251,7 +228,7 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             op_test_files_list = [
-                pathlib.Path("test_dataset/routing/op/wrapper/op50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/op/wrapper/op50_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in op_test_files_list:
@@ -267,7 +244,7 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             pctsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/pctsp/task/pctsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/pctsp/task/pctsp50_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in pctsp_test_files_list:
@@ -280,7 +257,7 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             pctsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/pctsp/wrapper/pctsp50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/pctsp/wrapper/pctsp50_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in pctsp_test_files_list:
@@ -296,7 +273,7 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             spctsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/spctsp/task/spctsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/spctsp/task/spctsp50_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in spctsp_test_files_list:
@@ -309,7 +286,7 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             spctsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/spctsp/wrapper/spctsp50_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in spctsp_test_files_list:
@@ -325,12 +302,12 @@ class SolverTesterBase(object):
         # ``Solve`` mode
         if mode == "solve":
             tsp_test_files_list_1 = [
-                pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
-                pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_cluster_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_gaussian_task.pkl"),
             ]
             tsp_test_files_list_2 = [
-                pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/tsp/task/tsp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp500_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in tsp_test_files_list_1:
@@ -349,8 +326,8 @@ class SolverTesterBase(object):
         # ``Batch Solve`` mode
         if mode == "batch_solve":
             tsp_test_files_list = [
-                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/tsp/wrapper/tsp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/wrapper/tsp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/tsp/tsp/wrapper/tsp500_uniform_4ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in tsp_test_files_list:
@@ -359,7 +336,287 @@ class SolverTesterBase(object):
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
+
+    def _get_cvrp_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrp_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrp_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
         
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrp_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrp_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpb_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPBTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpb_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpb_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPBTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpb_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpb_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPBWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpbl_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPBLTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpbl_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpbl_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPBLTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpbl_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpbl_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPBLWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpbltw_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPBLTWTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpbltw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpbltw_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPBLTWTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpbltw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpbltw_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPBLTWWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpbtw_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPBTWTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpbtw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpbtw_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPBTWTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpbtw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpbtw_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPBTWWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpl_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPLTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpl_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpl_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPLTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpl_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpl_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPLWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrpltw_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPLTWTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrpltw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrpltw_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPLTWTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrpltw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrpltw_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPLTWWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_cvrptw_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[CVRPTWTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            cvrptw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw100_o_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in cvrptw_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = CVRPTWTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+        
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            cvrptw_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw100_o_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in cvrptw_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = CVRPTWWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
     ########################################
     #            Graph Problems            #
     ########################################

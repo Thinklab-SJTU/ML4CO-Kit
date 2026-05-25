@@ -17,9 +17,9 @@ Random Initialization Solver.
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.random.tsp_random import tsp_random
-from ml4co_kit.solver.common.lib.random.atsp_random import atsp_random
-from ml4co_kit.solver.common.lib.random.cvrp_random import cvrp_random
+from .lib.random.tsp_random import tsp_random
+from .lib.random.atsp_random import atsp_random
+from .lib.random.cvrp_random import cvrp_random
 
 
 class RandomSolver(SolverBase):

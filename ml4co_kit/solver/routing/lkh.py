@@ -20,10 +20,10 @@ import shutil
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.routing.lib.lkh.tsp_lkh import tsp_lkh
-from ml4co_kit.solver.routing.lib.lkh.atsp_lkh import atsp_lkh
-from ml4co_kit.solver.routing.lib.lkh.cvrp_lkh import cvrp_lkh
 from ml4co_kit.utils.file_utils import download, pull_file_from_huggingface
+from .lib.lkh.tsp_lkh import tsp_lkh
+from .lib.lkh.atsp_lkh import atsp_lkh
+from .lib.lkh.cvrp_lkh import cvrp_lkh
 
 
 class LKHSolver(SolverBase):
@@ -40,7 +40,9 @@ class LKHSolver(SolverBase):
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super(LKHSolver, self).__init__(SOLVER_TYPE.LKH, optimizer=optimizer)
+        super(LKHSolver, self).__init__(
+            solver_type=SOLVER_TYPE.LKH, optimizer=optimizer
+        )
 
         # Initialize Attributes
         self.lkh_scale = lkh_scale

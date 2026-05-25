@@ -18,7 +18,7 @@ import pathlib
 import tempfile
 import subprocess
 import numpy as np
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 
 
 def atsp_lkh(
@@ -31,7 +31,7 @@ def atsp_lkh(
     lkh_special: bool = False,
 ):
     # Preparation 
-    dists = (task_data.dists * lkh_scale).astype(np.int32)
+    dists = (task_data.dists * lkh_scale).round().astype(np.int32)
     atsp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     par_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     tour_file = tempfile.NamedTemporaryFile(mode="w", delete=False)

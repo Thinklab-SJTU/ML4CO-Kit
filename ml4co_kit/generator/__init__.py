@@ -19,7 +19,8 @@ from .base import GeneratorBase
 
 # Graph Generator
 from .graph.base import (
-    GraphGeneratorBase, GRAPH_TYPE, GRAPH_WEIGHT_TYPE, GraphWeightGenerator
+    GraphGeneratorBase, GRAPH_TYPE, 
+    GRAPH_WEIGHT_TYPE, GraphWeightGenerator
 )
 from .graph.mcl import MClGenerator
 from .graph.mcut import MCutGenerator
@@ -34,17 +35,25 @@ from .portfolio.minvarpo import MinVarPOGenerator
 from .portfolio.maxretpo import MaxRetPOGenerator
 from .portfolio.mopo import MOPOGenerator
 
-# Routing Generator
+# Routing Generator (Base)
 from .routing.base import RoutingGeneratorBase
-from .routing.atsp import ATSPGenerator, ATSP_TYPE
-from .routing.cvrp import CVRPGenerator, CVRP_TYPE
-from .routing.ovrp import OVRPGenerator, OVRP_TYPE
-from .routing.op import OPGenerator, OP_TYPE
-from .routing.pctsp import PCTSPGenerator, PCTSP_TYPE
-from .routing.spctsp import SPCTSPGenerator, SPCTSP_TYPE
-from .routing.tsp import TSPGenerator, TSP_TYPE
-from .routing.vrpl import VRPLGenerator, VRPL_TYPE
-from .routing.vrptw import VRPTWGenerator, VRPTW_TYPE
+
+# Routing Generator (TSP)
+from .routing.tsp.atsp import ATSPGenerator, ATSP_TYPE
+from .routing.tsp.op import OPGenerator, OP_TYPE
+from .routing.tsp.pctsp import PCTSPGenerator, PCTSP_TYPE
+from .routing.tsp.spctsp import SPCTSPGenerator, SPCTSP_TYPE
+from .routing.tsp.tsp import TSPGenerator, TSP_TYPE
+
+# Routing Generator (VRP)
+from .routing.vrp.cvrp import CVRPGenerator, CVRP_TYPE
+from .routing.vrp.cvrpb import CVRPBGenerator
+from .routing.vrp.cvrpbl import CVRPBLGenerator
+from .routing.vrp.cvrpbltw import CVRPBLTWGenerator
+from .routing.vrp.cvrpbtw import CVRPBTWGenerator
+from .routing.vrp.cvrpl import CVRPLGenerator
+from .routing.vrp.cvrpltw import CVRPLTWGenerator
+from .routing.vrp.cvrptw import CVRPTWGenerator
 
 # QAP Generator
 from .qap.base import QAPGraphGenerator

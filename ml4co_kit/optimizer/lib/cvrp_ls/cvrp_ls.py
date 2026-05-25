@@ -13,9 +13,10 @@ CVRP local search algorithm.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 from ml4co_kit.optimizer.lib.cvrp_ls.c_classic import c_cvrp_local_search
 
 

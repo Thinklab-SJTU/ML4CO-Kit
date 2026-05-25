@@ -26,6 +26,7 @@ from ml4co_kit.utils.time_utils import Timer
 from ml4co_kit.generator.base import GeneratorBase
 from ml4co_kit.utils.time_utils import tqdm_by_time
 from ml4co_kit.task.base import TASK_TYPE, TaskBase
+from ml4co_kit.utils.pickle_utils import load_pickle
 from ml4co_kit.utils.file_utils import check_file_path
 
 
@@ -179,7 +180,10 @@ class WrapperBase(object):
     
     def from_pickle(self, file_path: pathlib.Path):
         with open(file_path, "rb") as file:
-            self.task_list = pickle.load(file)
+            self.task_list = load_pickle(file)
+        for task_data in self.task_list:
+            if isinstance(task_data, TaskBase):
+                task_data._repair_pickle_state()
         
     def to_pickle(self, file_path: pathlib.Path):
         # Check file path

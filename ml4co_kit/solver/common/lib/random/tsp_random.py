@@ -14,7 +14,7 @@ Random Initialization Algorithm for TSP
 
 
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 
 
 def _tsp_random(nodes_num: int) -> np.ndarray:

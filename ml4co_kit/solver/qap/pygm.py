@@ -18,10 +18,10 @@ from typing import List
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.qap.lib.pygm.gm_pygm import gm_pygm, gm_pygm_batch
-from ml4co_kit.solver.qap.lib.pygm.ged_pygm import ged_pygm, ged_pygm_batch
-from ml4co_kit.solver.qap.lib.pygm.kqap_pygm import kqap_pygm, kqap_pygm_batch
 from ml4co_kit.extension.pygmtools import PyGMToolsQAPSolver
+from .lib.pygm.gm_pygm import gm_pygm, gm_pygm_batch
+from .lib.pygm.ged_pygm import ged_pygm, ged_pygm_batch
+from .lib.pygm.kqap_pygm import kqap_pygm, kqap_pygm_batch
 
 
 class PyGMSolver(SolverBase):

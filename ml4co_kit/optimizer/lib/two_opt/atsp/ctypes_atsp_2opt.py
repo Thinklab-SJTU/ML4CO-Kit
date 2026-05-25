@@ -16,7 +16,7 @@ Two-opt local search algorithm for ATSP using CTypes.
 
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 from .ctypes_impl import ctypes_atsp_2opt_ls_impl
 
 

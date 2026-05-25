@@ -15,11 +15,11 @@ OR-Tools Solver for SAT (Boolean Satisfiability Problem)
 
 import numpy as np
 from ortools.sat.python import cp_model
-from ml4co_kit.task.logic.sat import SATTask
+from ml4co_kit.task.sat.sata import SATATask
 
 
 def sat_ortools(
-    task_data: SATTask, 
+    task_data: SATATask, 
     ortools_time_limit: int = 10
 ):  
     # Extract problem data

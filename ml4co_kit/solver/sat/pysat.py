@@ -17,8 +17,8 @@ PySAT Solver.
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.sat.lib.pysat.satp_pysat import satp_pysat
-from ml4co_kit.solver.sat.lib.pysat.sata_pysat import sata_pysat
+from .lib.pysat.satp_pysat import satp_pysat
+from .lib.pysat.sata_pysat import sata_pysat
 
 
 class PySATSolver(SolverBase):

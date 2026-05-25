@@ -17,37 +17,39 @@ Solver Test Module.
 from ml4co_kit.utils.env_utils import EnvChecker
 env_checker = EnvChecker()
 if env_checker.check_gnn4co():
-    from .solver.gnn4co_beam import GNN4COBeamSolverTester
-    from .solver.gnn4co_greedy import GNN4COGreedySolverTester
-    from .solver.gnn4co_mcts import GNN4COMCTSSolverTester
+    from .solver.common.gnn4co_beam import GNN4COBeamSolverTester
+    from .solver.common.gnn4co_greedy import GNN4COGreedySolverTester
+    from .solver.common.gnn4co_mcts import GNN4COMCTSSolverTester
     from .optimizer.two_opt import TwoOptOptimizerTester
     from .optimizer.mcts import MCTSOptimizerTester
 if env_checker.check_torch():
-    from .solver.neurolkh import NeuroLKHSolverTester
-    from .solver.rlsa import RLSASolverTester
-    from .solver.fem import FEMSolverTester
-    
+    from .solver.graph.rlsa import RLSASolverTester
+    from .solver.graph.fem import FEMSolverTester
+    from .solver.routing.neurolkh import NeuroLKHSolverTester
+
+# Check Python Version
+if env_checker.check_cp311_or_later():
+    from .solver.routing.pyvrp import PyVRPSolverTester
 
 # Load other solver testers
 from .base import SolverTesterBase
-from .solver.concorde import ConcordeSolverTester
-from .solver.ga_eax import GAEAXSolverTester
-from .solver.gp_degree import GpDegreeSolverTester
-from .solver.gurobi import GurobiSolverTester
-from .solver.hgs import HGSSolverTester
-from .solver.ils import ILSSolverTester
-from .solver.isco import ISCOSolverTester
-from .solver.insertion import InsertionSolverTester
-from .solver.kamis import KaMISSolverTester
-from .solver.lc_degree import LcDegreeSolverTester
-from .solver.lkh import LKHSolverTester
-from .solver.nearest import NearestSolverTester
-from .solver.ortools import ORSolverTester
-from .solver.random import RandomSolverTester
-from .solver.scip import SCIPSolverTester
-from .solver.pysat import PySATSolverTester
-from .solver.pygm import PyGMSolverTester
-
+from .solver.common.gurobi import GurobiSolverTester
+from .solver.common.ils import ILSSolverTester
+from .solver.common.insertion import InsertionSolverTester
+from .solver.common.ortools import ORSolverTester
+from .solver.common.random import RandomSolverTester
+from .solver.common.scip import SCIPSolverTester
+from .solver.graph.gp_degree import GpDegreeSolverTester
+from .solver.graph.isco import ISCOSolverTester
+from .solver.graph.kamis import KaMISSolverTester
+from .solver.graph.lc_degree import LcDegreeSolverTester
+from .solver.qap.pygm import PyGMSolverTester
+from .solver.routing.concorde import ConcordeSolverTester
+from .solver.routing.ga_eax import GAEAXSolverTester
+from .solver.routing.hgs import HGSSolverTester
+from .solver.routing.lkh import LKHSolverTester
+from .solver.routing.nearest import NearestSolverTester
+from .solver.sat.pysat import PySATSolverTester
 
 # Load other optimizer testers
 from .optimizer.cvrp_ls import CVRPLSOptimizerTester

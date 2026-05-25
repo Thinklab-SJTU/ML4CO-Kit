@@ -14,6 +14,7 @@ The utilities used to install the environment.
 
 
 import os
+import sys
 import platform
 import importlib.util
 import gurobipy as gp
@@ -54,6 +55,10 @@ class EnvChecker(object):
         
         # Cuda
         self.cuda_support = None
+
+        # Python Version
+        self.python_major = sys.version_info.major
+        self.python_minor = sys.version_info.minor
         
     def _check_package(self, pkg: str) -> bool:
         return importlib.util.find_spec(pkg) is not None
@@ -97,6 +102,18 @@ class EnvChecker(object):
             else:
                 self.cuda_support = False
         return self.cuda_support
+
+    def check_cp310_or_later(self) -> bool:
+        if self.python_major >= 3 and self.python_minor >= 10:
+            return True
+        else:
+            return False
+
+    def check_cp311_or_later(self) -> bool:
+        if self.python_major >= 3 and self.python_minor >= 11:
+            return True
+        else:
+            return False
             
             
 class EnvInstallHelper(object):

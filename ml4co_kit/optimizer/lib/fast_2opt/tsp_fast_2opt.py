@@ -15,7 +15,7 @@ PyBind11-backed fast 2-opt local search for TSP.
 
 
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .pybind11_tsp_fast_2opt import c_tsp_fast_2opt_impl
 
 

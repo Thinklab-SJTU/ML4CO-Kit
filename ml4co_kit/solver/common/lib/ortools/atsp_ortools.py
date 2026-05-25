@@ -15,7 +15,7 @@ OR-Tools Solver for ATSP
 
 import numpy as np
 from ortools.constraint_solver import pywrapcp
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 
 
 def atsp_ortools(

@@ -17,7 +17,7 @@ GA-EAX (A Genetic Algorithm using Edge Assembly Crossover)
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.routing.lib.ga_eax.tsp_ga_eax import tsp_ga_eax
+from .lib.ga_eax.tsp_ga_eax import tsp_ga_eax
 
 
 class GAEAXSolver(SolverBase):
@@ -46,7 +46,9 @@ class GAEAXSolver(SolverBase):
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super(GAEAXSolver, self).__init__(SOLVER_TYPE.GA_EAX, optimizer=optimizer)
+        super(GAEAXSolver, self).__init__(
+            solver_type=SOLVER_TYPE.GA_EAX, optimizer=optimizer
+        )
 
         # Initialize Attributes
         self.ga_eax_scale = ga_eax_scale

@@ -19,13 +19,13 @@ from ortools.constraint_solver.routing_enums_pb2 import LocalSearchMetaheuristic
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.ortools.op_ortools import op_ortools
-from ml4co_kit.solver.common.lib.ortools.tsp_ortools import tsp_ortools
-from ml4co_kit.solver.common.lib.ortools.mcl_ortools import mcl_ortools
-from ml4co_kit.solver.common.lib.ortools.mis_ortools import mis_ortools
-from ml4co_kit.solver.common.lib.ortools.mvc_ortools import mvc_ortools
-from ml4co_kit.solver.common.lib.ortools.atsp_ortools import atsp_ortools
-from ml4co_kit.solver.common.lib.ortools.pctsp_ortools import pctsp_ortools
+from .lib.ortools.op_ortools import op_ortools
+from .lib.ortools.tsp_ortools import tsp_ortools
+from .lib.ortools.mcl_ortools import mcl_ortools
+from .lib.ortools.mis_ortools import mis_ortools
+from .lib.ortools.mvc_ortools import mvc_ortools
+from .lib.ortools.atsp_ortools import atsp_ortools
+from .lib.ortools.pctsp_ortools import pctsp_ortools
 
 
 class ORSolver(SolverBase):

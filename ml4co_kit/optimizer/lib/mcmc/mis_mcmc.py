@@ -15,7 +15,7 @@ MCMC Algorithm for MIS
 
 import numpy as np
 from ml4co_kit.task.graph.mis import MISTask
-from ml4co_kit.optimizer.lib.mcmc.pybind11_impl.c_mis_mcmc import pybind11_mis_mcmc_impl
+from .pybind11_impl.c_mis_mcmc import pybind11_mis_mcmc_impl
 
 
 def mis_mcmc_ls(

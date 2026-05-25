@@ -14,8 +14,9 @@ Nearest Neighbor Algorithm for TSP
 
 
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .c_tsp_nearest import pybind11_tsp_nearest_impl
+
 
 def tsp_nearest(task_data: TSPTask):
     # Preparation

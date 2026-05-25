@@ -18,9 +18,9 @@ import torch
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.rlsa.mcl_rlsa import mcl_rlsa
-from ml4co_kit.solver.graph.lib.rlsa.mis_rlsa import mis_rlsa
-from ml4co_kit.solver.graph.lib.rlsa.mcut_rlsa import mcut_rlsa
+from .lib.rlsa.mcl_rlsa import mcl_rlsa
+from .lib.rlsa.mis_rlsa import mis_rlsa
+from .lib.rlsa.mcut_rlsa import mcut_rlsa
 
 
 class RLSASolver(SolverBase):

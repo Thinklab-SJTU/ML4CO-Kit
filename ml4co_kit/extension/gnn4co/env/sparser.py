@@ -20,8 +20,8 @@ from torch import Tensor
 from typing import List, Optional
 from sklearn.neighbors import KDTree
 from torch_geometric.data import Data, Batch
-from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.utils.type_utils import to_tensor
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.task.graph.base import GraphTaskBase
 

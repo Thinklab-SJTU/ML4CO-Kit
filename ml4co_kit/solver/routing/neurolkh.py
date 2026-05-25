@@ -19,7 +19,7 @@ from ml4co_kit.solver.base import SOLVER_TYPE
 from ml4co_kit.solver.routing.lkh import LKHSolver
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.routing.lib.neurolkh.tsp_neurolkh import batch_tsp_neurolkh
+from .lib.neurolkh.tsp_neurolkh import batch_tsp_neurolkh
 
 
 class NeuroLKHSolver(LKHSolver):

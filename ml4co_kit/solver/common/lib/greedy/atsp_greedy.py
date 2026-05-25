@@ -15,7 +15,7 @@ Greedy Algorithm for ATSP
 
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 from .c_atsp_greedy import c_atsp_greedy_decoder
 
 

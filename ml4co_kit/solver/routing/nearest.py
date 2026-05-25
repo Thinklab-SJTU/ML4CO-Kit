@@ -17,8 +17,8 @@ Nearest Neighbor Heuristic Solver
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.routing.lib.nearest.tsp_nearest import tsp_nearest
-from ml4co_kit.solver.routing.lib.nearest.cvrp_nearest import cvrp_nearest
+from .lib.nearest.tsp_nearest import tsp_nearest
+from .lib.nearest.cvrp_nearest import cvrp_nearest
 
 
 class NearestSolver(SolverBase):

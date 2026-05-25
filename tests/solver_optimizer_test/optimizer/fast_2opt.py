@@ -28,10 +28,10 @@ class FastTwoOptOptimizerTester(SolverTesterBase):
             test_args_list=[{"optimizer": FastTwoOptOptimizer()}],
             exclude_test_files_list=[
                 [
-                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_cluster_task.pkl"),
-                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_gaussian_task.pkl"),
-                    pathlib.Path("test_dataset/routing/tsp/task/tsp50_uniform_task.pkl"), 
-                    pathlib.Path("test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
+                    pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_cluster_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_gaussian_task.pkl"),
+                    pathlib.Path("test_dataset/routing/tsp/tsp/task/tsp50_uniform_task.pkl"), 
+                    pathlib.Path("test_dataset/routing/tsp/tsp/wrapper/tsp50_uniform_16ins.pkl"), 
                 ],
             ],
             info="FastTwoOptOptimizer"

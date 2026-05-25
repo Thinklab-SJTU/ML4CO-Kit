@@ -15,7 +15,7 @@ Gurobi Solver for CVRP
 
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 
 
 def cvrp_gurobi(

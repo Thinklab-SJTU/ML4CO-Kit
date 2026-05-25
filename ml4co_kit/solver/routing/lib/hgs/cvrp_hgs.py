@@ -16,7 +16,7 @@ HGS Algorithm for CVRP
 import os
 import tempfile
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 from .c_hgs import HGS_SOLVER_PATH
 
 
@@ -28,9 +28,9 @@ def cvrp_hgs(
     hgs_show_info: bool = False,
 ):
     # Preparation 
-    depots = (task_data.depots * hgs_scale).astype(np.int32)
-    points = (task_data.points * hgs_scale).astype(np.int32)
-    demands = (task_data.norm_demands * hgs_demands_scale).astype(np.int32)
+    depots = (task_data.depots * hgs_scale).round().astype(np.int32)
+    points = (task_data.points * hgs_scale).round().astype(np.int32)
+    demands = (task_data.norm_demands * hgs_demands_scale).round().astype(np.int32)
     capacity = int(hgs_demands_scale)
     vrp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     tour_file = tempfile.NamedTemporaryFile(mode="w", delete=False)

@@ -16,7 +16,7 @@ HGS Algorithm for TSP
 import os
 import tempfile
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .c_ga_eax_normal import GA_EAX_NORMAL_SOLVER_PATH
 from .c_ga_eax_large import GA_EAX_LARGE_SOLVER_PATH
 
@@ -31,7 +31,7 @@ def tsp_ga_eax(
     use_large_solver: bool = False,
 ):
     # Preparation 
-    points = (task_data.points * ga_eax_scale).astype(np.int32)
+    points = (task_data.points * ga_eax_scale).round().astype(np.int32)
     tsp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     sol_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     sol_abs_path_1 = sol_file.name + "_BestSol"

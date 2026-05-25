@@ -12,9 +12,10 @@ OR-Tools Solver for OP
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+
 import numpy as np
-from ortools.constraint_solver import pywrapcp, routing_enums_pb2
-from ml4co_kit.task.routing.op import OPTask
+from ortools.constraint_solver import pywrapcp
+from ml4co_kit.task.routing.tsp.op import OPTask
 
 
 def op_ortools(
@@ -24,7 +25,8 @@ def op_ortools(
 ):
     # Prepare data
     dists = np.asarray(task_data._get_dists())  # expected shape: (N, N)
-    prizes = np.asarray(task_data.prizes)  # could be length N (including depot) or N-1 (excluding depot)
+    # could be length N (including depot) or N-1 (excluding depot)
+    prizes = np.asarray(task_data.prizes)  
     max_length = float(task_data.max_length)
     N = int(dists.shape[0])
 
@@ -32,7 +34,10 @@ def op_ortools(
     scale = int(ortools_scale)
     # convert to python nested lists of ints (OR-Tools prefers Python ints)
     dist_matrix = (dists * scale).round().astype(np.int64).tolist()
-    scaled_prizes = (np.round(prizes * scale).astype(np.int64) if prizes.size > 0 else np.array([], dtype=np.int64))
+    scaled_prizes = (
+        np.round(prizes * scale).astype(np.int64) 
+        if prizes.size > 0 else np.array([], dtype=np.int64)
+    )
 
     # Build prizes_per_node of length N (prize at depot set to 0)
     prizes_per_node = np.zeros(N, dtype=np.int64)

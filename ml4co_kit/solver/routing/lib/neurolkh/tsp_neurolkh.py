@@ -16,8 +16,8 @@ LKH Algorithm for TSP
 import torch
 import pathlib
 from typing import List
-from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.utils.file_utils import download
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .pyneurolkh.encoder import SparseGCNEncoder
 from .pyneurolkh.sparser import neurolkh_sparser
 from .pyneurolkh.wrapper import neurolkh_wrapper

@@ -62,8 +62,11 @@ from .task import MClTask, MCutTask, MISTask, MVCTask
 # Routing Task
 from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 from .task import (
-    ATSPTask, CVRPTask, OVRPTask, OPTask, PCTSPTask, 
-    SPCTSPTask, TSPTask, VRPLTask, VRPTWTask
+    ATSPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask,
+)
+from .task import (
+    CVRPTask, CVRPBTask, CVRPBLTask, CVRPBLTWTask, 
+    CVRPBTWTask, CVRPLTask, CVRPLTWTask, CVRPTWTask,
 )
 
 # Portfolio Task
@@ -101,13 +104,14 @@ from .generator import MinVarPOGenerator, MaxRetPOGenerator, MOPOGenerator
 # Routing Generator
 from .generator import RoutingGeneratorBase
 from .generator import (
-    ATSP_TYPE, CVRP_TYPE, OVRP_TYPE, OP_TYPE, 
-    PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE, VRPL_TYPE, VRPTW_TYPE
+    ATSP_TYPE, CVRP_TYPE, OP_TYPE, PCTSP_TYPE, SPCTSP_TYPE, TSP_TYPE
 )
 from .generator import (
-    ATSPGenerator, CVRPGenerator, OVRPGenerator, OPGenerator,  
-    PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
-    VRPLGenerator, VRPTWGenerator
+    ATSPGenerator, OPGenerator, PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
+)
+from .generator import (
+    CVRPGenerator, CVRPBGenerator, CVRPBLGenerator, CVRPBLTWGenerator, 
+    CVRPBTWGenerator, CVRPLGenerator, CVRPLTWGenerator, CVRPTWGenerator,
 )
 
 # QAP Generator
@@ -149,8 +153,13 @@ if env_checker.check_gnn4co():
     from .solver import GNN4COSolver
 if env_checker.check_torch():
     from .solver import (
-        FEMSolver, RLSASolver, PyGMSolver, PyGMToolsQAPSolver, NeuroLKHSolver
+        FEMSolver, RLSASolver, PyGMSolver, 
+        PyGMToolsQAPSolver, NeuroLKHSolver
     )
+
+# Solver (Python Version)
+if env_checker.check_cp311_or_later():
+    from .solver import PyVRPSolver
 
 # Common Solvers
 from .solver import (
@@ -165,7 +174,8 @@ from .solver import (
 
 # Solvers for Routing Tasks
 from .solver import (
-    ConcordeSolver, GAEAXSolver, HGSSolver, LKHSolver, NearestSolver, PyVRPSolver
+    ConcordeSolver, GAEAXSolver, HGSSolver, 
+    LKHSolver, NearestSolver
 )
 
 # Solvers for SAT Tasks
@@ -200,8 +210,11 @@ from .wrapper import WrapperBase
 
 # Routing Problems
 from .wrapper import (
-    ATSPWrapper, CVRPWrapper, OVRPWrapper, OPWrapper, 
-    PCTSPWrapper, SPCTSPWrapper, TSPWrapper, VRPLWrapper, VRPTWWrapper
+    ATSPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper, TSPWrapper
+)
+from .wrapper import (
+    CVRPWrapper, CVRPBWrapper, CVRPBLWrapper, CVRPBLTWWrapper, 
+    CVRPBTWWrapper, CVRPLWrapper, CVRPLTWWrapper, CVRPTWWrapper,
 )
 
 # Graph Problems

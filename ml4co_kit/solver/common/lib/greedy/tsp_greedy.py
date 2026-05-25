@@ -14,7 +14,7 @@ Greedy Algorithm for TSP
 
 
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .cython_tsp_greedy import cython_tsp_greedy
 from .pybind11_tsp_greedy_v2 import pybind11_tsp_greedy_v2
 

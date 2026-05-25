@@ -15,7 +15,7 @@ OR-Tools Solver for TSP
 
 import numpy as np
 from ortools.constraint_solver import pywrapcp
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 
 
 def tsp_ortools(

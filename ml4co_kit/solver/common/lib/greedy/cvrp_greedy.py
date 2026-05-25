@@ -14,7 +14,7 @@ Greedy Algorithm for CVRP
 
 
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 
 
 def cvrp_greedy(task_data: CVRPTask):

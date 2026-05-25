@@ -17,8 +17,8 @@ GNN4CO Denser.
 import torch
 from typing import List
 from torch import Tensor
-from ml4co_kit.task.routing.tsp import TSPTask
-from ml4co_kit.task.routing.atsp import ATSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.atsp import ATSPTask
 from ml4co_kit.utils.type_utils import to_tensor
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 

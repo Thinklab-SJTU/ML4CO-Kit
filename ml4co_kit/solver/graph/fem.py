@@ -20,7 +20,7 @@ from functools import partial
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.fem.mcut_fem import mcut_fem
+from .lib.fem.mcut_fem import mcut_fem
 
 
 class FEMSolver(SolverBase):

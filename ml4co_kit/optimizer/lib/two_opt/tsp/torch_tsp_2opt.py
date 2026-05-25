@@ -19,7 +19,7 @@ import numpy as np
 from typing import List
 from torch import Tensor
 from ml4co_kit.task.routing.base import DISTANCE_TYPE
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.utils.type_utils import to_numpy, to_tensor
 
 

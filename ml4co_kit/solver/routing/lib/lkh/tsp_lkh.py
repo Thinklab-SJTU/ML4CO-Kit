@@ -18,7 +18,7 @@ import pathlib
 import tempfile
 import subprocess
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 
 
 def tsp_lkh(
@@ -31,7 +31,7 @@ def tsp_lkh(
     lkh_special: bool = False,
 ):
     # Preparation 
-    points = (task_data.points * lkh_scale).astype(np.int32)
+    points = (task_data.points * lkh_scale).round().astype(np.int32)
     tsp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     par_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
     tour_file = tempfile.NamedTemporaryFile(mode="w", delete=False)

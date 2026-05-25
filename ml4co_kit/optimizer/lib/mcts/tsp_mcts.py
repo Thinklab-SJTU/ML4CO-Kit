@@ -13,9 +13,10 @@ MCTS local search algorithm for TSP.
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.optimizer.lib.mcts.c_tsp_mcts import c_mcts_local_search
 
 

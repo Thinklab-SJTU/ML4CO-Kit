@@ -19,7 +19,7 @@ import pathlib
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.routing.lib.concorde.tsp_concorde import tsp_concorde
+from .lib.concorde.tsp_concorde import tsp_concorde
 
 
 class ConcordeSolver(SolverBase):

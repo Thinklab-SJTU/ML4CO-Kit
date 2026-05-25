@@ -40,21 +40,27 @@ from .qap.gm import GMTask, GMAffinityMatrixBuilder
 from .qap.ged import GEDTask
 from .qap.kqap import KQAPTask
 
-# Routing Task
+# Routing Task (Base)
 from .routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
-from .routing.atsp import ATSPTask
-from .routing.cvrp import CVRPTask
-from .routing.ovrp import OVRPTask
-from .routing.op import OPTask
-from .routing.pctsp import PCTSPTask
-from .routing.spctsp import SPCTSPTask
-from .routing.tsp import TSPTask
-from .routing.vrpl import VRPLTask
-from .routing.vrptw import VRPTWTask
+
+# Routing Task (TSP)
+from .routing.tsp.atsp import ATSPTask
+from .routing.tsp.op import OPTask
+from .routing.tsp.pctsp import PCTSPTask
+from .routing.tsp.spctsp import SPCTSPTask
+from .routing.tsp.tsp import TSPTask
+
+# Routing Task (VRP)
+from .routing.vrp.cvrp import CVRPTask
+from .routing.vrp.cvrpb import CVRPBTask
+from .routing.vrp.cvrpbl import CVRPBLTask
+from .routing.vrp.cvrpbltw import CVRPBLTWTask
+from .routing.vrp.cvrpbtw import CVRPBTWTask
+from .routing.vrp.cvrpl import CVRPLTask
+from .routing.vrp.cvrpltw import CVRPLTWTask
+from .routing.vrp.cvrptw import CVRPTWTask
 
 # SAT Task
 from .sat.base import SATTaskBase
 from .sat.satp import SATPTask
 from .sat.sata import SATATask
-
-# 

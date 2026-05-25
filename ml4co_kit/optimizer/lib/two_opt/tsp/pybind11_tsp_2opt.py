@@ -17,8 +17,8 @@ PyBind11-backed 2-opt local search for TSP.
 import copy
 import numpy as np
 from typing import List
-from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.utils.type_utils import to_numpy
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .pybind11_impl import pybind11_tsp_2opt_impl
 
 

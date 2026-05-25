@@ -17,7 +17,7 @@ import os
 import tempfile
 import subprocess
 import numpy as np
-from ml4co_kit.task.routing.pctsp import PCTSPTask
+from ml4co_kit.task.routing.tsp.pctsp import PCTSPTask
 from .c_pctsp_ils import C_PCTSP_ILS_SOLVER_PATH
 
 

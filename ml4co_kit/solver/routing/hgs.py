@@ -17,7 +17,7 @@ HGS (Hybrid Genetic Search)
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.routing.lib.hgs.cvrp_hgs import cvrp_hgs
+from .lib.hgs.cvrp_hgs import cvrp_hgs
 
 
 class HGSSolver(SolverBase):

@@ -41,10 +41,10 @@ from tests.solver_optimizer_test import (
     LKHSolverTester,
     NearestSolverTester,
     ORSolverTester,
-    RandomSolverTester,
-    SCIPSolverTester,
     PySATSolverTester,
     PyGMSolverTester,
+    RandomSolverTester,
+    SCIPSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     FastTwoOptOptimizerTester,
@@ -66,10 +66,10 @@ basic_tester_class_list = [
     LKHSolverTester,
     NearestSolverTester,
     ORSolverTester,
-    RandomSolverTester,
-    SCIPSolverTester,
     PySATSolverTester,
     PyGMSolverTester,
+    RandomSolverTester,
+    SCIPSolverTester,
     # optimizer testers
     CVRPLSOptimizerTester,
     FastTwoOptOptimizerTester,
@@ -117,6 +117,12 @@ if env_checker.check_gnn4co():
         TwoOptOptimizerTester,
     ]
     
+
+# Python Version
+if env_checker.check_cp311_or_later():
+    from tests.solver_optimizer_test import PyVRPSolverTester
+    basic_tester_class_list.append(PyVRPSolverTester)
+
 
 # Test Solver
 def test_solver_optimizer():

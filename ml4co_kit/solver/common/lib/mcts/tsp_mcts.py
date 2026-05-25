@@ -15,7 +15,7 @@ MCTS Algorithm for TSP
 
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.task.routing.base import DISTANCE_TYPE
 from ml4co_kit.solver.common.lib.mcts.c_tsp_mcts import c_mcts_decoder
 

@@ -14,7 +14,7 @@ Random Initialization Algorithm for CVRP
 
 
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 
 
 def _cvrp_random(norm_demands: np.ndarray) -> np.ndarray:

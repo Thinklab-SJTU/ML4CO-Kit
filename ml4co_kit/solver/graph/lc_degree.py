@@ -17,10 +17,10 @@ Local Construction Degree Solver.
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.lc_degree.mcl_lc_degree import mcl_lc_degree
-from ml4co_kit.solver.graph.lib.lc_degree.mis_lc_degree import mis_lc_degree
-from ml4co_kit.solver.graph.lib.lc_degree.mvc_lc_degree import mvc_lc_degree
-from ml4co_kit.solver.graph.lib.lc_degree.mcut_lc_degree import mcut_lc_degree
+from .lib.lc_degree.mcl_lc_degree import mcl_lc_degree
+from .lib.lc_degree.mis_lc_degree import mis_lc_degree
+from .lib.lc_degree.mvc_lc_degree import mvc_lc_degree
+from .lib.lc_degree.mcut_lc_degree import mcut_lc_degree
 
 
 class LcDegreeSolver(SolverBase):

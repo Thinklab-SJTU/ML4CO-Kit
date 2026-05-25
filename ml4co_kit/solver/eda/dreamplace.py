@@ -24,11 +24,11 @@ from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 from ml4co_kit.utils.file_utils import download, extract_archive
-from ml4co_kit.solver.eda.lib.dreamplace.edap_dreamplace import edap_dreamplace
 from ml4co_kit.extension.dreamplace.install_helper import (
     DreamPlaceInstallHelper, DreamPlaceBuildEnvChecker,
     DreamPlacePrebuilt, DREAMPLACE_THIRDPARTY_PATH,
 )
+from .lib.dreamplace.edap_dreamplace import edap_dreamplace
 
 
 class DreamPlaceSolver(SolverBase):

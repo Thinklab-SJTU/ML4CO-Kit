@@ -15,7 +15,7 @@ Insertion Algorithm for TSP
 
 import ctypes
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from .c_tsp_insertion import c_insertion
 
 

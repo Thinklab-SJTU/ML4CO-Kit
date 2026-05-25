@@ -20,9 +20,9 @@ from ml4co_kit.utils.file_utils import download
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.scip.mopo_scip import mopo_scip
-from ml4co_kit.solver.common.lib.scip.maxretpo_scip import maxretpo_scip
-from ml4co_kit.solver.common.lib.scip.minvarpo_scip import minvarpo_scip
+from .lib.scip.mopo_scip import mopo_scip
+from .lib.scip.maxretpo_scip import maxretpo_scip
+from .lib.scip.minvarpo_scip import minvarpo_scip
 
 
 class SCIPSolver(SolverBase):

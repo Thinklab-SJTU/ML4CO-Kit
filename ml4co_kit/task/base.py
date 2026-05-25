@@ -21,51 +21,59 @@ import hashlib
 import numpy as np
 from enum import Enum
 from typing import Sequence, Union
+from ml4co_kit.utils.pickle_utils import load_pickle
 from ml4co_kit.utils.file_utils import check_file_path
 
 
 class TASK_TYPE(str, Enum):
     """Define the task types as an enumeration."""
 
-    # Routing Problems
+    # 1. Routing Problems (Routing)
+
+    # 1.1 TSP Variants
+    TSP = "TSP" # Traveling Salesman Problem
     ATSP = "ATSP" # Asymmetric Traveling Salesman Problem 
-    CVRP = "CVRP" # Capacitated Vehicle Routing Problem
     OP = "OP" # Orienteering Problem 
-    OVRP = "OVRP" # Open Vehicle Routing Problem
     PCTSP = "PCTSP" # Prize Collection Traveling Salesman Problem
     SPCTSP = "SPCTSP" # Stochastic Prize Collection Traveling Salesman Problem
-    TSP = "TSP" # Traveling Salesman Problem
-    VRPL = "VRPL" # Vehicle Routing Problem with Route Length Limit
-    VRPTW = "VRPTW" # Vehicle Routing Problem with Time Windows
+    
+    # 1.2 VRP Variants
+    CVRP = "CVRP" # Capacitated Vehicle Routing Problem
+    CVRPB = "CVRPB" # B: Backhauls
+    CVRPL = "CVRPL" # L: Route Length Limit
+    CVRPTW = "CVRPTW" # TW: Time Windows
+    CVRPBL = "CVRPBL" # B and L
+    CVRPBTW = "CVRPBTW" # B and TW
+    CVRPLTW = "CVRPLTW" # L and TW
+    CVRPBLTW = "CVRPBLTW" # B and L and TW
 
-    # Graph Problems
+    # 2. Graph Problems (Graph)
     MCL = "MCl" # Maximum Clique
     MCUT = "MCut" # Maximum Cut
     MIS = "MIS" # Maximum Independent Set
     MVC = "MVC" # Minimum Vertex Cover
     
-    # Quadratic Assignment Problems
+    # 3. Quadratic Assignment Problems (QAP)
     GM = "GM" # Graph Matching
     GED = "GED" # Graph Edit Distance
     KQAP = "KQAP" # Koopmans-Beckmann QAP
     LQAP = "LQAP" # Lawler QAP
     
-    # Knapsack Problems
-    KP = "KP" # Knapsack Problem
-
-    # Linear Programming Problems
+    # 4. Mixed Integer Programming Problems (MIP)
+    MIP = "MIP" # Mixed Integer Programming
+    MILP = "MILP" # Mixed Integer Linear Programming
     LP = "LP" # Linear Program
 
-    # Portfolio Optimization Problems
+    # 5. Portfolio Optimization Problems (Portfolio)
     MAXRETPO = "MaxRetPO" # Maximum Return Portfolio Optimization
     MINVARPO = "MinVarPO" # Minimum Variance Portfolio Optimization
     MOPO = "MOPO" # Multi-Objective Portfolio Optimization
 
-    # SAT Problems
+    # 6. Boolean Satisfiability Problems (SAT)
     SATP = "SAT-P" # Satisfiability Prediction Problem
     SATA = "SAT-A" # Satisfying Assignment Prediction
 
-    # EDA Problems
+    # 7. Electronic Design Automation Problems (EDA)
     EDAP = "EDA-P" # EDA Placement
     EDATDP = "EDA-TDP" # EDA Timing-Driven Placement
     EDAR = "EDA-R" # EDA Routing
@@ -101,8 +109,16 @@ class TaskBase(object):
     def from_pickle(self, file_path: pathlib.Path):
         """Create a problem instance from a pickle file."""
         with open(file_path, "rb") as file:
-            loaded_instance: TaskBase = pickle.load(file)
+            loaded_instance: TaskBase = load_pickle(file)
         self.__dict__.update(loaded_instance.__dict__)
+        self._repair_pickle_state()
+    
+    def _repair_pickle_state(self):
+        """Fill missing attributes after loading legacy pickle files."""
+        fresh = self.__class__()
+        for key, value in fresh.__dict__.items():
+            if key not in self.__dict__:
+                self.__dict__[key] = value
     
     def to_pickle(self, file_path: pathlib.Path):
         # Check file path

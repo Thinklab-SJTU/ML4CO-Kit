@@ -17,19 +17,19 @@ Gurobi (Commercial Closed-Source Solver)
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.common.lib.gurobi.op_gurobi import op_gurobi
-from ml4co_kit.solver.common.lib.gurobi.tsp_gurobi import tsp_gurobi
-from ml4co_kit.solver.common.lib.gurobi.mcl_gurobi import mcl_gurobi
-from ml4co_kit.solver.common.lib.gurobi.mis_gurobi import mis_gurobi
-from ml4co_kit.solver.common.lib.gurobi.mvc_gurobi import mvc_gurobi
-from ml4co_kit.solver.common.lib.gurobi.atsp_gurobi import atsp_gurobi
-from ml4co_kit.solver.common.lib.gurobi.cvrp_gurobi import cvrp_gurobi
-from ml4co_kit.solver.common.lib.gurobi.mcut_gurobi import mcut_gurobi
-from ml4co_kit.solver.common.lib.gurobi.mopo_gurobi import mopo_gurobi
-from ml4co_kit.solver.common.lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
-from ml4co_kit.solver.common.lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
-from ml4co_kit.solver.common.lib.gurobi.satp_gurobi import satp_gurobi
-from ml4co_kit.solver.common.lib.gurobi.sata_gurobi import sata_gurobi
+from .lib.gurobi.op_gurobi import op_gurobi
+from .lib.gurobi.tsp_gurobi import tsp_gurobi
+from .lib.gurobi.mcl_gurobi import mcl_gurobi
+from .lib.gurobi.mis_gurobi import mis_gurobi
+from .lib.gurobi.mvc_gurobi import mvc_gurobi
+from .lib.gurobi.atsp_gurobi import atsp_gurobi
+from .lib.gurobi.cvrp_gurobi import cvrp_gurobi
+from .lib.gurobi.mcut_gurobi import mcut_gurobi
+from .lib.gurobi.mopo_gurobi import mopo_gurobi
+from .lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
+from .lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
+from .lib.gurobi.satp_gurobi import satp_gurobi
+from .lib.gurobi.sata_gurobi import sata_gurobi
 
 
 class GurobiSolver(SolverBase):

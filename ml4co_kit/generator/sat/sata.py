@@ -17,8 +17,8 @@ Generator for SAT-A (Satisfying Assignment Prediction) task instances.
 import numpy as np
 import pysat.solvers
 from typing import Union, Callable
-from ml4co_kit.task.sat import SATATask
 from ml4co_kit.task.base import TASK_TYPE
+from ml4co_kit.task.sat.sata import SATATask
 from ml4co_kit.generator.sat.base import SATGeneratorBase, SAT_TYPE
 
 

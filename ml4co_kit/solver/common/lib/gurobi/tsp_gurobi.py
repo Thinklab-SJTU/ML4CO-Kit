@@ -16,7 +16,7 @@ Gurobi Solver for TSP
 import os
 import numpy as np
 import gurobipy as gp
-from ml4co_kit.task.routing.tsp import TSPTask
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 
 
 def tsp_gurobi(

@@ -19,8 +19,8 @@ import scipy.sparse
 from torch import Tensor
 from typing import Union, List
 from ml4co_kit.utils.type_utils import to_numpy
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.task.routing.tsp import TSPTask
 from ml4co_kit.task.graph.base import GraphTaskBase
 from ...env import SparseDataBatch, DenseDataBatch
 

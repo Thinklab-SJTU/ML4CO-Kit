@@ -20,7 +20,7 @@ import pathlib
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.kamis.mis_kamis import mis_kamis
+from .lib.kamis.mis_kamis import mis_kamis
 
 
 class KaMISSolver(SolverBase):

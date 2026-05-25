@@ -19,10 +19,10 @@ from typing import Callable
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
-from ml4co_kit.solver.graph.lib.isco.mcl_isco import mcl_isco
-from ml4co_kit.solver.graph.lib.isco.mis_isco import mis_isco
-from ml4co_kit.solver.graph.lib.isco.mvc_isco import mvc_isco
-from ml4co_kit.solver.graph.lib.isco.mcut_isco import mcut_isco
+from .lib.isco.mcl_isco import mcl_isco
+from .lib.isco.mis_isco import mis_isco
+from .lib.isco.mvc_isco import mvc_isco
+from .lib.isco.mcut_isco import mcut_isco
 
 
 class ISCOSolver(SolverBase):

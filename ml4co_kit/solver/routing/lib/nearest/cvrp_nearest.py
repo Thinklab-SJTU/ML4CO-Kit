@@ -14,8 +14,9 @@ Nearest Neighbor Algorithm for CVRP
 
 
 import numpy as np
-from ml4co_kit.task.routing.cvrp import CVRPTask
+from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 from .c_cvrp_nearest import pybind11_cvrp_nearest_segment_impl
+
 
 def cvrp_nearest(task_data: CVRPTask):
     # Preparation

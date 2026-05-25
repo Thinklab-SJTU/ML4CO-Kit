@@ -15,7 +15,7 @@ OR-Tools Solver for PCTSP
 
 import numpy as np
 from ortools.constraint_solver import pywrapcp
-from ml4co_kit.task.routing.pctsp import PCTSPTask
+from ml4co_kit.task.routing.tsp.pctsp import PCTSPTask
 
 
 def pctsp_ortools(
@@ -52,7 +52,8 @@ def pctsp_ortools(
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
     
     # Add Penalties for Unvisited Nodes (Disjunctions)
-    # Note: Nodes for disjunctions are 1-indexed (excluding depot) relative to their original problem indices
+    # Note: Nodes for disjunctions are 1-indexed (excluding depot) 
+    # relative to their original problem indices
     # In OR-Tools, the node index `c + 1` corresponds to the actual location index.
     # Penalties are applied to nodes from 1 to num_locations - 1
     for i, p_val in enumerate(penalties):

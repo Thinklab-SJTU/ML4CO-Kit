@@ -26,6 +26,10 @@ if env_checker.check_torch():
     from .qap.pygm import PyGMSolver, PyGMToolsQAPSolver
     from .routing.neurolkh import NeuroLKHSolver
 
+# Solver (Python Version)
+if env_checker.check_cp311_or_later():
+    from .routing.pyvrp import PyVRPSolver
+
 # Basic Class
 from .base import SolverBase, SOLVER_TYPE
 
@@ -45,15 +49,11 @@ from .graph.kamis import KaMISSolver
 from .graph.lc_degree import LcDegreeSolver
 
 # Solvers for Routing Tasks
-try:
-    from .routing.concorde import ConcordeSolver
-except Exception:
-    ConcordeSolver = None
+from .routing.concorde import ConcordeSolver
 from .routing.ga_eax import GAEAXSolver
 from .routing.hgs import HGSSolver
 from .routing.lkh import LKHSolver
 from .routing.nearest import NearestSolver
-from .routing.pyvrp import PyVRPSolver
 
 # Solvers for SAT Tasks
 from .sat.pysat import PySATSolver

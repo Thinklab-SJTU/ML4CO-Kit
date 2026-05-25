@@ -13,6 +13,7 @@ CVRP-LS Optimizer Tester.
 # See the Mulan PSL v2 for more details.
 
 
+import pathlib
 from ml4co_kit import TASK_TYPE, RandomSolver, CVRPLSOptimizer
 from tests.solver_optimizer_test.base import SolverTesterBase
 
@@ -24,7 +25,14 @@ class CVRPLSOptimizerTester(SolverTesterBase):
             test_solver_class=RandomSolver,
             test_task_type_list=[TASK_TYPE.CVRP],
             test_args_list=[{"optimizer": CVRPLSOptimizer()}],
-            exclude_test_files_list=[[]],
+            exclude_test_files_list=[
+                [
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp100_o_uniform_16ins.pkl"),
+                ]
+            ],
             info="CVRPLSOptimizer"
         )
         

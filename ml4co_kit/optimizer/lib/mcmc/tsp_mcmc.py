@@ -14,8 +14,8 @@ MCMC Algorithm for TSP
 
 
 import numpy as np
-from ml4co_kit.task.routing.tsp import TSPTask
-from ml4co_kit.optimizer.lib.mcmc.pybind11_impl.c_tsp_mcmc import pybind11_tsp_mcmc_impl
+from ml4co_kit.task.routing.tsp.tsp import TSPTask
+from .pybind11_impl.c_tsp_mcmc import pybind11_tsp_mcmc_impl
 
 
 def tsp_mcmc_ls(task_data: TSPTask, taus: np.ndarray, seed: int = 1234):
