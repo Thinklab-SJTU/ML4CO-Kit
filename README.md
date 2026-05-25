@@ -147,7 +147,7 @@ After the environment is installed, run the following command to confirm that th
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO; SAT: SATA & SATP**
+**Graph: MCl & MCut & MIS & MVC; Routing: ATSP & OP & PCTSP & SPCTSP & TSP & CVRP (B/BL/BLTW/BTW/L/LTW/TW); Portfolio: MaxRetPO & MinVarPO & MOPO; SAT: SATA & SATP; EDA: EDAP**
 
 **✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
@@ -158,11 +158,18 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | ---- | :--------: | :--------------: | :--------: | :----: | :---------: |
 | **Routing Tasks** |
 |  Asymmetric TSP (ATSP)                              | ✔ | ✔ | ✔ | 📆 | ``tsplib`` |
-|  Capacitated Vehicle Routing Problem (CVRP)         | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
 |  Orienteering Problem (OP)                          | ✔ | ✔ | ✔ | 📆 |   |
 |  Prize Collection TSP (PCTSP)                       | ✔ | ✔ | ✔ | 📆 |   |
 |  Stochastic PCTSP (SPCTSP)                          | ✔ | ✔ | ✔ | 📆 |   |
 |  Traveling Salesman Problem (TSP)                   | ✔ | ✔ | ✔ | ✔  | ``tsplib`` |
+|  Capacitated Vehicle Routing Problem (CVRP)         | ✔ | ✔ | ✔ | ✔  | ``vrplib`` |
+|  CVRP with Backhauls (CVRPB)                        | ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Backhauls and Length Limit (CVRPBL)      | ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Backhauls, Length Limit and TW (CVRPBLTW)| ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Backhauls and Time Windows (CVRPBTW)     | ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Length Limit (CVRPL)                     | ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Length Limit and Time Windows (CVRPLTW)  | ✔ | ✔ | ✔ | 📆 |   |
+|  CVRP with Time Windows (CVRPTW)                    | ✔ | ✔ | ✔ | 📆 |   |
 | **Graph Tasks** |
 |  Maximum Clique (MCl)                               | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
 |  Maximum Cut (MCut)                                 | ✔ | ✔ | ✔ | ✔  | ``gpickle``, ``adj_matrix``, ``networkx``, ``csr`` |
@@ -179,6 +186,8 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |  Maximum Return Portfolio Optimization (MaxRetPO)   | ✔ | ✔ | ✔ | 📆  |  |
 |  Minimum Variance Portfolio Optimization (MinVarPO) | ✔ | ✔ | ✔ | 📆  |  |
 |  Multi-Objective Portfolio Optimization (MOPO)      | ✔ | ✔ | ✔ | 📆  |  |
+| **EDA Tasks** |
+|  EDA Placement (EDAP)                               | ✔ | ✔ | ✔ | 📆 | ``bookshelf`` |
 </details>
 
 ---
@@ -194,6 +203,20 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |         | HCP | Hamiltonian Cycle Problem transformed to ATSP | ✔ |
 | CVRP    | Uniform | Random coordinates with uniform distribution | ✔ |
 |         | Gaussian | Random coordinates with Gaussian distribution | ✔ |
+| CVRPB   | Uniform | CVRP with backhauls (uniform) | ✔ |
+|         | Gaussian | CVRP with backhauls (Gaussian) | ✔ |
+| CVRPBL  | Uniform | CVRPB + route length limit | ✔ |
+|         | Gaussian | CVRPB + route length limit (Gaussian) | ✔ |
+| CVRPBLTW | Uniform | CVRPBL + time windows | ✔ |
+|         | Gaussian | CVRPBL + time windows (Gaussian) | ✔ |
+| CVRPBTW | Uniform | CVRPB + time windows | ✔ |
+|         | Gaussian | CVRPB + time windows (Gaussian) | ✔ |
+| CVRPL   | Uniform | CVRP + route length limit | ✔ |
+|         | Gaussian | CVRP + route length limit (Gaussian) | ✔ |
+| CVRPLTW | Uniform | CVRPL + time windows | ✔ |
+|         | Gaussian | CVRPL + time windows (Gaussian) | ✔ |
+| CVRPTW  | Uniform | CVRP + time windows | ✔ |
+|         | Gaussian | CVRP + time windows (Gaussian) | ✔ |
 | OP      | Uniform | Random prizes with uniform distribution | ✔ |
 |         | Constant | All prizes are constant | ✔ |
 |         | Distance | Prizes based on distance from depot | ✔ |
@@ -306,6 +329,17 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | SCIPSolver           | MaxRetPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MinVarPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MOPO  | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PyVRPSolver          | CVRP  | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPB | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBL | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBLTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPL | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPLTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| NearestSolver        | TSP   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRP  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| DreamPlaceSolver     | EDAP  | Python | [DREAMPlace](https://github.com/limbo018/DREAMPlace) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
 </details>
 
@@ -326,6 +360,9 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                     | TSP    | Torch    | [DIFUSCO](https://github.com/Edward-Sun/DIFUSCO/blob/main/difusco/utils/tsp_utils.py) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                     | TSP    | Pybind11 | [GenSCO](https://github.com/Thinklab-SJTU/GenSCO) | [GenSCO](https://github.com/Thinklab-SJTU/GenSCO) | ✔ |
 | FastTwoOptOptimizer | TSP    | Pybind11 | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| MCMCOptimizer       | TSP    | Pybind11 | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                     | CVRP   | Pybind11 | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                     | MIS    | Pybind11 | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 
 </details>
 
@@ -339,6 +376,13 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 | **Routing Tasks** |
 | ATSPWrapper               | "[dists] output [sol]" | ``tsplib`` |
 | CVRPWrapper               | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | ``vrplib`` |
+| CVRPBWrapper              | "depots [depots] points [points] demands [demands] capacity [capacity] output [sol]" | |
+| CVRPBLWrapper             | "depots [depots] points [points] demands [demands] capacity [capacity] max_route_length [max_route_length] output [sol]" | |
+| CVRPBLTWWrapper           | "depots [depots] points [points] demands [demands] capacity [capacity] tw [tw] service [service] max_route_length [max_route_length] output [sol]" | |
+| CVRPBTWWrapper            | "depots [depots] points [points] demands [demands] capacity [capacity] tw [tw] service [service] output [sol]" | |
+| CVRPLWrapper              | "depots [depots] points [points] demands [demands] capacity [capacity] max_route_length [max_route_length] output [sol]" | |
+| CVRPLTWWrapper            | "depots [depots] points [points] demands [demands] capacity [capacity] tw [tw] service [service] max_route_length [max_route_length] output [sol]" | |
+| CVRPTWWrapper             | "depots [depots] points [points] demands [demands] capacity [capacity] tw [tw] service [service] output [sol]" | |
 | ORWrapper                 | "depots [depots] points [points] prizes [prizes] max_length [max_length] output [sol]" | |
 | PCTSPWrapper              | "depots [depots] points [points] penalties [penalties] prizes [prizes] required_prize [required_prize] output [sol]" | |
 | SPCTSPWrapper             | "depots [depots] points [points] penalties [penalties] expected_prizes [expected_prizes] actual_prizes [actual_prizes] required_prize [required_prize] output [sol]" | |
