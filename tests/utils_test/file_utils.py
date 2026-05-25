@@ -112,7 +112,7 @@ class FileUtilsTester(object):
 
         # 3.1 split the txt file
         split_txt_file(
-            file_path="test_dataset/routing/tsp/wrapper/tsp50_uniform_16ins.txt", 
+            file_path="test_dataset/routing/tsp/tsp/wrapper/tsp50_uniform_16ins.txt", 
             lines_per_file=8, save_dir="tmp/tsp_split"
         )
         shutil.rmtree("tmp/tsp_split")

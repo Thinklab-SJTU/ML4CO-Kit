@@ -227,7 +227,7 @@ class CVRPWrapper(WrapperBase):
                 )
         
         for idx, (vrp_file_path, sol_file_path) in tqdm_by_time(
-            enumerate(zip=(vrp_files_path, sol_files_path)), load_msg, show_time
+            enumerate(zip(vrp_files_path, sol_files_path)), load_msg, show_time
         ):
             if overwrite:
                 cvrp_task = self.task_class(round_type=round_type, precision=self.precision)

@@ -21,8 +21,7 @@ sys.path.insert(0, root_folder)
 
 
 # Checker
-from ml4co_kit.utils.env_utils import EnvChecker
-env_checker = EnvChecker()
+from ml4co_kit import env_checker
 
 
 # Get solvers to be tested (no torch used)

@@ -18,10 +18,17 @@ from .base import TaskTesterBase
 
 
 # Routing Problems
-from .routing.atsp import ATSPTaskTester
-from .routing.cvrp import CVRPTaskTester
-from .routing.tsp import TSPTaskTester
-from .routing.pctsp import PCTSPTaskTester
+from .routing.tsp.atsp import ATSPTaskTester
+from .routing.tsp.tsp import TSPTaskTester
+from .routing.tsp.pctsp import PCTSPTaskTester
+from .routing.vrp.cvrp import CVRPTaskTester
+from .routing.vrp.cvrpb import CVRPBTaskTester
+from .routing.vrp.cvrpbl import CVRPBLTaskTester
+from .routing.vrp.cvrpbltw import CVRPBLTWTaskTester
+from .routing.vrp.cvrpbtw import CVRPBTWTaskTester
+from .routing.vrp.cvrpl import CVRPLTaskTester
+from .routing.vrp.cvrpltw import CVRPLTWTaskTester
+from .routing.vrp.cvrptw import CVRPTWTaskTester
 
 
 # Graph Problems

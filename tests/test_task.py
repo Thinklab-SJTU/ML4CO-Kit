@@ -22,9 +22,16 @@ sys.path.insert(0, root_folder)
 # Routing Problems
 from tests.task_test import (
     ATSPTaskTester, 
-    CVRPTaskTester, 
     TSPTaskTester, 
-    PCTSPTaskTester
+    PCTSPTaskTester,
+    CVRPTaskTester, 
+    CVRPBTaskTester,
+    CVRPBLTaskTester,
+    CVRPBLTWTaskTester,
+    CVRPBTWTaskTester,
+    CVRPLTaskTester,
+    CVRPLTWTaskTester,
+    CVRPTWTaskTester
 )    
 
 
@@ -60,9 +67,16 @@ from tests.task_test import (
 def test_task():
     # Routing Problems
     ATSPTaskTester().test()
-    CVRPTaskTester().test()
     PCTSPTaskTester().test()
     TSPTaskTester().test()
+    CVRPTaskTester().test()
+    CVRPBTaskTester().test()
+    CVRPBLTaskTester().test()
+    CVRPBLTWTaskTester().test()
+    CVRPBTWTaskTester().test()
+    CVRPLTaskTester().test()
+    CVRPLTWTaskTester().test()
+    CVRPTWTaskTester().test()
     
     # Graph Problems
     MClTaskTester().test()

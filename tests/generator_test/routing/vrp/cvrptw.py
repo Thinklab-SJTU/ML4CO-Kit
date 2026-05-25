@@ -1,5 +1,5 @@
 r"""
-Tester for CVRP generator.
+Tester for CVRPTW generator.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,22 +13,34 @@ Tester for CVRP generator.
 # See the Mulan PSL v2 for more details.
 
 
-from ml4co_kit import CVRPGenerator, CVRP_TYPE
+from ml4co_kit import CVRPTWGenerator, CVRP_TYPE
 from tests.generator_test.base import GenTesterBase
 
 
-class CVRPGenTester(GenTesterBase):
+class CVRPTWGenTester(GenTesterBase):
     def __init__(self):
-        super(CVRPGenTester, self).__init__(
-            test_gen_class=CVRPGenerator,
+        super(CVRPTWGenTester, self).__init__(
+            test_gen_class=CVRPTWGenerator,
             test_args_list=[
                 # Uniform
                 {
                     "distribution_type": CVRP_TYPE.UNIFORM,
+                    "cvrp_open": False,
+                },
+                # Uniform
+                {
+                    "distribution_type": CVRP_TYPE.UNIFORM,
+                    "cvrp_open": True,
                 },
                 # Gaussian
                 {
                     "distribution_type": CVRP_TYPE.GAUSSIAN,
+                    "cvrp_open": False,
+                },
+                # Gaussian
+                {
+                    "distribution_type": CVRP_TYPE.GAUSSIAN,
+                    "cvrp_open": True,
                 },
             ]
         )

@@ -22,11 +22,18 @@ sys.path.insert(0, root_folder)
 # Routing Problems
 from tests.generator_test import (
     ATSPGenTester, 
-    CVRPGenTester, 
     OPGenTester, 
     PCTSPGenTester, 
     SPCTSPGenTester, 
-    TSPGenTester
+    TSPGenTester,
+    CVRPGenTester, 
+    CVRPBGenTester,
+    CVRPBLGenTester,
+    CVRPBLTWGenTester,
+    CVRPBTWGenTester,
+    CVRPLGenTester,
+    CVRPLTWGenTester,
+    CVRPTWGenTester,
 )
 
 
@@ -64,11 +71,18 @@ from tests.generator_test import (
 def test_generator():
     # Routing Problems
     ATSPGenTester().test()
-    CVRPGenTester().test()
     OPGenTester().test()
     PCTSPGenTester().test()
     SPCTSPGenTester().test()
     TSPGenTester().test()
+    CVRPGenTester().test()
+    CVRPBGenTester().test()
+    CVRPBLGenTester().test()
+    CVRPBLTWGenTester().test()
+    CVRPBTWGenTester().test()
+    CVRPLGenTester().test()
+    CVRPLTWGenTester().test()
+    CVRPTWGenTester().test()
 
     # Graph Problems
     MClGenTester().test()

@@ -80,6 +80,45 @@ def test_wrapper():
     SATPWrapperTester().test()
     SATAWrapperTester().test()
 
+    # Python Version
+    from ml4co_kit import env_checker
+    if env_checker.check_cp311_or_later():
+        # Load wrappers to be tested
+        from tests.wrapper_test import (
+            OVRPWrapperTester,
+            CVRPBWrapperTester,
+            OVRPBWrapperTester,
+            CVRPBLWrapperTester,
+            OVRPBLWrapperTester,
+            CVRPBLTWWrapperTester,
+            OVRPBLTWWrapperTester,
+            CVRPBTWWrapperTester,
+            OVRPBTWWrapperTester,
+            CVRPLWrapperTester,
+            OVRPLWrapperTester,
+            CVRPLTWWrapperTester,
+            OVRPLTWWrapperTester,
+            CVRPTWWrapperTester,
+            OVRPTWWrapperTester,
+        )
+
+        # Test wrappers
+        OVRPWrapperTester().test()
+        CVRPBWrapperTester().test()
+        OVRPBWrapperTester().test()
+        CVRPBLWrapperTester().test()
+        OVRPBLWrapperTester().test()
+        CVRPBLTWWrapperTester().test()
+        OVRPBLTWWrapperTester().test()
+        CVRPBTWWrapperTester().test()
+        OVRPBTWWrapperTester().test()
+        CVRPLWrapperTester().test()
+        OVRPLWrapperTester().test()
+        CVRPLTWWrapperTester().test()
+        OVRPLTWWrapperTester().test()
+        CVRPTWWrapperTester().test()
+        OVRPTWWrapperTester().test()
+
 
 # Main
 if __name__ == "__main__":

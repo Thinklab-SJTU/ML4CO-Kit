@@ -28,12 +28,16 @@ class WrapperTesterBase(object):
         solver: SolverBase,
         pickle_files_list: List[pathlib.Path],
         txt_files_list: List[pathlib.Path],
+        from_txt_args_list: List[dict] = None,
     ):
         self.test_wrapper_class = test_wrapper_class
         self.generator = generator
         self.solver = solver
         self.pickle_files_list = pickle_files_list
         self.txt_files_list = txt_files_list
+        if from_txt_args_list is None:
+            from_txt_args_list = [{} for _ in range(len(txt_files_list))]
+        self.from_txt_args_list = from_txt_args_list
     
     def test(self):
         # Create tmp folder
@@ -59,8 +63,9 @@ class WrapperTesterBase(object):
     def _test_pickle_txt(self):
         # Test overwrite in ``from_txt``
         wrapper = self.test_wrapper_class()
-        wrapper.from_txt(self.txt_files_list[0], ref=False)
-        wrapper.from_txt(self.txt_files_list[0], ref=True, overwrite=False)
+        from_txt_args = self.from_txt_args_list[0]
+        wrapper.from_txt(self.txt_files_list[0], ref=False, **from_txt_args)
+        wrapper.from_txt(self.txt_files_list[0], ref=True, overwrite=False, **from_txt_args)
         eval_result = wrapper.evaluate_w_gap()
         print(f"Test for overwrite in ``from_txt``: {eval_result}")
         
@@ -104,11 +109,11 @@ class WrapperTesterBase(object):
 
     def _test_solve_evaluate(self):
         wrapper = self.test_wrapper_class()
-        for txt_file in self.txt_files_list:
+        for txt_file, from_txt_args in zip(self.txt_files_list, self.from_txt_args_list):
             for num_threads in [1, 2]:
                 for show_time in [False, True]:
                     try:
-                        wrapper.from_txt(txt_file, ref=True)
+                        wrapper.from_txt(txt_file, ref=True, **from_txt_args)
                         wrapper.solve(
                             solver=self.solver,
                             num_threads=num_threads,

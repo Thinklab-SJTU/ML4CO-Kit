@@ -1,5 +1,5 @@
 r"""
-CVRP Task Tester.
+CVRPB Task Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -19,13 +19,15 @@ from ml4co_kit import CVRPTask
 from tests.task_test.base import TaskTesterBase
 
 
-class CVRPTaskTester(TaskTesterBase):
+class CVRPBTaskTester(TaskTesterBase):
     def __init__(self):
-        super(CVRPTaskTester, self).__init__(
+        super(CVRPBTaskTester, self).__init__(
             test_task_class=CVRPTask,
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp500_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_o_uniform_task.pkl"),
             ],
         )
         
@@ -33,18 +35,4 @@ class CVRPTaskTester(TaskTesterBase):
         pass
         
     def _test_render(self):
-        # Read data
-        task = CVRPTask()
-        task.from_pickle("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl")
-        task.sol = task.ref_sol
-        
-        # Render (problem)
-        tmp_path = self._make_tmp_file()
-        task.render(save_path=pathlib.Path(tmp_path + ".png"), with_sol=False)
-        
-        # Render (solution)
-        task.render(save_path=pathlib.Path(tmp_path + "_sol.png"), with_sol=True)
-        
-        # Clean up
-        os.remove(tmp_path + ".png")
-        os.remove(tmp_path + "_sol.png")
+        pass
