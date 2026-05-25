@@ -98,10 +98,6 @@ class LKHSolver(SolverBase):
         """Install LKH solver."""
         # Step1: Download LKH
         try:
-            # from original website
-            lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-            download(file_path="LKH-3.0.13.tgz", url=lkh_url)
-        except:
             # from huggingface
             pull_file_from_huggingface(
                 repo_id="ML4CO/ML4CO-Kit",
@@ -109,6 +105,10 @@ class LKHSolver(SolverBase):
                 filename="lkh/LKH-3.0.13.tgz",
                 save_path="LKH-3.0.13.tgz"
             )
+        except:
+            # from original website
+            lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
+            download(file_path="LKH-3.0.13.tgz", url=lkh_url)
 
         # Step2: tar .tgz file
         os.system("tar xvfz LKH-3.0.13.tgz")
