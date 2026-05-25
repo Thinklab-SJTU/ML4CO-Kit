@@ -52,10 +52,10 @@ class EDAP_MMSDataset(DatasetBase):
     def _preprocess(self):
        # Name list
         self.name_list = [
-            "adaptec1", "adaptec2", "adaptec3", "adaptec4",
-            "bigblue1", "bigblue2", "bigblue3", "bigblue4",
-            "newblue1", "newblue2", "newblue3", "newblue4", 
-            "newblue5", "newblue6", "newblue7",
+            "adaptec1", "adaptec2", "adaptec3", "adaptec4", 
+            "adaptec5", "bigblue1", "bigblue2", "bigblue3", 
+            "bigblue4", "newblue1", "newblue2", "newblue3", 
+            "newblue4", "newblue5", "newblue6", "newblue7",
         ]
 
         # Die size
@@ -76,6 +76,13 @@ class EDAP_MMSDataset(DatasetBase):
                 [335, 23098, 335+22592, 23386],
             ]), 
             # (adaptec4)
+            np.array([
+                [7807, 58, 7807+15120, 130],
+                [335, 130, 335+22592, 346],
+                [36, 346, 36+23190, 23098],
+                [335, 23098, 335+22592, 23386],
+            ]), 
+            # (adaptec5)
             np.array([
                 [7807, 58, 7807+15120, 130],
                 [335, 130, 335+22592, 346],
