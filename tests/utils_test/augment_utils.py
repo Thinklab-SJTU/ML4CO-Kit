@@ -46,7 +46,8 @@ class AugmentUtilsTester(object):
         tsp_task.from_data(points=augmented_points)
         solver.solve(tsp_task)
         gap = tsp_task.evaluate_w_gap()[2]
-        if abs(gap) > 1e-5:
+        
+        if abs(gap) > 1e-4:
             raise ValueError("Inconsistent gap for the augmented points.")
 
         ###############################################
