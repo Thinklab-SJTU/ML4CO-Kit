@@ -19,9 +19,7 @@ from ml4co_kit.task.routing.tsp.tsp import TSPTask
 from ml4co_kit.solver.routing.lib.concorde.pyconcorde import TSPConSolver
 
 
-def tsp_concorde(task_data: TSPTask, concorde_scale: int=1e6):
-
-    
+def tsp_concorde(task_data: TSPTask, concorde_scale: int=1e6):    
     # Get the data
     points = task_data.points * concorde_scale
     points = points.round().astype(np.int32)

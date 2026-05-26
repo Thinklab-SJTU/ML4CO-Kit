@@ -75,7 +75,6 @@ tsp_wrapper.generate_w_to_txt(
 r"""
 Example of using Concorde solver to solve TSP dataset.
 """
-
 from ml4co_kit import TSPWrapper, ConcordeSolver
 
 # Set the wrapper for TSP
