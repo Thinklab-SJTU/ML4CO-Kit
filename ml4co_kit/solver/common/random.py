@@ -23,6 +23,10 @@ from .lib.random.cvrp_random import cvrp_random
 
 
 class RandomSolver(SolverBase):
+    """
+    Random Initialization Solver
+    Last Update: 2026-05-26
+    """
     def __init__(self, optimizer: OptimizerBase = None):
         super(RandomSolver, self).__init__(
             solver_type=SOLVER_TYPE.RANDOM, optimizer=optimizer

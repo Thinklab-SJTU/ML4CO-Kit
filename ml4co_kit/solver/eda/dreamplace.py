@@ -34,8 +34,43 @@ from .lib.dreamplace.edap_dreamplace import edap_dreamplace
 class DreamPlaceSolver(SolverBase):
     """
     DreamPlace: https://github.com/limbo018/DREAMPlace
+    Current Version: 37214b40fe3837cc7d392c7d6092ccd6ff04a02c
+    Last Update: 2026-05-26
+    @inproceedings{
+        lin2019dreamplace,
+        title={Dreamplace: Deep learning toolkit-enabled gpu acceleration for modern vlsi placement},
+        author={Lin, Yibo and Dhar, Shounak and Li, Wuxi and Ren, Haoxing and Khailany, Brucek and Pan, David Z},
+        booktitle={Proceedings of the 56th Annual Design Automation Conference 2019},
+        pages={1--6},
+        year={2019}
+    }
+    @inproceedings{
+        lin2020dreamplace,
+        title={DREAMPlace 2.0: Open-source GPU-accelerated global and detailed placement for large-scale VLSI designs},
+        author={Lin, Yibo and Pan, David Z and Ren, Haoxing and Khailany, Brucek},
+        booktitle={2020 China Semiconductor Technology International Conference (CSTIC)},
+        pages={1--4},
+        year={2020},
+        organization={IEEE}
+    }
+    @inproceedings{
+        gu2020dreamplace,
+        title={DREAMPlace 3.0: Multi-electrostatics based robust VLSI placement with region constraints},
+        author={Gu, Jiaqi and Jiang, Zixuan and Lin, Yibo and Pan, David Z},
+        booktitle={Proceedings of the 39th International Conference on Computer-Aided Design},
+        pages={1--9},
+        year={2020}
+    }
+    @inproceedings{
+        liao2022dreamplace,
+        title={DREAMPlace 4.0: Timing-driven global placement with momentum-based net weighting},
+        author={Liao, Peiyu and Liu, Siting and Chen, Zhitang and Lv, Wenlong and Lin, Yibo and Yu, Bei},
+        booktitle={2022 Design, Automation \& Test in Europe Conference \& Exhibition (DATE)},
+        pages={939--944},
+        year={2022},
+        organization={IEEE}
+    }
     """
-
     def __init__(
         self,
         device: str = "cpu",

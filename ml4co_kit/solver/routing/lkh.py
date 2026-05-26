@@ -28,7 +28,19 @@ from .lib.lkh.cvrp_lkh import cvrp_lkh
 
 class LKHSolver(SolverBase):
     """
-    LKH: http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz
+    LKH: http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.14.tgz
+    PyLKH: https://github.com/ben-hudson/pylkh
+    Current Version: LKH-3.0.14
+    Last Update: 2026-05-26
+    @article{
+        helsgaun2017extension,
+        title={An extension of the Lin-Kernighan-Helsgaun TSP solver for constrained traveling salesman and vehicle routing problems},
+        author={Helsgaun, Keld},
+        journal={Roskilde: Roskilde University},
+        volume={12},
+        pages={966--980},
+        year={2017}
+    }
     """
     def __init__(
         self,
@@ -102,20 +114,20 @@ class LKHSolver(SolverBase):
             pull_file_from_huggingface(
                 repo_id="ML4CO/ML4CO-Kit",
                 repo_type="dataset",
-                filename="lkh/LKH-3.0.13.tgz",
-                save_path="LKH-3.0.13.tgz"
+                filename="lkh/LKH-3.0.14.tgz",
+                save_path="LKH-3.0.14.tgz"
             )
         except:
             # from original website
-            lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz"
-            download(file_path="LKH-3.0.13.tgz", url=lkh_url)
+            lkh_url = "http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.14.tgz"
+            download(file_path="LKH-3.0.14.tgz", url=lkh_url)
 
         # Step2: tar .tgz file
-        os.system("tar xvfz LKH-3.0.13.tgz")
+        os.system("tar xvfz LKH-3.0.14.tgz")
         
         # Step3: build LKH
         ori_dir = os.getcwd()
-        os.chdir("LKH-3.0.13")
+        os.chdir("LKH-3.0.14")
         os.system("make")
 
         # Step4: move LKH to the bin dir
@@ -123,6 +135,6 @@ class LKHSolver(SolverBase):
         os.chdir(ori_dir)
 
         # Step5: clean up
-        os.remove("LKH-3.0.13.tgz")
-        shutil.rmtree("LKH-3.0.13")
+        os.remove("LKH-3.0.14.tgz")
+        shutil.rmtree("LKH-3.0.14")
         print(f"LKH Solver installed successfully at {self.lkh_bin_path}.")

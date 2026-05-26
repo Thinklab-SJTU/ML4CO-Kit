@@ -30,8 +30,22 @@ from .lib.pyvrp.cvrptw_pyvrp import cvrptw_pyvrp
 class PyVRPSolver(SolverBase):
     """
     PyVRP: https://github.com/PyVRP/PyVRP
+    Current Version: v0.13.4
+    Last Update: 2026-05-26
+    @article{
+        Wouda_Lan_Kool_PyVRP_2024,
+        doi = {10.1287/ijoc.2023.0055},
+        url = {https://doi.org/10.1287/ijoc.2023.0055},
+        year = {2024},
+        volume = {36},
+        number = {4},
+        pages = {943--955},
+        publisher = {INFORMS},
+        author = {Niels A. Wouda and Leon Lan and Wouter Kool},
+        title = {{PyVRP}: a high-performance {VRP} solver package},
+        journal = {INFORMS Journal on Computing},
+    }
     """
-
     def __init__(
         self,
         time_limit: float = 1.0,

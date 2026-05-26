@@ -23,6 +23,7 @@ from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
 class NullSolver(SolverBase):
     """
     Null Solver: Do nothing.
+    Last Update: 2026-05-26
     """
     def __init__(
         self,

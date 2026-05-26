@@ -34,6 +34,16 @@ class HGSSolver(SolverBase):
         year={2012},
         publisher={INFORMS}
     }
+    @article{
+        vidal2022hybrid,
+        title={Hybrid genetic search for the CVRP: Open-source implementation and SWAP* neighborhood},
+        author={Vidal, Thibaut},
+        journal={Computers \& Operations Research},
+        volume={140},
+        pages={105643},
+        year={2022},
+        publisher={Elsevier}
+    }
     """
     def __init__(
         self, 

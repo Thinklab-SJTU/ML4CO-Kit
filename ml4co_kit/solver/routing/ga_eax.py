@@ -23,6 +23,8 @@ from .lib.ga_eax.tsp_ga_eax import tsp_ga_eax
 class GAEAXSolver(SolverBase):
     """
     GA-EAX: https://github.com/nagata-yuichi/GA-EAX
+    Current Version: 015dfbe9f267230f78787bd244af393ffc018900
+    Last Update: 2026-05-26
     @article{
         nagata2013powerful,
         title={A powerful genetic algorithm using edge assembly crossover for the traveling salesman problem},

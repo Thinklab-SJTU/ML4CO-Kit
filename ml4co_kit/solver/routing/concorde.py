@@ -26,6 +26,14 @@ class ConcordeSolver(SolverBase):
     """
     Concorde: https://www.math.uwaterloo.ca/tsp/concorde.html
     PyConcorde: https://github.com/jvkersch/pyconcorde
+    Current Version: a573c1b73244f0dc7cf88ddd18ccfa4c65919974
+    Last Update: 2026-05-26
+    @misc{
+        applegate2006concorde,
+        title={Concorde TSP solver},
+        author={Applegate, David and Cook, William},
+        year={2006}
+    }
     """
     def __init__(
         self,

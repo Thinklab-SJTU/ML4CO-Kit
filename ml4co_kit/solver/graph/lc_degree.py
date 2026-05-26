@@ -24,14 +24,21 @@ from .lib.lc_degree.mcut_lc_degree import mcut_lc_degree
 
 
 class LcDegreeSolver(SolverBase):
+    """
+    Local Construction Degree Solver
+    Last Update: 2026-05-26
+    """
     def __init__(
         self, 
         impl_type: str = "pybind11",
         optimizer: OptimizerBase = None
     ):
+        # Super Initialization
         super(LcDegreeSolver, self).__init__(
             solver_type=SOLVER_TYPE.LC_DEGREE, optimizer=optimizer
         )
+
+        # Set Attributes
         self.impl_type = impl_type
 
     def _solve(self, task_data: TaskBase):

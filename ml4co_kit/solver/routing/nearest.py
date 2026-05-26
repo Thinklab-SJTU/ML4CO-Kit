@@ -22,6 +22,10 @@ from .lib.nearest.cvrp_nearest import cvrp_nearest
 
 
 class NearestSolver(SolverBase):
+    """
+    Nearest Neighbor Heuristic Solver
+    Last Update: 2026-05-26
+    """
     def __init__(self, optimizer: OptimizerBase = None):
         super(NearestSolver, self).__init__(
             solver_type=SOLVER_TYPE.NEAREST, optimizer=optimizer

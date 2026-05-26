@@ -35,6 +35,7 @@ from .lib.gurobi.sata_gurobi import sata_gurobi
 class GurobiSolver(SolverBase):
     """
     Gurobi: https://www.gurobi.com/
+    Last Update: 2026-05-26
     """
     def __init__(
         self, 

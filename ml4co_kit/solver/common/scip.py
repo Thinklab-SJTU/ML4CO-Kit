@@ -29,6 +29,19 @@ class SCIPSolver(SolverBase):
     """
     SCIP: https://github.com/scipopt/scip
     PySCIPOpt: https://github.com/scipopt/PySCIPOpt
+    Current Version: 10.0.2
+    Last Update: 2026-05-26
+    @incollection{
+        MaherMiltenbergerPedrosoRehfeldtSchwarzSerrano2016,
+        author = {Stephen Maher and Matthias Miltenberger and Jo{\~{a}}o Pedro Pedroso 
+            and Daniel Rehfeldt and Robert Schwarz and Felipe Serrano},
+        title = {{PySCIPOpt}: Mathematical Programming in Python with the {SCIP} Optimization Suite},
+        booktitle = {Mathematical Software {\textendash} {ICMS} 2016},
+        publisher = {Springer International Publishing},
+        pages = {301--307},
+        year = {2016},
+        doi = {10.1007/978-3-319-42432-3_37},
+    }
     """
     def __init__(
         self,
@@ -39,8 +52,7 @@ class SCIPSolver(SolverBase):
     ):
         # Super Initialization
         super(SCIPSolver, self).__init__(
-            solver_type=SOLVER_TYPE.SCIP,
-            optimizer=optimizer
+            solver_type=SOLVER_TYPE.SCIP, optimizer=optimizer
         )
         
         # Set Attributes

@@ -26,6 +26,8 @@ from .lib.fem.mcut_fem import mcut_fem
 class FEMSolver(SolverBase):
     """
     FEM: https://github.com/Fanerst/FEM.
+    Current Version: ffec15a8041fde3c6f7486fe04ea82ba8e4f553b
+    Last Update: 2026-05-26
     @article{
         shen2025free,
         title={Free-energy machine for combinatorial optimization},
@@ -39,7 +41,6 @@ class FEMSolver(SolverBase):
         publisher={Nature Publishing Group US New York}
     }
     """
-    
     def __init__(
         self,
         num_trials: int = 100,

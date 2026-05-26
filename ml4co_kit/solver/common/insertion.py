@@ -26,7 +26,9 @@ from .lib.insertion.mcut_insertion import mcut_insertion
 
 class InsertionSolver(SolverBase):
     """
-    Insertion-TSP: https://github.com/henry-yeh/GLOP
+    Insertion-GLOP: https://github.com/henry-yeh/GLOP
+    Insertion-Random: https://github.com/Furffico/random-insertion
+    Last Update: 2026-05-26
     @inproceedings{
         ye2024glop,
         title={GLOP: Learning Global Partition and Local Construction for Solving Large-scale Routing Problems in Real-time},

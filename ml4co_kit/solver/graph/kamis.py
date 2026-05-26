@@ -26,6 +26,8 @@ from .lib.kamis.mis_kamis import mis_kamis
 class KaMISSolver(SolverBase):
     """
     KaMIS: https://github.com/KarlsruheMIS/KaMIS
+    Current Version: 7f3e2579ab8449e7ff4036d36a4305ee32e1088a
+    Last Update: 2026-05-26
     @inproceedings{
         lamm2016finding,
         title={Finding near-optimal independent sets at scale},

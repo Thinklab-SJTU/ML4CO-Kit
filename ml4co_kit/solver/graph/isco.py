@@ -28,6 +28,8 @@ from .lib.isco.mcut_isco import mcut_isco
 class ISCOSolver(SolverBase):
     """
     DISCS: https://github.com/google-research/discs
+    Current Version: aa8c12281a790fb36e98b32cc52279041b107f4a
+    Last Update: 2026-05-26
     @article{
         goshvadi2023discs,
         title={Discs: a benchmark for discrete sampling},

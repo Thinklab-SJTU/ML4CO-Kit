@@ -31,6 +31,7 @@ from .lib.ortools.pctsp_ortools import pctsp_ortools
 class ORSolver(SolverBase):
     """
     OR-Tools: https://developers.google.cn/optimization/introduction
+    Last Update: 2026-05-26
     """
     def __init__(
         self, 

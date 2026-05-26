@@ -26,6 +26,8 @@ from .lib.rlsa.mcut_rlsa import mcut_rlsa
 class RLSASolver(SolverBase):
     """
     RLSA: https://github.com/Shengyu-Feng/RLD4CO
+    Current Version: 7c3e5e7a161322d4dd4339fb760e1a8691847666
+    Last Update: 2026-05-26
     @inproceedings{
         feng2025regularizedlangevindynamicscombinatorial,
         title={Regularized Langevin Dynamics for Combinatorial Optimization},
@@ -49,7 +51,9 @@ class RLSASolver(SolverBase):
         optimizer: OptimizerBase = None,
     ):
         # Super Initialization
-        super(RLSASolver, self).__init__(SOLVER_TYPE.RLSA, optimizer=optimizer)
+        super(RLSASolver, self).__init__(
+            solver_type=SOLVER_TYPE.RLSA, optimizer=optimizer
+        )
 
         # Set Attributes
         self.rlsa_tau = rlsa_tau

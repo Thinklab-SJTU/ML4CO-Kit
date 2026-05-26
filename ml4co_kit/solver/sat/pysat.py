@@ -24,6 +24,26 @@ from .lib.pysat.sata_pysat import sata_pysat
 class PySATSolver(SolverBase):
     """
     PySAT: https://github.com/pysathq/pysat
+    Current Version: 1.9.dev4
+    Last Update: 2026-05-26
+    @inproceedings{
+        ignatiev2018pysat,
+        title={PySAT: A Python toolkit for prototyping with SAT oracles},
+        author={Ignatiev, Alexey and Morgado, Antonio and Marques-Silva, Joao},
+        booktitle={International Conference on Theory and Applications of Satisfiability Testing},
+        pages={428--437},
+        year={2018},
+        organization={Springer}
+    }
+    @inproceedings{
+        ignatiev2024towards,
+        title={Towards universally accessible SAT technology},
+        author={Ignatiev, Alexey and Tan, Zi Li and Karamanos, Christos},
+        booktitle={27th International Conference on Theory and Applications of Satisfiability Testing (SAT 2024)},
+        pages={16--1},
+        year={2024},
+        organization={Schloss Dagstuhl--Leibniz-Zentrum f{\"u}r Informatik}
+    }
     """
     def __init__(
         self,

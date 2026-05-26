@@ -23,6 +23,10 @@ from .lib.gp_degree.mvc_gp_degree import mvc_gp_degree_decoder
 
 
 class GpDegreeSolver(SolverBase):
+    """
+    Global Prediction Degree Solver
+    Last Update: 2026-05-26
+    """
     def __init__(self, optimizer: OptimizerBase = None):
         super(GpDegreeSolver, self).__init__(
             solver_type=SOLVER_TYPE.GP_DEGREE, optimizer=optimizer

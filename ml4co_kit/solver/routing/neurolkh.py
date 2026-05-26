@@ -1,5 +1,5 @@
 r"""
-NeuroLKH
+NeuroLKH Solver
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -25,6 +25,8 @@ from .lib.neurolkh.tsp_neurolkh import batch_tsp_neurolkh
 class NeuroLKHSolver(LKHSolver):
     """
     NeuroLKH: https://github.com/liangxinedu/NeuroLKH
+    Current Version: 32ab884c2fe6548ca4011eeb181af70fbfedc72b
+    Last Update: 2026-05-26
     @article{
         xin2021neurolkh,
         title={Neurolkh: Combining deep learning model with lin-kernighan-helsgaun \

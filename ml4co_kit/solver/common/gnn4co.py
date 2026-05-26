@@ -24,9 +24,12 @@ from ml4co_kit.extension.gnn4co.model.model import GNN4COModel
 
 class GNN4COSolver(SolverBase):
     """
+    GNN4CO: https://github.com/Thinklab-SJTU/ML4CO-Bench-101
+    Current Version: 22d1d62466cd7430a08b6179b9e5b65f6fc34f77
+    Last Update: 2026-05-26
     @inproceedings{
-        ma2025mlcobench,
-        title={ML4CO-Bench-101: Benchmark Machine Learning for Classic Combinatorial Problems on Graphs},
+        ma2025ml4co,
+        title={Ml4co-bench-101: Benchmark machine learning for classic combinatorial problems on graphs},
         author={Jiale Ma and Wenzheng Pan and Yang Li and Junchi Yan},
         booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
         year={2025}

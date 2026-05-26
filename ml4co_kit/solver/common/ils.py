@@ -24,7 +24,6 @@ from .lib.ils.spctsp_ils import spctsp_ils
 class ILSSolver(SolverBase):
     """
     ILS-PCTSP: https://github.com/jordanamecler/PCTSP
-    
     ILS-SPCTSP: https://github.com/wouterkool/attention-learn-to-route
     @article{
         kool2018attention,
