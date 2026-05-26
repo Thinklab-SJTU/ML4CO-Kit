@@ -1,4 +1,4 @@
-# LKH Integration in ML4CO-Kit
+# PyLKH Integration in ML4CO-Kit
 
 Dear PyLKH Team,
 

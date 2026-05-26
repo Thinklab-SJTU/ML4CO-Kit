@@ -54,16 +54,18 @@ mcut_wrapper = MCutWrapper()
 
 # Set the generator for MCut
 mcut_generator = MCutGenerator(
-    graph_type=GRAPH_TYPE.BA,
+    distribution_type=GRAPH_TYPE.BA,
     precision=np.float32,
-    nodes_num=50,
+    nodes_num_scale=(200, 300),
+    ba_conn_degree=4,
+    edge_weighted=False
 )
 
 # Set the solver for MCut
 mcut_solver = FEMSolver(
     num_trials=100,
     num_steps=1000,
-    device="cpu",
+    device="cuda",
 )
 
 # Generate MCut data
@@ -72,7 +74,7 @@ mcut_wrapper.generate_w_to_txt(
     generator=mcut_generator,
     solver=mcut_solver,
     num_samples=100,
-    num_threads=4,
+    batch_size=4,
     show_time=True,
 )
 ```
@@ -87,16 +89,13 @@ from ml4co_kit import MCutWrapper, FEMSolver
 mcut_wrapper = MCutWrapper()
 
 # Set the solver for MCut
-mcut_solver = FEMSolver(num_trials=100, num_steps=1000, device="cpu")
+mcut_solver = FEMSolver(num_trials=100, num_steps=1000, device="cuda")
 
-# Read the dataset from pkl file
-mcut_wrapper.from_pkl(
-    file_path="test_dataset/graph/mcut/wrapper/mcut_ba-small_no-weighted_4ins.pkl",
-    ref=True,
-)
+# Read the dataset from txt file
+mcut_wrapper.from_txt(file_path="mcut_ba-small_no-weighted_4ins.txt", ref=True)
 
 # Solve the dataset using FEM solver
-mcut_wrapper.solve(solver=mcut_solver, num_threads=4, show_time=True)
+mcut_wrapper.solve(solver=mcut_solver, batch_size=4, show_time=True)
 
 # Evaluate the solution
 print(mcut_wrapper.evaluate_w_gap())

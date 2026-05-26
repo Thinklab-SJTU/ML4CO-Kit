@@ -54,7 +54,8 @@ mis_generator = MISGenerator(
     distribution_type=GRAPH_TYPE.ER,
     precision=np.float32,
     nodes_num_scale=(700, 800),
-    er_prob=0.15
+    er_prob=0.15,
+    node_weighted=False
 )
 
 # Set the solver for MIS
