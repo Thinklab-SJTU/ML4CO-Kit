@@ -147,7 +147,7 @@ After the environment is installed, run the following command to confirm that th
 
 We will present the development progress of ML4CO-Kit in the above 5 levels. 
 
-**Graph: MCl & MCut & MIS & MVC; Routing: ATSP & OP & PCTSP & SPCTSP & TSP & CVRP (B/BL/BLTW/BTW/L/LTW/TW); Portfolio: MaxRetPO & MinVarPO & MOPO; SAT: SATA & SATP; EDA: EDAP**
+**Graph: MCl & MCut & MIS & MVC; Portfolio: MaxRetPO & MinVarPO & MOPO**
 
 **✔: Supported; 📆: Planned for future versions (contributions welcomed!).**
 
