@@ -195,6 +195,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |  Multi-Objective Portfolio Optimization (MOPO)      | ✔ | ✔ | ✔ | 📆  |  |
 | **EDA Tasks** |
 |  EDA Placement (EDAP)                               | ✔ | ✔ | ✔ | 📆 | ``bookshelf`` |
+
 </details>
 
 ---

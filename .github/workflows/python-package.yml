@@ -55,7 +55,21 @@ jobs:
       run: |
         pip install pytest
         python -m pip install pytest-cov
-        pytest --cov=ml4co_kit --cov-report=xml --cov-append
+        mkdir -p test-results
+        set -o pipefail
+        pytest \
+          --cov=ml4co_kit \
+          --cov-report=xml \
+          --cov-append \
+          --durations=0 \
+          --junitxml=test-results/linux-${{ matrix.python-version }}-junit.xml \
+          2>&1 | tee test-results/linux-${{ matrix.python-version }}-pytest.log
+    - name: Upload pytest logs and reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-py${{ matrix.python-version }}-pytest-results
+        path: test-results/
     - name: Upload to codecov
       uses: codecov/codecov-action@v3
       if: matrix.python-version == '3.11'
@@ -93,4 +107,18 @@ jobs:
       run: |
         pip install pytest
         python -m pip install pytest-cov
-        pytest --cov=ml4co_kit --cov-report=xml --cov-append
+        mkdir -p test-results
+        set -o pipefail
+        pytest \
+          --cov=ml4co_kit \
+          --cov-report=xml \
+          --cov-append \
+          --durations=0 \
+          --junitxml=test-results/macos-${{ matrix.python-version }}-junit.xml \
+          2>&1 | tee test-results/macos-${{ matrix.python-version }}-pytest.log
+    - name: Upload pytest logs and reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-py${{ matrix.python-version }}-pytest-results
+        path: test-results/

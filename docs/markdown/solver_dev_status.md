@@ -3,8 +3,6 @@
 
 | Solver | Support Task | Language | Source | Ref. / Implementation | State | 
 | :----: | :----------: |  ------- | :----: | :-------: | :---: |
-| Solver | Support Task | Language | Source | Ref. / Implementation | State | 
-| :----: | :----------: |  ------- | :----: | :-------: | :---: |
 | ConcordeSolver       | TSP   | C/C++  | [Concorde](https://www.math.uwaterloo.ca/tsp/concorde.html) | [PyConcorde](https://github.com/jvkersch/pyconcorde)  | ✔ |
 | GAEAXSolver          | TSP   | C/C++  | [GA-EAX](https://github.com/nagata-yuichi/GA-EAX) | [GA-EAX](https://github.com/nagata-yuichi/GA-EAX) | ✔ |
 | GNN4COSolver(Beam)   | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -39,7 +37,8 @@
 |                      | MCut  | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 |                      | MIS   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 |                      | MVC   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
-| KaMISSolver          | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [MIS-Bench](https://github.com/MaxiBoether/mis-benchmark-framework) | ✔ |
+| FEMSolver            | MCut  | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| KaMISSolver          | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [CHSZLabLib](https://github.com/CHSZLab/CHSZLabLib) | ✔ |
 | LcDegreeSolver       | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MCut  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
@@ -55,10 +54,25 @@
 |                      | MCl   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MVC   | C/C++  | [OR-Tools](https://developers.google.cn/optimization/introduction) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PyGMSolver           | GM    | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | GED   | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | KQAP  | Python | [pygmtools](https://github.com/Thinklab-SJTU/pygmtools) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PySATSolver          | SATP  | Python | [PySAT](https://github.com/pysathq/pysat) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | SATA  | Python | [PySAT](https://github.com/pysathq/pysat) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | RLSASolver           | MCl   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MCut  | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
-|                      | MVC   | Python | [RLSA](https://arxiv.org/abs/2502.00277) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 | SCIPSolver           | MaxRetPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MinVarPO | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MOPO  | C/C++  | [PySCIPOpt](https://github.com/scipopt/PySCIPOpt) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| PyVRPSolver          | CVRP  | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPB | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBL | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBLTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPBTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPL | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPLTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRPTW | Python | [PyVRP](https://github.com/PyVRP/PyVRP) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| NearestSolver        | TSP   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+|                      | CVRP  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
+| DreamPlaceSolver     | EDAP  | Python | [DREAMPlace](https://github.com/limbo018/DREAMPlace) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
