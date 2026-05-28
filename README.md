@@ -54,7 +54,7 @@ $ pip install -U https://github.com/Thinklab-SJTU/ML4CO-Kit/archive/master.zip #
 The following packages are required and shall be automatically installed by ``pip``:
 
 ```
-Python>=3.8
+Python>=3.9
 numpy>=1.24.3
 networkx>=2.8.8
 tqdm>=4.66.3
@@ -65,7 +65,7 @@ aiohttp>=3.10.11
 requests>=2.32.0
 matplotlib>=3.7.0
 async_timeout>=4.0.3
-pyvrp>=0.6.3
+pyvrp>=0.9.1
 gurobipy>=11.0.3
 scikit-learn>=1.3.0
 ortools>=9.12.4544
@@ -73,6 +73,11 @@ huggingface_hub>=0.32.0
 setuptools>=75.0.0
 PySCIPOpt>=5.6.0
 pybind11>=3.0.1
+cnfgen>=0.9.5
+python-sat
+PyYAML>=6.0.3
+hydra-core>=1.3.2
+chszlablib>=0.5.27
 ```
 
 To ensure you have access to all functions, you need to install the environment related to ``pytorch_lightning``. We have provided an installation helper, and you can install it using the following code.
@@ -141,6 +146,8 @@ After the environment is installed, run the following command to confirm that th
 ⚠️ **2025-10-21:** We find that on macOS, the ``gurobipy`` package does not support ``Python 3.8`` or earlier. Therefore, please upgrade your Python to at least 3.9.
 
 ⚠️ **2026-03-13:** For Python versions 3.9 to 3.11 on macOS, it is necessary to downgrade setuptools (recommended versions: 75.0.0 ~ 80.9.0).
+
+⚠️ **2026-05-28:** Starting from version ``0.5.3``, we will no longer support Python 3.8. Please upgrade your Python version to at least 3.9.
 
 
 ## 📝 **ML4CO-Kit Development status**

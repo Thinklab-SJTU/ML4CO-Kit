@@ -107,7 +107,11 @@ class EnvChecker(object):
         if self.python_major >= 3 and self.python_minor >= 9:
             return True
         else:
-            return False
+            # Since version 0.5.3, we will no longer support Python 3.8.
+            raise ValueError(
+                f"Python version {self.python_major}.{self.python_minor} is not supported. "
+                "Please upgrade your Python version to at least 3.9."
+            )
 
     def check_cp310_or_later(self) -> bool:
         if self.python_major >= 3 and self.python_minor >= 10:

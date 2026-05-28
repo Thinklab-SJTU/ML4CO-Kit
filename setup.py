@@ -38,7 +38,7 @@ REQUIRED = [
     "requests>=2.32.0",
     "matplotlib>=3.7.0",
     "async_timeout>=4.0.3",
-    "pyvrp>=0.6.3",
+    "pyvrp>=0.9.1",
     "gurobipy>=11.0.3",
     "scikit-learn>=1.3.0",
     "ortools>=9.12.4544",
@@ -49,7 +49,8 @@ REQUIRED = [
     "cnfgen>=0.9.5",
     "python-sat",
     "PyYAML>=6.0.3",
-    "hydra-core>=1.3.2"
+    "hydra-core>=1.3.2",
+    "chszlablib>=0.5.27"
 ]
 
 EXTRAS = {}
@@ -110,12 +111,11 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license="Mulan PSL v2",
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     classifiers=[
         "License :: OSI Approved :: Mulan Permissive Software License v2 (MulanPSL-2.0)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

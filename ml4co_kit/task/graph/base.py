@@ -19,6 +19,7 @@ import numpy as np
 import scipy.sparse
 import networkx as nx
 from typing import Union, Tuple
+from chszlablib import Graph as CHSZLabLibGraph
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
 
@@ -27,7 +28,6 @@ class GraphTaskBase(TaskBase):
     r"""
     Base class for all undirected graph problems in the ML4CO kit.
     """
-    
     def __init__(
         self, 
         task_type: TASK_TYPE,
@@ -393,6 +393,24 @@ class GraphTaskBase(TaskBase):
             self.xadj = csr.indptr.astype(np.int32)
             self.adjncy = csr.indices.astype(np.int32)
         return self.xadj, self.adjncy
+
+    def to_chszlablib(self, scale: float = 1e5) -> CHSZLabLibGraph:
+        """Convert current graph data to a chszlablib graph object."""
+        # Convert to CSR representation
+        xadj, adjncy = self.to_csr()
+        node_weights = self.nodes_weight * scale if self.node_weighted else None
+        edge_weights = self.edges_weight * scale if self.edge_weighted else None
+
+        # Create chszlablib graph
+        chszlablib_graph = CHSZLabLibGraph.from_csr(
+            xadj=xadj, 
+            adjncy=adjncy, 
+            node_weights=node_weights, 
+            edge_weights=edge_weights
+        )
+
+        # Return chszlablib graph
+        return chszlablib_graph
 
     def make_complement(self):
         """Convert the graph to its complement."""
