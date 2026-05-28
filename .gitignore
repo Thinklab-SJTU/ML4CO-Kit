@@ -73,9 +73,6 @@ ml4co_kit/solver/common/lib/greedy/cython_tsp_greedy/source/cython_tsp_greedy.c
 ml4co_kit/solver/common/lib/ils/c_pctsp_ils/pctsp_ils
 ml4co_kit/solver/common/lib/ils/c_spctsp_ils/spctsp_ils
 
-# kamis
-ml4co_kit/solver/graph/lib/kamis/KaMIS/**
-
 # pygmtools
 ml4co_kit/extension/pygmtools/c_astar/source/c_astar.cpp
 

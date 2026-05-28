@@ -309,7 +309,7 @@ We will present the development progress of ML4CO-Kit in the above 5 levels.
 |                      | MIS   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 |                      | MVC   | Python | [ISCO](https://proceedings.mlr.press/v202/sun23c/sun23c.pdf) | [DISCS](https://github.com/google-research/discs) | ✔ |
 | FEMSolver            | MCut  | Python | [FEM](https://github.com/Fanerst/FEM) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
-| KaMISSolver          | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [MIS-Bench](https://github.com/MaxiBoether/mis-benchmark-framework) | ✔ |
+| KaMISSolver          | MIS   | Python | [KaMIS](https://github.com/KarlsruheMIS/KaMIS) | [CHSZLabLib](https://github.com/CHSZLab/CHSZLabLib) | ✔ |
 | LcDegreeSolver       | MCl   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MCut  | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
 |                      | MIS   | Python | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | [ML4CO-Kit](https://github.com/Thinklab-SJTU/ML4CO-Kit) | ✔ |
