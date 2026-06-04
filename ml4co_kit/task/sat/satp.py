@@ -20,8 +20,6 @@ from ml4co_kit.task.sat.base import SATTaskBase
 
 
 class SATPTask(SATTaskBase):
-    """Satisfiability Prediction (SAP-P) task."""
-    
     def __init__(
         self, precision: Union[np.float32, np.float64] = np.float32
     ):

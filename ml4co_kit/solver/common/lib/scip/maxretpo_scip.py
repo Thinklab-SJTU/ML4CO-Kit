@@ -12,6 +12,7 @@ SCIP Solver for MaxRetPO
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
+
 import numpy as np
 from pyscipopt import Model, quicksum
 from ml4co_kit.task.portfolio.maxretpo import MaxRetPOTask

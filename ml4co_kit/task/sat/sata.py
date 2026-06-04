@@ -20,8 +20,6 @@ from ml4co_kit.task.sat.base import SATTaskBase
 
 
 class SATATask(SATTaskBase):
-    """Satisfying Assignment Prediction (SAT-A) task."""
-    
     def __init__(
         self, precision: Union[np.float32, np.float64] = np.float32
     ):

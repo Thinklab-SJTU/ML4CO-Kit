@@ -59,15 +59,9 @@ from .task import EDA_BENCH, EDAPTask
 from .task import GraphTaskBase 
 from .task import MClTask, MCutTask, MISTask, MVCTask
 
-# Routing Task
-from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
-from .task import (
-    ATSPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask,
-)
-from .task import (
-    CVRPTask, CVRPBTask, CVRPBLTask, CVRPBLTWTask, 
-    CVRPBTWTask, CVRPLTask, CVRPLTWTask, CVRPTWTask,
-)
+# MILP Task
+from .task import MILPTaskBase
+from .task import LPTask, MILPTask
 
 # Portfolio Task
 from .task import PortfolioTaskBase
@@ -77,6 +71,16 @@ from .task import MinVarPOTask, MaxRetPOTask, MOPOTask
 from .task import QAPTaskBase, QAPGraphBase
 from .task import GMTask, GMAffinityMatrixBuilder
 from .task import GEDTask, KQAPTask
+
+# Routing Task
+from .task import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
+from .task import (
+    ATSPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask,
+)
+from .task import (
+    CVRPTask, CVRPBTask, CVRPBLTask, CVRPBLTWTask, 
+    CVRPBTWTask, CVRPLTask, CVRPLTWTask, CVRPTWTask,
+)
 
 # SAT Task
 from .task import SATTaskBase

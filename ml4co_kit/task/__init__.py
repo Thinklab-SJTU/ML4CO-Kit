@@ -64,3 +64,8 @@ from .routing.vrp.cvrptw import CVRPTWTask
 from .sat.base import SATTaskBase
 from .sat.satp import SATPTask
 from .sat.sata import SATATask
+
+# MILP / LP Task
+from .milp.base import MILPTaskBase
+from .milp.lp import LPTask
+from .milp.milp import MILPTask

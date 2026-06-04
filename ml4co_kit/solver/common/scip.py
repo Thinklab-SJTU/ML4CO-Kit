@@ -20,6 +20,8 @@ from ml4co_kit.utils.file_utils import download
 from ml4co_kit.optimizer.base import OptimizerBase
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
 from ml4co_kit.solver.base import SolverBase, SOLVER_TYPE
+from .lib.scip.lp_scip import lp_scip
+from .lib.scip.milp_scip import milp_scip
 from .lib.scip.mopo_scip import mopo_scip
 from .lib.scip.maxretpo_scip import maxretpo_scip
 from .lib.scip.minvarpo_scip import minvarpo_scip
@@ -89,10 +91,20 @@ class SCIPSolver(SolverBase):
                 task_data=task_data,
                 scip_time_limit=self.scip_time_limit
             )
+        elif task_data.task_type == TASK_TYPE.LP:
+            return lp_scip(
+                task_data=task_data,
+                scip_time_limit=self.scip_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.MILP:
+            return milp_scip(
+                task_data=task_data,
+                scip_time_limit=self.scip_time_limit
+            )
         else:
             raise ValueError(
                 f"SCIP Solver does not support task type: {task_data.task_type}. "
-                f"Supported types: MaxRetPO, MinVarPO, MOPO"
+                f"Supported types: LP, MILP, MaxRetPO, MinVarPO, MOPO"
             )
 
     def install_soplex(self):

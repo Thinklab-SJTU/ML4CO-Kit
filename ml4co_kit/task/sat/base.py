@@ -21,8 +21,6 @@ from ml4co_kit.utils.file_utils import check_file_path
 
 
 class SATTaskBase(TaskBase):
-    """Base class for SAT problems."""
-    
     def __init__(
         self,
         task_type: TASK_TYPE,
