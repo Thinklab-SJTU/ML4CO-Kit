@@ -29,6 +29,8 @@ from .lib.gurobi.maxretpo_gurobi import maxretpo_gurobi
 from .lib.gurobi.minvarpo_gurobi import minvarpo_gurobi
 from .lib.gurobi.satp_gurobi import satp_gurobi
 from .lib.gurobi.sata_gurobi import sata_gurobi
+from .lib.gurobi.lp_gurobi import lp_gurobi
+from .lib.gurobi.milp_gurobi import milp_gurobi
 
 
 class GurobiSolver(SolverBase):
@@ -116,6 +118,16 @@ class GurobiSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.SATA:
             return sata_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.LP:
+            return lp_gurobi(
+                task_data=task_data,
+                gurobi_time_limit=self.gurobi_time_limit
+            )
+        elif task_data.task_type == TASK_TYPE.MILP:
+            return milp_gurobi(
                 task_data=task_data,
                 gurobi_time_limit=self.gurobi_time_limit
             )
