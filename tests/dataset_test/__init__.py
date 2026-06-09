@@ -16,12 +16,13 @@ Dataset Test Module.
 # Base Class
 from .base import DatasetTesterBase
 
-
 # EDA Problems
 from .eda.edap_ispd2005 import EDAP_ISPD2005DatasetTester
 from .eda.edap_ispd2005free import EDAP_ISPD2005FreeDatasetTester
 from .eda.edap_mms import EDAP_MMSDatasetTester
 
+# MILP Problems
+from .milp.milp_miplib import MILP_MIPLIBDatasetTester
 
 # QAP Problems
 from .qap.ged_aids700nef import GED_AIDS700nefDatasetTester

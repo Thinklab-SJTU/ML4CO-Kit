@@ -38,7 +38,7 @@ DREAMPLACE_THIRDPARTY_PATH = pathlib.Path(__file__).parent / "source/thirdparty"
 
 # Base URL for DreamPlace prebuilt packages
 DREAMPLACE_PREBUILT_BASE_URL = (
-    "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/resolve/main/dreamplace/"
+    "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/resolve/main/eda/dreamplace/"
 )
 
 

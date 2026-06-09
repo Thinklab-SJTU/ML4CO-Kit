@@ -29,18 +29,27 @@ class DatasetBase(object):
     def __init__(
         self, 
         task_type: TASK_TYPE, 
+        dataset_category: str,
         dataset_name: str,
         precision: Union[np.float32, np.float64] = np.float32,
     ):
         self.task_type = task_type
+        self.dataset_category = dataset_category
         self.dataset_name = dataset_name
         self.precision = precision
 
         # Download related
         self.root_dir = pathlib.Path(__file__).parent / "cache"
-        self.download_save_path: pathlib.Path = self.root_dir / "raw" / f"{dataset_name}.zip"
-        self.extracted_save_path: pathlib.Path = self.root_dir / "extracted" / f"{dataset_name}"
-        self.processed_save_path: pathlib.Path = self.root_dir / "processed" / f"{self.task_type.value}_{dataset_name}.pkl"
+        self.download_save_path = (
+            self.root_dir / "raw" / f"{dataset_category}" / f"{dataset_name}.zip"
+        )
+        self.extracted_save_path = (
+            self.root_dir / "extracted" / f"{dataset_category}" / f"{dataset_name}"
+        )
+        self.processed_save_path = (
+            self.root_dir / "processed" / f"{dataset_category}" / 
+            f"{self.task_type.value}_{dataset_name}.pkl"
+        )
 
         # cache
         self.cache: dict = {}
@@ -62,7 +71,7 @@ class DatasetBase(object):
                 pull_file_from_huggingface(
                     repo_id="ML4CO/ML4CO-Kit", 
                     repo_type="dataset", 
-                    filename=f"{self.dataset_name}.zip",
+                    filename=f"{self.dataset_category}/{self.dataset_name}.zip",
                     save_path=self.download_save_path.as_posix()
                 )
 

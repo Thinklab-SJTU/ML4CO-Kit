@@ -18,10 +18,10 @@ import pathlib
 import numpy as np
 import networkx as nx
 from typing import Union
-from ml4co_kit.task.qap.ged import GEDTask
 from ml4co_kit.task.base import TASK_TYPE
-from ml4co_kit.task.qap.base import QAPGraphBase
+from ml4co_kit.task.qap.ged import GEDTask
 from ml4co_kit.dataset.base import DatasetBase
+from ml4co_kit.task.qap.base import QAPGraphBase
 
 
 class GED_AIDS700nefDataset(DatasetBase):
@@ -34,6 +34,7 @@ class GED_AIDS700nefDataset(DatasetBase):
         # Super Initialization  
         super(GED_AIDS700nefDataset, self).__init__(
             task_type=TASK_TYPE.GED,
+            dataset_category="qap",
             dataset_name="AIDS700nef",
             precision=precision
         )

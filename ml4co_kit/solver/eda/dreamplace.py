@@ -182,7 +182,7 @@ class DreamPlaceSolver(SolverBase):
         if not DREAMPLACE_THIRDPARTY_PATH.exists():
             thirdparty_url = (
                 "https://huggingface.co/datasets/ML4CO/ML4CO-Kit/"
-                "resolve/main/dreamplace/dreamplace_thirdparty.zip"
+                "resolve/main/eda/dreamplace/dreamplace_thirdparty.zip"
             )
             download(file_path="dreamplace_thirdparty.zip", url=thirdparty_url)
             extract_archive(

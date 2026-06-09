@@ -26,13 +26,15 @@ from tests.dataset_test import (
     EDAP_ISPD2005DatasetTester,
     EDAP_ISPD2005FreeDatasetTester,
     EDAP_MMSDatasetTester,
-    GED_AIDS700nefDatasetTester
+    MILP_MIPLIBDatasetTester,
+    GED_AIDS700nefDatasetTester,
 )
 dataset_tester_list = [
     EDAP_ISPD2005DatasetTester,
     EDAP_ISPD2005FreeDatasetTester,
     EDAP_MMSDatasetTester,
-    GED_AIDS700nefDatasetTester
+    MILP_MIPLIBDatasetTester,
+    GED_AIDS700nefDatasetTester,
 ]
 
 

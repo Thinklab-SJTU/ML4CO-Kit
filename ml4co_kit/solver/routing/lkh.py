@@ -113,7 +113,7 @@ class LKHSolver(SolverBase):
             pull_file_from_huggingface(
                 repo_id="ML4CO/ML4CO-Kit",
                 repo_type="dataset",
-                filename="lkh/LKH-3.0.14.tgz",
+                filename="routing/lkh/LKH-3.0.14.tgz",
                 save_path="LKH-3.0.14.tgz"
             )
         except:

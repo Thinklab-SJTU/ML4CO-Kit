@@ -23,7 +23,7 @@ class MILPTask(MILPTaskBase):
     def __init__(
         self,
         minimize: bool = True,
-        precision: Union[np.float32, np.float64] = np.float32,
+        precision: Union[np.float32, np.float64] = np.float64,
         threshold: float = 1e-5,
     ):
         # Super Initialization

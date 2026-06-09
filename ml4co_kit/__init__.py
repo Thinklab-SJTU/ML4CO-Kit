@@ -139,6 +139,9 @@ from .dataset import (
     EDAP_ISPD2005Dataset, EDAP_ISPD2005FreeDataset, EDAP_MMSDataset
 )
 
+# MILP Dataset
+from .dataset import MILP_MIPLIBDataset
+
 # QAP Dataset
 from .dataset import GED_AIDS700nefDataset
 

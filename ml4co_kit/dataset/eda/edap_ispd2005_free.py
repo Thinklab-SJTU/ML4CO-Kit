@@ -42,6 +42,7 @@ class EDAP_ISPD2005FreeDataset(DatasetBase):
         # Super Initialization  
         super(EDAP_ISPD2005FreeDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
+            dataset_category="eda",
             dataset_name="ISPD2005Free",
             precision=precision
         )

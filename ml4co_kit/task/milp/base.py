@@ -28,7 +28,7 @@ class MILPTaskBase(TaskBase):
         task_type: TASK_TYPE,
         lp_relaxed: bool,
         minimize: bool,
-        precision: Union[np.float32, np.float64] = np.float32,
+        precision: Union[np.float32, np.float64] = np.float64,
         threshold: float = 1e-5
     ):
         # Super Initialization
@@ -45,7 +45,7 @@ class MILPTaskBase(TaskBase):
         self.threshold = threshold 
 
         # Initialize Attributes
-        self.constrs_num: int = None                  # Number of constraints M
+        self.constrs_num: int = None                 # Number of constraints M
         self.vars_num: int = None                    # Number of variables N
         self.A: scipy.sparse.csr_matrix = None       # CSR format (M, N)
         self.A_coo: scipy.sparse.coo_matrix = None   # COO format (M, N)
@@ -55,8 +55,9 @@ class MILPTaskBase(TaskBase):
         self.us: np.ndarray = None                   # Constraint upper bound (M,)
         self.lx: np.ndarray = None                   # Variable lower bound (N,)
         self.ux: np.ndarray = None                   # Variable upper bound (N,)
-        self.int_flag: np.ndarray = None               # Whether the variables are integer (N,)
-    
+        self.int_flag: np.ndarray = None             # Whether the variables are integer (N,)
+        self.var_names: list = None                  # Variable names from MPS/LP (N,)
+
     def _check_A_dim(self):
         """
         Checks if the ``A`` attribute is a 2D array.
@@ -177,6 +178,14 @@ class MILPTaskBase(TaskBase):
         if self.ref_sol.ndim != 1:
             raise ValueError("Reference solution should be a 1D array.")
 
+    def _check_var_names_not_none(self):
+        """Check if variable names are not None."""
+        if self.var_names is None:
+            raise ValueError(
+                "Variable names are required; load the instance via "
+                "``from_miplib`` first."
+            )
+
     def _check_constr_vars_num(self):
         """
         Checks if the number of constraints and variables are consistent.
@@ -246,99 +255,189 @@ class MILPTaskBase(TaskBase):
         else:
             self.constrs_num = 0
 
-    def _from_with_gurobi(self, file_path: Union[str, pathlib.Path]):
-        # Create Gurobi environment
-        env = gp.Env(empty=True)
-        env.setParam("OutputFlag", 0)
-        env.start()
+    def _parse_miplib_sol_file(
+        self, file_path: Union[str, pathlib.Path]
+    ) -> dict:
+        # Make sure the file path is a pathlib.Path
+        file_path = pathlib.Path(file_path)
 
-        # Using Gurobi API to read the MPS file
-        gp_model = gp.read(str(file_path), env=env)
-        gp_model.update()
+        # Initialize a dictionary to store the values
+        values = {}
 
-        # Get name from Gurobi model
-        name = gp_model.ModelName
+        # Read the file
+        with file_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith("=obj="):
+                    continue
+                parts = line.split()
+                if len(parts) < 2:
+                    continue
+                values[parts[0]] = float(parts[1])
         
-        # Get variables and constraints from Gurobi model
-        vars_list = gp_model.getVars()
-        constrs = gp_model.getConstrs()
-        vars_num = len(vars_list)
-        constrs_num = len(constrs)
+        # Return the values
+        return values
 
-        # Initialize objective coefficients, variable bounds, and integer variables
-        c = np.zeros(vars_num, dtype=self.precision)
-        lx = np.zeros(vars_num, dtype=self.precision)
-        ux = np.zeros(vars_num, dtype=self.precision)
-        int_flag = np.zeros(vars_num, dtype=np.bool_)
+    def _miplib_sol_dict_to_array(self, values: dict) -> np.ndarray:
+        # Check if the variable names and number of variables are set
+        if self.var_names is None or self.vars_num is None:
+            raise ValueError("Variable names and number of variables are not set!")
 
-        # Get objective coefficients, variable bounds, and integer flags
-        for v in vars_list:
-            j = v.index
-            c[j] = v.Obj
-            lx[j] = v.LB if v.LB > -gp.GRB.INFINITY else -np.inf
-            ux[j] = v.UB if v.UB < gp.GRB.INFINITY else np.inf
+        # Initialize a dictionary to store the index of the variables
+        name_to_idx = {name: i for i, name in enumerate(self.var_names)}
+
+        # Initialize a solution vector
+        sol = np.zeros(self.vars_num, dtype=self.precision)
+
+        # Initialize a list to store the unknown variable names
+        unknown = []
+        for name, val in values.items():
+            idx = name_to_idx.get(name)
+            if idx is None:
+                unknown.append(name)
+            else:
+                sol[idx] = val
+        if unknown:
+            preview = unknown[:5]
+            suffix = "..." if len(unknown) > 5 else ""
+            raise ValueError(
+                f"Unknown variable names in solution file: {preview}{suffix}"
+            )
+
+        # Return the solution vector
+        return sol
+
+    def _from_with_gurobi(
+        self, 
+        file_path: Union[str, pathlib.Path] = None,
+        sol_path: Union[str, pathlib.Path] = None,
+        ref: bool = False,
+    ):
+        # Read MPS file
+        if file_path is not None:
+            # Create Gurobi environment
+            env = gp.Env(empty=True)
+            env.setParam("OutputFlag", 0)
+            env.start()
+
+            # Using Gurobi API to read the MPS file
+            gp_model = gp.read(str(file_path), env=env)
+            gp_model.update()
+
+            # Get name from Gurobi model
+            name = gp_model.ModelName
             
-            # Set integer variables
-            if self.lp_relaxed:
-                int_flag[j] = False
-            else:
-                int_flag[j] = v.VType in (gp.GRB.INTEGER, gp.GRB.BINARY)
-        
-        # Store optimization direction; store ``c`` as minimization coefficients
-        self.minimize = gp_model.ModelSense == gp.GRB.MINIMIZE
-        if not self.minimize:
-            c = -c
+            # Get variables and constraints from Gurobi model
+            vars_list = gp_model.getVars()
+            constrs = gp_model.getConstrs()
+            vars_num = len(vars_list)
+            constrs_num = len(constrs)
 
-        # Get constraint matrix from Gurobi model
-        A = gp_model.getA()
+            # Initialize objective coefficients, variable bounds, and integer variables
+            c = np.zeros(vars_num, dtype=self.precision)
+            lx = np.zeros(vars_num, dtype=self.precision)
+            ux = np.zeros(vars_num, dtype=self.precision)
+            int_flag = np.zeros(vars_num, dtype=np.bool_)
 
-        # Get constraint bounds from Gurobi model
-        rhs = np.asarray(gp_model.getAttr("RHS", constrs), dtype=self.precision)
-        sense = gp_model.getAttr("Sense", constrs)
+            # Get objective coefficients, variable bounds, and integer flags
+            for v in vars_list:
+                j = v.index
+                c[j] = v.Obj
+                lx[j] = v.LB if v.LB > -gp.GRB.INFINITY else -np.inf
+                ux[j] = v.UB if v.UB < gp.GRB.INFINITY else np.inf
+                
+                # Set integer variables
+                if self.lp_relaxed:
+                    int_flag[j] = False
+                else:
+                    int_flag[j] = v.VType in (gp.GRB.INTEGER, gp.GRB.BINARY)
+            
+            # Store optimization direction; store ``c`` as minimization coefficients
+            self.minimize = gp_model.ModelSense == gp.GRB.MINIMIZE
+            if not self.minimize:
+                c = -c
 
-        # Get constraint lower and upper bounds
-        ls = np.full(constrs_num, -np.inf, dtype=self.precision)
-        us = np.full(constrs_num, np.inf, dtype=self.precision)
-        for i in range(constrs_num):
-            _sense = sense[i]
-            _rhs = rhs[i]
-            if _sense in (gp.GRB.LESS_EQUAL, "<"):
-                us[i] = _rhs
-            elif _sense in (gp.GRB.GREATER_EQUAL, ">"):
-                ls[i] = _rhs
-            elif _sense in (gp.GRB.EQUAL, "="):
-                ls[i] = us[i] = _rhs
-            else:
-                raise ValueError(f"Unknown constraint sense: {_sense!r}")
+            # Get constraint matrix from Gurobi model
+            A = gp_model.getA()
 
-        # Call ``from_data`` to set attributes
-        self.from_data(
-            A=A, c=c, ls=ls, us=us, lx=lx, ux=ux, int_flag=int_flag, name=name
-        )
-        
-        # Dispose Gurobi model and environment
-        env.dispose()
-        gp_model.dispose()
+            # Get constraint bounds from Gurobi model
+            rhs = np.asarray(gp_model.getAttr("RHS", constrs), dtype=self.precision)
+            sense = gp_model.getAttr("Sense", constrs)
 
-    def _write_with_gurobi(self, file_path: Union[str, pathlib.Path]):
+            # Get constraint lower and upper bounds
+            ls = np.full(constrs_num, -np.inf, dtype=self.precision)
+            us = np.full(constrs_num, np.inf, dtype=self.precision)
+            for i in range(constrs_num):
+                _sense = sense[i]
+                _rhs = rhs[i]
+                if _sense in (gp.GRB.LESS_EQUAL, "<"):
+                    us[i] = _rhs
+                elif _sense in (gp.GRB.GREATER_EQUAL, ">"):
+                    ls[i] = _rhs
+                elif _sense in (gp.GRB.EQUAL, "="):
+                    ls[i] = us[i] = _rhs
+                else:
+                    raise ValueError(f"Unknown constraint sense: {_sense!r}")
+
+            # Call ``from_data`` to set attributes
+            self.from_data(
+                A=A, c=c, ls=ls, us=us, lx=lx, ux=ux, int_flag=int_flag, name=name
+            )
+            self.var_names = [v.VarName for v in vars_list]
+
+            # Dispose Gurobi model and environment
+            gp_model.dispose()
+            env.dispose()
+
+        # Read solution from ``sol`` file
+        if sol_path is not None:
+            values = self._parse_miplib_sol_file(sol_path)
+            sol = self._miplib_sol_dict_to_array(values)
+            self.from_data(sol=sol, ref=ref)
+
+    def _to_with_gurobi(
+        self,
+        file_path: Union[str, pathlib.Path] = None,
+        sol_path: Union[str, pathlib.Path] = None,
+    ):
         """Write the instance to MPS or LP via Gurobi."""
-        # Check file path
-        check_file_path(file_path)
+        # Write instance to file
+        if file_path is not None:
+            # Check file path
+            check_file_path(file_path)
 
-        # Create Gurobi environment
-        env = gp.Env(empty=True)
-        env.setParam("OutputFlag", 0)
-        env.start()
+            # Create Gurobi environment
+            env = gp.Env(empty=True)
+            env.setParam("OutputFlag", 0)
+            env.start()
 
-        # Build Gurobi model
-        gp_model = self._build_gurobi_model(env)
+            # Build Gurobi model
+            gp_model = self._build_gurobi_model(env)
 
-        # Write Gurobi model to file
-        gp_model.write(str(file_path))
+            # Write Gurobi model to file
+            gp_model.write(str(file_path))
 
-        # Dispose Gurobi model and environment
-        gp_model.dispose()
-        env.dispose()
+            # Dispose Gurobi model and environment
+            gp_model.dispose()
+            env.dispose()
+
+        # Write solution to file
+        if sol_path is not None:
+            # Check and get solution
+            check_file_path(sol_path)
+            self._check_sol_not_none()
+            self._check_var_names_not_none()
+        
+            # Get objective value
+            obj_val = self.evaluate(self.sol, check_constr=False)
+            
+            # Write solution to file
+            with pathlib.Path(sol_path).open("w", encoding="utf-8") as f:
+                f.write(f"=obj= {obj_val}\n")
+                for i, val in enumerate(self.sol):
+                    f.write(f"{self.var_names[i]} {val}\n")
 
     def _build_gurobi_model(self, env: gp.Env) -> gp.Model:
         """Build a Gurobi model from internal MILP data."""
@@ -518,19 +617,24 @@ class MILPTaskBase(TaskBase):
         # Return ``A_dense`` attribute
         return self.A_dense
 
-    def from_mps(self, file_path: Union[str, pathlib.Path]):
-        self._from_with_gurobi(file_path)
+    def from_miplib(
+        self, 
+        file_path: Union[str, pathlib.Path] = None, 
+        sol_path: Union[str, pathlib.Path] = None,
+        ref: bool = False,
+    ):
+        """Read the instance and solution from an MIPLIB file via Gurobi."""
+        self._from_with_gurobi(
+            file_path=file_path, sol_path=sol_path, ref=ref
+        )
 
-    def to_mps(self, file_path: Union[str, pathlib.Path]):
+    def to_miplib(
+        self, 
+        file_path: Union[str, pathlib.Path] = None, 
+        sol_path: Union[str, pathlib.Path] = None
+    ):
         """Write the instance to an MPS file via Gurobi."""
-        self._write_with_gurobi(file_path)
-
-    def from_lp(self, file_path: Union[str, pathlib.Path]):
-        self._from_with_gurobi(file_path)
-
-    def to_lp(self, file_path: Union[str, pathlib.Path]):
-        """Write the instance to an LP file via Gurobi."""
-        self._write_with_gurobi(file_path)
+        self._to_with_gurobi(file_path, sol_path)
 
     def check_constraints(self, sol: np.ndarray) -> bool:
         """
@@ -539,8 +643,10 @@ class MILPTaskBase(TaskBase):
         # Check Constraints: ls <= Ax <= us
         Ax = self.A @ sol
         if not np.all(Ax >= self.ls - self.threshold):
+            np.where(Ax < self.ls - self.threshold)
             return False
         if not np.all(Ax <= self.us + self.threshold):
+            np.where(Ax > self.us + self.threshold)[0]
             return False
 
         # Check Variables: lx <= x <= ux
@@ -548,7 +654,7 @@ class MILPTaskBase(TaskBase):
             return False
         if not np.all(sol <= self.ux + self.threshold):
             return False
-        
+
         # Check Integer Variables: int_flag
         int_sol = sol[self.int_flag]
         int_sol_diff = np.abs(int_sol - np.round(int_sol))

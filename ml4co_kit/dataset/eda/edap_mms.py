@@ -41,6 +41,7 @@ class EDAP_MMSDataset(DatasetBase):
         # Super Initialization  
         super(EDAP_MMSDataset, self).__init__(
             task_type=TASK_TYPE.EDAP,
+            dataset_category="eda",
             dataset_name="MMS",
             precision=precision
         )
