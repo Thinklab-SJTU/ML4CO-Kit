@@ -16,9 +16,9 @@ Trainer for ML4CO models.
 import os
 import torch
 from torch import nn
-from typing import Optional, List
 from wandb.util import generate_id
-from typing import Union, Optional
+from typing import Optional, List, Union
+from pytorch_lightning import LightningModule
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.utilities import rank_zero_info
 from pytorch_lightning.trainer import Trainer as PLTrainer
@@ -28,7 +28,32 @@ from pytorch_lightning.callbacks import (
 )
 
 
+class MetricProgressBar(TQDMProgressBar):
+    """Display progress-bar metrics with fixed decimal precision."""
+
+    def __init__(self, metric_precision: int = 4, **kwargs):
+        super().__init__(**kwargs)
+        self.metric_precision = metric_precision
+
+    def get_metrics(
+        self, trainer: PLTrainer, pl_module: LightningModule
+    ) -> dict[str, Union[int, str, float]]:
+        metrics = super().get_metrics(trainer, pl_module)
+        return {
+            name: (
+                f"{value:.{self.metric_precision}f}"
+                if isinstance(value, float)
+                else value
+            )
+            for name, value in metrics.items()
+        }
+
+
 class Checkpoint(ModelCheckpoint):
+    """
+    Save the model periodically by monitoring a quantity.
+    Look at the above link for more detailed information.
+    """
     def __init__(
         self,
         dirpath: str = "wandb/checkpoints",
@@ -53,6 +78,9 @@ class Checkpoint(ModelCheckpoint):
 
 
 class Logger(WandbLogger):
+    """
+    Logger for Wandb.
+    """
     def __init__(
         self,
         name: str = "wandb",
@@ -75,6 +103,9 @@ class Logger(WandbLogger):
 
 
 class Trainer(PLTrainer):
+    """
+    Trainer for ML4CO models.
+    """
     def __init__(
         self,
         model: nn.Module,
@@ -102,6 +133,8 @@ class Trainer(PLTrainer):
         gradient_clip_val: int = 1,
         inference_mode: bool = False,
         reload_dataloaders_every_n_epochs: int = 0,
+        progress_bar_refresh_rate: int = 20,
+        metric_precision: int = 4,
         # Disable JIT profiling executor.
         disable_profiling_executor: bool = True,
         # pretrained
@@ -156,7 +189,10 @@ class Trainer(PLTrainer):
             precision=16 if fp16 else 32,
             logger=self.logger,
             callbacks=[
-                TQDMProgressBar(refresh_rate=20),
+                MetricProgressBar(
+                    refresh_rate=progress_bar_refresh_rate,
+                    metric_precision=metric_precision,
+                ),
                 self.ckpt_callback,
                 self.lr_callback,
             ],
