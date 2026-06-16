@@ -23,13 +23,14 @@ import matplotlib.pyplot as plt
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
 from ml4co_kit.utils.file_utils import check_file_path
-from ml4co_kit.task.routing.base import RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
+from ml4co_kit.task.routing.base import DistanceEvaluator, RoutingTaskBase, DISTANCE_TYPE, ROUND_TYPE
 
 
 class CVRPTask(RoutingTaskBase):
     def __init__(
         self, 
         cvrp_open: bool = False,
+        mixed_backhaul: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D, 
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
         precision: Union[np.float32, np.float64] = np.float32,
@@ -145,6 +146,181 @@ class CVRPTask(RoutingTaskBase):
         """Split tours based on depot delimiters."""
         return np.split(sol, np.where(sol == 0)[0])[1: -1]
 
+    @staticmethod
+    def _check_route_c(
+        route: np.ndarray,
+        demands: np.ndarray,
+        capacity: float,
+        threshold: float,
+    ) -> bool:
+        # Get the demands on the route
+        route_demands = demands[route.astype(int) - 1]
+        split_demand_need = np.sum(route_demands)
+
+        # Check if the demand is within the capacity
+        if split_demand_need > capacity + threshold:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def _check_route_l(
+        dist_eval: DistanceEvaluator, 
+        coords: np.ndarray, 
+        route: np.ndarray, 
+        max_route_length: float,
+        threshold: float,
+        cvrp_open: bool = False,
+    ) -> bool:
+        """
+        Define a helper function to check the constraint L
+        """
+        # Initialize the route length
+        route_length = 0
+
+        # Depot -> First Customer
+        route_length += dist_eval.cal_distance(
+            start=coords[0], end=coords[route[0]]
+        )
+
+        # Customers in the route
+        for idx in range(len(route) - 1):
+            route_length += dist_eval.cal_distance(
+                start=coords[route[idx]], end=coords[route[idx + 1]]
+            )
+
+        # If not cvrp_open, add the distance from the last customer to the depot
+        if not cvrp_open:
+            route_length += dist_eval.cal_distance(
+                start=coords[route[-1]], end=coords[0]
+            )
+
+        # Check if the route length is within the maximum route length
+        if route_length > max_route_length + threshold:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def _check_route_b(
+        route: np.ndarray,
+        demands: np.ndarray,
+        capacity: float,
+        threshold: float,
+    ) -> bool:
+        """
+        Define a helper function to check the constraint B
+        """
+        # 1. Linehaul before backhaul
+        route_demands = demands[route.astype(int) - 1]
+        is_linehaul = route_demands >= 0
+        is_backhaul = route_demands < 0
+        if np.any(is_backhaul):
+            first_backhaul_idx = np.flatnonzero(is_backhaul)[0]
+            if np.any(is_linehaul[first_backhaul_idx + 1:]):
+                return False
+
+        # 2. Linehaul load <= vehicle capacity
+        linehaul_load = np.sum(route_demands[is_linehaul])
+        if linehaul_load > capacity + threshold:
+            return False
+
+        # 3. Backhaul load <= vehicle capacity
+        backhaul_load = np.sum(-route_demands[is_backhaul])
+        if backhaul_load > capacity + threshold:
+            return False
+
+    @staticmethod
+    def _check_route_mb(
+        route: np.ndarray,
+        demands: np.ndarray,
+        capacity: float,
+        threshold: float,
+    ) -> bool:
+        """
+        Define a helper function to check constraint MB:
+        """
+        # 1. Linehaul load <= vehicle capacity
+        route_demands = demands[route.astype(int) - 1]
+        is_linehaul = route_demands >= 0
+        linehaul_load = np.sum(route_demands[is_linehaul])
+        if linehaul_load > capacity + threshold:
+            return False
+
+        # 2. Check if the backhaul load is within the capacity
+        left_capacity = capacity - linehaul_load
+        for node in route.astype(int):
+            # Update the left capacity
+            left_capacity += demands[node]
+            
+            # Check if the left capacity is greater than zero
+            if left_capacity < -threshold:
+                return False
+        
+        # Return True if the route constraints are satisfied
+        return True
+
+    @staticmethod
+    def _check_route_tw(
+        dist_eval: DistanceEvaluator, 
+        coords: np.ndarray, 
+        route: np.ndarray, 
+        tw: np.ndarray, 
+        service: np.ndarray,
+        threshold: float,
+        cvrp_open: bool = False
+    ) -> bool:
+        """
+        Define a helper function to check the constraint TW
+        """
+        # Initialize the current time
+        cur_time: float = 0
+        last_node = 0
+
+        # Sequentially check each node in the route
+        for node in route.astype(int):
+            # Get the time window and service time
+            cur_tw = tw[node]
+            cur_tw_0 = float(cur_tw[0])
+            cur_tw_1 = float(cur_tw[1])
+            cur_st = service[node]
+
+            # Update the current time
+            travel_time = dist_eval.cal_distance(
+                start=coords[last_node], end=coords[node]
+            )
+            cur_time += float(travel_time)
+            cur_time = cur_tw_0 if cur_time < cur_tw_0 else cur_time
+
+            # Check if the current time is within the time window
+            if cur_time > cur_tw_1 + threshold:
+                return False 
+            
+            # Update the current time with the service time
+            cur_time += cur_st
+
+            # Update the last node
+            last_node = node
+
+        # If not open, final check (back to depot)
+        if not cvrp_open:
+            # Get the time window and service time
+            cur_tw: np.ndarray = tw[0]
+            cur_tw_1: float = float(cur_tw[1])
+
+            # Update the current time
+            travel_time = dist_eval.cal_distance(
+                start=coords[last_node], end=coords[0]
+            )
+            cur_time += float(travel_time)
+            
+            # Check if the current time is within the time window
+            if cur_time > cur_tw_1 + threshold:
+                return False
+
+        # Return True if the route time windows are satisfied
+        return True
+            
     def from_data(
         self,
         depots: np.ndarray = None,
@@ -365,12 +541,17 @@ class CVRPTask(RoutingTaskBase):
         for split_idx in range(len(split_tours)): 
             # Get the split tour and the demands on the split tour
             split_tour: np.ndarray = split_tours[split_idx][1:]
-            route_demands = demands[split_tour.astype(int) - 1]
 
             # check if the demand is within the capacity
-            split_demand_need = np.sum(route_demands, dtype=self.precision)
-            if split_demand_need > capacity + self.threshold:
+            if not self._check_route_c(
+                route=split_tour, 
+                demands=demands, 
+                capacity=capacity, 
+                threshold=self.threshold
+            ):
                 return False
+
+        # If all constraints are satisfied, return True
         return True
         
     def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:

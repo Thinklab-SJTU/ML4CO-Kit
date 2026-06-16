@@ -90,49 +90,32 @@ class CVRPLTask(CVRPTask):
         capacity = self.capacity
         split_tours = self._split_tours(sol)
 
-        # Define a helper function to evaluate the route length
-        def _eval_route_len(route: np.ndarray) -> np.floating:
-            # Initialize the route length
-            route_length = 0
-
-            # Depot -> First Customer
-            route_length += self.dist_eval.cal_distance(
-                self.coords[0], self.coords[route[0]]
-            )
-
-            # Customers in the route
-            for idx in range(len(route) - 1):
-                route_length += self.dist_eval.cal_distance(
-                    self.coords[route[idx]], self.coords[route[idx + 1]]
-                )
-
-            # If not cvrp_open, add the distance from the last customer to the depot
-            if not self.cvrp_open:
-                route_length += self.dist_eval.cal_distance(
-                    self.coords[route[-1]], self.coords[0]
-                )
-
-            # Return the route length
-            return route_length
-
         # For each split tour, check:
         # 1. if the demand is within the capacity
         # 2. if the route length is within the maximum route length
         for split_idx in range(len(split_tours)):   
-            # Get the split tour and the demands on the split tour
+            # Get the split tour
             split_tour: np.ndarray = split_tours[split_idx][1:]
-            route_demands = demands[split_tour.astype(int) - 1]
 
-            # 1. if the demand is within the capacity
-            split_demand_need = np.sum(route_demands, dtype=self.precision)
-            if split_demand_need > capacity + self.threshold:
+            # Check the constraint C
+            if not self._check_route_c(
+                route=split_tour,
+                demands=demands,
+                capacity=capacity,
+                threshold=self.threshold
+            ):
                 return False
 
-            # 2. if the route length is within the maximum route length
-            route_length = _eval_route_len(split_tour)
-            if route_length > self.max_route_length + self.threshold:
+            # Check the constraint L
+            if not self._check_route_l(
+                dist_eval=self.dist_eval, 
+                coords=self.coords, 
+                route=split_tour, 
+                max_route_length=self.max_route_length, 
+                threshold=self.threshold, 
+                cvrp_open=self.cvrp_open
+            ):
                 return False
 
-        # If all constraints are satisfied, return True
+        # If all constraints are satisfied, return True        
         return True
-        

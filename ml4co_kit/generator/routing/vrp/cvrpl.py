@@ -65,19 +65,16 @@ class CVRPLGenerator(CVRPGenerator):
         # Extra Attributes
         self.rou_max = rou_max
 
-    def _generate_uniform(self) -> CVRPLTask:
+    def _generate_core(
+        self, depots: np.ndarray, points: np.ndarray
+    ) -> CVRPLTask:
         # Generate demands and capacity
         demands, capacity = self._generate_demands_and_capacity()
         
-        # Generate uniform random coordinates in [0, 1]
-        coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num + 1, 2))
-        depots = coords[0]
-        points = coords[1:]
-
         # Generate the route length limit
         d0i = np.linalg.norm(depots - points, axis=1)
         max_route_length = generate_for_l(d0i, self.rou_max)
-        
+
         # Create CVRPL Instance from Data
         task_data = CVRPLTask(
             cvrp_open=self.cvrp_open,
@@ -87,36 +84,6 @@ class CVRPLGenerator(CVRPGenerator):
         )
         task_data.from_data(
             depots=depots, points=points, demands=demands, 
-            capacity=capacity, max_route_length=max_route_length
-        )
-        return task_data
-
-    def _generate_gaussian(self) -> CVRPLTask:
-        # Generate demands and capacity
-        demands, capacity = self._generate_demands_and_capacity()
-        
-        # Generate coordinates from a Gaussian distribution
-        coords = np.random.normal(
-            loc=(self.gaussian_mean_x, self.gaussian_mean_y),
-            scale=self.gaussian_std,
-            size=(self.nodes_num + 1, 2),
-        )
-        depots = coords[0]
-        points = coords[1:]
-
-        # Generate the route length limit
-        d0i = np.linalg.norm(depots - points, axis=1)
-        max_route_length = generate_for_l(d0i, self.rou_max)
-
-        # Create CVRPL Instance from Data
-        task_data = CVRPLTask(
-            cvrp_open=self.cvrp_open,
-            distance_type=DISTANCE_TYPE.EUC_2D,
-            round_type=ROUND_TYPE.NO,
-            precision=self.precision
-        )
-        task_data.from_data(
-            depots=depots, points=points, demands=demands,  
             capacity=capacity, max_route_length=max_route_length
         )
         return task_data

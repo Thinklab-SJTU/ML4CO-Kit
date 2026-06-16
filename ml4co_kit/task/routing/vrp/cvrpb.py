@@ -31,6 +31,7 @@ class CVRPBTask(CVRPTask):
     def __init__(
         self,
         cvrp_open: bool = False,
+        mixed_backhaul: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         precision: Union[np.float32, np.float64] = np.float32,
@@ -45,8 +46,9 @@ class CVRPBTask(CVRPTask):
             threshold=threshold,
         )
 
-        # Set Task Type
+        # Set Task Type and Mixed Backhaul
         self.task_type = TASK_TYPE.CVRPB
+        self.mixed_backhaul = mixed_backhaul
 
     def check_constraints(self, sol: np.ndarray) -> bool:
         """Check if the solution is valid for backhauls."""
@@ -65,32 +67,28 @@ class CVRPBTask(CVRPTask):
         split_tours = self._split_tours(sol)
 
         # For each split tour, check:
-        # 1. if the linehaul demand is served before the backhaul demand
-        # 2. if the linehaul demand is within the capacity
-        # 3. if the backhaul demand is within the capacity
         for split_idx in range(len(split_tours)):
-            # Get the split tour and the demands on the split tour
+            # Get the split tour
             split_tour: np.ndarray = split_tours[split_idx][1:]
-            route_demands = demands[split_tour.astype(int) - 1]
 
-            # 1. Linehaul before backhaul
-            is_linehaul = route_demands >= 0
-            is_backhaul = route_demands < 0
-            if np.any(is_backhaul):
-                first_backhaul_idx = np.flatnonzero(is_backhaul)[0]
-                if np.any(is_linehaul[first_backhaul_idx + 1:]):
+            # Check the constraint B or MB
+            if self.mixed_backhaul:
+                if not self._check_route_mb(
+                    route=split_tour,
+                    demands=demands,
+                    capacity=capacity,
+                    threshold=self.threshold
+                ):
+                    return False
+            else:
+                if not self._check_route_b(
+                    route=split_tour,
+                    demands=demands,
+                    capacity=capacity,
+                    threshold=self.threshold
+                ):
                     return False
 
-            # 2. Linehaul load <= vehicle capacity
-            linehaul_load = np.sum(route_demands[is_linehaul], dtype=self.precision)
-            if linehaul_load > capacity + self.threshold:
-                return False
-
-            # 3. Backhaul load <= vehicle capacity
-            backhaul_load = np.sum(-route_demands[is_backhaul], dtype=self.precision)
-            if backhaul_load > capacity + self.threshold:
-                return False
-        
         # If all constraints are satisfied, return True
         return True
 

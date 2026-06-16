@@ -27,6 +27,7 @@ class CVRPBGenerator(CVRPGenerator):
     def __init__(
         self, 
         cvrp_open: bool = False,
+        mixed_backhaul: bool = False,
         distribution_type: CVRP_TYPE = CVRP_TYPE.UNIFORM,
         precision: Union[np.float32, np.float64] = np.float32,
         nodes_num: int = 50,
@@ -57,13 +58,16 @@ class CVRPBGenerator(CVRPGenerator):
             gaussian_std=gaussian_std,
         )
         
-        # Set Task Type
+        # Set Task Type and Mixed Backhaul
         self.task_type = TASK_TYPE.CVRPB
+        self.mixed_backhaul = mixed_backhaul
 
         # Extra Attributes
         self.bh_ratio = bh_ratio
 
-    def _generate_uniform(self) -> CVRPBTask:
+    def _generate_core(
+        self, depots: np.ndarray, points: np.ndarray
+    ) -> CVRPBTask:
         # Generate demands and capacity
         demands, capacity = self._generate_demands_and_capacity()
         
@@ -71,44 +75,10 @@ class CVRPBGenerator(CVRPGenerator):
         bh_mask = np.random.rand(self.nodes_num) < self.bh_ratio
         demands[bh_mask] = -demands[bh_mask]
 
-        # Generate uniform random coordinates in [0, 1]
-        coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num + 1, 2))
-        depots = coords[0]
-        points = coords[1:]
-
         # Create CVRPB Instance from Data
         task_data = CVRPBTask(
             cvrp_open=self.cvrp_open,
-            distance_type=DISTANCE_TYPE.EUC_2D,
-            round_type=ROUND_TYPE.NO,
-            precision=self.precision
-        )
-        task_data.from_data(
-            depots=depots, points=points, 
-            demands=demands, capacity=capacity
-        )
-        return task_data
-
-    def _generate_gaussian(self) -> CVRPBTask:
-        # Generate demands and capacity
-        demands, capacity = self._generate_demands_and_capacity()
-
-        # Backhauls
-        bh_mask = np.random.rand(self.nodes_num) < self.bh_ratio
-        demands[bh_mask] = -demands[bh_mask]
-
-        # Generate coordinates from a Gaussian distribution
-        coords = np.random.normal(
-            loc=(self.gaussian_mean_x, self.gaussian_mean_y),
-            scale=self.gaussian_std,
-            size=(self.nodes_num + 1, 2),
-        )
-        depots = coords[0]
-        points = coords[1:]
-
-        # Create CVRPB Instance from Data
-        task_data = CVRPBTask(
-            cvrp_open=self.cvrp_open,
+            mixed_backhaul=self.mixed_backhaul,
             distance_type=DISTANCE_TYPE.EUC_2D,
             round_type=ROUND_TYPE.NO,
             precision=self.precision

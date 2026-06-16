@@ -309,8 +309,8 @@ class WrapperBase(object):
         
         # Evaluate the task list
         for task_data in self.task_list:
-            sol_cost, ref_cost, gap = task_data.evaluate_w_gap(
-                check_constr=check_constr)
+            sol_cost, ref_cost, gap = \
+                task_data.evaluate_w_gap(check_constr=check_constr)
             sol_costs_list.append(sol_cost)
             ref_costs_list.append(ref_cost)
             gaps_list.append(gap)

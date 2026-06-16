@@ -26,6 +26,7 @@ class CVRPBTWTask(CVRPTask):
     def __init__(
         self,
         cvrp_open: bool = False,
+        mixed_backhaul: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         precision: Union[np.float32, np.float64] = np.float32,
@@ -40,8 +41,9 @@ class CVRPBTWTask(CVRPTask):
             threshold=threshold,
         )
 
-        # Set Task Type
+        # Set Task Type and Mixed Backhaul
         self.task_type = TASK_TYPE.CVRPBTW
+        self.mixed_backhaul = mixed_backhaul
 
         # Extra Attributes
         self.tw = None         # Time windows (V+1, 2)
@@ -109,88 +111,41 @@ class CVRPBTWTask(CVRPTask):
         capacity = self.capacity
         split_tours = self._split_tours(sol)
 
-        # Define a helper function to check the route time windows
-        def _check_route_tw(route: np.ndarray) -> bool:
-            # Initialize the current time
-            cur_time: float = 0
-            last_node = 0
-
-            # Sequentially check each node in the route
-            for node in route.astype(int):
-                # Get the time window and service time
-                cur_tw = self.tw[node]
-                cur_tw_0 = float(cur_tw[0])
-                cur_tw_1 = float(cur_tw[1])
-                cur_st = self.service[node]
-
-                # Update the current time
-                travel_time = self.dist_eval.cal_distance(
-                    self.coords[last_node], self.coords[node]
-                )
-                cur_time += float(travel_time)
-                cur_time = cur_tw_0 if cur_time < cur_tw_0 else cur_time
-
-                # Check if the current time is within the time window
-                if cur_time > cur_tw_1 + self.threshold:
-                    return False 
-                
-                # Update the current time with the service time
-                cur_time += cur_st
-
-                # Update the last node
-                last_node = node
-
-            # If not open, final check (back to depot)
-            if not self.cvrp_open:
-                # Get the time window and service time
-                cur_tw: np.ndarray = self.tw[0]
-                cur_tw_1: float = float(cur_tw[1])
-
-                # Update the current time
-                travel_time = self.dist_eval.cal_distance(
-                    self.coords[last_node], self.coords[0]
-                )
-                cur_time += float(travel_time)
-                
-                # Check if the current time is within the time window
-                if cur_time > cur_tw_1 + self.threshold:
-                    return False
-
-            # Return True if the route time windows are satisfied
-            return True
-
         # For each split tour, check:
-        # 1. if the linehaul demand is served before the backhaul demand
-        # 2. if the linehaul demand is within the capacity
-        # 3. if the backhaul demand is within the capacity
-        # 4. if the route time windows are satisfied
         for split_idx in range(len(split_tours)):   
-            # Get the split tour and the demands on the split tour
+            # Get the split tour
             split_tour: np.ndarray = split_tours[split_idx][1:]
-            route_demands = demands[split_tour.astype(int) - 1]
 
-            # 1. Linehaul before backhaul
-            is_linehaul = route_demands >= 0
-            is_backhaul = route_demands < 0
-            if np.any(is_backhaul):
-                first_backhaul_idx = np.flatnonzero(is_backhaul)[0]
-                if np.any(is_linehaul[first_backhaul_idx + 1:]):
+            # Check the constraint B or MB
+            if self.mixed_backhaul:
+                if not self._check_route_mb(
+                    route=split_tour,
+                    demands=demands,
+                    capacity=capacity,
+                    threshold=self.threshold
+                ):
+                    return False
+            else:
+                if not self._check_route_b(
+                    route=split_tour,
+                    demands=demands,
+                    capacity=capacity,
+                    threshold=self.threshold
+                ):
                     return False
 
-            # 2. Linehaul load <= vehicle capacity
-            linehaul_load = np.sum(route_demands[is_linehaul], dtype=self.precision)
-            if linehaul_load > capacity + self.threshold:
+            # Check the constraint TW
+            if not self._check_route_tw(
+                dist_eval=self.dist_eval,
+                coords=self.coords,
+                route=split_tour,
+                tw=self.tw,
+                service=self.service,
+                threshold=self.threshold,
+                cvrp_open=self.cvrp_open
+            ):
                 return False
-
-            # 3. Backhaul load <= vehicle capacity
-            backhaul_load = np.sum(-route_demands[is_backhaul], dtype=self.precision)
-            if backhaul_load > capacity + self.threshold:
-                return False
-
-            # 4. Route time windows are satisfied
-            if not _check_route_tw(split_tour):
-                return False
-
+                
         # If all constraints are satisfied, return True
         return True
 

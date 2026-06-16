@@ -65,14 +65,11 @@ class CVRPTWGenerator(CVRPGenerator):
         # Extra Attributes
         self.max_time = max_time
 
-    def _generate_uniform(self) -> CVRPTWTask:
+    def _generate_core(
+        self, depots: np.ndarray, points: np.ndarray
+    ) -> CVRPTWTask:
         # Generate demands and capacity
         demands, capacity = self._generate_demands_and_capacity()
-
-        # Generate uniform random coordinates in [0, 1]
-        coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num + 1, 2))
-        depots = coords[0]
-        points = coords[1:]
 
         # Generate the time window and service time
         d0i = np.linalg.norm(depots - points, axis=1)
@@ -87,36 +84,6 @@ class CVRPTWGenerator(CVRPGenerator):
         )
         task_data.from_data(
             depots=depots, points=points, demands=demands, 
-            capacity=capacity, tw=tw, service=service
-        )
-        return task_data
-
-    def _generate_gaussian(self) -> CVRPTWTask:
-        # Generate demands and capacity
-        demands, capacity = self._generate_demands_and_capacity()
-
-        # Generate coordinates from a Gaussian distribution
-        coords = np.random.normal(
-            loc=(self.gaussian_mean_x, self.gaussian_mean_y),
-            scale=self.gaussian_std,
-            size=(self.nodes_num + 1, 2),
-        )
-        depots = coords[0]
-        points = coords[1:]
-
-        # Generate the time window and service time
-        d0i = np.linalg.norm(depots - points, axis=1)
-        tw, service = generate_for_tw(d0i, self.max_time)
-
-        # Create CVRPTW Instance from Data
-        task_data = CVRPTWTask(
-            cvrp_open=self.cvrp_open,
-            distance_type=DISTANCE_TYPE.EUC_2D,
-            round_type=ROUND_TYPE.NO,
-            precision=self.precision
-        )
-        task_data.from_data(
-            depots=depots, points=points, demands=demands,  
             capacity=capacity, tw=tw, service=service
         )
         return task_data

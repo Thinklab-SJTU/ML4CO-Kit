@@ -50,7 +50,7 @@ class ROUND_TYPE(str, Enum):
     ROUND = "round"   # Round to Nearest Integer
 
 
-class DisntanceEvaluator(object):
+class DistanceEvaluator(object):
     """Distance evaluator for different distance types."""
     def __init__(
         self,
@@ -216,6 +216,6 @@ class RoutingTaskBase(TaskBase):
         
         # Initialize Attributes
         self.distance_type = distance_type
-        self.dist_eval = DisntanceEvaluator(
+        self.dist_eval = DistanceEvaluator(
             distance_type=distance_type, round_type=round_type
         )

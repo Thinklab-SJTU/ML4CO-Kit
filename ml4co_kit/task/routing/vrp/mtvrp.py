@@ -1,6 +1,5 @@
 r"""
-CVRP with backhauls, length limit and time windows (CVRPBLTW).
-CVRPBLTW can be seen as a combination of CVRPB, CVRPL and CVRPTW.
+Multi-Task VRP (B/MB, O, TW, L)
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,7 +13,6 @@ CVRPBLTW can be seen as a combination of CVRPB, CVRPL and CVRPTW.
 # See the Mulan PSL v2 for more details.
 
 
-import pathlib
 import numpy as np
 from typing import Union
 from ml4co_kit.task.base import TASK_TYPE
@@ -22,18 +20,21 @@ from ml4co_kit.task.routing.vrp.cvrp import CVRPTask
 from ml4co_kit.task.routing.base import DISTANCE_TYPE, ROUND_TYPE
 
 
-class CVRPBLTWTask(CVRPTask):
+class MTVRPTask(CVRPTask):
     def __init__(
         self,
         cvrp_open: bool = False,
+        backhaul_flag: bool = False,
         mixed_backhaul: bool = False,
+        tw_flag: bool = False,
+        max_route_length_flag: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         precision: Union[np.float32, np.float64] = np.float32,
         threshold: float = 1e-4,
     ):
         # Super Initialization
-        super(CVRPBLTWTask, self).__init__(
+        super(MTVRPTask, self).__init__(
             cvrp_open=cvrp_open,
             distance_type=distance_type,
             round_type=round_type,
@@ -41,9 +42,12 @@ class CVRPBLTWTask(CVRPTask):
             threshold=threshold,
         )
 
-        # Set Task Type and Mixed Backhaul
-        self.task_type = TASK_TYPE.CVRPBLTW
+        # Set Task Type and Flags (B/MB, TW, L)
+        self.task_type = TASK_TYPE.MTVRP
+        self.backhaul_flag = backhaul_flag
         self.mixed_backhaul = mixed_backhaul
+        self.tw_flag = tw_flag
+        self.max_route_length_flag = max_route_length_flag
 
         # Extra Attributes
         self.max_route_length = None  # Maximum length for each route
@@ -113,7 +117,7 @@ class CVRPBLTWTask(CVRPTask):
         ordered_sol = np.sort(sol)[-self.nodes_num:]
         if not np.all(ordered_sol == (np.arange(self.nodes_num) + 1)):
             return False
-        
+
         # Split Tours
         demands = self.demands
         capacity = self.capacity
@@ -124,58 +128,60 @@ class CVRPBLTWTask(CVRPTask):
             # Get the split tour
             split_tour: np.ndarray = split_tours[split_idx][1:]
 
-            # Check the constraint B or MB
-            if self.mixed_backhaul:
-                if not self._check_route_mb(
+            # Check the demands constraint
+            if self.backhaul_flag:
+                # Check the constraint B or MB
+                if self.mixed_backhaul:
+                    if not self._check_route_mb(
+                        route=split_tour,
+                        demands=demands,
+                        capacity=capacity,
+                        threshold=self.threshold
+                    ):
+                        return False
+                else:
+                    if not self._check_route_b(
+                        route=split_tour,
+                        demands=demands,
+                        capacity=capacity,
+                        threshold=self.threshold
+                    ):
+                        return False
+            else:
+                if not self._check_route_c(
                     route=split_tour,
                     demands=demands,
                     capacity=capacity,
                     threshold=self.threshold
                 ):
                     return False
-            else:
-                if not self._check_route_b(
+
+            # Check the length constraint
+            if self.max_route_length_flag:
+                # Check the constraint L
+                if not self._check_route_l(
+                    dist_eval=self.dist_eval,
+                    coords=self.coords,
                     route=split_tour,
-                    demands=demands,
-                    capacity=capacity,
-                    threshold=self.threshold
+                    max_route_length=self.max_route_length,
+                    threshold=self.threshold,
+                    cvrp_open=self.cvrp_open
                 ):
-                    return False    
+                    return False
 
-            # Check the constraint L
-            if not self._check_route_l(
-                dist_eval=self.dist_eval,
-                coords=self.coords,
-                route=split_tour,
-                max_route_length=self.max_route_length,
-                threshold=self.threshold,
-                cvrp_open=self.cvrp_open
-            ):
-                return False
-
-            # Check the constraint TW
-            if not self._check_route_tw(
-                dist_eval=self.dist_eval,
-                coords=self.coords,
-                route=split_tour,
-                tw=self.tw,
-                service=self.service,
-                threshold=self.threshold,
-                cvrp_open=self.cvrp_open
-            ):
-                return False
+            # Check the time windows constraint
+            if self.tw_flag:
+                # Check the constraint TW
+                if not self._check_route_tw(
+                    dist_eval=self.dist_eval,
+                    coords=self.coords,
+                    route=split_tour,
+                    tw=self.tw,
+                    service=self.service,
+                    threshold=self.threshold,
+                    cvrp_open=self.cvrp_open
+                ):
+                    return False
 
         # If all constraints are satisfied, return True
         return True
-
-    def render(
-        self, 
-        save_path: pathlib.Path, 
-        with_sol: bool = True,
-        figsize: tuple = (5, 5),
-        node_color: str = "darkblue",
-        edge_color: str = "darkblue",
-        node_size: int = 50,
-    ):
-        pass
-        # TODO: Implement the render method for CVRPBLTW

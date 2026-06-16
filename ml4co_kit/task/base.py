@@ -39,13 +39,14 @@ class TASK_TYPE(str, Enum):
     
     # 1.2 VRP Variants
     CVRP = "CVRP" # Capacitated Vehicle Routing Problem
-    CVRPB = "CVRPB" # B: Backhauls
+    CVRPB = "CVRPB" # B/MB: Backhauls and Mixed Backhauls
     CVRPL = "CVRPL" # L: Route Length Limit
     CVRPTW = "CVRPTW" # TW: Time Windows
-    CVRPBL = "CVRPBL" # B and L
-    CVRPBTW = "CVRPBTW" # B and TW
+    CVRPBL = "CVRPBL" # B/MB and L
+    CVRPBTW = "CVRPBTW" # B/MB and TW
     CVRPLTW = "CVRPLTW" # L and TW
-    CVRPBLTW = "CVRPBLTW" # B and L and TW
+    CVRPBLTW = "CVRPBLTW" # B/MB and L and TW
+    MTVRP = "MTVRP" # MTV: Multi-Task VRP (B/MB, O, TW, L) 
 
     # 2. Graph Problems (Graph)
     MCL = "MCl" # Maximum Clique

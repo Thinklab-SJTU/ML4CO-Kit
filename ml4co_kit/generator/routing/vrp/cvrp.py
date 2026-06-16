@@ -94,14 +94,9 @@ class CVRPGenerator(RoutingGeneratorBase):
         capacity = np.random.randint(self.min_capacity, self.max_capacity+1)
         return demands, capacity
 
-    def _generate_uniform(self) -> CVRPTask:
+    def _generate_core(self, depots: np.ndarray, points: np.ndarray) -> CVRPTask:
         # Generate demands and capacity
         demands, capacity = self._generate_demands_and_capacity()
-        
-        # Generate uniform random coordinates in [0, 1]
-        coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num + 1, 2))
-        depots = coords[0]
-        points = coords[1:]
         
         # Create CVRP Instance from Data
         task_data = CVRPTask(
@@ -116,10 +111,16 @@ class CVRPGenerator(RoutingGeneratorBase):
         )
         return task_data
 
-    def _generate_gaussian(self) -> CVRPTask:
-        # Generate demands and capacity
-        demands, capacity = self._generate_demands_and_capacity()
-        
+    def _generate_uniform(self):
+        # Generate uniform random coordinates in [0, 1]
+        coords = np.random.uniform(0.0, 1.0, size=(self.nodes_num + 1, 2))
+        depots = coords[0]
+        points = coords[1:]
+
+        # Create CVRPBLTW Instance from Data
+        return self._generate_core(depots, points)
+
+    def _generate_gaussian(self):
         # Generate coordinates from a Gaussian distribution
         coords = np.random.normal(
             loc=(self.gaussian_mean_x, self.gaussian_mean_y),
@@ -128,19 +129,9 @@ class CVRPGenerator(RoutingGeneratorBase):
         )
         depots = coords[0]
         points = coords[1:]
-        
-        # Create CVRP Instance from Data
-        task_data = CVRPTask(
-            cvrp_open=self.cvrp_open,
-            distance_type=DISTANCE_TYPE.EUC_2D,
-            round_type=ROUND_TYPE.NO,
-            precision=self.precision
-        )
-        task_data.from_data(
-            depots=depots, points=points, 
-            demands=demands, capacity=capacity
-        )
-        return task_data
+
+        # Create CVRPBLTW Instance from Data
+        return self._generate_core(depots, points)
 
 
 ######################################
