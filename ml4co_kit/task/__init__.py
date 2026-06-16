@@ -59,6 +59,7 @@ from .routing.vrp.cvrpbtw import CVRPBTWTask
 from .routing.vrp.cvrpl import CVRPLTask
 from .routing.vrp.cvrpltw import CVRPLTWTask
 from .routing.vrp.cvrptw import CVRPTWTask
+from .routing.vrp.mtvrp import MTVRPTask
 
 # SAT Task
 from .sat.base import SATTaskBase

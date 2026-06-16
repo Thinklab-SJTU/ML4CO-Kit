@@ -34,6 +34,7 @@ from tests.generator_test import (
     CVRPLGenTester,
     CVRPLTWGenTester,
     CVRPTWGenTester,
+    MTVRPGenTester,
 )
 
 
@@ -83,6 +84,7 @@ def test_generator():
     CVRPLGenTester().test()
     CVRPLTWGenTester().test()
     CVRPTWGenTester().test()
+    MTVRPGenTester().test()
 
     # Graph Problems
     MClGenTester().test()

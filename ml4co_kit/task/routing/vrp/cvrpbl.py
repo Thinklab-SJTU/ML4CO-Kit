@@ -104,6 +104,7 @@ class CVRPBLTask(CVRPTask):
                     threshold=self.threshold
                 ):
                     return False
+            else:
                 if not self._check_route_b(
                     route=split_tour,
                     demands=demands,
@@ -121,6 +122,7 @@ class CVRPBLTask(CVRPTask):
                 threshold=self.threshold,
                 cvrp_open=self.cvrp_open
             ):
+                import pdb; pdb.set_trace()
                 return False
         
         # If all constraints are satisfied, return True

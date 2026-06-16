@@ -32,6 +32,7 @@ from .routing.vrp.cvrpbtw import CVRPBTWWrapper
 from .routing.vrp.cvrpl import CVRPLWrapper
 from .routing.vrp.cvrpltw import CVRPLTWWrapper
 from .routing.vrp.cvrptw import CVRPTWWrapper
+from .routing.vrp.mtvrp import MTVRPWrapper
 
 # Graph Problems
 from .graph.mcl import MClWrapper

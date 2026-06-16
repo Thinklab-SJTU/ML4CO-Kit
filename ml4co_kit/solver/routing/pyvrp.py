@@ -24,6 +24,7 @@ from .lib.pyvrp.cvrpbtw_pyvrp import cvrpbtw_pyvrp
 from .lib.pyvrp.cvrpl_pyvrp import cvrpl_pyvrp
 from .lib.pyvrp.cvrpltw_pyvrp import cvrpltw_pyvrp
 from .lib.pyvrp.cvrptw_pyvrp import cvrptw_pyvrp
+from .lib.pyvrp.mtvrp_pyvrp import mtvrp_pyvrp
 
 
 class PyVRPSolver(SolverBase):
@@ -115,6 +116,13 @@ class PyVRPSolver(SolverBase):
             )
         elif task_data.task_type == TASK_TYPE.CVRPTW:
             return cvrptw_pyvrp(
+                task_data=task_data, 
+                time_limit=self.time_limit, 
+                scale=self.scale, 
+                seed=self.seed
+            )
+        elif task_data.task_type == TASK_TYPE.MTVRP:
+            return mtvrp_pyvrp(
                 task_data=task_data, 
                 time_limit=self.time_limit, 
                 scale=self.scale, 

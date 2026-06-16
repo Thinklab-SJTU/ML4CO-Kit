@@ -135,6 +135,8 @@ class SolverTesterBase(object):
             return self._get_cvrpltw_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.CVRPTW:
             return self._get_cvrptw_tasks(mode, exclude_test_files)
+        elif test_task_type == TASK_TYPE.MTVRP:
+            return self._get_mtvrp_tasks(mode, exclude_test_files)
 
         # Graph Problems
         elif test_task_type == TASK_TYPE.MCL:
@@ -345,8 +347,8 @@ class SolverTesterBase(object):
             cvrp_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp500_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrp_test_files_list:
@@ -361,8 +363,8 @@ class SolverTesterBase(object):
             cvrp_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp500_uniform_4ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrp_test_files_list:
@@ -380,8 +382,12 @@ class SolverTesterBase(object):
             cvrpb_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpb100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpmb50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/cvrpmb100_uniform_task.pkl"),     
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/ovrpb50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/ovrpb100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/ovrpmb50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/task/ovrpmb100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrpb_test_files_list:
@@ -396,8 +402,12 @@ class SolverTesterBase(object):
             cvrpb_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpb100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpmb50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/cvrpmb100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpb50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpb100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpmb50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpmb100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpb_test_files_list:
@@ -415,8 +425,12 @@ class SolverTesterBase(object):
             cvrpbl_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbl100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbmbl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/cvrpbmbl100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/ovrpbl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/ovrpbl100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/ovrpmbl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/task/ovrpmbl100_uniform_task.pkl"), 
             ]
             task_list = list()
             for test_file in cvrpbl_test_files_list:
@@ -431,8 +445,12 @@ class SolverTesterBase(object):
             cvrpbl_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbl100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbmbl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/cvrpbmbl100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/ovrpbl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/ovrpbl100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/ovrpmbl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbl/wrapper/ovrpmbl100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpbl_test_files_list:
@@ -450,8 +468,12 @@ class SolverTesterBase(object):
             cvrpbltw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpmbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpmbltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpbltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpmbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpmbltw100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrpbltw_test_files_list:
@@ -466,8 +488,12 @@ class SolverTesterBase(object):
             cvrpbltw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpmbltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpmbltw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/ovrpbltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/ovrpbltw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/ovrpmbltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/ovrpmbltw100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpbltw_test_files_list:
@@ -485,8 +511,12 @@ class SolverTesterBase(object):
             cvrpbtw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpbtw100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpmbtw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/cvrpmbtw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/ovrpbtw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/ovrpbtw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/ovrpmbtw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/task/ovrpmbtw100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrpbtw_test_files_list:
@@ -501,8 +531,12 @@ class SolverTesterBase(object):
             cvrpbtw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpbtw100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpmbtw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/cvrpmbtw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/ovrpbtw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/ovrpbtw100_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/ovrpmbtw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbtw/wrapper/ovrpmbtw100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpbtw_test_files_list:
@@ -520,8 +554,8 @@ class SolverTesterBase(object):
             cvrpl_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/cvrpl100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/ovrpl50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/task/ovrpl100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrpl_test_files_list:
@@ -536,8 +570,8 @@ class SolverTesterBase(object):
             cvrpl_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/ovrpl50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/ovrpl100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpl_test_files_list:
@@ -555,8 +589,8 @@ class SolverTesterBase(object):
             cvrpltw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/cvrpltw100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/ovrpltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/task/ovrpltw100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrpltw_test_files_list:
@@ -571,8 +605,8 @@ class SolverTesterBase(object):
             cvrpltw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/cvrpltw100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/ovrpltw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/ovrpltw100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrpltw_test_files_list:
@@ -590,8 +624,8 @@ class SolverTesterBase(object):
             cvrptw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/cvrptw100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/ovrptw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/task/ovrptw100_uniform_task.pkl"),
             ]
             task_list = list()
             for test_file in cvrptw_test_files_list:
@@ -606,13 +640,42 @@ class SolverTesterBase(object):
             cvrptw_test_files_list = [
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_uniform_16ins.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw100_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_o_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw100_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/ovrptw50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/ovrptw100_uniform_16ins.pkl"),
             ]
             bacth_task_list = list()
             for test_file in cvrptw_test_files_list:
                 if test_file not in exclude_test_files:
                     wrapper = CVRPTWWrapper()
+                    wrapper.from_pickle(test_file)
+                    bacth_task_list.append(wrapper.task_list)
+            return bacth_task_list
+
+    def _get_mtvrp_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[MTVRPTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            mtvrp_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/mtvrp/task/mtvrp50_uniform_task.pkl"),
+            ]
+            task_list = list()
+            for test_file in mtvrp_test_files_list:
+                if test_file not in exclude_test_files:
+                    task = MTVRPTask()
+                    task.from_pickle(test_file)
+                    task_list.append(task)
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            mtvrp_test_files_list = [
+                pathlib.Path("test_dataset/routing/vrp/mtvrp/wrapper/mtvrp50_uniform_16ins.pkl"),
+            ]
+            bacth_task_list = list()
+            for test_file in mtvrp_test_files_list:
+                if test_file not in exclude_test_files:
+                    wrapper = MTVRPWrapper()
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list

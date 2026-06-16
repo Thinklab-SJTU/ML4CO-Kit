@@ -30,6 +30,7 @@ from .routing.vrp.cvrpbtw import CVRPBTWGenTester
 from .routing.vrp.cvrpl import CVRPLGenTester
 from .routing.vrp.cvrpltw import CVRPLTWGenTester
 from .routing.vrp.cvrptw import CVRPTWGenTester
+from .routing.vrp.mtvrp import MTVRPGenTester
 
 # Graph Problems
 from .graph.mcut import MCutGenTester

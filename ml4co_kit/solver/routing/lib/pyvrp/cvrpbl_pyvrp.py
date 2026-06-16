@@ -77,10 +77,11 @@ def cvrpbl_pyvrp(
 
     # For ``backhaul``, linehauls must be served before backhauls. 
     # This can be enforced by setting a large value from backhaul to linehaul.
-    large_value = max(int(scale * 100), int(1e7))
-    linehaul = np.flatnonzero(delivery > 0) + 1
-    backhaul = np.flatnonzero(pickup > 0) + 1
-    dists[np.ix_(backhaul, linehaul)] = large_value
+    if not task_data.mixed_backhaul:
+        large_value = max(int(scale * 100), int(1e7))
+        linehaul = np.flatnonzero(delivery > 0) + 1
+        backhaul = np.flatnonzero(pickup > 0) + 1
+        dists[np.ix_(backhaul, linehaul)] = large_value
 
     # Create problem data
     problem_data = ProblemData(

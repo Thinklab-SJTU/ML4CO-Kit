@@ -197,6 +197,7 @@ class CVRPTask(RoutingTaskBase):
 
         # Check if the route length is within the maximum route length
         if route_length > max_route_length + threshold:
+            import pdb; pdb.set_trace()
             return False
         else:
             return True
@@ -244,7 +245,8 @@ class CVRPTask(RoutingTaskBase):
         Define a helper function to check constraint MB:
         """
         # 1. Linehaul load <= vehicle capacity
-        route_demands = demands[route.astype(int) - 1]
+        route = route.astype(int) - 1
+        route_demands = demands[route]
         is_linehaul = route_demands >= 0
         linehaul_load = np.sum(route_demands[is_linehaul])
         if linehaul_load > capacity + threshold:
@@ -252,7 +254,7 @@ class CVRPTask(RoutingTaskBase):
 
         # 2. Check if the backhaul load is within the capacity
         left_capacity = capacity - linehaul_load
-        for node in route.astype(int):
+        for node in route:
             # Update the left capacity
             left_capacity += demands[node]
             

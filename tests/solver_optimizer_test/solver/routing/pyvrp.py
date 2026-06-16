@@ -31,11 +31,12 @@ class PyVRPSolverTester(SolverTesterBase):
                 TASK_TYPE.CVRPL, 
                 TASK_TYPE.CVRPLTW,  
                 TASK_TYPE.CVRPTW,
+                TASK_TYPE.MTVRP,
             ],
             test_args_list=[
-                {}, {}, {}, {}, {}, {}, {}, {},
+                {}, {}, {}, {}, {}, {}, {}, {}, {},
             ],
-            exclude_test_files_list=[[], [], [], [], [], [], [], []]
+            exclude_test_files_list=[[], [], [], [], [], [], [], [], []]
         )
         
     def pre_test(self):

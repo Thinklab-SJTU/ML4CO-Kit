@@ -25,8 +25,12 @@ class CVRPBLTWTaskTester(TaskTesterBase):
             pickle_files_list=[
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_uniform_task.pkl"),
                 pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw50_o_uniform_task.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpbltw100_o_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpmbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/cvrpmbltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpbltw100_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpmbltw50_uniform_task.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/task/ovrpmbltw100_uniform_task.pkl"),
             ],
         )
         

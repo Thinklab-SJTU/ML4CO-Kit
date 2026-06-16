@@ -28,11 +28,6 @@ class MTVRPGenerator(CVRPGenerator):
     
     def __init__(
         self, 
-        open_ratio: float = 0.5,
-        backhaul_ratio: float = 0.5,
-        mixed_backhaul_ratio: float = 0.5,
-        tw_ratio: float = 0.5,
-        max_route_length_ratio: float = 0.5,
         distribution_type: CVRP_TYPE = CVRP_TYPE.UNIFORM,
         precision: Union[np.float32, np.float64] = np.float32,
         nodes_num: int = 50,
@@ -49,6 +44,12 @@ class MTVRPGenerator(CVRPGenerator):
         bh_ratio: float = 0.2,
         rou_max: float = 2.8,
         max_time: float = 4.6,
+        # special args for flags
+        open_ratio: float = 0.5,
+        backhaul_ratio: float = 0.5,
+        mixed_backhaul_ratio: float = 0.5,
+        tw_ratio: float = 0.5,
+        max_route_length_ratio: float = 0.5,
     ):
         # Super Initialization
         super(MTVRPGenerator, self).__init__(
@@ -106,6 +107,8 @@ class MTVRPGenerator(CVRPGenerator):
                 max_route_length = generate_for_l(d0i, self.rou_max)
             else:
                 max_route_length = None
+        else:
+            tw, service, max_route_length = None, None, None
 
         # Create MTVRP Instance from Data
         task_data = MTVRPTask(

@@ -78,8 +78,8 @@ from .task import (
     ATSPTask, OPTask, PCTSPTask, SPCTSPTask, TSPTask,
 )
 from .task import (
-    CVRPTask, CVRPBTask, CVRPBLTask, CVRPBLTWTask, 
-    CVRPBTWTask, CVRPLTask, CVRPLTWTask, CVRPTWTask,
+    CVRPTask, CVRPBTask, CVRPBLTask, CVRPBLTWTask, CVRPBTWTask, 
+    CVRPLTask, CVRPLTWTask, CVRPTWTask, MTVRPTask,
 )
 
 # SAT Task
@@ -114,8 +114,9 @@ from .generator import (
     ATSPGenerator, OPGenerator, PCTSPGenerator, SPCTSPGenerator, TSPGenerator, 
 )
 from .generator import (
-    CVRPGenerator, CVRPBGenerator, CVRPBLGenerator, CVRPBLTWGenerator, 
-    CVRPBTWGenerator, CVRPLGenerator, CVRPLTWGenerator, CVRPTWGenerator,
+    CVRPGenerator, CVRPBGenerator, CVRPBLGenerator, 
+    CVRPBLTWGenerator, CVRPBTWGenerator, CVRPLGenerator, 
+    CVRPLTWGenerator, CVRPTWGenerator, MTVRPGenerator,
 )
 
 # QAP Generator
@@ -220,8 +221,9 @@ from .wrapper import (
     ATSPWrapper, OPWrapper, PCTSPWrapper, SPCTSPWrapper, TSPWrapper
 )
 from .wrapper import (
-    CVRPWrapper, CVRPBWrapper, CVRPBLWrapper, CVRPBLTWWrapper, 
-    CVRPBTWWrapper, CVRPLWrapper, CVRPLTWWrapper, CVRPTWWrapper,
+    CVRPWrapper, CVRPBWrapper, CVRPBLWrapper, 
+    CVRPBLTWWrapper, CVRPBTWWrapper, CVRPLWrapper,
+    CVRPLTWWrapper, CVRPTWWrapper, MTVRPWrapper,
 )
 
 # Graph Problems

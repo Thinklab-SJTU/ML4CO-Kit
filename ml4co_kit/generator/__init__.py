@@ -53,6 +53,7 @@ from .routing.vrp.cvrpbtw import CVRPBTWGenerator
 from .routing.vrp.cvrpl import CVRPLGenerator
 from .routing.vrp.cvrpltw import CVRPLTWGenerator
 from .routing.vrp.cvrptw import CVRPTWGenerator
+from .routing.vrp.mtvrp import MTVRPGenerator
 
 # QAP Generator
 from .qap.base import QAPGraphGenerator
