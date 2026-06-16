@@ -36,11 +36,18 @@ MODULE_REMAP: Dict[str, str] = {
 }
 
 
+# Legacy class names used in older pickle files -> current class names.
+CLASS_NAME_REMAP: Dict[str, str] = {
+    "DisntanceEvaluator": "DistanceEvaluator",
+}
+
+
 class LegacyUnpickler(pickle.Unpickler):
     """Unpickler that remaps legacy module paths to their current locations."""
 
     def find_class(self, module: str, name: str):
         module = MODULE_REMAP.get(module, module)
+        name = CLASS_NAME_REMAP.get(name, name)
         return super().find_class(module, name)
 
 
