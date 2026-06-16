@@ -230,6 +230,9 @@ class CVRPTask(RoutingTaskBase):
         if backhaul_load > capacity + threshold:
             return False
 
+        # Return True if the route constraints are satisfied
+        return True
+
     @staticmethod
     def _check_route_mb(
         route: np.ndarray,
