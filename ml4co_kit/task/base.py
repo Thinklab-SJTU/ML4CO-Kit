@@ -1,5 +1,9 @@
 r"""
-Base class for all problems in the ML4CO kit.
+Base classes for all combinatorial optimization tasks in ML4CO-Kit.
+
+A **task** represents a single problem instance: input data, an optional candidate
+solution (``sol``), and an optional reference solution (``ref_sol``). Subclasses
+implement problem-specific encodings, constraint checking, and objective evaluation.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -81,7 +85,39 @@ class TASK_TYPE(str, Enum):
 
 
 class TaskBase(object):
-    """Base class for all tasks in the ML4CO kit."""
+    """Base class for a single combinatorial optimization instance.
+
+    Parameters
+    ----------
+    task_type : TASK_TYPE
+        Problem identifier.
+    minimize : bool
+        Whether the objective is minimized (``True``) or maximized (``False``).
+    precision : np.float32 or np.float64, optional
+        Floating-point dtype for coordinates and costs. Default is ``np.float32``.
+
+    Attributes
+    ----------
+    sol : np.ndarray or None
+        Current solution encoding (subclass-specific).
+    ref_sol : np.ndarray or None
+        Reference solution for benchmarking.
+    name : str
+        Unique instance name (UUID hex by default).
+    cache : dict
+        Optional cache used by solvers / optimizers.
+
+    Examples
+    --------
+    >>> import pathlib
+    >>> from ml4co_kit import CVRPTask
+    >>> task = CVRPTask()
+    >>> task.from_pickle(
+    ...     pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl")
+    ... )
+    >>> task.evaluate(task.ref_sol)
+    10.973...
+    """
 
     def __init__(
         self, 
@@ -108,7 +144,13 @@ class TaskBase(object):
             raise ValueError("``ref_sol`` cannot be None!")
     
     def from_pickle(self, file_path: pathlib.Path):
-        """Create a problem instance from a pickle file."""
+        """Restore a task from a pickle file.
+
+        Parameters
+        ----------
+        file_path : pathlib.Path
+            Path to a ``.pkl`` file produced by :meth:`to_pickle` or the toolkit.
+        """
         with open(file_path, "rb") as file:
             loaded_instance: TaskBase = load_pickle(file)
         self.__dict__.update(loaded_instance.__dict__)
@@ -122,10 +164,14 @@ class TaskBase(object):
                 self.__dict__[key] = value
     
     def to_pickle(self, file_path: pathlib.Path):
-        # Check file path
+        """Serialize this task to a pickle file.
+
+        Parameters
+        ----------
+        file_path : pathlib.Path
+            Output ``.pkl`` path (parent directories are created if needed).
+        """
         check_file_path(file_path)
-        
-        # Save task data to ``.pkl`` file
         with open(file_path, "wb") as f:
             pickle.dump(self, f)
             f.close()
@@ -143,7 +189,19 @@ class TaskBase(object):
         raise NotImplementedError("Subclasses should implement this method.")
 
     def evaluate_w_gap(self, check_constr: bool = True) -> Sequence[np.floating]:
-        """Evaluate the given solution with gap."""
+        """Compare ``sol`` and ``ref_sol`` and return the optimality gap (%).
+
+        Parameters
+        ----------
+        check_constr : bool, optional
+            If ``True``, validate solutions before evaluation.
+
+        Returns
+        -------
+        tuple of (sol_cost, ref_cost, gap)
+            ``gap`` is ``None`` when ``ref_cost`` is near zero. For minimization,
+            ``gap = (sol_cost - ref_cost) / ref_cost * 100``.
+        """
         # Check if the solution and reference solution are not None
         if self.sol is None or self.ref_sol is None:
             raise ValueError("Solution and reference solution cannot be None!")

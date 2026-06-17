@@ -18,4 +18,5 @@ Contents of Official Documentation
    optimizer_dev_status.rst
    wrapper_dev_status.rst
    example.rst
+   guide/task/index
    api/ml4co_kit.rst

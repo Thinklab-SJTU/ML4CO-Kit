@@ -1,5 +1,9 @@
 r"""
-Base Task Class for Routing Problems.
+Base task classes for routing problems (TSP, VRP, etc.).
+
+Provides distance metrics (:class:`DISTANCE_TYPE`, :class:`ROUND_TYPE`,
+:class:`DistanceEvaluator`) and :class:`RoutingTaskBase`, which extends
+:class:`~ml4co_kit.task.base.TaskBase` with a distance evaluator.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -195,8 +199,27 @@ class DistanceEvaluator(object):
 
 
 class RoutingTaskBase(TaskBase):
-    r"""
-    Base class for all routing problems in the ML4CO kit.
+    r"""Base class for routing tasks defined on node coordinates.
+
+    Parameters
+    ----------
+    task_type : TASK_TYPE
+        Routing problem type.
+    minimize : bool
+        Whether route cost is minimized.
+    distance_type : DISTANCE_TYPE
+        Edge weight metric (e.g. ``EUC_2D``).
+    round_type : ROUND_TYPE
+        Rounding applied to computed distances.
+    precision : np.float32 or np.float64, optional
+        Floating dtype. Default is ``np.float32``.
+
+    Attributes
+    ----------
+    distance_type : DISTANCE_TYPE
+        Selected distance metric.
+    dist_eval : DistanceEvaluator
+        Callable distance engine shared by subclasses.
     """
     
     def __init__(

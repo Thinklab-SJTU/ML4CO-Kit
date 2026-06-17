@@ -1,8 +1,9 @@
 r"""
-Capacitated Vehicle Routing Problem (CVRP). 
+Capacitated Vehicle Routing Problem (CVRP).
 
-The CVRP problems requires finding the most efficient routes for a fleet of vehicles
-with limited capacity to deliver goods to a set of customers while minimizing costs.
+Find minimum-cost vehicle routes from a depot that serve all customers exactly once
+subject to vehicle capacity. :class:`CVRPTask` holds one instance; use
+:class:`~ml4co_kit.wrapper.routing.vrp.cvrp.CVRPWrapper` for batch operations.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -27,6 +28,39 @@ from ml4co_kit.task.routing.base import DistanceEvaluator, RoutingTaskBase, DIST
 
 
 class CVRPTask(RoutingTaskBase):
+    """Single-instance CVRP task.
+
+    Parameters
+    ----------
+    cvrp_open : bool, optional
+        If ``True``, routes are open (OVRP): no return leg to the depot.
+    mixed_backhaul : bool, optional
+        Reserved for backhaul variants (unused in plain CVRP).
+    distance_type : DISTANCE_TYPE, optional
+        Edge metric. Default ``EUC_2D``.
+    round_type : ROUND_TYPE, optional
+        Distance rounding rule. Default ``NO``.
+    precision : np.float32 or np.float64, optional
+        Coordinate / cost dtype.
+    threshold : float, optional
+        Numerical tolerance for constraint checking.
+
+    Notes
+    -----
+    Solution format: 1D array with depot index ``0`` as route separators, e.g.
+    ``[0, 3, 5, 0, 2, 1, 0]`` for two routes.
+
+    Examples
+    --------
+    >>> import pathlib
+    >>> from ml4co_kit import CVRPTask
+    >>> task = CVRPTask()
+    >>> task.from_pickle(
+    ...     pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_uniform_task.pkl")
+    ... )
+    >>> float(task.evaluate(task.ref_sol))
+    10.973...
+    """
     def __init__(
         self, 
         cvrp_open: bool = False,
@@ -336,6 +370,27 @@ class CVRPTask(RoutingTaskBase):
         normalize: bool = False,
         name: str = None
     ):
+        """Populate the task from numpy arrays.
+
+        Parameters
+        ----------
+        depots : np.ndarray, optional
+            Depot coordinates, shape ``(2,)`` or ``(3,)``.
+        points : np.ndarray, optional
+            Customer coordinates, shape ``(V, 2)`` or ``(V, 3)``.
+        demands : np.ndarray, optional
+            Customer demands, shape ``(V,)``.
+        capacity : float, optional
+            Vehicle capacity.
+        sol : np.ndarray, optional
+            Tour encoding with ``0`` depot delimiters.
+        ref : bool, optional
+            If ``True``, store ``sol`` in ``ref_sol`` instead of ``sol``.
+        normalize : bool, optional
+            Scale coordinates to ``[0, 1]`` (``EUC_2D`` only).
+        name : str, optional
+            Instance name override.
+        """
         # Set Attributes and Check Dimensions
         if depots is not None:
             self.depots = depots.astype(self.precision)
@@ -525,7 +580,7 @@ class CVRPTask(RoutingTaskBase):
                 f.write(f"Cost {cost}\n")
 
     def check_constraints(self, sol: np.ndarray) -> bool:
-        """Check if the solution is valid."""
+        """Return ``True`` if ``sol`` is a feasible CVRP tour."""
         # Every tour starts and ends with the depot
         if sol[0] != 0 or sol[-1] != 0:
             return False
@@ -559,7 +614,20 @@ class CVRPTask(RoutingTaskBase):
         return True
         
     def evaluate(self, sol: np.ndarray, check_constr: bool = True) -> np.floating:
-        """Evaluate the total distance of the CVRP solution."""
+        """Return total route length of ``sol``.
+
+        Parameters
+        ----------
+        sol : np.ndarray
+            Tour with depot index ``0`` as route separators.
+        check_constr : bool, optional
+            Raise ``ValueError`` if constraints are violated.
+
+        Returns
+        -------
+        np.floating
+            Sum of edge lengths (respects ``cvrp_open``).
+        """
         # Check Constraints
         if check_constr and not self.check_constraints(sol):
             raise ValueError("Invalid solution!")
@@ -587,7 +655,21 @@ class CVRPTask(RoutingTaskBase):
         edge_color: str = "darkblue",
         node_size: int = 50,
     ):
-        """Render the CVRP problem instance with or without solution."""
+        """Save a matplotlib figure of the instance (and optional solution).
+
+        Parameters
+        ----------
+        save_path : pathlib.Path
+            Output image path (``.png``, etc.).
+        with_sol : bool, optional
+            Draw ``self.sol`` routes when ``True``; instance only when ``False``.
+        figsize : tuple, optional
+            Figure size in inches.
+        node_color, edge_color : str, optional
+            Plot colors (used when applicable).
+        node_size : int, optional
+            Scatter marker size for customers.
+        """
         
         # Check ``save_path``
         check_file_path(save_path)

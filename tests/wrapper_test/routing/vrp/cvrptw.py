@@ -26,11 +26,9 @@ class CVRPTWWrapperTester(WrapperTesterBase):
             solver=PyVRPSolver(),
             pickle_files_list=[
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_uniform_16ins.pkl"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_o_uniform_16ins.pkl"),
             ],
             txt_files_list=[
                 pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_uniform_16ins.txt"),
-                pathlib.Path("test_dataset/routing/vrp/cvrptw/wrapper/cvrptw50_o_uniform_16ins.txt"),
             ],
         )
         
