@@ -48,7 +48,10 @@ extensions = [
     "sphinx_design",
     'm2r2']
 
-autodoc_mock_imports = ['scipy', 'matplotlib', 'torch_geometric', 'pynvml']
+autodoc_mock_imports = [
+    'scipy', 'matplotlib', 'torch_geometric', 'pynvml',
+    'torch', 'pytorch_lightning', 'wandb',
+]
 
 autosummary_generate = True
 

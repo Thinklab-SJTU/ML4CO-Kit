@@ -137,7 +137,7 @@ class CVRPWrapper(WrapperBase):
                 depot = task.depots
                 points = task.points
                 demands = task.demands
-                capacity = task.capacity
+                capacity = float(task.capacity)
                 sol = task.sol
 
                 # Write data to ``.txt`` file

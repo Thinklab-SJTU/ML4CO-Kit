@@ -14,9 +14,17 @@ ml4co_kit.task
    ml4co_kit.task.graph.mis
    ml4co_kit.task.graph.mvc
    ml4co_kit.task.routing.base
-   ml4co_kit.task.routing.atsp
-   ml4co_kit.task.routing.cvrp
-   ml4co_kit.task.routing.op
-   ml4co_kit.task.routing.pctsp
-   ml4co_kit.task.routing.spctsp
-   ml4co_kit.task.routing.tsp
+   ml4co_kit.task.routing.tsp.atsp
+   ml4co_kit.task.routing.tsp.op
+   ml4co_kit.task.routing.tsp.pctsp
+   ml4co_kit.task.routing.tsp.spctsp
+   ml4co_kit.task.routing.tsp.tsp
+   ml4co_kit.task.routing.vrp.cvrp
+   ml4co_kit.task.routing.vrp.cvrpb
+   ml4co_kit.task.routing.vrp.cvrpbl
+   ml4co_kit.task.routing.vrp.cvrpbltw
+   ml4co_kit.task.routing.vrp.cvrpbtw
+   ml4co_kit.task.routing.vrp.cvrpl
+   ml4co_kit.task.routing.vrp.cvrpltw
+   ml4co_kit.task.routing.vrp.cvrptw
+   ml4co_kit.task.routing.vrp.mtvrp

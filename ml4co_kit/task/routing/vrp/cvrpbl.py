@@ -122,7 +122,6 @@ class CVRPBLTask(CVRPTask):
                 threshold=self.threshold,
                 cvrp_open=self.cvrp_open
             ):
-                import pdb; pdb.set_trace()
                 return False
         
         # If all constraints are satisfied, return True

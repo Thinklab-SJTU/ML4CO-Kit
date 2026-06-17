@@ -143,7 +143,7 @@ class CVRPLWrapper(WrapperBase):
                 depot = task.depots
                 points = task.points
                 demands = task.demands
-                capacity = task.capacity
+                capacity = float(task.capacity)
                 max_route_length = task.max_route_length
                 sol = task.sol
 

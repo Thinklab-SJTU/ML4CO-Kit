@@ -9,6 +9,8 @@ ml4co_kit.optimizer
 
    ml4co_kit.optimizer.base
    ml4co_kit.optimizer.cvrp_ls
+   ml4co_kit.optimizer.fast_2opt
+   ml4co_kit.optimizer.isco
+   ml4co_kit.optimizer.mcmc
    ml4co_kit.optimizer.mcts
-   ml4co_kit.optimizer.rlsa
    ml4co_kit.optimizer.two_opt

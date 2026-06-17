@@ -100,6 +100,7 @@ def test_wrapper():
             OVRPLTWWrapperTester,
             CVRPTWWrapperTester,
             OVRPTWWrapperTester,
+            MTVRPWrapperTester,
         )
 
         # Test wrappers

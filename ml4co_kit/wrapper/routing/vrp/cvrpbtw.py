@@ -160,7 +160,7 @@ class CVRPBTWWrapper(WrapperBase):
                 depot = task.depots
                 points = task.points
                 demands = task.demands
-                capacity = task.capacity
+                capacity = float(task.capacity)
                 tw = task.tw
                 service = task.service
                 sol = task.sol

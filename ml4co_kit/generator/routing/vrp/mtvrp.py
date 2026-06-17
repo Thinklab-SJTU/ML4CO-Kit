@@ -89,7 +89,8 @@ class MTVRPGenerator(CVRPGenerator):
         flag_mb = np.random.rand() < self.mixed_backhaul_ratio
         flag_tw = np.random.rand() < self.tw_ratio
         flag_l = np.random.rand() < self.max_route_length_ratio
-
+        flag_mb = False if flag_b == False else flag_mb
+        
         # Generate data related to C and B
         demands, capacity = self._generate_demands_and_capacity()
         if flag_b:

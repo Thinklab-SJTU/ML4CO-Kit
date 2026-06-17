@@ -38,8 +38,6 @@ class MTVRPWrapper(WrapperBase):
     def from_txt(
         self, 
         file_path: pathlib.Path,
-        cvrp_open: bool = False,
-        mixed_backhaul: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         ref: bool = False,
@@ -70,10 +68,14 @@ class MTVRPWrapper(WrapperBase):
                 tw = split_line_5[0]
                 split_line_6 = split_line_5[1].split(" max_route_length ")
                 service = split_line_6[0]
-                split_line_7 = split_line_6[1].split(" output ")
+                split_line_7 = split_line_6[1].split(" cvrp_open ")
                 max_route_length = split_line_7[0]
-                tour = split_line_7[1]
-                
+                split_line_8 = split_line_7[1].split(" mixed_backhaul ")
+                cvrp_open = split_line_8[0]
+                split_line_9 = split_line_8[1].split(" output ")
+                mixed_backhaul = split_line_9[0]
+                tour = split_line_9[1]
+
                 # Parse depot coordinates
                 depot = depot.split(" ")
                 depot = np.array([
@@ -103,14 +105,6 @@ class MTVRPWrapper(WrapperBase):
 
                 # Parse capacity
                 capacity = float(capacity)
-
-                # Parse max route length
-                if max_route_length != "None":
-                    max_route_length = float(max_route_length)
-                    max_route_length_flag = True
-                else:
-                    max_route_length = None
-                    max_route_length_flag = False
                 
                 # Parse time windows
                 if tw != "None":
@@ -135,6 +129,26 @@ class MTVRPWrapper(WrapperBase):
                     )
                 else:
                     service = None
+
+                # Parse max route length
+                if max_route_length != "None":
+                    max_route_length = float(max_route_length)
+                    max_route_length_flag = True
+                else:
+                    max_route_length = None
+                    max_route_length_flag = False
+
+                # Parse cvrp_open
+                if cvrp_open == "False":
+                    cvrp_open = False
+                else:
+                    cvrp_open = True
+
+                # Parse mixed backhaul
+                if mixed_backhaul == "False":
+                    mixed_backhaul = False
+                else:
+                    mixed_backhaul = True
 
                 # Parse tour
                 tour = tour.split(" ")
@@ -183,7 +197,7 @@ class MTVRPWrapper(WrapperBase):
                 depot = task.depots
                 points = task.points
                 demands = task.demands
-                capacity = task.capacity
+                capacity = float(task.capacity)
                 sol = task.sol
                 
                 # Check data related to TW and L
@@ -197,6 +211,10 @@ class MTVRPWrapper(WrapperBase):
                 tw = task.tw
                 service = task.service
                 max_route_length = task.max_route_length
+
+                # Get cvrp_open and mixed_backhaul
+                cvrp_open = task.cvrp_open
+                mixed_backhaul = task.mixed_backhaul
 
                 # Write data to ``.txt`` file
                 f.write("depots " + str(depot[0]) + str(" ") + str(depot[1]))
@@ -224,6 +242,8 @@ class MTVRPWrapper(WrapperBase):
                     f.write(str(" max_route_length ") + str(max_route_length))
                 else:
                     f.write(" max_route_length " + str("None"))
+                f.write(" cvrp_open " + str(cvrp_open))
+                f.write(" mixed_backhaul " + str(mixed_backhaul))
                 f.write(str(" output "))
                 f.write(str(" ").join(str(node_idx) for node_idx in sol))
                 f.write("\n")

@@ -197,7 +197,6 @@ class CVRPTask(RoutingTaskBase):
 
         # Check if the route length is within the maximum route length
         if route_length > max_route_length + threshold:
-            import pdb; pdb.set_trace()
             return False
         else:
             return True

@@ -167,7 +167,7 @@ class CVRPBLTWWrapper(WrapperBase):
                 depot = task.depots
                 points = task.points
                 demands = task.demands
-                capacity = task.capacity
+                capacity = float(task.capacity)
                 tw = task.tw
                 service = task.service
                 max_route_length = task.max_route_length

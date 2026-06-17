@@ -31,6 +31,7 @@ if env_checker.check_cp311_or_later():
     from .routing.vrp.ovrpltw import OVRPLTWWrapperTester
     from .routing.vrp.cvrptw import CVRPTWWrapperTester
     from .routing.vrp.ovrptw import OVRPTWWrapperTester
+    from .routing.vrp.mtvrp import MTVRPWrapperTester
 
 # Base Class
 from .base import WrapperTesterBase

@@ -3,7 +3,6 @@
 # @date   Sep 2018
 
 
-import pdb
 import numpy as np
 from scipy import fftpack
 
@@ -69,8 +68,6 @@ if __name__ == "__main__":
     print("dst_type2")
     print(ydst2)
 
-    pdb.set_trace()
-
     print("scipy idst")
     print(fftpack.idst(ydst2, 2)/len(x))
 
@@ -100,5 +97,3 @@ if __name__ == "__main__":
     #    else:
     #        v[k] = expk[k] * (-ydst2_ext[N-k] + 1j*ydst2_ext[k])
     #print(np.fft.ifft(v))
-
-    pdb.set_trace()

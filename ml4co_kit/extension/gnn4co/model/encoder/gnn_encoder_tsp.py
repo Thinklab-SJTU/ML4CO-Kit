@@ -109,7 +109,6 @@ class TSPGNNEncoder(nn.Module):
         else:
             # embedder
             graph = torch.ones_like(e).long()
-            import pdb
             x = self.node_embed(self.pos_embed(x)) # (B, V, H)
             e = self.edge_embed(self.edge_pos_embed(e)) # (B, V, V, H)
             

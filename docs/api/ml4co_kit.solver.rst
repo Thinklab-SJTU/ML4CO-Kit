@@ -8,19 +8,21 @@ ml4co_kit.solver
    :recursive:
 
    ml4co_kit.solver.base
-   ml4co_kit.solver.beam
-   ml4co_kit.solver.concorde
-   ml4co_kit.solver.ga_eax
-   ml4co_kit.solver.gp_degree
-   ml4co_kit.solver.greedy
-   ml4co_kit.solver.gurobi
-   ml4co_kit.solver.hgs
-   ml4co_kit.solver.ils
-   ml4co_kit.solver.insertion
-   ml4co_kit.solver.kamis
-   ml4co_kit.solver.lc_degree
-   ml4co_kit.solver.lkh
-   ml4co_kit.solver.mcts
-   ml4co_kit.solver.neurolkh
-   ml4co_kit.solver.ortools
-   ml4co_kit.solver.rlsa
+   ml4co_kit.solver.common.gurobi
+   ml4co_kit.solver.common.ils
+   ml4co_kit.solver.common.insertion
+   ml4co_kit.solver.common.null
+   ml4co_kit.solver.common.ortools
+   ml4co_kit.solver.common.random
+   ml4co_kit.solver.common.scip
+   ml4co_kit.solver.routing.concorde
+   ml4co_kit.solver.routing.ga_eax
+   ml4co_kit.solver.routing.hgs
+   ml4co_kit.solver.routing.lkh
+   ml4co_kit.solver.routing.nearest
+   ml4co_kit.solver.routing.pyvrp
+   ml4co_kit.solver.graph.gp_degree
+   ml4co_kit.solver.graph.isco
+   ml4co_kit.solver.graph.kamis
+   ml4co_kit.solver.graph.lc_degree
+   ml4co_kit.solver.sat.pysat

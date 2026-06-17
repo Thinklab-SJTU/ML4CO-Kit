@@ -13,11 +13,10 @@ Learning Module.
 # See the Mulan PSL v2 for more details.
 
 
-import importlib.util
+from .env import BaseEnv
 
-# pytorch_lightning  
-found_pytorch_lightning = importlib.util.find_spec("pytorch_lightning")
-if found_pytorch_lightning is not None:
-    from .env import BaseEnv
+try:
     from .model import BaseModel
     from .train import Checkpoint, Logger, Trainer
+except ImportError:
+    pass
