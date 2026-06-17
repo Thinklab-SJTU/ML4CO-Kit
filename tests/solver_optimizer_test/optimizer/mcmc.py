@@ -37,10 +37,10 @@ class RoutingMCMCOptimizerTester(SolverTesterBase):
             exclude_test_files_list=[
                 [],
                 [
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp100_o_uniform_16ins.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp50_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp100_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp50_uniform_16ins.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp100_uniform_16ins.pkl"),
                 ]
             ],
             info="MCMCOptimizer"

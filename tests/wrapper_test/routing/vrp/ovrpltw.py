@@ -1,5 +1,5 @@
 r"""
-CVRPL Wrapper Tester.
+CVRPLTW Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,21 +14,21 @@ CVRPL Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import CVRPLWrapper, CVRPLGenerator, PyVRPSolver
+from ml4co_kit import CVRPLTWWrapper, CVRPLTWGenerator, PyVRPSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class OVRPLWrapperTester(WrapperTesterBase):
+class OVRPLTWWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(OVRPLWrapperTester, self).__init__(
-            test_wrapper_class=CVRPLWrapper,
-            generator=CVRPLGenerator(cvrp_open=True),
+        super(OVRPLTWWrapperTester, self).__init__(
+            test_wrapper_class=CVRPLTWWrapper,
+            generator=CVRPLTWGenerator(cvrp_open=True),
             solver=PyVRPSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/ovrpltw50_uniform_16ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrpl/wrapper/cvrpl50_o_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpltw/wrapper/ovrpltw50_uniform_16ins.txt"),
             ],
             from_txt_args_list=[
                 {"cvrp_open": True},

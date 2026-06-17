@@ -31,8 +31,8 @@ class NearestSolverTester(SolverTesterBase):
             exclude_test_files_list=[
                 [],
                 [
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp50_o_uniform_task.pkl"),
-                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/cvrp100_o_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp50_uniform_task.pkl"),
+                    pathlib.Path("test_dataset/routing/vrp/cvrp/task/ovrp100_uniform_task.pkl"),
                 ]
             ]
         )

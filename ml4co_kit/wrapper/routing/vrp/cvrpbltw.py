@@ -39,6 +39,7 @@ class CVRPBLTWWrapper(WrapperBase):
         self, 
         file_path: pathlib.Path,
         cvrp_open: bool = False,
+        mixed_backhaul: bool = False,
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D,
         round_type: ROUND_TYPE = ROUND_TYPE.NO,
         ref: bool = False,
@@ -126,6 +127,7 @@ class CVRPBLTWWrapper(WrapperBase):
                 if overwrite:
                     cvrpbltw_task = CVRPBLTWTask(
                         cvrp_open=cvrp_open,
+                        mixed_backhaul=mixed_backhaul,
                         distance_type=distance_type,
                         round_type=round_type,
                         precision=self.precision

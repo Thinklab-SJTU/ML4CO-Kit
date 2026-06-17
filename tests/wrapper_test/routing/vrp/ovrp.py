@@ -25,10 +25,10 @@ class OVRPWrapperTester(WrapperTesterBase):
             generator=CVRPGenerator(cvrp_open=True),
             solver=PyVRPSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp50_uniform_16ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/cvrp50_o_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/vrp/cvrp/wrapper/ovrp50_uniform_16ins.txt"),
             ],
             from_txt_args_list=[
                 {"cvrp_open": True},

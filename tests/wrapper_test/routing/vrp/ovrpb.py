@@ -1,5 +1,5 @@
 r"""
-CVRPBLTW Wrapper Tester.
+CVRPBL Wrapper Tester.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -14,24 +14,27 @@ CVRPBLTW Wrapper Tester.
 
 
 import pathlib
-from ml4co_kit import CVRPBLTWWrapper, CVRPBLTWGenerator, PyVRPSolver
+from ml4co_kit import CVRPBWrapper, CVRPBGenerator, PyVRPSolver
 from tests.wrapper_test.base import WrapperTesterBase
 
 
-class OVRPBLTWWrapperTester(WrapperTesterBase):
+class OVRPBWrapperTester(WrapperTesterBase):
     def __init__(self):
-        super(OVRPBLTWWrapperTester, self).__init__(
-            test_wrapper_class=CVRPBLTWWrapper,
-            generator=CVRPBLTWGenerator(cvrp_open=True),
+        super(OVRPBWrapperTester, self).__init__(
+            test_wrapper_class=CVRPBWrapper,
+            generator=CVRPBGenerator(cvrp_open=True),
             solver=PyVRPSolver(),
             pickle_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_o_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpb50_uniform_16ins.pkl"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpmb50_uniform_16ins.pkl"),
             ],
             txt_files_list=[
-                pathlib.Path("test_dataset/routing/vrp/cvrpbltw/wrapper/cvrpbltw50_o_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpb50_uniform_16ins.txt"),
+                pathlib.Path("test_dataset/routing/vrp/cvrpb/wrapper/ovrpmb50_uniform_16ins.txt"),
             ],
             from_txt_args_list=[
                 {"cvrp_open": True},
+                {"cvrp_open": True, "mixed_backhaul": True},
             ],
         )
         

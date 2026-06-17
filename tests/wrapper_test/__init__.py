@@ -16,21 +16,21 @@ Wrapper Test Module.
 # Load env_checker
 from ml4co_kit import env_checker
 if env_checker.check_cp311_or_later():
-    from .routing.vrp.cvrp_o import OVRPWrapperTester
+    from .routing.vrp.ovrp import OVRPWrapperTester
     from .routing.vrp.cvrpb import CVRPBWrapperTester
-    from .routing.vrp.cvrpb_o import OVRPBWrapperTester
+    from .routing.vrp.ovrpb import OVRPBWrapperTester
     from .routing.vrp.cvrpbl import CVRPBLWrapperTester
-    from .routing.vrp.cvrpbl_o import OVRPBLWrapperTester
+    from .routing.vrp.ovrpbl import OVRPBLWrapperTester
     from .routing.vrp.cvrpbltw import CVRPBLTWWrapperTester
-    from .routing.vrp.cvrpbltw_o import OVRPBLTWWrapperTester
+    from .routing.vrp.ovrpbltw import OVRPBLTWWrapperTester
     from .routing.vrp.cvrpbtw import CVRPBTWWrapperTester
-    from .routing.vrp.cvrpbtw_o import OVRPBTWWrapperTester
+    from .routing.vrp.ovrpbtw import OVRPBTWWrapperTester
     from .routing.vrp.cvrpl import CVRPLWrapperTester
-    from .routing.vrp.cvrpl_o import OVRPLWrapperTester
+    from .routing.vrp.ovrpl import OVRPLWrapperTester
     from .routing.vrp.cvrpltw import CVRPLTWWrapperTester
-    from .routing.vrp.cvrpltw_o import OVRPLTWWrapperTester
+    from .routing.vrp.ovrpltw import OVRPLTWWrapperTester
     from .routing.vrp.cvrptw import CVRPTWWrapperTester
-    from .routing.vrp.cvrptw_o import OVRPTWWrapperTester
+    from .routing.vrp.ovrptw import OVRPTWWrapperTester
 
 # Base Class
 from .base import WrapperTesterBase
