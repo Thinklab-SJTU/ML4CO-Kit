@@ -79,13 +79,13 @@ class PCTSPTask(RoutingTaskBase):
 
         # Clean the dists
         self.dists = None
-        
+
     def _restore_raw_data(self):
         """Restore the original data from cache."""
-        self.depots = self.cache["raw_depots"]
-        self.points = self.cache["raw_points"]
-        self.coords = self.cache["raw_coords"]
-        self.penalties = self.cache["raw_penalties"]
+        self.depots = self.cache.get("raw_depots", self.depots)
+        self.points = self.cache.get("raw_points", self.points)
+        self.coords = self.cache.get("raw_coords", self.coords)
+        self.penalties = self.cache.get("raw_penalties", self.penalties)
 
     def _check_depots_dim(self):
         """Check if depots are 1D or 2D."""
