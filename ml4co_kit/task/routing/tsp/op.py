@@ -28,7 +28,8 @@ class OPTask(RoutingTaskBase):
         self, 
         distance_type: DISTANCE_TYPE = DISTANCE_TYPE.EUC_2D, 
         round_type: ROUND_TYPE = ROUND_TYPE.NO, 
-        precision: Union[np.float32, np.float64] = np.float32
+        precision: Union[np.float32, np.float64] = np.float32,
+        threshold: float = 1e-5
     ):
         # Super Initialization
         super(OPTask, self).__init__(
@@ -36,7 +37,7 @@ class OPTask(RoutingTaskBase):
             minimize=False,  # OP is a maximization problem
             distance_type=distance_type,
             round_type=round_type, 
-            precision=precision
+            precision=precision,
         )
         
         # Initialize Attributes
@@ -47,19 +48,40 @@ class OPTask(RoutingTaskBase):
         self.prizes = None                 # Prize values for each node
         self.max_length = None             # Maximum length of the path
         self.dists = None                  # Distance matrix
+        self.threshold = threshold         # Threshold for floating point precision
     
-    def _normalize_depots_and_points(self):
+    def _normalize_data(self):
         """Normalize depots and points to [0, 1] range."""
+        # Check if the distance type is EUC_2D
         if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
             raise ValueError("Normalization is only supported for EUC_2D distance type.")
-        depots = self.depots
-        points = self.points
-        min_vals = min(np.min(points), np.min(self.depots))
-        max_vals = max(np.max(points), np.max(self.depots))
-        normalized_points = (points - min_vals) / (max_vals - min_vals)
-        normalized_depots = (depots - min_vals) / (max_vals - min_vals)
-        self.points = normalized_points
-        self.depots = normalized_depots
+        
+        # Save the original data in cache
+        self.cache["raw_points"] = self.points
+        self.cache["raw_depots"] = self.depots
+        self.cache["raw_coords"] = self.coords
+        self.cache["raw_max_length"] = self.max_length
+        
+        # Get normalize scale
+        min_vals = np.min(self.coords)
+        max_vals = np.max(self.coords)
+        norm_scale = max_vals - min_vals
+
+        # Normalize the data
+        self.coords = (self.coords - min_vals) / norm_scale
+        self.depots = self.coords[0]
+        self.points = self.coords[1:]
+        self.max_length = self.max_length / norm_scale
+
+        # Clean the dists
+        self.dists = None
+
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        self.points = self.cache.get("raw_points", self.points)
+        self.depots = self.cache.get("raw_depots", self.depots)
+        self.coords = self.cache.get("raw_coords", self.coords)
+        self.max_length = self.cache.get("raw_max_length", self.max_length)
     
     def _check_depots_dim(self):
         """Check if depots are 1D or 2D."""
@@ -166,7 +188,7 @@ class OPTask(RoutingTaskBase):
         
         # Normalize Depots and Points if Required
         if normalize:
-            self._normalize_depots_and_points()
+            self._normalize_data()
         
         # Set Number of Nodes if Provided
         if self.points is not None:
@@ -188,7 +210,7 @@ class OPTask(RoutingTaskBase):
             total_distance += self.dist_eval.cal_distance(
                 self.coords[sol[i]], self.coords[sol[i + 1]]
             )
-        if total_distance > self.max_length:
+        if total_distance > self.max_length + self.threshold:
             return False
             
         return True

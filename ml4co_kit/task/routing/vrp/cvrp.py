@@ -90,19 +90,36 @@ class CVRPTask(RoutingTaskBase):
         self.capacity = None               # Capacity of vehicles 
         self.dists = None                  # Distance matrix (V+1, V+1)
         self.threshold = threshold         # Threshold for floating point precision
-  
-    def _normalize_depots_and_points(self):
+    
+    def _normalize_data(self):
         """Normalize depots and points to [0, 1] range."""
+        # Check if the distance type is EUC_2D
         if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
             raise ValueError("Normalization is only supported for EUC_2D distance type.")
-        depots = self.depots
-        points = self.points
-        min_vals = min(np.min(points), np.min(self.depots))
-        max_vals = max(np.max(points), np.max(self.depots))
-        normalized_points = (points - min_vals) / (max_vals - min_vals)
-        normalized_depots = (depots - min_vals) / (max_vals - min_vals)
-        self.points = normalized_points
-        self.depots = normalized_depots
+        
+        # Save the original data in cache
+        self.cache["raw_points"] = self.points
+        self.cache["raw_depots"] = self.depots
+        self.cache["raw_coords"] = self.coords
+        
+        # Get normalize scale
+        min_vals = np.min(self.coords)
+        max_vals = np.max(self.coords)
+        norm_scale = max_vals - min_vals
+
+        # Normalize the data
+        self.coords = (self.coords - min_vals) / norm_scale
+        self.depots = self.coords[0]
+        self.points = self.coords[1:]
+
+        # Clean the dists
+        self.dists = None
+
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        self.points = self.cache.get("raw_points", self.points)
+        self.depots = self.cache.get("raw_depots", self.depots)
+        self.coords = self.cache.get("raw_coords", self.coords)
 
     def _check_depots_dim(self):
         """Check if depots are 1D or 2D."""
@@ -425,7 +442,7 @@ class CVRPTask(RoutingTaskBase):
             
         # Normalize Depots and Points if Required
         if normalize:
-            self._normalize_depots_and_points()
+            self._normalize_data()
         
         # Set Number of Nodes if Provided
         if self.points is not None:

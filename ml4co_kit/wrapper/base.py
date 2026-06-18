@@ -41,10 +41,16 @@ class WrapperBase(object):
         self.task_list: List[TaskBase] = list()
     
     def swap_sol_and_ref_sol(self):
+        """Swap the solution and reference solution."""
         for task_data in self.task_list:
             tmp = task_data.ref_sol
             task_data.ref_sol = task_data.sol
             task_data.sol = tmp
+
+    def restore_raw_data(self):
+        """Restore the original data."""
+        for task_data in self.task_list:
+            task_data._restore_raw_data()
  
     def generate_w_to_txt(
         self,

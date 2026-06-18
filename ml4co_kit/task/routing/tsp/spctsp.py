@@ -54,25 +54,41 @@ class SPCTSPTask(RoutingTaskBase):
         self.dists = None                  # Distance matrix
         self.threshold = threshold         # Threshold for floating point precision
     
-    def _normalize_depots_and_points_with_penalties(self):
+    def _normalize_data(self):
         """
         Normalize depots, points to [0, 1] range. Since the objective function
         includes the penalty, we need to normalize it together.
         """
         if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
             raise ValueError("Normalization is only supported for EUC_2D distance type.")
-        depots = self.depots
-        points = self.points
-        penalties = self.penalties
-        min_vals = min(np.min(points), np.min(self.depots))
-        max_vals = max(np.max(points), np.max(self.depots))
-        normalized_points = (points - min_vals) / (max_vals - min_vals)
-        normalized_depots = (depots - min_vals) / (max_vals - min_vals)
-        normalized_penalties = (penalties - min_vals) / (max_vals - min_vals)
-        self.points = normalized_points
-        self.depots = normalized_depots
-        self.penalties = normalized_penalties
+        
+        # Save the original data in cache
+        self.cache["raw_depots"] = self.depots
+        self.cache["raw_points"] = self.points
+        self.cache["raw_coords"] = self.coords
+        self.cache["raw_penalties"] = self.penalties
+        
+        # Get normalize scale
+        min_vals = np.min(self.coords)
+        max_vals = np.max(self.coords)
+        norm_scale = max_vals - min_vals
+        
+        # Normalize the data
+        self.coords = (self.coords - min_vals) / norm_scale
+        self.depots = self.coords[0]
+        self.points = self.coords[1:]
+        self.penalties = self.penalties / norm_scale
 
+        # Clean the dists
+        self.dists = None
+
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        self.depots = self.cache.get("raw_depots", self.depots)
+        self.points = self.cache.get("raw_points", self.points)
+        self.coords = self.cache.get("raw_coords", self.coords)
+        self.penalties = self.cache.get("raw_penalties", self.penalties)
+        
     def _check_depots_dim(self):
         """Check if depots are 1D or 2D."""
         if self.depots.ndim != 1 or self.depots.shape[0] not in [2, 3]:
@@ -230,7 +246,7 @@ class SPCTSPTask(RoutingTaskBase):
         
         # Normalize Depots and Points if Required
         if normalize:
-            self._normalize_depots_and_points_with_penalties()
+            self._normalize_data()
         
         # Set Number of Nodes if Provided
         if self.points is not None:

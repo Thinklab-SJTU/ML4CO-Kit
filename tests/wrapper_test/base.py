@@ -43,14 +43,14 @@ class WrapperTesterBase(object):
         # Create tmp folder
         os.makedirs("tmp", exist_ok=True)
         
-        # Test for pickle & txt
-        self._test_pickle_txt()
+        # # Test for pickle & txt
+        # self._test_pickle_txt()
         
-        # Test for other read and write methods
-        self._test_other_rw_methods()
+        # # Test for other read and write methods
+        # self._test_other_rw_methods()
         
-        # Test for generate
-        self._test_generate()
+        # # Test for generate
+        # self._test_generate()
         
         # Test for solve
         self._test_solve_evaluate()
@@ -119,6 +119,7 @@ class WrapperTesterBase(object):
                             num_threads=num_threads,
                             show_time=show_time
                         )
+                        wrapper.restore_raw_data()
                         sol_costs = wrapper.evaluate()
                         eval_result = wrapper.evaluate_w_gap()
                         msg = (

@@ -48,15 +48,28 @@ class TSPTask(RoutingTaskBase):
         self.points = None                 # Coordinates of points
         self.dists = None                  # Distance matrix
     
-    def _normalize_points(self):
+    def _normalize_data(self):
         """Normalize points to [0, 1] range."""
         if self.dist_eval.distance_type != DISTANCE_TYPE.EUC_2D:
             raise ValueError("Normalization is only supported for EUC_2D distance type.")
-        points = self.points
-        min_vals = np.min(points)
-        max_vals = np.max(points)
-        normalized_points = (points - min_vals) / (max_vals - min_vals)
-        self.points = normalized_points
+        
+        # Save the original data in cache
+        self.cache["raw_points"] = self.points
+        
+        # Get normalize scale
+        min_vals = np.min(self.points)
+        max_vals = np.max(self.points)
+        norm_scale = max_vals - min_vals
+        
+        # Normalize the data
+        self.points = (self.points - min_vals) / norm_scale
+
+        # Clean the dists
+        self.dists = None
+    
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        self.points = self.cache.get("raw_points", self.points)
     
     def _check_points_dim(self):
         """Check if points are 2D or 3D."""
@@ -117,7 +130,7 @@ class TSPTask(RoutingTaskBase):
         
         # Normalize Points if Required
         if normalize:
-            self._normalize_points()
+            self._normalize_data()
             
         # Set Name if Provided
         if name is not None:

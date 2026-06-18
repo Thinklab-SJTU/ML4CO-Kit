@@ -47,13 +47,22 @@ class ATSPTask(RoutingTaskBase):
         self.nodes_num = None  # Number of nodes
         self.dists = None  # Distance matrix
         
-    def _normalize_dists(self):
+    def _normalize_data(self):
         """Normalize dists to [0, 1] range."""
-        dists = self.dists
-        min_vals = np.min(dists)
-        max_vals = np.max(dists)
-        normalized_dists = (dists - min_vals) / (max_vals - min_vals)
-        self.dists = normalized_dists
+        # Save the original data in cache
+        self.cache["raw_dists"] = self.dists
+        
+        # Get normalize scale
+        min_vals = np.min(self.dists)
+        max_vals = np.max(self.dists)
+        norm_scale = max_vals - min_vals
+        
+        # Normalize the data
+        self.dists = (self.dists - min_vals) / norm_scale
+    
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        self.dists = self.cache.get("raw_dists", self.dists)
     
     def _check_dists_dim(self):
         """Check if dists are 2D or 3D."""
@@ -103,7 +112,7 @@ class ATSPTask(RoutingTaskBase):
 
         # Normalize dists if Required
         if normalize:
-            self._normalize_dists()
+            self._normalize_data()
             
         # Set Name if Provided
         if name is not None:

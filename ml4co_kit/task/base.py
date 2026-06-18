@@ -163,6 +163,10 @@ class TaskBase(object):
             if key not in self.__dict__:
                 self.__dict__[key] = value
     
+    def _restore_raw_data(self):
+        """Restore the original data from cache."""
+        pass
+    
     def to_pickle(self, file_path: pathlib.Path):
         """Serialize this task to a pickle file.
 
