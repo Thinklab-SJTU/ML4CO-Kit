@@ -328,7 +328,7 @@ class SolverTesterBase(object):
                 if test_file not in exclude_test_files:
                     task = TSPTask()
                     task.from_pickle(test_file)
-                    task._normalize_points()
+                    task._normalize_data()
                     task_list.append(task)
             for test_file in tsp_test_files_list_2:
                 if test_file not in exclude_test_files:
