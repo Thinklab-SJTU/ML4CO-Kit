@@ -67,16 +67,24 @@ class SolverTesterBase(object):
                     
                     # Solve mode
                     if mode == "solve":
+                        # Get task list
                         test_task_list = self.get_task_list(
                             mode=mode, 
                             test_task_type=test_task_type, 
                             exclude_test_files=exclude_test_files
                         )
-                
+
+                        # Solve tasks
                         for test_task in test_task_list:
                             solver.solve(test_task)
-                            eval_results = test_task.evaluate_w_gap()
-                            print(f"{str(test_task)} Eval results: {eval_results}")
+                            if test_task.task_type not in [TASK_TYPE.EDAP]:
+                                eval_results = test_task.evaluate_w_gap()
+                                print(f"{str(test_task)} Eval results: {eval_results}")
+                            else:
+                                eval_sol_results = test_task.evaluate(test_task.sol)
+                                eval_ref_results = test_task.evaluate(test_task.ref_sol)
+                                print(f"{str(test_task)} Eval Sol results: {eval_sol_results}")
+                                print(f"{str(test_task)} Eval Ref results: {eval_ref_results}")
                         del test_task_list
 
                     # Batch solve mode
@@ -167,6 +175,10 @@ class SolverTesterBase(object):
             return self._get_satp_tasks(mode, exclude_test_files)
         elif test_task_type == TASK_TYPE.SATA:
             return self._get_sata_tasks(mode, exclude_test_files)
+        
+        # EDA Problems
+        elif test_task_type == TASK_TYPE.EDAP:
+            return self._get_edap_tasks(mode, exclude_test_files)
         
         # Others
         else:
@@ -818,7 +830,6 @@ class SolverTesterBase(object):
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list
             
-            
     ########################################
     #         Portfolio Problems           #
     ########################################
@@ -1036,4 +1047,25 @@ class SolverTesterBase(object):
                     wrapper.from_pickle(test_file)
                     bacth_task_list.append(wrapper.task_list)
             return bacth_task_list  
-    
+
+    ########################################
+    #            EDA Problems              #
+    ########################################
+
+    def _get_edap_tasks(
+        self, mode: str, exclude_test_files: List[pathlib.Path]
+    ) -> List[EDAPTask]:
+        # ``Solve`` mode
+        if mode == "solve":
+            from ml4co_kit import EDAP_ISPD2005Dataset
+            dataset = EDAP_ISPD2005Dataset()
+            task_list = [dataset.load(0)]
+            return task_list
+
+        # ``Batch Solve`` mode
+        if mode == "batch_solve":
+            from ml4co_kit import EDAP_ISPD2005Dataset
+            dataset = EDAP_ISPD2005Dataset()
+            task_list = [dataset.load(idx) for idx in range(8)]
+            batch_task_list = [task_list]
+            return batch_task_list

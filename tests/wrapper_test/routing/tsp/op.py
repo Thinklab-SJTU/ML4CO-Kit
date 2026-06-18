@@ -30,6 +30,9 @@ class OPWrapperTester(WrapperTesterBase):
             txt_files_list=[
                 pathlib.Path("test_dataset/routing/tsp/op/wrapper/op50_uniform_4ins.txt"),
             ],
+            from_txt_args_list=[
+                {"normalize": True},
+            ],
         )
         
     def _test_other_rw_methods(self):

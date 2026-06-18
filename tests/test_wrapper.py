@@ -119,6 +119,7 @@ def test_wrapper():
         OVRPLTWWrapperTester().test()
         CVRPTWWrapperTester().test()
         OVRPTWWrapperTester().test()
+        MTVRPWrapperTester().test()
 
 
 # Main

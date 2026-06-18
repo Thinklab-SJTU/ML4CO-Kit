@@ -26,6 +26,8 @@ if env_checker.check_torch():
     from .solver.graph.rlsa import RLSASolverTester
     from .solver.graph.fem import FEMSolverTester
     from .solver.routing.neurolkh import NeuroLKHSolverTester
+if env_checker.check_dreamplace():
+    from .solver.eda.dreamplace import DreamPlaceSolverTester
 
 # Check Python Version
 if env_checker.check_cp311_or_later():

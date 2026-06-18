@@ -30,6 +30,9 @@ class PCTSPWrapperTester(WrapperTesterBase):
             txt_files_list=[
                 pathlib.Path("test_dataset/routing/tsp/pctsp/wrapper/pctsp50_uniform_4ins.txt"),
             ],
+            from_txt_args_list=[
+                {"normalize": True},
+            ],
         )
         
     def _test_other_rw_methods(self):

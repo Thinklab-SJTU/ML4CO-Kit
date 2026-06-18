@@ -87,7 +87,7 @@ if env_checker.check_gurobi():
     basic_tester_class_list.append(GurobiSolverTester)
    
     
-# Get solvers to be tested (torch used)
+# Get solvers to be tested (torch)
 if env_checker.check_torch():
     from tests.solver_optimizer_test import (
         RLSASolverTester, 
@@ -100,6 +100,7 @@ if env_checker.check_torch():
         FEMSolverTester,
     ]
 
+# Get solvers to be tested (gnn4co)
 if env_checker.check_gnn4co():
     from tests.solver_optimizer_test import (
         GNN4COBeamSolverTester, 
@@ -115,6 +116,11 @@ if env_checker.check_gnn4co():
         MCTSOptimizerTester,
         TwoOptOptimizerTester,
     ]
+
+# Get solvers to be tested (dreamplace)
+if env_checker.check_dreamplace():
+    from tests.solver_optimizer_test import DreamPlaceSolverTester
+    torch_tester_class_list.append(DreamPlaceSolverTester)
     
 
 # Python Version
@@ -136,6 +142,7 @@ def test_solver_optimizer():
         tester_class(device="cpu").test()
         if env_checker.check_cuda():
             tester_class(device="cuda").test()
+
 
 # Main
 if __name__ == "__main__":
