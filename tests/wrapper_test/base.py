@@ -43,14 +43,14 @@ class WrapperTesterBase(object):
         # Create tmp folder
         os.makedirs("tmp", exist_ok=True)
         
-        # # Test for pickle & txt
-        # self._test_pickle_txt()
+        # Test for pickle & txt
+        self._test_pickle_txt()
         
-        # # Test for other read and write methods
-        # self._test_other_rw_methods()
+        # Test for other read and write methods
+        self._test_other_rw_methods()
         
-        # # Test for generate
-        # self._test_generate()
+        # Test for generate
+        self._test_generate()
         
         # Test for solve
         self._test_solve_evaluate()
