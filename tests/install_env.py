@@ -40,4 +40,7 @@ if __name__ == "__main__":
     # Install DreamPlace
     from ml4co_kit.solver.eda.dreamplace import DreamPlaceSolver
     dreamplace_solver = DreamPlaceSolver()
-    dreamplace_solver.install(cpu_only=True, using_prebuilt=True)
+    if sys.platform == "linux": 
+        dreamplace_solver.install(cpu_only=True, using_prebuilt=True)
+    else:
+        dreamplace_solver.install(cpu_only=True)
