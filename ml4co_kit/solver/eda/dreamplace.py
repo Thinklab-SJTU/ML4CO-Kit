@@ -13,8 +13,10 @@ DreamPlace solver for EDA problems.
 
 
 import os
+import sys
 import yaml
 import pathlib
+import subprocess
 import importlib.util
 from typing import Any, Dict
 from ml4co_kit.task.eda.edap import EDAPTask
@@ -89,7 +91,19 @@ class DreamPlaceSolver(SolverBase):
 
         # Path for DreamPlace YAML files
         self.conf_path = pathlib.Path(__file__).parent / "lib/dreamplace/conf"
-    
+
+        # Fix bugs for MacOS ``cairo`` library
+        if sys.platform == "darwin":
+            cairo_prefix = subprocess.check_output(["brew", "--prefix", "cairo"]).decode("utf-8").strip()
+            if not cairo_prefix:
+                raise RuntimeError(
+                    "cairo library not found. Please install cairo via Homebrew."
+                )
+            cairo_lib_path = pathlib.Path(cairo_prefix) / "lib"
+            os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = (
+                f"{cairo_lib_path.as_posix()}:${os.environ.get('DYLD_FALLBACK_LIBRARY_PATH', '')}"
+            )
+
     def _solve(self, task_data: TaskBase):
         """Solve the task data using DreamPlace solver."""
         # Check if DreamPlace is installed
