@@ -13,13 +13,13 @@ DREAMPLACE_BEGIN_NAMESPACE
 template <typename T>
 int computePinPosCudaSegmentLauncher(
     const T* x, const T* y, const T* pin_offset_x, const T* pin_offset_y,
-    const long* pin2node_map, const int* flat_node2pin_map,
+    const int64_t* pin2node_map, const int* flat_node2pin_map,
     const int* flat_node2pin_start_map, int num_pins, T* pin_x, T* pin_y);
 
 template <typename T>
 int computePinPosGradCudaSegmentLauncher(
     const T* grad_out_x, const T* grad_out_y, const T* x, const T* y,
-    const T* pin_offset_x, const T* pin_offset_y, const long* pin2node_map,
+    const T* pin_offset_x, const T* pin_offset_y, const int64_t* pin2node_map,
     const int* flat_node2pin_map, const int* flat_node2pin_start_map,
     int num_nodes, int num_pins, T* grad, T* grad_y,
     T* grad_perm_buf  ///< 2*num_pins
@@ -44,7 +44,7 @@ at::Tensor pin_pos_forward(at::Tensor pos, at::Tensor pin_offset_x,
             DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + num_nodes,
             DREAMPLACE_TENSOR_DATA_PTR(pin_offset_x, scalar_t),
             DREAMPLACE_TENSOR_DATA_PTR(pin_offset_y, scalar_t),
-            DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, long),
+            DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, int64_t),
             DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_map, int),
             DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_start_map, int), num_pins,
             DREAMPLACE_TENSOR_DATA_PTR(out, scalar_t),
@@ -81,7 +81,7 @@ at::Tensor pin_pos_backward(at::Tensor grad_out, at::Tensor pos,
             DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + num_nodes,
             DREAMPLACE_TENSOR_DATA_PTR(pin_offset_x, scalar_t),
             DREAMPLACE_TENSOR_DATA_PTR(pin_offset_y, scalar_t),
-            DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, long),
+            DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, int64_t),
             DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_map, int),
             DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_start_map, int),
             num_physical_nodes, num_pins,

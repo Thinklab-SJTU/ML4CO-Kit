@@ -20,8 +20,14 @@
 
 #else
 
+// PyTorch 2.4+ exports mutable_data_ptr<T>() but not the legacy data_ptr<T>().
+#if TORCH_VERSION_MAJOR > 2 || (TORCH_VERSION_MAJOR == 2 && TORCH_VERSION_MINOR >= 4)
+#define DREAMPLACE_TENSOR_DATA_PTR(TENSOR, TYPE) \
+  ((TENSOR.defined())? TENSOR.mutable_data_ptr<TYPE>() : nullptr)
+#else
 #define DREAMPLACE_TENSOR_DATA_PTR(TENSOR, TYPE) \
   ((TENSOR.defined())? TENSOR.data_ptr<TYPE>() : nullptr)
+#endif
 #define DREAMPLACE_TENSOR_SCALARTYPE(TENSOR) TENSOR.scalar_type()
 
 #endif

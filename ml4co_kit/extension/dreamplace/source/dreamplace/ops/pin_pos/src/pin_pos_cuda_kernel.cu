@@ -31,7 +31,7 @@ int computePinPosCudaLauncher(
 	const T* x, const T* y,
 	const T* pin_offset_x,
 	const T* pin_offset_y,
-	const long* pin2node_map,
+	const int64_t* pin2node_map,
 	const int* flat_node2pin_map,
 	const int* flat_node2pin_start_map,
 	int num_pins,
@@ -79,7 +79,7 @@ int computePinPosGradCudaLauncher(
 	const T* x, const T* y,
 	const T* pin_offset_x,
 	const T* pin_offset_y,
-	const long* pin2node_map,
+	const int64_t* pin2node_map,
 	const int* flat_node2pin_map,
 	const int* flat_node2pin_start_map,
 	int num_nodes,
@@ -108,7 +108,7 @@ int computePinPosGradCudaLauncher(
     	    const T* x, const T* y, \
     	    const T* pin_offset_x, \
 	        const T* pin_offset_y, \
-	        const long* pin2node_map, \
+	        const int64_t* pin2node_map, \
 	        const int* flat_node2pin_map, \
 	        const int* flat_node2pin_start_map, \
 	        int num_pins, \
@@ -120,7 +120,7 @@ int computePinPosGradCudaLauncher(
 	        const T* x, const T* y, \
 	        const T* pin_offset_x, \
 	        const T* pin_offset_y, \
-	        const long* pin2node_map, \
+	        const int64_t* pin2node_map, \
 	        const int* flat_node2pin_map, \
 	        const int* flat_node2pin_start_map, \
 	        int num_nodes, \

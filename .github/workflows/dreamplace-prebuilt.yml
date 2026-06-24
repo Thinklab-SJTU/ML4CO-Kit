@@ -94,7 +94,7 @@ jobs:
       - name: macOS — Homebrew deps
         run: |
           brew update
-          brew install cmake boost flex bison libomp
+          brew install cmake boost flex bison libomp cairo
 
       - name: Install Python deps and build DreamPlace
         run: |
