@@ -42,11 +42,11 @@ int run_auction(
     bool allocate_flag = false; 
     if (!item2person_ptr)
     {
-        item2person_ptr = (int*)malloc(num_nodes * sizeof(int));
-        bids_ptr      = (T*)malloc(num_nodes * num_nodes * sizeof(T));
-        prices_ptr    = (T*)malloc(num_nodes * sizeof(T));
-        //bidders_ptr     = (int*)malloc(num_nodes * num_nodes * sizeof(int)); // unused
-        sbids_ptr       = (int*)malloc(num_nodes * sizeof(int));
+        item2person_ptr = (int*)calloc((size_t)num_nodes, sizeof(int));
+        bids_ptr      = (T*)calloc((size_t)num_nodes, (size_t)num_nodes * sizeof(T));
+        prices_ptr    = (T*)calloc((size_t)num_nodes, sizeof(T));
+        //bidders_ptr   = (int*)calloc((size_t)num_nodes, (size_t)num_nodes * sizeof(int)); // unused
+        sbids_ptr       = (int*)calloc((size_t)num_nodes, sizeof(int));
         allocate_flag = true; 
     }
 
@@ -79,7 +79,7 @@ int run_auction(
         while(num_assigned < num_nodes && counter < auction_max_iters){
             counter += 1;
 
-            std::memset(bids, 0, num_nodes * num_nodes * sizeof(T));
+            std::memset(bids, 0, (size_t)num_nodes * num_nodes * sizeof(T));
             std::memset(sbids, 0, num_nodes * sizeof(int));
 
             // #pragma omp parallel for num_threads(1)
@@ -195,7 +195,7 @@ class AuctionAlgorithmCPULauncher
                 int auction_max_iters=AUCTION_MAX_ITERS
                 )
         {
-            int nn = n*n; 
+            size_t nn = (size_t)n*n; 
 
             m_matrix.resize(nn); 
             m_item2person.resize(n); 
@@ -207,7 +207,7 @@ class AuctionAlgorithmCPULauncher
             if (minimize_flag)
             {
                 T max_cost = 0; 
-                for (int i = 0; i < nn; ++i)
+                for (size_t i = 0; i < nn; ++i)
                 {
                     T c = cost[i];
                     if (c < skip_threshold)
