@@ -251,7 +251,7 @@ from .wrapper import (
 #                    Learning                      #
 ####################################################
 
-if env_checker.pytorch_lightning_support:
+if env_checker.check_learning():
     from .learning import (
         BaseEnv, BaseModel, Trainer, Checkpoint, Logger
     )

@@ -77,6 +77,9 @@ class EnvChecker(object):
         ]
         return all(check_list)
 
+    def check_learning(self) -> bool:
+        return self.pytorch_lightning_support and self.wandb_support
+
     def check_dreamplace(self) -> bool:
         check_list = [
             self.torch_support,

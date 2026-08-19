@@ -14,9 +14,8 @@ Learning Module.
 
 
 from .env import BaseEnv
+from ml4co_kit.utils.env_utils import EnvChecker
 
-try:
+if EnvChecker().check_learning():
     from .model import BaseModel
     from .train import Checkpoint, Logger, Trainer
-except ImportError:
-    pass
