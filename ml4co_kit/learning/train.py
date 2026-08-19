@@ -212,13 +212,13 @@ class Trainer(PLTrainer):
 
         self.train_model = model
 
-    def model_train(self):
+    def model_train(self, ckpt_path: Optional[str] = None):
         rank_zero_info(
             f"Logging to {self.logger.save_dir}/{self.logger.name}/{self.logger.version}"
         )
         rank_zero_info(f"checkpoint_callback's dirpath is {self.ckpt_save_path}")
         rank_zero_info(f"{'-' * 100}\n" f"{str(self.train_model)}\n" f"{'-' * 100}\n")
-        self.fit(self.train_model)
+        self.fit(model=self.train_model, ckpt_path=ckpt_path)
         self.logger.finalize("success")
 
     def model_test(self):
