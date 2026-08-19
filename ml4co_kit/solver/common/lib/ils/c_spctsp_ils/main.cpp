@@ -598,9 +598,10 @@ int main(int argc, char *argv[]) {
         //                      cout << endl;
         ILS(params, solution);
 
-        if (solution->cost + solution->penalty < bestResult)
+        if (solution->cost + solution->penalty < bestResult) {
             bestResult = solution->cost + solution->penalty;
             bestRoute = solution->route;
+        }
         averageResult += (solution->cost + solution->penalty);
         averageTime += (float(clock() - start) / CLOCKS_PER_SEC);
 
