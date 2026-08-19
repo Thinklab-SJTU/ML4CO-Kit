@@ -15,8 +15,9 @@ Trainer for ML4CO models.
 
 import os
 import torch
+import string
+import secrets
 from torch import nn
-from wandb.util import generate_id
 from typing import Optional, List, Union
 from pytorch_lightning import LightningModule
 from pytorch_lightning.loggers import WandbLogger
@@ -93,13 +94,21 @@ class Logger(WandbLogger):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         if id is None and resume_id is None:
-            wandb_id = os.getenv("WANDB_RUN_ID") or generate_id()
+            wandb_id = os.getenv("WANDB_RUN_ID") or self.generate_id()
         else:
             wandb_id = id if id is not None else resume_id
 
         super().__init__(
             name=name, project=project, entity=entity, save_dir=save_dir, id=wandb_id
         )
+
+    @staticmethod
+    def generate_id(length: int = 8) -> str:
+        """Generate a random base-36 string of `length` digits."""
+        # There are ~2.8T base-36 8-digit strings. If we generate 210k ids,
+        # we'll have a ~1% chance of collision.
+        alphabet = string.ascii_lowercase + string.digits
+        return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
 class Trainer(PLTrainer):
