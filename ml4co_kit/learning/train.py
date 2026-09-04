@@ -1,5 +1,5 @@
 r"""
-Trainer for ML4CO models.
+Trainer for PyTorch ML4CO models (PyTorch Lightning backend).
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -93,6 +93,7 @@ class Logger(WandbLogger):
     ):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
+        # Prefer explicit id / resume_id, then WANDB_RUN_ID, else random.
         if id is None and resume_id is None:
             wandb_id = os.getenv("WANDB_RUN_ID") or self.generate_id()
         else:
@@ -104,9 +105,8 @@ class Logger(WandbLogger):
 
     @staticmethod
     def generate_id(length: int = 8) -> str:
-        """Generate a random base-36 string of `length` digits."""
-        # There are ~2.8T base-36 8-digit strings. If we generate 210k ids,
-        # we'll have a ~1% chance of collision.
+        """Generate a random base-36 string of ``length`` digits."""
+        # ~2.8T base-36 8-digit strings; ~1% collision after ~210k ids.
         alphabet = string.ascii_lowercase + string.digits
         return "".join(secrets.choice(alphabet) for _ in range(length))
 
@@ -144,19 +144,19 @@ class Trainer(PLTrainer):
         reload_dataloaders_every_n_epochs: int = 0,
         progress_bar_refresh_rate: int = 20,
         metric_precision: int = 4,
-        # Disable JIT profiling executor.
+        # Disable JIT profiling executor for a bit less overhead.
         disable_profiling_executor: bool = True,
         # pretrained
         ckpt_path: Optional[str] = None,
         weight_path: Optional[str] = None
     ):
-        # logger
+        # --- logger ---
         if logger is None:
             self.logger = Logger(name=wandb_logger_name, resume_id=resume_id)
         else:
             self.logger = logger
         
-        # checkpoint
+        # --- checkpoint (default under train_ckpts/<run_name>/<run_id>) ---
         if ckpt_save_path is None:
             self.ckpt_save_path = os.path.join(
                 "train_ckpts", self.logger._name, self.logger._id
@@ -171,10 +171,11 @@ class Trainer(PLTrainer):
             mode=mode
         )
         
-        # learning rate
+        # --- LR monitor ---
         self.lr_callback = LearningRateMonitor(logging_interval="step")
 
-        # strategy
+        # --- distributed strategy ---
+        # Defaults suit multi-GPU CO training; override via ``strategy=``.
         if strategy is None:
             strategy = DDPStrategy(
                 static_graph=True,
@@ -182,7 +183,6 @@ class Trainer(PLTrainer):
                 gradient_as_bucket_view=True
             )
             
-        # Disable JIT profiling executor
         if disable_profiling_executor:
             try:
                 torch._C._jit_set_profiling_executor(False)
@@ -190,7 +190,6 @@ class Trainer(PLTrainer):
             except AttributeError:
                 pass
         
-        # super
         super().__init__(
             accelerator=accelerator,
             strategy=strategy,
@@ -214,6 +213,8 @@ class Trainer(PLTrainer):
             inference_mode=inference_mode,
             reload_dataloaders_every_n_epochs=reload_dataloaders_every_n_epochs
         )
+
+        # Optional warm-start: full Lightning ckpt, or raw state_dict weights.
         if ckpt_path is not None:
             model.load_from_checkpoint(ckpt_path)
         elif weight_path is not None:
@@ -222,6 +223,7 @@ class Trainer(PLTrainer):
         self.train_model = model
 
     def model_train(self, ckpt_path: Optional[str] = None):
+        """Run Lightning ``fit`` and finalize the wandb logger."""
         rank_zero_info(
             f"Logging to {self.logger.save_dir}/{self.logger.name}/{self.logger.version}"
         )
@@ -231,6 +233,7 @@ class Trainer(PLTrainer):
         self.logger.finalize("success")
 
     def model_test(self):
+        """Run Lightning ``test`` on the attached model."""
         rank_zero_info(
             f"Logging to {self.logger.save_dir}/{self.logger.name}/{self.logger.version}"
         )

@@ -1,5 +1,5 @@
 r"""
-Base class for ML4CO models.
+Base class for PyTorch ML4CO models.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -20,7 +20,7 @@ from typing import Any
 from functools import partial
 from torch.optim.lr_scheduler import LambdaLR
 from pytorch_lightning.utilities import rank_zero_info
-from ml4co_kit.learning.env import BaseEnv
+from .env import BaseEnv
 
 
 class BaseModel(pl.LightningModule):
@@ -35,12 +35,13 @@ class BaseModel(pl.LightningModule):
         super(BaseModel, self).__init__()
         self.env = env
         self.model = model
-        self.lr_scheduler = lr_scheduler
+        self.lr_scheduler = lr_scheduler  # "constant" | "cosine-decay" | "one-cycle"
         self.num_training_steps_cached = None
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
 
     def load_data(self):
+        """Load datasets via the attached environment."""
         self.env.load_data()
 
     def train_dataloader(self):
@@ -53,11 +54,13 @@ class BaseModel(pl.LightningModule):
         return self.env.test_dataloader()
 
     def configure_optimizers(self):
-        """Configure optimizers and learning rate schedulers."""
+        """Hook required by Lightning: return optimizer (+ optional scheduler)."""
         rank_zero_info(
             "Parameters: %d" % sum([p.numel() for p in self.model.parameters()])
         )
-        rank_zero_info("Training steps: %d" % self.get_total_num_training_steps())
+        rank_zero_info(
+            "Training steps: %d" % self.get_total_num_training_steps()
+        )
 
         if self.lr_scheduler == "constant":
             return torch.optim.AdamW(
@@ -75,6 +78,7 @@ class BaseModel(pl.LightningModule):
                 self.lr_scheduler, self.get_total_num_training_steps()
             )(optimizer)
 
+        # Step-wise schedule matches common diffusion / CO training setups.
         return {
             "optimizer": optimizer,
             "lr_scheduler": {
@@ -85,7 +89,10 @@ class BaseModel(pl.LightningModule):
 
     def get_total_num_training_steps(self) -> int:
         """
-        Total training steps inferred from datamodule and devices.
+        Infer total optimization steps from Lightning trainer settings.
+
+        Used to build cosine / one-cycle schedules before training starts.
+        Result is cached because Lightning may call this more than once.
         """
         if self.num_training_steps_cached is not None:
             return self.num_training_steps_cached
@@ -108,13 +115,19 @@ class BaseModel(pl.LightningModule):
         return self.num_training_steps_cached
 
     def shared_step(self, batch: Any, batch_idx: int, phase: str):
-        """Shared step between train/val/test. To be implemented in subclasses."""
+        """
+        Single place for train/val/test logic.
+
+        Subclasses should return a loss tensor (or a dict containing ``loss``)
+        so Lightning can call ``backward`` consistently across phases.
+        """
         raise NotImplementedError(
             "Shared step is required to implemented in subclasses."
         )
 
     def training_step(self, batch: Any, batch_idx: int):
-        # To use new data every epoch, we need to call reload_dataloaders_every_epoch=True in Trainer
+        # To refresh training data every epoch, set
+        # reload_dataloaders_every_n_epochs > 0 on Trainer.
         return self.shared_step(batch, batch_idx, phase="train")
 
     def validation_step(self, batch: Any, batch_idx: int):
@@ -124,19 +137,21 @@ class BaseModel(pl.LightningModule):
         return self.shared_step(batch, batch_idx, phase="test")
 
     def load_weights(self):
-        """load state dict from checkpoint"""
+        """Load weights / checkpoint; implement in subclasses as needed."""
         raise NotImplementedError(
             "``load_ckpt`` is required to implemented in subclasses."
         )
 
 
 def get_schedule_fn(scheduler, num_training_steps):
-    """Returns a callable scheduler_fn(optimizer).
-    Todo: Sanitize and unify these schedulers...
+    """
+    Build a callable ``scheduler_fn(optimizer) -> LRScheduler``.
+
+    Supported names: ``cosine-decay``, ``one-cycle`` (simplified single cycle).
     """
 
     def get_one_cycle(optimizer, num_training_steps):
-        """Simple single-cycle scheduler. Not including paper/fastai three-phase things or asymmetry."""
+        """Linear warm-up to peak LR, then linear cool-down to near zero."""
 
         def lr_lambda(current_step):
             if current_step < num_training_steps / 2:
@@ -152,7 +167,7 @@ def get_schedule_fn(scheduler, num_training_steps):
             T_max=num_training_steps,
             eta_min=0.0,
         )
-    elif scheduler == "one-cycle":  # this is a simplified one-cycle
+    elif scheduler == "one-cycle":
         scheduler_fn = partial(
             get_one_cycle,
             num_training_steps=num_training_steps,

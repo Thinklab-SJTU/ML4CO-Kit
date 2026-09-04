@@ -1,5 +1,11 @@
 r"""
-Learning Module.
+MS Learning Module (Ascend-oriented backend).
+
+Exports ``BaseEnv`` always; exports ``BaseModel`` / ``Trainer`` / helpers only
+when ``check_learning(backend="mindspore")`` succeeds (``mindspore`` installed).
+
+Interface mirrors ``ml4co_kit.learning.pytorch`` so higher-level code can switch
+backends with minimal changes.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -13,15 +19,9 @@ Learning Module.
 # See the Mulan PSL v2 for more details.
 
 
-from .env import BaseEnv
 from ml4co_kit.utils.env_utils import EnvChecker
 
-if EnvChecker().check_learning():
-    from .model import BaseModel
-    from .train import Checkpoint, Logger, Trainer
-
 if EnvChecker().check_learning(backend="mindspore"):
-    from .extra_backends.mindspore import (
-        MSDataset, MSDataLoader, MSBaseModel, 
-        MSCheckpoint, MSLogger, MSTrainer
-    )
+    from .dataloader import MSDataset, MSDataLoader
+    from .model import MSBaseModel
+    from .train import MSCheckpoint, MSLogger, MSTrainer

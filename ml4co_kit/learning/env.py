@@ -1,5 +1,5 @@
 r"""
-Base class for environments.
+Base class for PyTorch environments.
 """
 
 # Copyright (c) 2024 Thinklab@SJTU
@@ -28,7 +28,7 @@ class BaseEnv:
         device: str = "cpu"
     ):
         self.name = name
-        self.mode = mode
+        self.mode = mode  # typically "train" / "val" / "test"
         self.train_path = train_path
         self.val_path = val_path
         self.test_path = test_path
@@ -42,21 +42,25 @@ class BaseEnv:
         self.device = device
         
     def load_data(self):
+        """Build ``train/val/test`` datasets from the configured paths."""
         raise NotImplementedError(
             "``load_data`` is required to implemented in subclasses."
         )
 
     def train_dataloader(self):
+        """Return the training dataloader used by Lightning."""
         raise NotImplementedError(
             "``train_dataloader`` is required to implemented in subclasses."
         )
 
     def val_dataloader(self):
+        """Return the validation dataloader used by Lightning."""
         raise NotImplementedError(
             "``val_dataloader`` is required to implemented in subclasses."
         )
 
     def test_dataloader(self):
+        """Return the test dataloader used by Lightning."""
         raise NotImplementedError(
             "``test_dataloader`` is required to implemented in subclasses."
         )

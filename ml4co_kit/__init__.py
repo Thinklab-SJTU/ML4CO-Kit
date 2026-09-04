@@ -251,11 +251,17 @@ from .wrapper import (
 #                    Learning                      #
 ####################################################
 
-if env_checker.check_learning():
+if env_checker.check_learning(backend="pytorch"):
     from .learning import (
         BaseEnv, BaseModel, Trainer, Checkpoint, Logger
     )
-    
+
+if env_checker.check_learning(backend="mindspore"):
+    from .learning import (
+        MSDataset, MSDataLoader, MSBaseModel,
+        MSCheckpoint, MSLogger, MSTrainer
+    )
+
 
 __version__ = "0.5.5"
 __author__ = "SJTU-ReThinkLab"

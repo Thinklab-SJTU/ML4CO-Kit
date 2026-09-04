@@ -28,7 +28,10 @@ class EnvChecker(object):
 
         # Basic (torch)
         self.torch_support = self._check_package("torch")
-        
+
+        # MindSpore (Ascend / learning_ms)
+        self.mindspore_support = self._check_package("mindspore")
+
         # GNN4CO (scipy, wandb, pytorch_ligntning, torch-X)
         self.scipy_support = self._check_package("scipy")
         self.torch_scatter_support = self._check_package("torch_scatter")
@@ -77,8 +80,13 @@ class EnvChecker(object):
         ]
         return all(check_list)
 
-    def check_learning(self) -> bool:
-        return self.pytorch_lightning_support and self.wandb_support
+    def check_learning(self, backend: str = "pytorch") -> bool:
+        if backend == "pytorch":
+            return self.pytorch_lightning_support and self.wandb_support
+        elif backend == "mindspore":
+            return self.mindspore_support
+        else:
+            raise ValueError(f"Invalid backend: {backend}")
 
     def check_dreamplace(self) -> bool:
         check_list = [
