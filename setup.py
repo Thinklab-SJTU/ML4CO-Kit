@@ -38,7 +38,7 @@ REQUIRED = [
     "requests>=2.32.0",
     "matplotlib>=3.7.0",
     "async_timeout>=4.0.3",
-    "pyvrp>=0.9.1",
+    "pyvrp>=0.9.1,<=0.13.4",
     "gurobipy>=11.0.3",
     "scikit-learn>=1.5.0",
     "ortools>=9.12.4544",
