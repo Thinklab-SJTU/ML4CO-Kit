@@ -107,6 +107,15 @@ setup(
     url=URL,
     packages=find_packages(),
     package_data={PACKAGE_NAME: ["**"], NAME: ["**"], "docs": ["**"]},
+    # Runtime HuggingFace / dataset downloads live here and must not ship in wheels.
+    exclude_package_data={
+        PACKAGE_NAME: [
+            "dataset/cache",
+            "dataset/cache/*",
+            "dataset/cache/**",
+            "dataset/cache/**/*",
+        ]
+    },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,

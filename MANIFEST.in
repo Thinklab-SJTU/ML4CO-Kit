@@ -1,2 +1,4 @@
 include README.md
 recursive-include docs *
+prune ml4co_kit/dataset/cache
+recursive-exclude ml4co_kit/dataset/cache *
