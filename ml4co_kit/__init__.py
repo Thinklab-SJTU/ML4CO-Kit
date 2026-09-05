@@ -251,9 +251,11 @@ from .wrapper import (
 #                    Learning                      #
 ####################################################
 
+from .learning import BaseEnv
+
 if env_checker.check_learning(backend="pytorch"):
     from .learning import (
-        BaseEnv, BaseModel, Trainer, Checkpoint, Logger
+        BaseModel, Trainer, Checkpoint, Logger
     )
 
 if env_checker.check_learning(backend="mindspore"):
@@ -263,5 +265,5 @@ if env_checker.check_learning(backend="mindspore"):
     )
 
 
-__version__ = "0.5.6"
+__version__ = "0.5.7"
 __author__ = "SJTU-ReThinkLab"
