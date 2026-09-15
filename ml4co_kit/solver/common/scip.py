@@ -31,8 +31,8 @@ class SCIPSolver(SolverBase):
     """
     SCIP: https://github.com/scipopt/scip
     PySCIPOpt: https://github.com/scipopt/PySCIPOpt
-    Current Version: 10.0.2
-    Last Update: 2026-05-26
+    Current Version: 10.0.3
+    Last Update: 2026-09-15
     @incollection{
         MaherMiltenbergerPedrosoRehfeldtSchwarzSerrano2016,
         author = {Stephen Maher and Matthias Miltenberger and Jo{\~{a}}o Pedro Pedroso 
@@ -48,8 +48,8 @@ class SCIPSolver(SolverBase):
     def __init__(
         self,
         scip_time_limit: float = 10.0,
-        soplex_version: str = "8.0.2",
-        scip_version: str = "10.0.2",
+        soplex_version: str = "8.0.3",
+        scip_version: str = "10.0.3",
         optimizer: OptimizerBase = None
     ):
         # Super Initialization

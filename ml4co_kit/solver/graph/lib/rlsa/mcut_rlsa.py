@@ -17,13 +17,13 @@ import torch
 import numpy as np
 from torch import Tensor
 from typing import Tuple
-from ml4co_kit.task.graph.mis import MISTask
+from ml4co_kit.task.graph.mcut import MCutTask
 from ml4co_kit.utils.type_utils import to_tensor, to_numpy
     
 
 def mcut_rlsa(
-    task_data: MISTask,
-    rlsa_tau: float = 5, 
+    task_data: MCutTask,
+    rlsa_tau: float = 2.0, 
     rlsa_d: int = 20, 
     rlsa_k: int = 200, 
     rlsa_t: int = 200, 
