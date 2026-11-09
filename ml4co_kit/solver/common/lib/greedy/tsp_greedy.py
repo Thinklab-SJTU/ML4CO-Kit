@@ -50,13 +50,29 @@ def tsp_greedy(task_data: TSPTask):
 
 
 def _tsp_greedy_v2(
-    candidate_edges: np.ndarray, nodes_num: int, num_workers: int = 1
+    candidate_edges: np.ndarray, 
+    nodes_num: int, 
+    num_workers: int = 1, 
+    points: np.ndarray = None
 ) -> np.ndarray:
+    """
+    Greedy edge insertion over candidate edges sorted by priority.
+
+    Args:
+        candidate_edges: flattened edge list ``[i, j, i, j, ...]``, shape (E,) or (B, E) for a batch.
+        nodes_num: number of nodes.
+        num_workers: threads for the batched mode.
+        points: (V, 2) or (B, V, 2) coordinates. If given, the fragments left when the candidate
+            edges do not form a tour (e.g. kNN-sparse heatmaps) are joined by nearest-endpoint
+            greedy insertion; otherwise such inputs raise ``RuntimeError``.
+    """
     # Ensure input is int32 for C++ compatibility
     candidate_edges = np.ascontiguousarray(candidate_edges, dtype=np.int32)
+    if points is not None:
+        points = np.ascontiguousarray(points, dtype=np.float64)
     
     # Call the pybind11 implementation
-    tours = pybind11_tsp_greedy_v2(candidate_edges, nodes_num, num_workers)
+    tours = pybind11_tsp_greedy_v2(candidate_edges, nodes_num, num_workers, points)
     
     return tours
 
@@ -66,7 +82,8 @@ def tsp_greedy_v2(task_data: TSPTask):
     tour = _tsp_greedy_v2(
         candidate_edges=task_data.cache["candidate_edges"], 
         nodes_num=task_data.nodes_num, 
-        num_workers=1
+        num_workers=1,
+        points=task_data.points
     )
     
     # Store the tour in the task_data

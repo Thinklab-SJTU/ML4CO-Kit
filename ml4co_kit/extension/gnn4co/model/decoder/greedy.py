@@ -16,7 +16,7 @@ GNN4CO Greedy Decoder.
 
 
 from ml4co_kit.task.base import TaskBase, TASK_TYPE
-from ml4co_kit.solver.common.lib.greedy.tsp_greedy import tsp_greedy
+from ml4co_kit.solver.common.lib.greedy.tsp_greedy import tsp_greedy, tsp_greedy_v2
 from ml4co_kit.solver.common.lib.greedy.mcl_greedy import mcl_greedy
 from ml4co_kit.solver.common.lib.greedy.mis_greedy import mis_greedy
 from ml4co_kit.solver.common.lib.greedy.mvc_greedy import mvc_greedy
@@ -26,8 +26,16 @@ from .base import GNN4CODecoder
 
 
 class GNN4COGreedyDecoder(GNN4CODecoder):
-    def __init__(self, sparse_factor: int) -> None:
+    def __init__(self, sparse_factor: int, use_candidate_edges: bool = False) -> None:
+        """
+        Args:
+            sparse_factor: number of candidate edges per node of the sparse graph (-1 for dense).
+            use_candidate_edges: for sparse TSP, run greedy insertion over the heatmap's candidate
+                edges (``tsp_greedy_v2``, fragments joined by nearest endpoints) instead of building
+                the dense N x N heatmap. Recommended for large instances.
+        """
         super(GNN4COGreedyDecoder, self).__init__(sparse_factor)
+        self.use_candidate_edges = use_candidate_edges
 
     def _decode(self, task_data: TaskBase):
         # Get task type
@@ -35,7 +43,10 @@ class GNN4COGreedyDecoder(GNN4CODecoder):
 
         # Decode according to task type
         if task_type == TASK_TYPE.TSP:
-            tsp_greedy(task_data)
+            if self.use_candidate_edges and self.sparse_factor > 0:
+                tsp_greedy_v2(task_data)
+            else:
+                tsp_greedy(task_data)
         elif task_type == TASK_TYPE.ATSP:
             atsp_greedy(task_data)
         elif task_type == TASK_TYPE.MCL:

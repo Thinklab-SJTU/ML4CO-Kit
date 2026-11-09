@@ -25,9 +25,28 @@ from ml4co_kit.task.graph.base import GraphTaskBase
 from ...env import SparseDataBatch, DenseDataBatch
 
 
+def sorted_candidate_edges(
+    heatmap: np.ndarray, edge_index: np.ndarray, nodes_num: int
+) -> np.ndarray:
+    """
+    Undirected candidate edges of a sparse TSP heatmap, sorted by decreasing symmetrized score.
+
+    The score of {i, j} is (H_ij + H_ji) / 2, the same as the dense ``(H + H.T) / 2``.
+    Returns the flattened edge list ``[i, j, i, j, ...]`` (int32) used by ``tsp_greedy_v2``.
+    """
+    lo = np.minimum(edge_index[0], edge_index[1]).astype(np.int64)
+    hi = np.maximum(edge_index[0], edge_index[1]).astype(np.int64)
+    keys, inverse = np.unique(lo * nodes_num + hi, return_inverse=True)
+    scores = np.bincount(inverse, weights=heatmap.astype(np.float64)) / 2
+    keys = keys[np.argsort(-scores, kind="stable")]
+    return np.stack([keys // nodes_num, keys % nodes_num], axis=1).reshape(-1).astype(np.int32)
+
+
 class GNN4CODecoder(object):
     def __init__(self, sparse_factor: int) -> None:
         self.sparse_factor = sparse_factor
+        # If True, sparse TSP heatmaps are decoded from their candidate edges without the dense N x N heatmap
+        self.use_candidate_edges = False
         
     def sparse_decode(
         self, 
@@ -52,12 +71,17 @@ class GNN4CODecoder(object):
                 _heatmap = heatmap[edge_begin_idx:edge_end_idx]
                 _edge_index = edge_index[:, edge_begin_idx:edge_end_idx]
                 _edge_index = _edge_index - accumulated_nodes_num
-                _dense_heatmap: np.ndarray = scipy.sparse.coo_matrix(
-                    arg1=(_heatmap, (_edge_index[0], _edge_index[1])), 
-                    shape=(nodes_num, nodes_num)
-                ).toarray()
-                _dense_heatmap = (_dense_heatmap + _dense_heatmap.T) / 2
-                task_data.cache["heatmap"] = _dense_heatmap
+                if self.use_candidate_edges and self.sparse_factor > 0:
+                    task_data.cache["candidate_edges"] = sorted_candidate_edges(
+                        heatmap=_heatmap, edge_index=_edge_index, nodes_num=nodes_num
+                    )
+                else:
+                    _dense_heatmap: np.ndarray = scipy.sparse.coo_matrix(
+                        arg1=(_heatmap, (_edge_index[0], _edge_index[1])), 
+                        shape=(nodes_num, nodes_num)
+                    ).toarray()
+                    _dense_heatmap = (_dense_heatmap + _dense_heatmap.T) / 2
+                    task_data.cache["heatmap"] = _dense_heatmap
                 edge_begin_idx = edge_end_idx
                 accumulated_nodes_num += nodes_num
 
