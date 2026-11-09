@@ -151,7 +151,8 @@ class EnvInstallHelper(object):
     def install(self):
         # numpy & torch
         if version.parse(self.pytorch_version) < version.parse("2.4.0"):
-            os.system(f"pip install 'numpy<2'")
+            # pandas>=3 requires numpy>=2
+            os.system(f"pip install 'numpy<2' 'pandas<3'")
         os.system(f"pip install torch=={self.pytorch_version}")
             
         # scipy
