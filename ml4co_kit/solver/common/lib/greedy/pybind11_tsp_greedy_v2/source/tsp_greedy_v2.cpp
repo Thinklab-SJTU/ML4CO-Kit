@@ -40,6 +40,10 @@ using DoubleArray = py::array_t<double, py::array::c_style | py::array::forcecas
  * @return Tour(s):
  *         - Single instance: 1D array of shape (num_nodes + 1,)
  *         - Batched: 2D array of shape (batch_size, num_nodes + 1)
+ * 
+ * @throws std::out_of_range (IndexError) if a node index is outside [0, num_nodes)
+ * @throws std::invalid_argument (ValueError) if candidate_edges or points have an invalid shape
+ * @throws std::runtime_error (RuntimeError) if the candidate edges do not form a tour and no points are given
  */
 inline py::array_t<int> tsp_greedy_insert(
     const IntArray & candidate_edges,

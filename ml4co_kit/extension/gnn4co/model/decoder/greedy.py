@@ -29,7 +29,7 @@ class GNN4COGreedyDecoder(GNN4CODecoder):
     def __init__(self, sparse_factor: int, use_candidate_edges: bool = False) -> None:
         """
         Args:
-            sparse_factor: number of candidate edges per node of the sparse graph (-1 for dense).
+            sparse_factor: number of candidate edges per node of the sparse graph (<= 0 for dense).
             use_candidate_edges: for sparse TSP, run greedy insertion over the heatmap's candidate
                 edges (``tsp_greedy_v2``, fragments joined by nearest endpoints) instead of building
                 the dense N x N heatmap. Recommended for large instances.

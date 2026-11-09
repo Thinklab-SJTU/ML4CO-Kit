@@ -45,7 +45,8 @@ def sorted_candidate_edges(
 class GNN4CODecoder(object):
     def __init__(self, sparse_factor: int) -> None:
         self.sparse_factor = sparse_factor
-        # If True, sparse TSP heatmaps are decoded from their candidate edges without the dense N x N heatmap
+        # If True, sparse TSP heatmaps are decoded from their candidate edges
+        # without building the dense N x N heatmap (set by subclasses that support it)
         self.use_candidate_edges = False
         
     def sparse_decode(

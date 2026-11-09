@@ -59,12 +59,13 @@ def _tsp_greedy_v2(
     Greedy edge insertion over candidate edges sorted by priority.
 
     Args:
-        candidate_edges: flattened edge list ``[i, j, i, j, ...]``, shape (E,) or (B, E) for a batch.
+        candidate_edges: flattened edge list ``[i, j, i, j, ...]``, shape (E,) or (B, E)
+            for a batch.
         nodes_num: number of nodes.
         num_workers: threads for the batched mode.
-        points: (V, 2) or (B, V, 2) coordinates. If given, the fragments left when the candidate
-            edges do not form a tour (e.g. kNN-sparse heatmaps) are joined by nearest-endpoint
-            greedy insertion; otherwise such inputs raise ``RuntimeError``.
+        points: (nodes_num, 2) or (B, nodes_num, 2) coordinates. If given, the fragments left
+            when the candidate edges do not form a tour (e.g. kNN-sparse heatmaps) are joined
+            by nearest-endpoint greedy insertion; otherwise such inputs raise ``RuntimeError``.
     """
     # Ensure input is int32 for C++ compatibility
     candidate_edges = np.ascontiguousarray(candidate_edges, dtype=np.int32)

@@ -77,6 +77,13 @@ inline int insert_edges(
  * Endpoints (nodes with fewer than 2 neighbors) propose edges to their k nearest endpoints, which are
  * inserted in increasing order of length; k doubles whenever a round inserts nothing. Each round costs
  * O(m^2) for m endpoints, which is small when the candidate list covers most of the tour.
+ * 
+ * @param points Node coordinates as flattened array [x, y, x, y, ...]
+ * @param num_nodes Number of nodes in the TSP instance
+ * @param neighbors Neighbor slots of every node (2 per node, -1 = empty), updated in place
+ * @param parent Union-find parents of the path fragments, updated in place
+ * @param num_inserted_edges Number of edges inserted so far
+ * @return Number of inserted edges, always num_nodes - 1 (one Hamiltonian path)
  */
 inline int join_fragments(
     const double* points,
